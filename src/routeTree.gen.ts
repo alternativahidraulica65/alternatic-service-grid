@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authenticated/historico'
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated/nova-os'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
@@ -30,6 +31,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHistoricoRoute = AuthenticatedHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedKanbanRoute = AuthenticatedKanbanRouteImport.update({
@@ -63,6 +69,7 @@ const AuthenticatedOrcamentoPrecificacaoRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/nova-os': typeof AuthenticatedNovaOsRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/historico'
     | '/kanban'
     | '/nova-os'
     | '/orcamento'
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/historico'
     | '/kanban'
     | '/nova-os'
     | '/orcamento'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/_authenticated/dashboard'
+    | '/_authenticated/historico'
     | '/_authenticated/kanban'
     | '/_authenticated/nova-os'
     | '/_authenticated/orcamento'
@@ -146,6 +158,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/historico': {
+      id: '/_authenticated/historico'
+      path: '/historico'
+      fullPath: '/historico'
+      preLoaderRoute: typeof AuthenticatedHistoricoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/kanban': {
@@ -203,6 +222,7 @@ const AuthenticatedOrcamentoRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedNovaOsRoute: typeof AuthenticatedNovaOsRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
@@ -211,6 +231,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedNovaOsRoute: AuthenticatedNovaOsRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
