@@ -332,22 +332,26 @@ function DashboardPage() {
                   Precificação e Aprovação
                 </Button>
 
-                <Button 
-                  className="w-full justify-start border-input" 
-                  variant="outline"
-                  onClick={() => router.navigate({ to: "/orcamento/pdf" as any })}
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  Gerador de Orçamentos (PDF)
-                </Button>
-                <Button 
-                  className="w-full justify-start border-input" 
-                  variant="outline"
-                  onClick={() => router.navigate({ to: "/engenharia/materiais" as any })}
-                >
-                  <Box className="mr-2 h-4 w-4" />
-                  Matéria-Prima Inteligente
-                </Button>
+                {isFinanceiro && (
+                  <Button 
+                    className="w-full justify-start border-input" 
+                    variant="outline"
+                    onClick={() => router.navigate({ to: "/orcamento/pdf" as any })}
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    Gerador de Orçamentos (PDF)
+                  </Button>
+                )}
+                {isGestor && (
+                  <Button 
+                    className="w-full justify-start border-input" 
+                    variant="outline"
+                    onClick={() => router.navigate({ to: "/engenharia/materiais" as any })}
+                  >
+                    <Box className="mr-2 h-4 w-4" />
+                    Matéria-Prima Inteligente
+                  </Button>
+                )}
                 <Button 
                   className="w-full justify-start border-input" 
                   variant="outline"
@@ -356,14 +360,16 @@ function DashboardPage() {
                   <Search className="mr-2 h-4 w-4" />
                   Busca e Histórico Global
                 </Button>
-                <Button 
-                  className="w-full justify-start border-input" 
-                  variant="outline"
-                  onClick={() => router.navigate({ to: "/admin/usuarios" as any })}
-                >
-                  <Users className="mr-2 h-4 w-4" />
-                  Gestão de Usuários
-                </Button>
+                {isDiretor && (
+                  <Button 
+                    className="w-full justify-start border-input" 
+                    variant="outline"
+                    onClick={() => router.navigate({ to: "/admin/usuarios" as any })}
+                  >
+                    <Users className="mr-2 h-4 w-4" />
+                    Gestão de Usuários
+                  </Button>
+                )}
 
                 <Button 
                   className="w-full justify-start border-input" 
