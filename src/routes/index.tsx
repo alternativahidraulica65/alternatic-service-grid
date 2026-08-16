@@ -3,7 +3,7 @@ import { createFileRoute, useRouter, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, Lock, Eye, EyeOff, Loader2, Wheat } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, Droplets } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
