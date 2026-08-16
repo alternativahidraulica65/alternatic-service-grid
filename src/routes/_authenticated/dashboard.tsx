@@ -300,7 +300,7 @@ function DashboardPage() {
                 <Button 
                   className="w-full justify-start btn-industrial" 
                   variant="default"
-                  onClick={() => router.navigate({ to: "/nova-os" })}
+                  onClick={() => router.navigate({ to: "/ordens-servico/nova" as any })}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Nova Ordem de Serviço
