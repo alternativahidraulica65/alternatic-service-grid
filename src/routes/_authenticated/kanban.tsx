@@ -78,7 +78,7 @@ function KanbanPage() {
                   
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-[10px] border-amber-500 text-amber-700 bg-amber-50">
-                      {new Date(order.criado_em).toLocaleDateString()}
+                      {order.criado_em ? new Date(order.criado_em).toLocaleDateString() : 'Sem data'}
                     </Badge>
                   </div>
                 </Card>
