@@ -120,7 +120,12 @@ function OrcamentoPage() {
         if (error) {
           toast.error("Erro ao carregar custos");
         } else {
-          setItems(data || []);
+          setItems((data || []).map(item => ({
+            ...item,
+            custo_interno: Number(item.custo_interno) || 0,
+            valor_venda: Number(item.valor_venda) || 0,
+            is_terceirizado: !!item.is_terceirizado
+          })) as ItemCusto[]);
         }
       };
       fetchCosts();
