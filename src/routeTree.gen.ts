@@ -18,6 +18,7 @@ import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
+import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 
 const IndexRoute = IndexRouteImport.update({
@@ -66,6 +67,12 @@ const AuthenticatedEngenhariaMateriaisRoute =
     path: '/engenharia/materiais',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOrcamentoPdfRoute =
+  AuthenticatedOrcamentoPdfRouteImport.update({
+    id: '/pdf',
+    path: '/pdf',
+    getParentRoute: () => AuthenticatedOrcamentoRoute,
+  } as any)
 const AuthenticatedOrcamentoPrecificacaoRoute =
   AuthenticatedOrcamentoPrecificacaoRouteImport.update({
     id: '/precificacao',
@@ -82,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +101,7 @@ export interface FileRoutesByTo {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRoutesById {
@@ -106,6 +115,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRouteTypes {
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/admin/usuarios'
     | '/engenharia/materiais'
+    | '/orcamento/pdf'
     | '/orcamento/precificacao'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/admin/usuarios'
     | '/engenharia/materiais'
+    | '/orcamento/pdf'
     | '/orcamento/precificacao'
   id:
     | '__root__'
@@ -142,6 +154,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamento'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/engenharia/materiais'
+    | '/_authenticated/orcamento/pdf'
     | '/_authenticated/orcamento/precificacao'
   fileRoutesById: FileRoutesById
 }
@@ -215,6 +228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEngenhariaMateriaisRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/orcamento/pdf': {
+      id: '/_authenticated/orcamento/pdf'
+      path: '/pdf'
+      fullPath: '/orcamento/pdf'
+      preLoaderRoute: typeof AuthenticatedOrcamentoPdfRouteImport
+      parentRoute: typeof AuthenticatedOrcamentoRoute
+    }
     '/_authenticated/orcamento/precificacao': {
       id: '/_authenticated/orcamento/precificacao'
       path: '/precificacao'
@@ -226,11 +246,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedOrcamentoRouteChildren {
+  AuthenticatedOrcamentoPdfRoute: typeof AuthenticatedOrcamentoPdfRoute
   AuthenticatedOrcamentoPrecificacaoRoute: typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 
 const AuthenticatedOrcamentoRouteChildren: AuthenticatedOrcamentoRouteChildren =
   {
+    AuthenticatedOrcamentoPdfRoute: AuthenticatedOrcamentoPdfRoute,
     AuthenticatedOrcamentoPrecificacaoRoute:
       AuthenticatedOrcamentoPrecificacaoRoute,
   }
