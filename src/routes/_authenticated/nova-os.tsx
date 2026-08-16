@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, 
@@ -14,7 +14,9 @@ import {
   Trash2,
   ChevronRight,
   Clock,
-  Factory
+  Factory,
+  Eye,
+  ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -32,6 +34,14 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/_authenticated/nova-os")({
   component: NovaOSPage,
