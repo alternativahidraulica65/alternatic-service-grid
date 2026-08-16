@@ -486,6 +486,7 @@ export type Database = {
           nome: string
           updated_at: string
           user_id: string
+          username: string | null
         }
         Insert: {
           ativo?: boolean
@@ -497,6 +498,7 @@ export type Database = {
           nome: string
           updated_at?: string
           user_id: string
+          username?: string | null
         }
         Update: {
           ativo?: boolean
@@ -508,6 +510,7 @@ export type Database = {
           nome?: string
           updated_at?: string
           user_id?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -526,7 +529,14 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "diretor" | "financeiro" | "gestor" | "operador" | "tecnico"
+      app_role:
+        | "diretor"
+        | "financeiro"
+        | "gestor"
+        | "operador"
+        | "tecnico"
+        | "administrativo_financeiro"
+        | "terceirizado"
       tipo_comissao: "padrao" | "divisao_50_50"
     }
     CompositeTypes: {
@@ -655,7 +665,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["diretor", "financeiro", "gestor", "operador", "tecnico"],
+      app_role: [
+        "diretor",
+        "financeiro",
+        "gestor",
+        "operador",
+        "tecnico",
+        "administrativo_financeiro",
+        "terceirizado",
+      ],
       tipo_comissao: ["padrao", "divisao_50_50"],
     },
   },

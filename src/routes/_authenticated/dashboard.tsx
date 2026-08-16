@@ -90,22 +90,26 @@ function KPICard({ title, value, subtext, icon: Icon, trend }: any) {
 function DashboardPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, profile, roles, isAdmin } = Route.useRouteContext();
+  const { user, profile, roles, isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado } = Route.useRouteContext();
   
   // Local state for view simulation (RBAC override for admins)
   const [activeView, setActiveView] = useState<string | null>(null);
   
   useEffect(() => {
-    if (isAdmin && !activeView) {
+    if (isDiretor && !activeView) {
       setActiveView("diretor");
-    } else if (!isAdmin) {
-      setActiveView(roles[0] || "operador");
+    } else if (!isDiretor) {
+      // Prioridade de visão se tiver múltiplas roles
+      if (isFinanceiro) setActiveView("financeiro");
+      else if (isGestor) setActiveView("gestor");
+      else if (isOperador) setActiveView("operador");
+      else if (isTerceirizado) setActiveView("terceirizado");
+      else setActiveView("operador");
     }
-  }, [isAdmin, roles]);
+  }, [isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado]);
 
-  const mainRole = isAdmin ? "Diretor" : roles[0] || "Operador";
-  const formattedRole = mainRole.charAt(0).toUpperCase() + mainRole.slice(1);
-  const currentView = isAdmin ? activeView : (roles[0] || "operador");
+  const formattedRole = activeView ? activeView.charAt(0).toUpperCase() + activeView.slice(1) : "Acessando...";
+  const currentView = activeView;
 
   // Fetch real data from Supabase
   const { data: companies } = useSuspenseQuery({
@@ -128,9 +132,9 @@ function DashboardPage() {
 
   // Calculate KPIs based on real data
   const activeOrdersCount = orders?.filter(o => o.status === 'aberta' || o.status === 'em_andamento').length || 0;
-  const totalRevenue = orders?.reduce((acc, curr) => acc + (Number(curr.valor_total) || 0), 0) || 0;
+  const totalRevenue = isFinanceiro || isDiretor ? (orders?.reduce((acc, curr) => acc + (Number(curr.valor_total) || 0), 0) || 0) : 0;
   const pendingQuotes = orders?.filter(o => o.status === 'orcamento_pendente').length || 0;
-  const avgMargin = orders?.length ? (orders.reduce((acc, curr) => acc + (Number(curr.margem_lucro) || 0), 0) / orders.length) : 0;
+  const avgMargin = isDiretor ? (orders?.length ? (orders.reduce((acc, curr) => acc + (Number(curr.margem_lucro) || 0), 0) / orders.length) : 0) : 0;
 
   // Prepare chart data
   const revenueByCnpj = companies?.map(company => {
@@ -153,7 +157,7 @@ function DashboardPage() {
 
   // Render View Switcher for Admins
   const ViewSwitcher = () => {
-    if (!isAdmin) return null;
+    if (!isDiretor) return null;
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -235,12 +239,14 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <KPICard 
-              title="Faturamento Total" 
-              value={`R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} 
-              subtext="Total acumulado" 
-              icon={DollarSign} 
-            />
+            {(isDiretor || isFinanceiro) && (
+              <KPICard 
+                title="Faturamento Total" 
+                value={`R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} 
+                subtext="Total acumulado" 
+                icon={DollarSign} 
+              />
+            )}
             <KPICard 
               title="OS Ativas" 
               value={activeOrdersCount.toString()} 
@@ -253,43 +259,47 @@ function DashboardPage() {
               subtext="Aguardando aprovação" 
               icon={AlertTriangle} 
             />
-            <KPICard 
-              title="Margem Média" 
-              value={`${avgMargin.toFixed(1)}%`} 
-              subtext="Média global" 
-              trend={avgMargin > 30 ? "Acima da meta" : ""} 
-              icon={TrendingUp} 
-            />
+            {isDiretor && (
+              <KPICard 
+                title="Margem Média" 
+                value={`${avgMargin.toFixed(1)}%`} 
+                subtext="Média global" 
+                trend={avgMargin > 30 ? "Acima da meta" : ""} 
+                icon={TrendingUp} 
+              />
+            )}
           </div>
 
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Revenue Chart */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">Faturamento por Empresa Emissora</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={revenueByCnpj} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
-                      <Tooltip 
-                        cursor={{ fill: "transparent" }}
-                        contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px" }}
-                        formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Faturamento"]}
-                      />
-                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                        {revenueByCnpj.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color || "#FFD700"} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+            {isDiretor && (
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-base font-semibold">Faturamento por Empresa Emissora</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={revenueByCnpj} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
+                        <Tooltip 
+                          cursor={{ fill: "transparent" }}
+                          contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px" }}
+                          formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Faturamento"]}
+                        />
+                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                          {revenueByCnpj.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color || "#FFD700"} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Quick Actions */}
             <Card>
@@ -322,22 +332,26 @@ function DashboardPage() {
                   Precificação e Aprovação
                 </Button>
 
-                <Button 
-                  className="w-full justify-start border-input" 
-                  variant="outline"
-                  onClick={() => router.navigate({ to: "/orcamento/pdf" as any })}
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  Gerador de Orçamentos (PDF)
-                </Button>
-                <Button 
-                  className="w-full justify-start border-input" 
-                  variant="outline"
-                  onClick={() => router.navigate({ to: "/engenharia/materiais" as any })}
-                >
-                  <Box className="mr-2 h-4 w-4" />
-                  Matéria-Prima Inteligente
-                </Button>
+                {isFinanceiro && (
+                  <Button 
+                    className="w-full justify-start border-input" 
+                    variant="outline"
+                    onClick={() => router.navigate({ to: "/orcamento/pdf" as any })}
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    Gerador de Orçamentos (PDF)
+                  </Button>
+                )}
+                {isGestor && (
+                  <Button 
+                    className="w-full justify-start border-input" 
+                    variant="outline"
+                    onClick={() => router.navigate({ to: "/engenharia/materiais" as any })}
+                  >
+                    <Box className="mr-2 h-4 w-4" />
+                    Matéria-Prima Inteligente
+                  </Button>
+                )}
                 <Button 
                   className="w-full justify-start border-input" 
                   variant="outline"
@@ -346,14 +360,16 @@ function DashboardPage() {
                   <Search className="mr-2 h-4 w-4" />
                   Busca e Histórico Global
                 </Button>
-                <Button 
-                  className="w-full justify-start border-input" 
-                  variant="outline"
-                  onClick={() => router.navigate({ to: "/admin/usuarios" as any })}
-                >
-                  <Users className="mr-2 h-4 w-4" />
-                  Gestão de Usuários
-                </Button>
+                {isDiretor && (
+                  <Button 
+                    className="w-full justify-start border-input" 
+                    variant="outline"
+                    onClick={() => router.navigate({ to: "/admin/usuarios" as any })}
+                  >
+                    <Users className="mr-2 h-4 w-4" />
+                    Gestão de Usuários
+                  </Button>
+                )}
 
                 <Button 
                   className="w-full justify-start border-input" 
@@ -461,13 +477,15 @@ function DashboardPage() {
             <UserIcon className="h-5 w-5 text-primary" />
             <h2 className="font-display text-2xl font-bold text-foreground">Minha Fila de Trabalho</h2>
           </div>
-          <Button 
-            className="btn-industrial" 
-            onClick={() => router.navigate({ to: "/nova-os" })}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Triagem
-          </Button>
+          {isGestor && (
+            <Button 
+              className="btn-industrial" 
+              onClick={() => router.navigate({ to: "/ordens-servico/nova" as any })}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nova Triagem
+            </Button>
+          )}
         </div>
         <Card>
           <CardHeader>
