@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      custos_os: {
+        Row: {
+          categoria: string
+          criado_em: string | null
+          criado_por: string | null
+          custo_interno: number | null
+          descricao: string
+          id: string
+          is_terceirizado: boolean | null
+          os_id: string
+          terceiro_nome: string | null
+          valor_venda: number | null
+        }
+        Insert: {
+          categoria: string
+          criado_em?: string | null
+          criado_por?: string | null
+          custo_interno?: number | null
+          descricao: string
+          id?: string
+          is_terceirizado?: boolean | null
+          os_id: string
+          terceiro_nome?: string | null
+          valor_venda?: number | null
+        }
+        Update: {
+          categoria?: string
+          criado_em?: string | null
+          criado_por?: string | null
+          custo_interno?: number | null
+          descricao?: string
+          id?: string
+          is_terceirizado?: boolean | null
+          os_id?: string
+          terceiro_nome?: string | null
+          valor_venda?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custos_os_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       empresas_emissoras: {
         Row: {
           cnpj: string
