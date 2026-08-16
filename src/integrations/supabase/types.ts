@@ -38,6 +38,44 @@ export type Database = {
         }
         Relationships: []
       }
+      historico_processo_os: {
+        Row: {
+          criado_em: string | null
+          executor_id: string | null
+          id: string
+          observacao: string | null
+          os_id: string
+          status_anterior: string | null
+          status_novo: string
+        }
+        Insert: {
+          criado_em?: string | null
+          executor_id?: string | null
+          id?: string
+          observacao?: string | null
+          os_id: string
+          status_anterior?: string | null
+          status_novo: string
+        }
+        Update: {
+          criado_em?: string | null
+          executor_id?: string | null
+          id?: string
+          observacao?: string | null
+          os_id?: string
+          status_anterior?: string | null
+          status_novo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_processo_os_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ordens_servico: {
         Row: {
           cliente: string
@@ -84,6 +122,44 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas_emissoras"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pecas_os: {
+        Row: {
+          criado_em: string | null
+          criado_por: string | null
+          foto_url: string | null
+          id: string
+          localizacao: string | null
+          nome: string
+          os_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url?: string | null
+          id?: string
+          localizacao?: string | null
+          nome: string
+          os_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url?: string | null
+          id?: string
+          localizacao?: string | null
+          nome?: string
+          os_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pecas_os_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
             referencedColumns: ["id"]
           },
         ]

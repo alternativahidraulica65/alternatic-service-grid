@@ -12,7 +12,8 @@ import {
   LayoutDashboard,
   Factory,
   User as UserIcon,
-  Wrench
+  Wrench,
+  Plus
 } from "lucide-react";
 import { toast } from "sonner";
 import { 
@@ -234,7 +235,15 @@ function DashboardPage() {
                 <CardTitle className="text-base font-semibold">Ações Rápidas</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start btn-industrial" variant="default">
+                <Button 
+                  className="w-full justify-start btn-industrial" 
+                  variant="default"
+                  onClick={() => router.navigate({ to: "/nova-os" })}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nova Ordem de Serviço
+                </Button>
+                <Button className="w-full justify-start border-input" variant="outline">
                   <CheckCircle2 className="mr-2 h-4 w-4" />
                   Aprovar Orçamentos
                 </Button>
@@ -275,7 +284,16 @@ function DashboardPage() {
           </div>
         </header>
         <main className="container-industrial py-8 space-y-8">
-          <h2 className="font-display text-2xl font-bold text-foreground">Gestão de Produção</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-2xl font-bold text-foreground">Gestão de Produção</h2>
+            <Button 
+              className="btn-industrial" 
+              onClick={() => router.navigate({ to: "/nova-os" })}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nova OS / Triagem
+            </Button>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <KPICard title="Ordens Ativas" value={activeOrdersCount.toString()} subtext="Unidades totais" icon={Factory} />
             <KPICard title="Aguardando Custos" value={pendingQuotes.toString()} subtext="OS paradas" icon={DollarSign} />
@@ -326,9 +344,18 @@ function DashboardPage() {
         </div>
       </header>
       <main className="container-industrial py-8 space-y-8">
-        <div className="flex items-center gap-2">
-          <UserIcon className="h-5 w-5 text-primary" />
-          <h2 className="font-display text-2xl font-bold text-foreground">Minha Fila de Trabalho</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <UserIcon className="h-5 w-5 text-primary" />
+            <h2 className="font-display text-2xl font-bold text-foreground">Minha Fila de Trabalho</h2>
+          </div>
+          <Button 
+            className="btn-industrial" 
+            onClick={() => router.navigate({ to: "/nova-os" })}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Nova Triagem
+          </Button>
         </div>
         <Card>
           <CardHeader>
