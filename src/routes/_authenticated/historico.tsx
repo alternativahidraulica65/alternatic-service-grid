@@ -148,7 +148,7 @@ function HistoricoPage() {
               <Card 
                 key={os.id} 
                 className="group hover:border-primary transition-all cursor-pointer bg-white"
-                onClick={() => window.open(`/dashboard`, '_self')} // TODO: Redirect to OS details
+                onClick={() => router.navigate({ to: "/dashboard" })}
               >
                 <CardContent className="p-4">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
