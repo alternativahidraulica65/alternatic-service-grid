@@ -224,10 +224,9 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="mt-8 text-center">
           <p className="text-xs font-medium text-white/60">
-            © {new Date().getFullYear()} Plataforma Agrícola.
+            © {new Date().getFullYear()} Alternativa Hidráulica.
           </p>
         </footer>
       </div>
