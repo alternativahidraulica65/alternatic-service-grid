@@ -29,10 +29,10 @@ export const Route = createFileRoute("/")({
   component: LoginPage,
   head: () => ({
     meta: [
-      { title: "Acesso à Plataforma — Gestão Agrícola" },
-      { name: "description", content: "Acesse o sistema de gestão agrícola." },
-      { property: "og:title", content: "Acesso à Plataforma — Gestão Agrícola" },
-      { property: "og:description", content: "Acesse o sistema de gestão agrícola." },
+      { title: "Acesso à Plataforma — Alternativa Hidráulica" },
+      { name: "description", content: "Acesse o sistema Alternativa Hidráulica." },
+      { property: "og:title", content: "Acesso à Plataforma — Alternativa Hidráulica" },
+      { property: "og:description", content: "Acesse o sistema Alternativa Hidráulica." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
