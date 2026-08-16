@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
 });
 
 function LoginPage() {
-  console.log("Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
+  console.log("Supabase URL:", import.meta.env["VITE_SUPABASE_URL"]);
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
