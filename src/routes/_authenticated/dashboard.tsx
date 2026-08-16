@@ -397,7 +397,7 @@ function DashboardPage() {
             <h2 className="font-display text-2xl font-bold text-foreground">Gestão de Produção</h2>
             <Button 
               className="btn-industrial" 
-              onClick={() => router.navigate({ to: "/nova-os" })}
+              onClick={() => router.navigate({ to: "/ordens-servico/nova" as any })}
             >
               <Plus className="mr-2 h-4 w-4" />
               Nova OS / Triagem
