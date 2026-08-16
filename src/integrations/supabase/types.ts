@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      clientes: {
+        Row: {
+          cnpj: string | null
+          criado_em: string | null
+          email: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          telefone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cnpj?: string | null
+          criado_em?: string | null
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          telefone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cnpj?: string | null
+          criado_em?: string | null
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          telefone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       configuracoes_vendedores: {
         Row: {
           id: string
@@ -183,49 +216,81 @@ export type Database = {
       ordens_servico: {
         Row: {
           cliente: string
+          cliente_id: string | null
           criado_em: string | null
+          data_abertura: string | null
+          data_previsao_conclusao: string | null
           descricao: string | null
           empresa_id: string | null
           id: string
           margem_lucro: number | null
           numero_os: string
+          observacoes: string | null
           operador_atribuido: string | null
+          prioridade: string | null
           status: string
+          tecnico_id: string | null
           updated_at: string | null
           valor_total: number | null
         }
         Insert: {
           cliente: string
+          cliente_id?: string | null
           criado_em?: string | null
+          data_abertura?: string | null
+          data_previsao_conclusao?: string | null
           descricao?: string | null
           empresa_id?: string | null
           id?: string
           margem_lucro?: number | null
           numero_os: string
+          observacoes?: string | null
           operador_atribuido?: string | null
+          prioridade?: string | null
           status?: string
+          tecnico_id?: string | null
           updated_at?: string | null
           valor_total?: number | null
         }
         Update: {
           cliente?: string
+          cliente_id?: string | null
           criado_em?: string | null
+          data_abertura?: string | null
+          data_previsao_conclusao?: string | null
           descricao?: string | null
           empresa_id?: string | null
           id?: string
           margem_lucro?: number | null
           numero_os?: string
+          observacoes?: string | null
           operador_atribuido?: string | null
+          prioridade?: string | null
           status?: string
+          tecnico_id?: string | null
           updated_at?: string | null
           valor_total?: number | null
         }
         Relationships: [
           {
+            foreignKeyName: "ordens_servico_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ordens_servico_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas_emissoras"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_servico_tecnico_id_fkey"
+            columns: ["tecnico_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
         ]
@@ -414,6 +479,7 @@ export type Database = {
         Row: {
           ativo: boolean
           avatar_url: string | null
+          cargo: string | null
           created_at: string
           email: string
           id: string
@@ -424,6 +490,7 @@ export type Database = {
         Insert: {
           ativo?: boolean
           avatar_url?: string | null
+          cargo?: string | null
           created_at?: string
           email: string
           id?: string
@@ -434,6 +501,7 @@ export type Database = {
         Update: {
           ativo?: boolean
           avatar_url?: string | null
+          cargo?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -457,7 +525,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "diretor" | "financeiro" | "gestor" | "operador"
+      app_role: "diretor" | "financeiro" | "gestor" | "operador" | "tecnico"
       tipo_comissao: "padrao" | "divisao_50_50"
     }
     CompositeTypes: {
@@ -586,7 +654,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["diretor", "financeiro", "gestor", "operador"],
+      app_role: ["diretor", "financeiro", "gestor", "operador", "tecnico"],
       tipo_comissao: ["padrao", "divisao_50_50"],
     },
   },
