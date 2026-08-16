@@ -11,7 +11,8 @@ import {
   CheckCircle2,
   LayoutDashboard,
   Factory,
-  User as UserIcon
+  User as UserIcon,
+  Wrench
 } from "lucide-react";
 import { toast } from "sonner";
 import { 
@@ -188,11 +189,11 @@ function DashboardPage() {
                       <Tooltip 
                         cursor={{ fill: "transparent" }}
                         contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px" }}
-                        formatter={(val: number) => [`R$ ${val.toLocaleString("pt-BR")}`, "Faturamento"]}
+                        formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Faturamento"]}
                       />
                       <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                         {REVENUE_BY_CNPJ.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length] || "#FFD700"} />
                         ))}
                       </Bar>
                     </BarChart>
