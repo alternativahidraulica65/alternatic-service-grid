@@ -118,21 +118,21 @@ function NovaOSPage() {
     setIsSubmitting(true);
     try {
       const selectedCliente = clientes?.find(c => c.id === values.cliente_id);
-      const valorNumerico = values.valor_total ? parseFloat(values.valor_total.replace(/[^\d.-]/g, '')) : undefined;
+      const valorNumerico = values.valor_total ? parseFloat(values.valor_total.replace(/[^\d.-]/g, '')) : null;
 
       const { error } = await supabase
         .from('ordens_servico')
         .insert({
           numero_os: values.numero_os,
-          cliente: selectedCliente?.nome || "Cliente Desconhecido", // Required field in DB
+          cliente: selectedCliente?.nome || "Cliente Desconhecido",
           cliente_id: values.cliente_id,
           tecnico_id: values.tecnico_id,
           descricao: values.descricao,
           status: values.status,
           prioridade: values.prioridade,
-          observacoes: values.observacoes,
+          observacoes: values.observacoes || null,
           data_abertura: values.data_abertura.toISOString(),
-          data_previsao_conclusao: values.data_previsao_conclusao?.toISOString(),
+          data_previsao_conclusao: values.data_previsao_conclusao ? values.data_previsao_conclusao.toISOString() : null,
           valor_total: valorNumerico,
         });
 
