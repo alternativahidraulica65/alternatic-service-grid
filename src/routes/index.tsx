@@ -128,12 +128,13 @@ function LoginPage() {
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
+                      <Input
                           type="email"
                           placeholder="seu.email@alternativa.com"
                           className="h-11 rounded-lg border-input bg-background pl-10 text-sm focus-visible:ring-primary"
                           autoComplete="email"
                           disabled={isLoading}
+                          aria-label="E-mail"
                           {...field}
                         />
                       </div>
@@ -160,6 +161,7 @@ function LoginPage() {
                           className="h-11 rounded-lg border-input bg-background pl-10 pr-10 text-sm focus-visible:ring-primary"
                           autoComplete="current-password"
                           disabled={isLoading}
+                          aria-label="Senha"
                           {...field}
                         />
                         <button
