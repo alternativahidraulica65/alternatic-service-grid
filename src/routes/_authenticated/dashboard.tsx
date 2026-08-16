@@ -477,13 +477,15 @@ function DashboardPage() {
             <UserIcon className="h-5 w-5 text-primary" />
             <h2 className="font-display text-2xl font-bold text-foreground">Minha Fila de Trabalho</h2>
           </div>
-          <Button 
-            className="btn-industrial" 
-            onClick={() => router.navigate({ to: "/nova-os" })}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Triagem
-          </Button>
+          {isGestor && (
+            <Button 
+              className="btn-industrial" 
+              onClick={() => router.navigate({ to: "/ordens-servico/nova" as any })}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nova Triagem
+            </Button>
+          )}
         </div>
         <Card>
           <CardHeader>
