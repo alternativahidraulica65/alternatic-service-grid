@@ -45,9 +45,10 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  Legend
+  ResponsiveContainer
 } from "recharts";
+import { Outlet } from "@tanstack/react-router";
+
 
 export const Route = createFileRoute("/_authenticated/orcamento")({
   component: OrcamentoPage,
@@ -265,6 +266,8 @@ function OrcamentoPage() {
       </header>
 
       <main className="container-industrial py-8 space-y-8">
+        <Outlet />
+
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Seleção de OS e Resumo */}
           <div className="space-y-6">
