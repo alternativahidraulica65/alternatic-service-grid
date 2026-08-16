@@ -55,7 +55,7 @@ const formSchema = z.object({
   prioridade: z.string().min(1, "Prioridade é obrigatória"),
   observacoes: z.string().optional(),
   data_previsao_conclusao: z.date().optional(),
-  valor_total: z.string().optional().transform((val) => val ? parseFloat(val.replace(/[^\d.-]/g, '')) : undefined),
+  valor_total: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
