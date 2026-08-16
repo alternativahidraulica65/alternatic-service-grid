@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { 
@@ -32,6 +32,7 @@ export const Route = createFileRoute("/_authenticated/historico")({
 });
 
 function HistoricoPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todas");
 
@@ -148,7 +149,7 @@ function HistoricoPage() {
               <Card 
                 key={os.id} 
                 className="group hover:border-primary transition-all cursor-pointer bg-white"
-                onClick={() => window.open(`/dashboard`, '_self')} // TODO: Redirect to OS details
+                onClick={() => router.navigate({ to: "/dashboard" })}
               >
                 <CardContent className="p-4">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
