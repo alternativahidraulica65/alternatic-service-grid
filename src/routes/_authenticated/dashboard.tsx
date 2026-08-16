@@ -157,7 +157,7 @@ function DashboardPage() {
 
   // Render View Switcher for Admins
   const ViewSwitcher = () => {
-    if (!isAdmin) return null;
+    if (!isDiretor) return null;
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
