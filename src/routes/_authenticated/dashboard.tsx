@@ -12,7 +12,8 @@ import {
   LayoutDashboard,
   Factory,
   User as UserIcon,
-  Wrench
+  Wrench,
+  Plus
 } from "lucide-react";
 import { toast } from "sonner";
 import { 
@@ -237,7 +238,7 @@ function DashboardPage() {
                 <Button 
                   className="w-full justify-start btn-industrial" 
                   variant="default"
-                  onClick={() => router.navigate({ to: "/_authenticated/nova-os" })}
+                  onClick={() => router.navigate({ to: "/nova-os" })}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Nova Ordem de Serviço
