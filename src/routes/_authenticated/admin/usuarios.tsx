@@ -115,8 +115,9 @@ function GestaoUsuariosPage() {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-slate-900">{profile.nome}</h3>
-                      <p className="text-[10px] text-slate-500 uppercase">{profile.perfil || 'Usuário'}</p>
+                      <p className="text-[10px] text-slate-500 uppercase">Colaborador</p>
                     </div>
+
                   </div>
                   <ChevronRight className={`h-4 w-4 text-slate-300 transition-transform ${selectedUserId === profile.id ? 'rotate-90 text-primary' : ''}`} />
                 </CardContent>
@@ -134,9 +135,7 @@ function GestaoUsuariosPage() {
                     <CardTitle className="text-2xl font-display text-slate-900">{selectedProfile.nome}</CardTitle>
                     <CardDescription>{selectedProfile.email}</CardDescription>
                   </div>
-                  <Badge variant="outline" className="border-primary text-primary bg-primary/5 uppercase text-[10px] font-bold">
-                    {selectedProfile.perfil}
-                  </Badge>
+
                 </div>
               </CardHeader>
               <CardContent className="space-y-8">
@@ -148,7 +147,8 @@ function GestaoUsuariosPage() {
                     </h4>
                     <div className="space-y-2">
                       <Label>Perfil / Role</Label>
-                      <Select defaultValue={selectedProfile.perfil || "operador"}>
+                      <Select defaultValue="operador">
+
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>

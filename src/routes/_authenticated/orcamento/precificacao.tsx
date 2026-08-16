@@ -68,7 +68,8 @@ function PrecificacaoPage() {
   });
 
   const selectedOS = orders?.find(o => o.id === selectedOSId);
-  const custoTotal = custos?.reduce((acc, curr) => acc + (Number(curr.custo_unitario) * Number(curr.quantidade) || 0), 0) || 0;
+  const custoTotal = custos?.reduce((acc, curr) => acc + (Number(curr.custo_interno) || 0), 0) || 0;
+
   
   // Preço Venda = Custo / (1 - Margem/100)
   const precoVenda = custoTotal / (1 - margem / 100);
@@ -159,11 +160,12 @@ function PrecificacaoPage() {
                     <div key={item.id} className="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
                       <div>
                         <p className="font-medium text-slate-900">{item.descricao}</p>
-                        <p className="text-[10px] text-slate-500 uppercase">{item.categoria} • Qtd: {item.quantidade}</p>
+                        <p className="text-[10px] text-slate-500 uppercase">{item.categoria}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-mono text-slate-900">R$ {(item.custo_unitario * item.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                        <p className="font-mono text-slate-900">R$ {(Number(item.custo_interno) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                       </div>
+
                     </div>
                   ))}
                   {custos?.length === 0 && (
