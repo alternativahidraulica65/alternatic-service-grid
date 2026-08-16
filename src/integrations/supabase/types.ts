@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      empresas_emissoras: {
+        Row: {
+          cnpj: string
+          cor_identificacao: string | null
+          criado_em: string | null
+          id: string
+          nome: string
+        }
+        Insert: {
+          cnpj: string
+          cor_identificacao?: string | null
+          criado_em?: string | null
+          id?: string
+          nome: string
+        }
+        Update: {
+          cnpj?: string
+          cor_identificacao?: string | null
+          criado_em?: string | null
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      ordens_servico: {
+        Row: {
+          cliente: string
+          criado_em: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          margem_lucro: number | null
+          numero_os: string
+          operador_atribuido: string | null
+          status: string
+          updated_at: string | null
+          valor_total: number | null
+        }
+        Insert: {
+          cliente: string
+          criado_em?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          margem_lucro?: number | null
+          numero_os: string
+          operador_atribuido?: string | null
+          status?: string
+          updated_at?: string | null
+          valor_total?: number | null
+        }
+        Update: {
+          cliente?: string
+          criado_em?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          margem_lucro?: number | null
+          numero_os?: string
+          operador_atribuido?: string | null
+          status?: string
+          updated_at?: string | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ordens_servico_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas_emissoras"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
