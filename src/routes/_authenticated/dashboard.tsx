@@ -13,7 +13,9 @@ import {
   Factory,
   User as UserIcon,
   Wrench,
-  Plus
+  Plus,
+  Eye,
+  ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { 
@@ -30,6 +32,15 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
@@ -77,8 +88,20 @@ function DashboardPage() {
   const queryClient = useQueryClient();
   const { user, profile, roles, isAdmin } = Route.useRouteContext();
   
+  // Local state for view simulation (RBAC override for admins)
+  const [activeView, setActiveView] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (isAdmin && !activeView) {
+      setActiveView("diretor");
+    } else if (!isAdmin) {
+      setActiveView(roles[0] || "operador");
+    }
+  }, [isAdmin, roles]);
+
   const mainRole = isAdmin ? "Diretor" : roles[0] || "Operador";
   const formattedRole = mainRole.charAt(0).toUpperCase() + mainRole.slice(1);
+  const currentView = isAdmin ? activeView : (roles[0] || "operador");
 
   // Fetch real data from Supabase
   const { data: companies } = useSuspenseQuery({
@@ -124,8 +147,42 @@ function DashboardPage() {
     await router.navigate({ to: "/", replace: true });
   }
 
+  // Render View Switcher for Admins
+  const ViewSwitcher = () => {
+    if (!isAdmin) return null;
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="border-primary/50 text-primary hover:bg-primary/5 mr-2">
+            <Eye className="mr-2 h-4 w-4" />
+            Visão: {activeView?.toUpperCase()}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            Simulador RBAC
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setActiveView("diretor")} className={activeView === "diretor" ? "bg-primary/10 font-bold" : ""}>
+            Diretor / Estratégico
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("financeiro")} className={activeView === "financeiro" ? "bg-primary/10 font-bold" : ""}>
+            Financeiro / Faturamento
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("gestor")} className={activeView === "gestor" ? "bg-primary/10 font-bold" : ""}>
+            Gestor / Produção
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("operador")} className={activeView === "operador" ? "bg-primary/10 font-bold" : ""}>
+            Operador / Bancada
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
   // View: Diretor / Financeiro
-  if (isAdmin || roles.includes("financeiro")) {
+  if (currentView === "diretor" || currentView === "financeiro") {
     return (
       <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-10 border-b border-border bg-card shadow-sm backdrop-blur-sm">
@@ -149,6 +206,7 @@ function DashboardPage() {
                 <p className="text-sm font-semibold text-foreground">{profile?.nome || user.email}</p>
                 <p className="text-xs text-muted-foreground capitalize">{formattedRole}</p>
               </div>
+              <ViewSwitcher />
               <Button
                 variant="outline"
                 size="sm"
@@ -268,7 +326,7 @@ function DashboardPage() {
   }
 
   // View: Gestor
-  if (roles.includes("gestor")) {
+  if (currentView === "gestor") {
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border bg-card shadow-sm">
@@ -281,6 +339,7 @@ function DashboardPage() {
             </div>
             <div className="flex items-center gap-4">
               <p className="text-sm font-medium text-foreground">{profile?.nome || user.email}</p>
+              <ViewSwitcher />
               <Button variant="outline" size="sm" onClick={handleSignOut} className="rounded-lg">
                 Sair
               </Button>
@@ -342,9 +401,12 @@ function DashboardPage() {
             </div>
             <h1 className="font-display text-lg font-semibold text-foreground">Alternativa Hidráulica</h1>
           </div>
-          <Button variant="outline" size="sm" onClick={handleSignOut} className="rounded-lg">
-            Sair
-          </Button>
+          <div className="flex items-center gap-2">
+            <ViewSwitcher />
+            <Button variant="outline" size="sm" onClick={handleSignOut} className="rounded-lg">
+              Sair
+            </Button>
+          </div>
         </div>
       </header>
       <main className="container-industrial py-8 space-y-8">
