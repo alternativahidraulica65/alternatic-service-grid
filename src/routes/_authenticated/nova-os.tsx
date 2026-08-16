@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, 
@@ -14,7 +14,9 @@ import {
   Trash2,
   ChevronRight,
   Clock,
-  Factory
+  Factory,
+  Eye,
+  ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -32,6 +34,14 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/_authenticated/nova-os")({
   component: NovaOSPage,
@@ -54,7 +64,43 @@ type Peca = {
 function NovaOSPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user } = Route.useRouteContext();
+  const { user, isAdmin, roles } = Route.useRouteContext();
+
+  // RBAC Override for Admins
+  const [activeView, setActiveView] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (isAdmin && !activeView) {
+      setActiveView("diretor");
+    } else if (!isAdmin) {
+      setActiveView(roles[0] || "operador");
+    }
+  }, [isAdmin, roles]);
+
+  const ViewSwitcher = () => {
+    if (!isAdmin) return null;
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="border-primary/50 text-primary hover:bg-primary/5 mr-2">
+            <Eye className="mr-2 h-4 w-4" />
+            Visão: {activeView?.toUpperCase()}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            Simulador RBAC
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setActiveView("diretor")}>Diretor</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("financeiro")}>Financeiro</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("gestor")}>Gestor</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("operador")}>Operador</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
 
   // Form State
   const [cliente, setCliente] = useState("");
@@ -179,14 +225,17 @@ function NovaOSPage() {
             </Button>
             <h1 className="font-display text-lg font-bold text-slate-900">Nova OS / Triagem</h1>
           </div>
-          <Button 
-            className="btn-industrial bg-primary text-primary-foreground hover:bg-primary/90" 
-            onClick={handleSave}
-            disabled={loading}
-          >
-            <Save className="mr-2 h-4 w-4" />
-            {loading ? "Salvando..." : "Finalizar Triagem"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <ViewSwitcher />
+            <Button 
+              className="btn-industrial bg-primary text-primary-foreground hover:bg-primary/90" 
+              onClick={handleSave}
+              disabled={loading}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {loading ? "Salvando..." : "Finalizar Triagem"}
+            </Button>
+          </div>
         </div>
       </header>
 

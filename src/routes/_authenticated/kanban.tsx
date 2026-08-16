@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft,
@@ -12,7 +12,9 @@ import {
   MoreVertical,
   Box,
   ClipboardCheck,
-  Factory
+  Factory,
+  Eye,
+  ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +33,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/_authenticated/kanban")({
   component: KanbanPage,
@@ -61,7 +71,43 @@ const COMPONENTES_CILINDRO = [
 function KanbanPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user } = Route.useRouteContext();
+  const { user, isAdmin, roles } = Route.useRouteContext();
+  
+  // RBAC Override for Admins
+  const [activeView, setActiveView] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (isAdmin && !activeView) {
+      setActiveView("diretor");
+    } else if (!isAdmin) {
+      setActiveView(roles[0] || "operador");
+    }
+  }, [isAdmin, roles]);
+
+  const ViewSwitcher = () => {
+    if (!isAdmin) return null;
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="border-primary/50 text-primary hover:bg-primary/5 mr-2">
+            <Eye className="mr-2 h-4 w-4" />
+            Visão: {activeView?.toUpperCase()}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            Simulador RBAC
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setActiveView("diretor")}>Diretor</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("financeiro")}>Financeiro</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("gestor")}>Gestor</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActiveView("operador")}>Operador</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
   const [selectedOS, setSelectedOS] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -176,7 +222,8 @@ function KanbanPage() {
             </Button>
             <h1 className="font-display text-lg font-bold text-slate-900">Fila da Oficina</h1>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <ViewSwitcher />
             <Badge variant="outline" className="bg-slate-900 text-primary border-none hidden sm:flex">
               Operação em Tempo Real
             </Badge>
