@@ -132,9 +132,9 @@ function DashboardPage() {
 
   // Calculate KPIs based on real data
   const activeOrdersCount = orders?.filter(o => o.status === 'aberta' || o.status === 'em_andamento').length || 0;
-  const totalRevenue = orders?.reduce((acc, curr) => acc + (Number(curr.valor_total) || 0), 0) || 0;
+  const totalRevenue = isFinanceiro || isDiretor ? (orders?.reduce((acc, curr) => acc + (Number(curr.valor_total) || 0), 0) || 0) : 0;
   const pendingQuotes = orders?.filter(o => o.status === 'orcamento_pendente').length || 0;
-  const avgMargin = orders?.length ? (orders.reduce((acc, curr) => acc + (Number(curr.margem_lucro) || 0), 0) / orders.length) : 0;
+  const avgMargin = isDiretor ? (orders?.length ? (orders.reduce((acc, curr) => acc + (Number(curr.margem_lucro) || 0), 0) / orders.length) : 0) : 0;
 
   // Prepare chart data
   const revenueByCnpj = companies?.map(company => {
