@@ -15,7 +15,11 @@ import {
   Wrench,
   Plus,
   Eye,
-  ShieldCheck
+  ShieldCheck,
+  Search,
+  Users,
+  Box,
+  FileText
 } from "lucide-react";
 import { toast } from "sonner";
 import { 
@@ -309,10 +313,48 @@ function DashboardPage() {
                   <CheckCircle2 className="mr-2 h-4 w-4" />
                   Orçamentação e Custos
                 </Button>
-                <Button className="w-full justify-start border-input" variant="outline">
+                <Button 
+                  className="w-full justify-start border-input" 
+                  variant="outline"
+                  onClick={() => router.navigate({ to: "/orcamento/precificacao" as any })}
+                >
                   <TrendingUp className="mr-2 h-4 w-4" />
-                  Relatório Financeiro
+                  Precificação e Aprovação
                 </Button>
+
+                <Button 
+                  className="w-full justify-start border-input" 
+                  variant="outline"
+                  onClick={() => router.navigate({ to: "/orcamento/pdf" as any })}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Gerador de Orçamentos (PDF)
+                </Button>
+                <Button 
+                  className="w-full justify-start border-input" 
+                  variant="outline"
+                  onClick={() => router.navigate({ to: "/engenharia/materiais" as any })}
+                >
+                  <Box className="mr-2 h-4 w-4" />
+                  Matéria-Prima Inteligente
+                </Button>
+                <Button 
+                  className="w-full justify-start border-input" 
+                  variant="outline"
+                  onClick={() => router.navigate({ to: "/historico" as any })}
+                >
+                  <Search className="mr-2 h-4 w-4" />
+                  Busca e Histórico Global
+                </Button>
+                <Button 
+                  className="w-full justify-start border-input" 
+                  variant="outline"
+                  onClick={() => router.navigate({ to: "/admin/usuarios" as any })}
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  Gestão de Usuários
+                </Button>
+
                 <Button 
                   className="w-full justify-start border-input" 
                   variant="outline"

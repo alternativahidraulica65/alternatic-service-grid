@@ -12,9 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authenticated/historico'
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated/nova-os'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
+import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
+import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
+import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,6 +33,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHistoricoRoute = AuthenticatedHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedKanbanRoute = AuthenticatedKanbanRouteImport.update({
@@ -45,43 +55,107 @@ const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
   path: '/orcamento',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEngenhariaMateriaisRoute =
+  AuthenticatedEngenhariaMateriaisRouteImport.update({
+    id: '/engenharia/materiais',
+    path: '/engenharia/materiais',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrcamentoPdfRoute =
+  AuthenticatedOrcamentoPdfRouteImport.update({
+    id: '/pdf',
+    path: '/pdf',
+    getParentRoute: () => AuthenticatedOrcamentoRoute,
+  } as any)
+const AuthenticatedOrcamentoPrecificacaoRoute =
+  AuthenticatedOrcamentoPrecificacaoRouteImport.update({
+    id: '/precificacao',
+    path: '/precificacao',
+    getParentRoute: () => AuthenticatedOrcamentoRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
-  '/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
+  '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
-  '/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
+  '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/nova-os': typeof AuthenticatedNovaOsRoute
-  '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
+  '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/kanban' | '/nova-os' | '/orcamento'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/historico'
+    | '/kanban'
+    | '/nova-os'
+    | '/orcamento'
+    | '/admin/usuarios'
+    | '/engenharia/materiais'
+    | '/orcamento/pdf'
+    | '/orcamento/precificacao'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/kanban' | '/nova-os' | '/orcamento'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/historico'
+    | '/kanban'
+    | '/nova-os'
+    | '/orcamento'
+    | '/admin/usuarios'
+    | '/engenharia/materiais'
+    | '/orcamento/pdf'
+    | '/orcamento/precificacao'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/dashboard'
+    | '/_authenticated/historico'
     | '/_authenticated/kanban'
     | '/_authenticated/nova-os'
     | '/_authenticated/orcamento'
+    | '/_authenticated/admin/usuarios'
+    | '/_authenticated/engenharia/materiais'
+    | '/_authenticated/orcamento/pdf'
+    | '/_authenticated/orcamento/precificacao'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -112,6 +186,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/historico': {
+      id: '/_authenticated/historico'
+      path: '/historico'
+      fullPath: '/historico'
+      preLoaderRoute: typeof AuthenticatedHistoricoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/kanban': {
       id: '/_authenticated/kanban'
       path: '/kanban'
@@ -133,21 +214,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrcamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/usuarios': {
+      id: '/_authenticated/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/engenharia/materiais': {
+      id: '/_authenticated/engenharia/materiais'
+      path: '/engenharia/materiais'
+      fullPath: '/engenharia/materiais'
+      preLoaderRoute: typeof AuthenticatedEngenhariaMateriaisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orcamento/pdf': {
+      id: '/_authenticated/orcamento/pdf'
+      path: '/pdf'
+      fullPath: '/orcamento/pdf'
+      preLoaderRoute: typeof AuthenticatedOrcamentoPdfRouteImport
+      parentRoute: typeof AuthenticatedOrcamentoRoute
+    }
+    '/_authenticated/orcamento/precificacao': {
+      id: '/_authenticated/orcamento/precificacao'
+      path: '/precificacao'
+      fullPath: '/orcamento/precificacao'
+      preLoaderRoute: typeof AuthenticatedOrcamentoPrecificacaoRouteImport
+      parentRoute: typeof AuthenticatedOrcamentoRoute
+    }
   }
 }
 
+interface AuthenticatedOrcamentoRouteChildren {
+  AuthenticatedOrcamentoPdfRoute: typeof AuthenticatedOrcamentoPdfRoute
+  AuthenticatedOrcamentoPrecificacaoRoute: typeof AuthenticatedOrcamentoPrecificacaoRoute
+}
+
+const AuthenticatedOrcamentoRouteChildren: AuthenticatedOrcamentoRouteChildren =
+  {
+    AuthenticatedOrcamentoPdfRoute: AuthenticatedOrcamentoPdfRoute,
+    AuthenticatedOrcamentoPrecificacaoRoute:
+      AuthenticatedOrcamentoPrecificacaoRoute,
+  }
+
+const AuthenticatedOrcamentoRouteWithChildren =
+  AuthenticatedOrcamentoRoute._addFileChildren(
+    AuthenticatedOrcamentoRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedNovaOsRoute: typeof AuthenticatedNovaOsRoute
-  AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRoute
+  AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedNovaOsRoute: AuthenticatedNovaOsRoute,
-  AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRoute,
+  AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
+  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
