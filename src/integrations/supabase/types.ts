@@ -126,6 +126,127 @@ export type Database = {
           },
         ]
       }
+      os_checklist_tecnico: {
+        Row: {
+          componente: string
+          criado_em: string | null
+          criado_por: string | null
+          estado: string | null
+          id: string
+          observacao_tecnica: string | null
+          os_id: string
+        }
+        Insert: {
+          componente: string
+          criado_em?: string | null
+          criado_por?: string | null
+          estado?: string | null
+          id?: string
+          observacao_tecnica?: string | null
+          os_id: string
+        }
+        Update: {
+          componente?: string
+          criado_em?: string | null
+          criado_por?: string | null
+          estado?: string | null
+          id?: string
+          observacao_tecnica?: string | null
+          os_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_checklist_tecnico_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      os_fotos_anexos: {
+        Row: {
+          criado_em: string | null
+          criado_por: string | null
+          foto_url: string
+          id: string
+          legenda: string | null
+          os_id: string
+          peca_id: string | null
+          tipo: string | null
+        }
+        Insert: {
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url: string
+          id?: string
+          legenda?: string | null
+          os_id: string
+          peca_id?: string | null
+          tipo?: string | null
+        }
+        Update: {
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url?: string
+          id?: string
+          legenda?: string | null
+          os_id?: string
+          peca_id?: string | null
+          tipo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_fotos_anexos_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_fotos_anexos_peca_id_fkey"
+            columns: ["peca_id"]
+            isOneToOne: false
+            referencedRelation: "os_guarda_pecas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      os_guarda_pecas: {
+        Row: {
+          criado_em: string | null
+          criado_por: string | null
+          descricao: string
+          id: string
+          localizacao: string
+          os_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          criado_por?: string | null
+          descricao: string
+          id?: string
+          localizacao: string
+          os_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          criado_por?: string | null
+          descricao?: string
+          id?: string
+          localizacao?: string
+          os_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_guarda_pecas_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pecas_os: {
         Row: {
           criado_em: string | null
