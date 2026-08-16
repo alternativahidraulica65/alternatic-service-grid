@@ -101,10 +101,10 @@ function LoginPage() {
         {/* Brand header */}
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FFD700] shadow-lg shadow-yellow-500/20">
-            <Wheat className="h-8 w-8 text-black" strokeWidth={2.5} />
+            <Droplets className="h-8 w-8 text-black" strokeWidth={2.5} />
           </div>
           <h1 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl drop-shadow-md">
-            Plataforma Agrícola
+            Alternativa Hidráulica
           </h1>
           <p className="mt-2 text-sm font-medium text-white/80">
             Gestão Integrada de Campo e Produção
