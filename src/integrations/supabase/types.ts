@@ -14,40 +14,73 @@ export type Database = {
   }
   public: {
     Tables: {
+      configuracoes_vendedores: {
+        Row: {
+          id: string
+          porcentagem_padrao: number | null
+          regra_comissao: Database["public"]["Enums"]["tipo_comissao"] | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          porcentagem_padrao?: number | null
+          regra_comissao?: Database["public"]["Enums"]["tipo_comissao"] | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          porcentagem_padrao?: number | null
+          regra_comissao?: Database["public"]["Enums"]["tipo_comissao"] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       custos_os: {
         Row: {
+          aprovado_diretoria: boolean | null
           categoria: string
+          comissao_vendedor: number | null
           criado_em: string | null
           criado_por: string | null
           custo_interno: number | null
           descricao: string
           id: string
           is_terceirizado: boolean | null
+          margem_lucro_percentual: number | null
           os_id: string
+          preco_venda_final: number | null
           terceiro_nome: string | null
           valor_venda: number | null
         }
         Insert: {
+          aprovado_diretoria?: boolean | null
           categoria: string
+          comissao_vendedor?: number | null
           criado_em?: string | null
           criado_por?: string | null
           custo_interno?: number | null
           descricao: string
           id?: string
           is_terceirizado?: boolean | null
+          margem_lucro_percentual?: number | null
           os_id: string
+          preco_venda_final?: number | null
           terceiro_nome?: string | null
           valor_venda?: number | null
         }
         Update: {
+          aprovado_diretoria?: boolean | null
           categoria?: string
+          comissao_vendedor?: number | null
           criado_em?: string | null
           criado_por?: string | null
           custo_interno?: number | null
           descricao?: string
           id?: string
           is_terceirizado?: boolean | null
+          margem_lucro_percentual?: number | null
           os_id?: string
+          preco_venda_final?: number | null
           terceiro_nome?: string | null
           valor_venda?: number | null
         }
@@ -122,6 +155,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      materiais: {
+        Row: {
+          criado_em: string | null
+          densidade: number
+          id: string
+          nome: string
+          preco_base_kg: number
+        }
+        Insert: {
+          criado_em?: string | null
+          densidade: number
+          id?: string
+          nome: string
+          preco_base_kg: number
+        }
+        Update: {
+          criado_em?: string | null
+          densidade?: number
+          id?: string
+          nome?: string
+          preco_base_kg?: number
+        }
+        Relationships: []
       }
       ordens_servico: {
         Row: {
@@ -401,6 +458,7 @@ export type Database = {
     }
     Enums: {
       app_role: "diretor" | "financeiro" | "gestor" | "operador"
+      tipo_comissao: "padrao" | "divisao_50_50"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -529,6 +587,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["diretor", "financeiro", "gestor", "operador"],
+      tipo_comissao: ["padrao", "divisao_50_50"],
     },
   },
 } as const
