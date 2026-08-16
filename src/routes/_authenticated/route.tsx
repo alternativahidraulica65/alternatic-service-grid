@@ -23,13 +23,28 @@ export const Route = createFileRoute("/_authenticated")({
       .eq("user_id", user.id);
 
     const roles = userRoles?.map(r => r.role) || [];
-    const isAdmin = user.email === "admin@teste.com" || roles.includes("diretor");
+    
+    // RBAC Logic: Identifica o perfil principal e permissões
+    const isDiretor = roles.includes("diretor");
+    const isFinanceiro = roles.includes("administrativo_financeiro");
+    const isGestor = roles.includes("gestor");
+    const isOperador = roles.includes("operador");
+    const isTerceirizado = roles.includes("terceirizado");
+
+    // Usuário DEV sempre tem acesso total (tratado como Diretor)
+    const isDev = user.email === "teste.dev@alternativahidraulica.local";
+    const hasFullAccess = isDiretor || isDev;
 
     return { 
       user, 
       profile, 
       roles,
-      isAdmin
+      isDiretor: hasFullAccess,
+      isFinanceiro: isFinanceiro || hasFullAccess,
+      isGestor: isGestor || hasFullAccess,
+      isOperador: isOperador || hasFullAccess,
+      isTerceirizado: isTerceirizado || hasFullAccess,
+      isAdmin: hasFullAccess // Legado
     };
   },
   component: () => <Outlet />,
