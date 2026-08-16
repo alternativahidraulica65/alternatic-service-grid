@@ -275,10 +275,10 @@ function KanbanPage() {
                                    estado === 'recuperacao' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-red-500 hover:bg-red-600')
                                 : ''
                             }`}
-                            onClick={() => setVistoria({
-                              ...vistoria, 
-                              [comp.id]: { ...vistoria[comp.id], estado }
-                            })}
+                            onClick={() => setVistoria(prev => ({
+                              ...prev, 
+                              [comp.id]: { estado, obs: prev[comp.id]?.obs || "" }
+                            }))}
                           >
                             {estado === 'aprovado' && <CheckCircle2 className="w-3 h-3 mr-1" />}
                             {estado === 'recuperacao' && <Clock className="w-3 h-3 mr-1" />}
@@ -292,10 +292,13 @@ function KanbanPage() {
                       placeholder="Observações técnicas sobre este componente..." 
                       className="bg-white text-xs h-16"
                       value={vistoria[comp.id]?.obs || ""}
-                      onChange={(e) => setVistoria({
-                        ...vistoria,
-                        [comp.id]: { ...vistoria[comp.id], obs: e.target.value }
-                      })}
+                      onChange={(e) => {
+                        const obs = e.target.value;
+                        setVistoria(prev => ({
+                          ...prev,
+                          [comp.id]: { estado: prev[comp.id]?.estado || "aprovado", obs }
+                        }));
+                      }}
                     />
                   </div>
                 ))}
