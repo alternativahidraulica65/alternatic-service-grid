@@ -284,7 +284,16 @@ function DashboardPage() {
           </div>
         </header>
         <main className="container-industrial py-8 space-y-8">
-          <h2 className="font-display text-2xl font-bold text-foreground">Gestão de Produção</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-2xl font-bold text-foreground">Gestão de Produção</h2>
+            <Button 
+              className="btn-industrial" 
+              onClick={() => router.navigate({ to: "/nova-os" })}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nova OS / Triagem
+            </Button>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <KPICard title="Ordens Ativas" value={activeOrdersCount.toString()} subtext="Unidades totais" icon={Factory} />
             <KPICard title="Aguardando Custos" value={pendingQuotes.toString()} subtext="OS paradas" icon={DollarSign} />
@@ -335,9 +344,18 @@ function DashboardPage() {
         </div>
       </header>
       <main className="container-industrial py-8 space-y-8">
-        <div className="flex items-center gap-2">
-          <UserIcon className="h-5 w-5 text-primary" />
-          <h2 className="font-display text-2xl font-bold text-foreground">Minha Fila de Trabalho</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <UserIcon className="h-5 w-5 text-primary" />
+            <h2 className="font-display text-2xl font-bold text-foreground">Minha Fila de Trabalho</h2>
+          </div>
+          <Button 
+            className="btn-industrial" 
+            onClick={() => router.navigate({ to: "/nova-os" })}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Nova Triagem
+          </Button>
         </div>
         <Card>
           <CardHeader>
