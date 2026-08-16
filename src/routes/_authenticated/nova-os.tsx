@@ -97,10 +97,6 @@ function NovaOSPage() {
 
   const handlePecaChange = (index: number, field: keyof Peca, value: any) => {
     const newPecas = [...pecas];
-    const { data: userRoles } = await supabase.from('user_roles').select('role').eq('user_id', user.id);
-    const roles = userRoles?.map(r => r.role) || [];
-    const isAdmin = roles.includes('diretor');
-    
     newPecas[index] = { ...newPecas[index], [field]: value } as Peca;
     setPecas(newPecas);
   };

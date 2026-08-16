@@ -234,7 +234,15 @@ function DashboardPage() {
                 <CardTitle className="text-base font-semibold">Ações Rápidas</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start btn-industrial" variant="default">
+                <Button 
+                  className="w-full justify-start btn-industrial" 
+                  variant="default"
+                  onClick={() => router.navigate({ to: "/_authenticated/nova-os" })}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nova Ordem de Serviço
+                </Button>
+                <Button className="w-full justify-start border-input" variant="outline">
                   <CheckCircle2 className="mr-2 h-4 w-4" />
                   Aprovar Orçamentos
                 </Button>
