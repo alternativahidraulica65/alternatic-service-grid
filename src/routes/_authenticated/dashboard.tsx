@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { 
   LogOut, 
   Droplets, 
@@ -29,15 +29,6 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-// Mock data for initial visualization
-const REVENUE_BY_CNPJ = [
-  { name: "Alternativa Matriz", value: 125000 },
-  { name: "Alternativa Filial Sul", value: 85000 },
-  { name: "Alternativa Equipamentos", value: 45000 },
-];
-
-const COLORS = ["#FFD700", "#A9A9A9", "#708090"];
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
@@ -87,6 +78,42 @@ function DashboardPage() {
   
   const mainRole = isAdmin ? "Diretor" : roles[0] || "Operador";
   const formattedRole = mainRole.charAt(0).toUpperCase() + mainRole.slice(1);
+
+  // Fetch real data from Supabase
+  const { data: companies } = useSuspenseQuery({
+    queryKey: ['empresas_emissoras'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('empresas_emissoras').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: orders } = useSuspenseQuery({
+    queryKey: ['ordens_servico'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ordens_servico').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Calculate KPIs based on real data
+  const activeOrdersCount = orders?.filter(o => o.status === 'aberta' || o.status === 'em_andamento').length || 0;
+  const totalRevenue = orders?.reduce((acc, curr) => acc + (Number(curr.valor_total) || 0), 0) || 0;
+  const pendingQuotes = orders?.filter(o => o.status === 'orcamento_pendente').length || 0;
+  const avgMargin = orders?.length ? (orders.reduce((acc, curr) => acc + (Number(curr.margem_lucro) || 0), 0) / orders.length) : 0;
+
+  // Prepare chart data
+  const revenueByCnpj = companies?.map(company => {
+    const revenue = orders?.filter(o => o.empresa_id === company.id)
+      .reduce((acc, curr) => acc + (Number(curr.valor_total) || 0), 0) || 0;
+    return {
+      name: company.nome,
+      value: revenue,
+      color: company.cor_identificacao
+    };
+  }) || [];
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
@@ -139,36 +166,35 @@ function DashboardPage() {
             <h2 className="font-display text-2xl font-bold text-foreground">Visão Executiva</h2>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
-              <span>Atualizado agora</span>
+              <span>Dados reais do sistema</span>
             </div>
           </div>
 
           {/* KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KPICard 
-              title="Faturamento (Mês)" 
-              value="R$ 255.000,00" 
-              subtext="vs. mês anterior" 
-              trend="12%" 
+              title="Faturamento Total" 
+              value={`R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} 
+              subtext="Total acumulado" 
               icon={DollarSign} 
             />
             <KPICard 
               title="OS Ativas" 
-              value="42" 
+              value={activeOrdersCount.toString()} 
               subtext="Em produção" 
               icon={ClipboardList} 
             />
             <KPICard 
               title="Orçamentos Pendentes" 
-              value="18" 
+              value={pendingQuotes.toString()} 
               subtext="Aguardando aprovação" 
               icon={AlertTriangle} 
             />
             <KPICard 
-              title="Margem Global" 
-              value="34.5%" 
-              subtext="Média atual" 
-              trend="2.1%" 
+              title="Margem Média" 
+              value={`${avgMargin.toFixed(1)}%`} 
+              subtext="Média global" 
+              trend={avgMargin > 30 ? "Acima da meta" : ""} 
               icon={TrendingUp} 
             />
           </div>
@@ -177,12 +203,12 @@ function DashboardPage() {
             {/* Revenue Chart */}
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Faturamento por CNPJ (Empresa Emissora)</CardTitle>
+                <CardTitle className="text-base font-semibold">Faturamento por Empresa Emissora</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-[300px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={REVENUE_BY_CNPJ} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <BarChart data={revenueByCnpj} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
@@ -192,8 +218,8 @@ function DashboardPage() {
                         formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Faturamento"]}
                       />
                       <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                        {REVENUE_BY_CNPJ.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length] || "#FFD700"} />
+                        {revenueByCnpj.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color || "#FFD700"} />
                         ))}
                       </Bar>
                     </BarChart>
@@ -251,17 +277,30 @@ function DashboardPage() {
         <main className="container-industrial py-8 space-y-8">
           <h2 className="font-display text-2xl font-bold text-foreground">Gestão de Produção</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <KPICard title="Equipamentos na Oficina" value="28" subtext="Unidades totais" icon={Factory} />
-            <KPICard title="Aguardando Custos" value="7" subtext="OS paradas" icon={DollarSign} />
-            <KPICard title="Lead Time Médio" value="4.2 dias" subtext="Mês atual" icon={Clock} />
+            <KPICard title="Ordens Ativas" value={activeOrdersCount.toString()} subtext="Unidades totais" icon={Factory} />
+            <KPICard title="Aguardando Custos" value={pendingQuotes.toString()} subtext="OS paradas" icon={DollarSign} />
+            <KPICard title="Lead Time Médio" value="4.2 dias" subtext="Estimado do sistema" icon={Clock} />
           </div>
           <Card>
             <CardHeader>
               <CardTitle>Visão da Oficina</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed border-border text-muted-foreground">
-                Módulo de controle de equipamentos em breve
+              <div className="space-y-3">
+                {orders?.filter(o => o.status === 'aberta' || o.status === 'em_andamento').map(order => (
+                  <div key={order.id} className="flex items-center justify-between rounded-lg border border-border p-3 bg-muted/20">
+                    <div>
+                      <p className="text-sm font-bold">{order.numero_os}</p>
+                      <p className="text-xs text-muted-foreground">{order.cliente}</p>
+                    </div>
+                    <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">{order.status}</span>
+                  </div>
+                ))}
+                {activeOrdersCount === 0 && (
+                  <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed border-border text-muted-foreground">
+                    Nenhuma ordem de serviço ativa no momento.
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -297,20 +336,23 @@ function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-border p-4 bg-muted/30">
-                <div>
-                  <p className="text-sm font-bold">OS #2024-001</p>
-                  <p className="text-xs text-muted-foreground">Cilindro Hidráulico CAT 320D</p>
+              {orders?.map(order => (
+                <div key={order.id} className="flex items-center justify-between rounded-lg border border-border p-4 bg-muted/30">
+                  <div>
+                    <p className="text-sm font-bold">{order.numero_os}</p>
+                    <p className="text-xs text-muted-foreground">{order.cliente}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">{order.status}</span>
+                    <Button size="sm" variant="outline" className="h-8">Detalhes</Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">Em Execução</span>
-                  <Button size="sm" variant="outline" className="h-8">Detalhes</Button>
-                </div>
-              </div>
-              {/* Exemplo de fila vazia/futura */}
-              <p className="text-center text-sm text-muted-foreground py-10">
-                Você não tem outras ordens de serviço pendentes no momento.
-              </p>
+              ))}
+              {(!orders || orders.length === 0) && (
+                <p className="text-center text-sm text-muted-foreground py-10">
+                  Você não tem outras ordens de serviço pendentes no momento.
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
