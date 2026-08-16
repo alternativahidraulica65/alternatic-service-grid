@@ -251,9 +251,13 @@ function DashboardPage() {
                   <TrendingUp className="mr-2 h-4 w-4" />
                   Relatório Financeiro
                 </Button>
-                <Button className="w-full justify-start border-input" variant="outline">
+                <Button 
+                  className="w-full justify-start border-input" 
+                  variant="outline"
+                  onClick={() => router.navigate({ to: "/kanban" })}
+                >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Auditoria de Custos
+                  Kanban de Produção
                 </Button>
               </CardContent>
             </Card>
@@ -371,7 +375,7 @@ function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">{order.status}</span>
-                    <Button size="sm" variant="outline" className="h-8">Detalhes</Button>
+                    <Button size="sm" variant="outline" className="h-8" onClick={() => router.navigate({ to: "/kanban" })}>Detalhes</Button>
                   </div>
                 </div>
               ))}
