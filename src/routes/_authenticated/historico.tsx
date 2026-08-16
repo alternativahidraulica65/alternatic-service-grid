@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { 
@@ -32,6 +32,7 @@ export const Route = createFileRoute("/_authenticated/historico")({
 });
 
 function HistoricoPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todas");
 
