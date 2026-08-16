@@ -239,12 +239,14 @@ function DashboardPage() {
 
           {/* KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <KPICard 
-              title="Faturamento Total" 
-              value={`R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} 
-              subtext="Total acumulado" 
-              icon={DollarSign} 
-            />
+            {(isDiretor || isFinanceiro) && (
+              <KPICard 
+                title="Faturamento Total" 
+                value={`R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} 
+                subtext="Total acumulado" 
+                icon={DollarSign} 
+              />
+            )}
             <KPICard 
               title="OS Ativas" 
               value={activeOrdersCount.toString()} 
@@ -257,13 +259,15 @@ function DashboardPage() {
               subtext="Aguardando aprovação" 
               icon={AlertTriangle} 
             />
-            <KPICard 
-              title="Margem Média" 
-              value={`${avgMargin.toFixed(1)}%`} 
-              subtext="Média global" 
-              trend={avgMargin > 30 ? "Acima da meta" : ""} 
-              icon={TrendingUp} 
-            />
+            {isDiretor && (
+              <KPICard 
+                title="Margem Média" 
+                value={`${avgMargin.toFixed(1)}%`} 
+                subtext="Média global" 
+                trend={avgMargin > 30 ? "Acima da meta" : ""} 
+                icon={TrendingUp} 
+              />
+            )}
           </div>
 
           <div className="grid gap-6 lg:grid-cols-3">
