@@ -3,7 +3,7 @@ import { createFileRoute, useRouter, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, Lock, Eye, EyeOff, Loader2, Wheat } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, Droplets } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -29,10 +29,10 @@ export const Route = createFileRoute("/")({
   component: LoginPage,
   head: () => ({
     meta: [
-      { title: "Acesso à Plataforma — Gestão Agrícola" },
-      { name: "description", content: "Acesse o sistema de gestão agrícola." },
-      { property: "og:title", content: "Acesso à Plataforma — Gestão Agrícola" },
-      { property: "og:description", content: "Acesse o sistema de gestão agrícola." },
+      { title: "Acesso à Plataforma — Alternativa Hidráulica" },
+      { name: "description", content: "Acesse o sistema Alternativa Hidráulica." },
+      { property: "og:title", content: "Acesso à Plataforma — Alternativa Hidráulica" },
+      { property: "og:description", content: "Acesse o sistema Alternativa Hidráulica." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -79,7 +79,7 @@ function LoginPage() {
     }
 
     toast.success("Login realizado", {
-      description: "Bem-vindo de volta à plataforma agrícola.",
+      description: "Bem-vindo de volta à Alternativa Hidráulica.",
     });
 
     await router.navigate({ to: "/dashboard", replace: true });
@@ -101,10 +101,10 @@ function LoginPage() {
         {/* Brand header */}
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FFD700] shadow-lg shadow-yellow-500/20">
-            <Wheat className="h-8 w-8 text-black" strokeWidth={2.5} />
+            <Droplets className="h-8 w-8 text-black" strokeWidth={2.5} />
           </div>
           <h1 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl drop-shadow-md">
-            Plataforma Agrícola
+            Alternativa Hidráulica
           </h1>
           <p className="mt-2 text-sm font-medium text-white/80">
             Gestão Integrada de Campo e Produção
@@ -224,10 +224,9 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="mt-8 text-center">
           <p className="text-xs font-medium text-white/60">
-            © {new Date().getFullYear()} Plataforma Agrícola.
+            © {new Date().getFullYear()} Alternativa Hidráulica.
           </p>
         </footer>
       </div>
