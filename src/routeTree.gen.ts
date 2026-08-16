@@ -16,6 +16,7 @@ import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated/nova-os'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 
@@ -53,6 +54,12 @@ const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
   path: '/orcamento',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEngenhariaMateriaisRoute =
   AuthenticatedEngenhariaMateriaisRouteImport.update({
     id: '/engenharia/materiais',
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
@@ -95,6 +104,7 @@ export interface FileRoutesById {
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/nova-os': typeof AuthenticatedNovaOsRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/nova-os'
     | '/orcamento'
+    | '/admin/usuarios'
     | '/engenharia/materiais'
     | '/orcamento/precificacao'
   fileRoutesByTo: FileRoutesByTo
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/nova-os'
     | '/orcamento'
+    | '/admin/usuarios'
     | '/engenharia/materiais'
     | '/orcamento/precificacao'
   id:
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kanban'
     | '/_authenticated/nova-os'
     | '/_authenticated/orcamento'
+    | '/_authenticated/admin/usuarios'
     | '/_authenticated/engenharia/materiais'
     | '/_authenticated/orcamento/precificacao'
   fileRoutesById: FileRoutesById
@@ -188,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrcamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/usuarios': {
+      id: '/_authenticated/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/engenharia/materiais': {
       id: '/_authenticated/engenharia/materiais'
       path: '/engenharia/materiais'
@@ -226,6 +246,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedNovaOsRoute: typeof AuthenticatedNovaOsRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
 }
 
@@ -235,6 +256,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedNovaOsRoute: AuthenticatedNovaOsRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
+  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
 }
 
