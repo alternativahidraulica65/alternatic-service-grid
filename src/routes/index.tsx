@@ -79,7 +79,7 @@ function LoginPage() {
     }
 
     toast.success("Login realizado", {
-      description: "Bem-vindo de volta à Alternativa Hidráulica.",
+      description: "Bem-vindo de volta à plataforma agrícola.",
     });
 
     await router.navigate({ to: "/dashboard", replace: true });
