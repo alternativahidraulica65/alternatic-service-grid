@@ -90,22 +90,26 @@ function KPICard({ title, value, subtext, icon: Icon, trend }: any) {
 function DashboardPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, profile, roles, isAdmin } = Route.useRouteContext();
+  const { user, profile, roles, isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado } = Route.useRouteContext();
   
   // Local state for view simulation (RBAC override for admins)
   const [activeView, setActiveView] = useState<string | null>(null);
   
   useEffect(() => {
-    if (isAdmin && !activeView) {
+    if (isDiretor && !activeView) {
       setActiveView("diretor");
-    } else if (!isAdmin) {
-      setActiveView(roles[0] || "operador");
+    } else if (!isDiretor) {
+      // Prioridade de visão se tiver múltiplas roles
+      if (isFinanceiro) setActiveView("financeiro");
+      else if (isGestor) setActiveView("gestor");
+      else if (isOperador) setActiveView("operador");
+      else if (isTerceirizado) setActiveView("terceirizado");
+      else setActiveView("operador");
     }
-  }, [isAdmin, roles]);
+  }, [isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado]);
 
-  const mainRole = isAdmin ? "Diretor" : roles[0] || "Operador";
-  const formattedRole = mainRole.charAt(0).toUpperCase() + mainRole.slice(1);
-  const currentView = isAdmin ? activeView : (roles[0] || "operador");
+  const formattedRole = activeView ? activeView.charAt(0).toUpperCase() + activeView.slice(1) : "Acessando...";
+  const currentView = activeView;
 
   // Fetch real data from Supabase
   const { data: companies } = useSuspenseQuery({
