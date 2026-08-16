@@ -272,32 +272,34 @@ function DashboardPage() {
 
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Revenue Chart */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">Faturamento por Empresa Emissora</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={revenueByCnpj} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
-                      <Tooltip 
-                        cursor={{ fill: "transparent" }}
-                        contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px" }}
-                        formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Faturamento"]}
-                      />
-                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                        {revenueByCnpj.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color || "#FFD700"} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+            {isDiretor && (
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-base font-semibold">Faturamento por Empresa Emissora</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={revenueByCnpj} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
+                        <Tooltip 
+                          cursor={{ fill: "transparent" }}
+                          contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px" }}
+                          formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Faturamento"]}
+                        />
+                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                          {revenueByCnpj.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color || "#FFD700"} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Quick Actions */}
             <Card>
