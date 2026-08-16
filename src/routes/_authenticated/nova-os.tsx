@@ -36,7 +36,10 @@ import { Progress } from "@/components/ui/progress";
 export const Route = createFileRoute("/_authenticated/nova-os")({
   component: NovaOSPage,
   head: () => ({
-    title: "Triagem e Nova OS — Alternativa Hidráulica",
+    meta: [
+      { title: "Triagem e Nova OS — Alternativa Hidráulica" },
+      { name: "description", content: "Abertura de nova OS e triagem de equipamentos." },
+    ],
   }),
 });
 
@@ -94,7 +97,11 @@ function NovaOSPage() {
 
   const handlePecaChange = (index: number, field: keyof Peca, value: any) => {
     const newPecas = [...pecas];
-    newPecas[index] = { ...newPecas[index], [field]: value };
+    const { data: userRoles } = await supabase.from('user_roles').select('role').eq('user_id', user.id);
+    const roles = userRoles?.map(r => r.role) || [];
+    const isAdmin = roles.includes('diretor');
+    
+    newPecas[index] = { ...newPecas[index], [field]: value } as Peca;
     setPecas(newPecas);
   };
 
@@ -123,7 +130,7 @@ function NovaOSPage() {
           numero_os: numeroOS,
           status: 'aberta',
           descricao: `Triagem de ${tipoEquipamento}`,
-          empresa_id: companies?.[0]?.id // Mockando primeira empresa
+          empresa_id: companies?.[0]?.id || null
         })
         .select()
         .single();
