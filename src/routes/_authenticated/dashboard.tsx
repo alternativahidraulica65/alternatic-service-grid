@@ -15,7 +15,11 @@ import {
   Wrench,
   Plus,
   Eye,
-  ShieldCheck
+  ShieldCheck,
+  Search,
+  Users,
+  Box,
+  FileText
 } from "lucide-react";
 import { toast } from "sonner";
 import { 
