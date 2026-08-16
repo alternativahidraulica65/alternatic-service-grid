@@ -316,15 +316,24 @@ function DashboardPage() {
                 <Button 
                   className="w-full justify-start border-input" 
                   variant="outline"
-                  onClick={() => router.navigate({ to: "/orcamento/precificacao" })}
+                  onClick={() => router.navigate({ to: "/orcamento/precificacao" as any })}
                 >
                   <TrendingUp className="mr-2 h-4 w-4" />
                   Precificação e Aprovação
                 </Button>
+
                 <Button 
                   className="w-full justify-start border-input" 
                   variant="outline"
-                  onClick={() => router.navigate({ to: "/engenharia/materiais" })}
+                  onClick={() => router.navigate({ to: "/orcamento/pdf" as any })}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Gerador de Orçamentos (PDF)
+                </Button>
+                <Button 
+                  className="w-full justify-start border-input" 
+                  variant="outline"
+                  onClick={() => router.navigate({ to: "/engenharia/materiais" as any })}
                 >
                   <Box className="mr-2 h-4 w-4" />
                   Matéria-Prima Inteligente
@@ -332,7 +341,7 @@ function DashboardPage() {
                 <Button 
                   className="w-full justify-start border-input" 
                   variant="outline"
-                  onClick={() => router.navigate({ to: "/historico" })}
+                  onClick={() => router.navigate({ to: "/historico" as any })}
                 >
                   <Search className="mr-2 h-4 w-4" />
                   Busca e Histórico Global
@@ -340,11 +349,12 @@ function DashboardPage() {
                 <Button 
                   className="w-full justify-start border-input" 
                   variant="outline"
-                  onClick={() => router.navigate({ to: "/admin/usuarios" })}
+                  onClick={() => router.navigate({ to: "/admin/usuarios" as any })}
                 >
                   <Users className="mr-2 h-4 w-4" />
                   Gestão de Usuários
                 </Button>
+
                 <Button 
                   className="w-full justify-start border-input" 
                   variant="outline"
