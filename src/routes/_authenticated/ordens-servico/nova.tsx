@@ -75,8 +75,8 @@ function NovaOSPage() {
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Queries for dynamic selects
-  const { data: clientes } = useSuspenseQuery({
+  // Queries for dynamic selects (client-side only to avoid SSR auth/hydration issues)
+  const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_list'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -84,11 +84,11 @@ function NovaOSPage() {
         .select('id, nome')
         .order('nome');
       if (error) throw error;
-      return data;
-    }
+      return data ?? [];
+    },
   });
 
-  const { data: tecnicos } = useSuspenseQuery({
+  const { data: tecnicos = [] } = useQuery({
     queryKey: ['tecnicos_list'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -97,15 +97,17 @@ function NovaOSPage() {
         .eq('cargo', 'tecnico')
         .order('nome');
       if (error) throw error;
-      return data;
-    }
+      return data ?? [];
+    },
   });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       numero_os: "",
-      data_abertura: new Date(),
+      data_abertura: undefined as any,
+      cliente_id: "",
+      tecnico_id: "",
       status: "Aberta",
       prioridade: "Média",
       descricao: "",
@@ -113,6 +115,13 @@ function NovaOSPage() {
       valor_total: undefined as any,
     },
   });
+
+  // Set today's date after hydration to keep server/client markup identical
+  useEffect(() => {
+    if (!form.getValues("data_abertura")) {
+      form.setValue("data_abertura", new Date());
+    }
+  }, [form]);
 
   async function onSubmit(values: FormValues) {
     setIsSubmitting(true);
