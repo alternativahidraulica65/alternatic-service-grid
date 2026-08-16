@@ -15,6 +15,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated/nova-os'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
+import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,20 +46,28 @@ const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
   path: '/orcamento',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOrcamentoPrecificacaoRoute =
+  AuthenticatedOrcamentoPrecificacaoRouteImport.update({
+    id: '/precificacao',
+    path: '/precificacao',
+    getParentRoute: () => AuthenticatedOrcamentoRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
-  '/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
-  '/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -67,13 +76,26 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/nova-os': typeof AuthenticatedNovaOsRoute
-  '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/kanban' | '/nova-os' | '/orcamento'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/kanban'
+    | '/nova-os'
+    | '/orcamento'
+    | '/orcamento/precificacao'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/kanban' | '/nova-os' | '/orcamento'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/kanban'
+    | '/nova-os'
+    | '/orcamento'
+    | '/orcamento/precificacao'
   id:
     | '__root__'
     | '/'
@@ -82,6 +104,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kanban'
     | '/_authenticated/nova-os'
     | '/_authenticated/orcamento'
+    | '/_authenticated/orcamento/precificacao'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -133,21 +156,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrcamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/orcamento/precificacao': {
+      id: '/_authenticated/orcamento/precificacao'
+      path: '/precificacao'
+      fullPath: '/orcamento/precificacao'
+      preLoaderRoute: typeof AuthenticatedOrcamentoPrecificacaoRouteImport
+      parentRoute: typeof AuthenticatedOrcamentoRoute
+    }
   }
 }
+
+interface AuthenticatedOrcamentoRouteChildren {
+  AuthenticatedOrcamentoPrecificacaoRoute: typeof AuthenticatedOrcamentoPrecificacaoRoute
+}
+
+const AuthenticatedOrcamentoRouteChildren: AuthenticatedOrcamentoRouteChildren =
+  {
+    AuthenticatedOrcamentoPrecificacaoRoute:
+      AuthenticatedOrcamentoPrecificacaoRoute,
+  }
+
+const AuthenticatedOrcamentoRouteWithChildren =
+  AuthenticatedOrcamentoRoute._addFileChildren(
+    AuthenticatedOrcamentoRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedNovaOsRoute: typeof AuthenticatedNovaOsRoute
-  AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRoute
+  AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedNovaOsRoute: AuthenticatedNovaOsRoute,
-  AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRoute,
+  AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
