@@ -11,8 +11,8 @@ import {
   X
 } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -126,7 +126,7 @@ function NovaOSPage() {
   async function onSubmit(values: FormValues) {
     setIsSubmitting(true);
     try {
-      const selectedCliente = clientes?.find(c => c.id === values.cliente_id);
+      const selectedCliente = clientes.find((c: { id: string; nome: string }) => c.id === values.cliente_id);
       const valorNumerico = values.valor_total ? parseFloat(values.valor_total.replace(/[^\d.-]/g, '')) : null;
 
       const { error } = await supabase
@@ -258,7 +258,7 @@ function NovaOSPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {clientes?.map(c => (
+                          {clientes.map((c: { id: string; nome: string }) => (
                             <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
                           ))}
                         </SelectContent>
@@ -282,7 +282,7 @@ function NovaOSPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {tecnicos?.map(t => (
+                          {tecnicos.map((t: { id: string; nome: string }) => (
                             <SelectItem key={t.id} value={t.id}>{t.nome}</SelectItem>
                           ))}
                         </SelectContent>
