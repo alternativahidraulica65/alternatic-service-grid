@@ -301,9 +301,13 @@ function DashboardPage() {
                   <Plus className="mr-2 h-4 w-4" />
                   Nova Ordem de Serviço
                 </Button>
-                <Button className="w-full justify-start border-input" variant="outline">
+                <Button 
+                  className="w-full justify-start border-input" 
+                  variant="outline"
+                  onClick={() => router.navigate({ to: "/orcamento" })}
+                >
                   <CheckCircle2 className="mr-2 h-4 w-4" />
-                  Aprovar Orçamentos
+                  Orçamentação e Custos
                 </Button>
                 <Button className="w-full justify-start border-input" variant="outline">
                   <TrendingUp className="mr-2 h-4 w-4" />
