@@ -3,7 +3,7 @@ import { createFileRoute, useRouter, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { User, Lock, Eye, EyeOff, Loader2, Droplets } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, Droplets } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "O usuário é obrigatório."),
+  email: z.string().email("Insira um e-mail válido."),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
 });
 
@@ -47,7 +47,7 @@ function LoginPage() {
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -56,17 +56,8 @@ function LoginPage() {
     setIsLoading(true);
 
     try {
-      // Busca o e-mail associado ao nome de usuário
-      const { data: email, error: rpcError } = await supabase.rpc('get_email_by_username', {
-        p_username: values.username.trim()
-      });
-
-      if (rpcError || !email) {
-        throw new Error("Invalid login credentials");
-      }
-
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email as string,
+        email: values.email,
         password: values.password,
       });
 
@@ -139,22 +130,22 @@ function LoginPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
-                name="username"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-slate-700">
-                      Usuário
+                      E-mail
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                         <Input
-                          type="text"
-                          placeholder="Digite seu usuário"
+                          type="email"
+                          placeholder="Digite seu e-mail"
                           className="h-11 rounded-lg border-slate-200 bg-white pl-10 text-sm focus-visible:ring-[#FFD700]"
-                          autoComplete="username"
+                          autoComplete="email"
                           disabled={isLoading}
-                          aria-label="Usuário"
+                          aria-label="E-mail"
                           {...field}
                         />
                       </div>
@@ -239,11 +230,10 @@ function LoginPage() {
 
         <footer className="mt-8 text-center">
           <p className="text-xs font-medium text-white/60">
-            © {new Date().getFullYear()} Alternativa Hidráulica.
+            © Alternativa Hidráulica.
           </p>
         </footer>
       </div>
     </div>
-
   );
 }

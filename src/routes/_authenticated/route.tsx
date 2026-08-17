@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated")({
     const { data: profile } = await supabase
       .from("usuarios")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("id", user.id)
       .single();
 
     const { data: userRoles } = await supabase
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated")({
     const isTerceirizado = roles.includes("terceirizado");
 
     // Usuário DEV sempre tem acesso total (tratado como Diretor)
-    const isDev = user.email === "teste.dev@alternativahidraulica.local";
+    const isDev = user.email === "dev@admin.com";
     const hasFullAccess = isDiretor || isDev;
 
     return { 
