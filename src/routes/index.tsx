@@ -58,7 +58,7 @@ function LoginPage() {
     try {
       // Busca o e-mail associado ao nome de usuário
       const { data: email, error: rpcError } = await supabase.rpc('get_email_by_username', {
-        p_username: values.username
+        p_username: values.username.trim()
       });
 
       if (rpcError || !email) {
