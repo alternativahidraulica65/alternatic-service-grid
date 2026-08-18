@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   ArrowLeft, 
   Settings, 
@@ -13,7 +14,8 @@ import {
   Save,
   Search,
   User,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -30,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/os/nova")({
   component: NovaOSPage,
@@ -37,24 +40,78 @@ export const Route = createFileRoute("/_authenticated/os/nova")({
 
 function NovaOSPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
+  const [selectedCliente, setSelectedCliente] = useState<string>("");
+  const [tipoEquipamento, setTipoEquipamento] = useState<string>("cilindro");
+  const [prioridade, setPrioridade] = useState<string>("Média");
+  const [descricao, setDescricao] = useState<string>("");
+  const [relatorioCliente, setRelatorioCliente] = useState<string>("");
   
-  // Mock de peças retiradas na triagem
+  const { data: clientes = [] } = useQuery({
+    queryKey: ['clientes_lookup'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('clientes').select('id, nome');
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const [pecas, setPecas] = useState<{id: number, nome: string, local: string}[]>([]);
 
   const handleAddPeca = () => {
     setPecas([...pecas, { id: Date.now(), nome: "", local: "" }]);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!selectedCliente || !descricao) {
+      toast.error("Preencha cliente e descrição.");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("Ordem de Serviço aberta com sucesso!", {
-        description: "OS-1026 gerada e enviada para triagem.",
+    try {
+      const proximoNum = `OS-${Math.floor(1000 + Math.random() * 9000)}`;
+      
+      const { data: os, error: osError } = await supabase
+        .from('ordens_servico')
+        .insert({
+          numero_os: proximoNum,
+          cliente_id: selectedCliente,
+          cliente: clientes.find(c => c.id === selectedCliente)?.nome || "Cliente Desconhecido",
+          descricao: descricao,
+          prioridade: prioridade,
+          status: 'aberta',
+          data_abertura: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (osError) throw osError;
+
+      if (pecas.length > 0) {
+        const { error: pecasError } = await supabase
+          .from('os_guarda_pecas')
+          .insert(pecas.map(p => ({
+            os_id: os.id,
+            descricao: p.nome || "Peça não identificada",
+            localizacao: p.local || "Não informado"
+          })));
+        
+        if (pecasError) throw pecasError;
+      }
+
+      toast.success("Ordem de Serviço aberta!", {
+        description: `${proximoNum} gerada com sucesso.`
       });
+      
+      queryClient.invalidateQueries({ queryKey: ['ordens_servico'] });
       router.navigate({ to: "/dashboard" });
-    }, 1500);
+    } catch (e: any) {
+      toast.error("Erro ao criar OS: " + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -81,21 +138,32 @@ function NovaOSPage() {
             </CardHeader>
             <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente (Autocomplete)</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input placeholder="Pesquisar cliente..." className="pl-10 h-11 border-border focus:ring-primary" />
-                </div>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente</Label>
+                <Select value={selectedCliente} onValueChange={setSelectedCliente}>
+                  <SelectTrigger className="h-11 border-border">
+                    <SelectValue placeholder="Selecione o cliente..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clientes.map(c => (
+                      <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Número Relatório Cliente (Opcional)</Label>
-                <Input placeholder="Ex: REL-2024-001" className="h-11 border-border focus:ring-primary" />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Relatório Cliente (Opcional)</Label>
+                <Input 
+                  placeholder="Ex: REL-2024-001" 
+                  className="h-11 border-border" 
+                  value={relatorioCliente}
+                  onChange={(e) => setRelatorioCliente(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tipo de Equipamento</Label>
-                <Select>
+                <Select value={tipoEquipamento} onValueChange={setTipoEquipamento}>
                   <SelectTrigger className="h-11 border-border">
-                    <SelectValue placeholder="Selecione o tipo..." />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="cilindro">Cilindro Hidráulico</SelectItem>
@@ -106,21 +174,26 @@ function NovaOSPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tipo de Atendimento</Label>
-                <Select defaultValue="normal">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Prioridade</Label>
+                <Select value={prioridade} onValueChange={setPrioridade}>
                   <SelectTrigger className="h-11 border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="normal">Normal (Fluxo Padrão)</SelectItem>
-                    <SelectItem value="garantia">Garantia (Prioridade)</SelectItem>
-                    <SelectItem value="urgente">Urgente (SLA 24h)</SelectItem>
+                    <SelectItem value="Baixa">Baixa</SelectItem>
+                    <SelectItem value="Média">Média</SelectItem>
+                    <SelectItem value="Alta">Alta (Urgente)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="md:col-span-2 space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Descrição do Defeito / Solicitação</Label>
-                <Textarea placeholder="Descreva os problemas relatados pelo cliente..." className="min-h-[100px] border-border focus:ring-primary" />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Descrição do Defeito</Label>
+                <Textarea 
+                  placeholder="Descreva os problemas relatados pelo cliente..." 
+                  className="min-h-[100px] border-border" 
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                />
               </div>
             </CardContent>
           </Card>
@@ -150,8 +223,18 @@ function NovaOSPage() {
                       <div className="h-10 w-10 rounded bg-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors cursor-pointer">
                         <Camera className="h-5 w-5" />
                       </div>
-                      <Input placeholder="Nome da Peça" className="h-9 text-xs font-bold border-border bg-white" />
-                      <Input placeholder="Gaveta / Local" className="h-9 text-xs font-bold border-border bg-white" />
+                      <Input 
+                        placeholder="Nome da Peça" 
+                        className="h-9 text-xs font-bold border-border bg-white" 
+                        value={peca.nome}
+                        onChange={(e) => setPecas(pecas.map(p => p.id === peca.id ? { ...p, nome: e.target.value } : p))}
+                      />
+                      <Input 
+                        placeholder="Gaveta / Local" 
+                        className="h-9 text-xs font-bold border-border bg-white" 
+                        value={peca.local}
+                        onChange={(e) => setPecas(pecas.map(p => p.id === peca.id ? { ...p, local: e.target.value } : p))}
+                      />
                       <Button variant="ghost" size="icon" className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-50" onClick={() => setPecas(pecas.filter(p => p.id !== peca.id))}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
