@@ -7,17 +7,13 @@ import {
   Save, 
   FileText,
   AlertTriangle,
-  Info,
-  DollarSign,
-  Percent,
   Plus,
   Trash2,
   Lock,
-  Eye,
   ChevronDown
 } from "lucide-react";
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +35,8 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/orcamento")({
   component: OrcamentoPage,
@@ -46,33 +44,69 @@ export const Route = createFileRoute("/_authenticated/orcamento")({
 
 function OrcamentoPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [showInternalCosts, setShowInternalCosts] = useState(true);
+  const [selectedOSId, setSelectedOSId] = useState<string>("");
 
-  // Mock de itens do orçamento
-  const [itens, setItens] = useState([
-    { id: 1, descricao: "Kit de Vedações Completo (Cilindro CAT 320D)", tipo: "Peca", custo: 850.00, margem: 60, total: 1360.00 },
-    { id: 2, descricao: "Brunimento Interno de Camisa", tipo: "Servico", custo: 450.00, margem: 100, total: 900.00 },
-    { id: 3, descricao: "Polimento de Haste", tipo: "Servico", custo: 200.00, margem: 80, total: 360.00 },
-  ]);
+  const { data: ordens = [] } = useQuery({
+    queryKey: ['os_orcamento_list'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ordens_servico').select('*').in('status', ['aberta', 'vistoria', 'orcamento_pendente']);
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: itens = [] } = useQuery({
+    queryKey: ['orcamento_itens', selectedOSId],
+    queryFn: async () => {
+      if (!selectedOSId) return [];
+      const { data, error } = await supabase.from('custos_os').select('*').eq('os_id', selectedOSId);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedOSId
+  });
+
+  const selectedOS = ordens.find(o => o.id === selectedOSId);
 
   const totais = useMemo(() => {
-    const custo = itens.reduce((acc, item) => acc + item.custo, 0);
-    const venda = itens.reduce((acc, item) => acc + item.total, 0);
+    const custo = itens.reduce((acc: number, item: any) => acc + (item.custo_interno || 0), 0);
+    const venda = itens.reduce((acc: number, item: any) => acc + (item.valor_venda || 0), 0);
     const lucro = venda - custo;
     const margemGeral = venda > 0 ? (lucro / venda) * 100 : 0;
     
     return { custo, venda, lucro, margemGeral };
   }, [itens]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!selectedOSId) {
+      toast.error("Selecione uma OS primeiro.");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({
+          status: 'orcamento_pendente',
+          valor_total: totais.venda,
+          margem_lucro: totais.margemGeral
+        })
+        .eq('id', selectedOSId);
+
+      if (error) throw error;
+
       toast.success("Orçamento gerado!", {
-        description: "Versão V1 disponível para aprovação do cliente.",
+        description: "Status atualizado para orcamento_pendente.",
       });
-    }, 1000);
+      queryClient.invalidateQueries({ queryKey: ['ordens_servico'] });
+    } catch (e: any) {
+      toast.error("Erro ao salvar: " + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,9 +118,18 @@ function OrcamentoPage() {
           </Button>
           <div>
             <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">ORÇAMENTO / <span className="text-primary">PREÇIFICAÇÃO</span></h2>
-            <p className="text-sm text-muted-foreground font-medium flex items-center gap-2 uppercase tracking-widest">
-              OS-1024 <span className="h-1 w-1 rounded-full bg-border" /> Indústria Metalúrgica SA
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <Select value={selectedOSId} onValueChange={setSelectedOSId}>
+                <SelectTrigger className="h-9 w-64 border-border font-bold text-[10px] uppercase">
+                  <SelectValue placeholder="Selecione a OS..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {ordens.map(os => (
+                    <SelectItem key={os.id} value={os.id}>{os.numero_os} - {os.cliente}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -136,28 +179,28 @@ function OrcamentoPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {itens.map((item) => (
+                  {itens.map((item: any) => (
                     <TableRow key={item.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
                       <TableCell className="py-4 pl-6">
                         <p className="text-sm font-bold text-foreground uppercase tracking-tight">{item.descricao}</p>
                       </TableCell>
                       <TableCell className="py-4">
                         <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest bg-white">
-                          {item.tipo}
+                          {item.categoria}
                         </Badge>
                       </TableCell>
                       {showInternalCosts && (
                         <TableCell className="py-4 text-right font-medium text-slate-500">
-                          {item.custo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          {(item.custo_interno || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </TableCell>
                       )}
                       <TableCell className="py-4 text-right">
                         <div className="inline-flex items-center justify-end gap-1 font-black text-primary">
-                          {item.margem}%
+                          {item.margem_lucro_percentual || 0}%
                         </div>
                       </TableCell>
                       <TableCell className="py-4 text-right pr-6 font-black text-foreground">
-                        {item.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        {(item.valor_venda || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -294,8 +337,8 @@ function OrcamentoPage() {
                 </Button>
                 
                 <p className="text-[9px] text-center font-bold text-slate-600 uppercase tracking-widest">
-                  Este orçamento será enviado para: <br/>
-                  <span className="text-slate-400">comercial@metalurgica.com.br</span>
+                  Este orçamento será processado para: <br/>
+                  <span className="text-slate-400">{selectedOS?.cliente || "Nenhum cliente selecionado"}</span>
                 </p>
               </div>
             </CardContent>
