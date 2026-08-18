@@ -153,28 +153,28 @@ function DashboardDiretor() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard 
           title="Total de Clientes" 
-          value={dbStats?.clientesCount.toString() || "0"} 
+          value={dbStats?.clientesCount?.toString() || "0"} 
           subtext="Base total de clientes" 
           icon={Users} 
           colorClass="text-emerald-500"
         />
         <KPICard 
           title="Total de Produtos" 
-          value={dbStats?.produtosCount.toString() || "0"} 
+          value={dbStats?.produtosCount?.toString() || "0"} 
           subtext="Itens cadastrados" 
           icon={Package} 
           colorClass="text-blue-500"
         />
         <KPICard 
           title="Vendas do Mês" 
-          value={`R$ ${dbStats?.currentMonthVendas.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || "0,00"}`} 
+          value={`R$ ${dbStats?.currentMonthVendas?.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || "0,00"}`} 
           subtext="Faturamento bruto (Mês Atual)" 
           icon={DollarSign} 
           colorClass="text-primary"
         />
         <KPICard 
           title="Pedidos Pendentes" 
-          value={dbStats?.pedidosPendentesCount.toString() || "0"} 
+          value={dbStats?.pedidosPendentesCount?.toString() || "0"} 
           subtext="Aguardando faturamento" 
           icon={Receipt} 
           colorClass="text-amber-500"
