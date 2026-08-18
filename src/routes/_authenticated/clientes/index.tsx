@@ -65,8 +65,8 @@ function ClientesPage() {
     nome: "",
     cnpj: "",
     endereco: "",
-    categoria: "C",
-    status: "Ativo"
+    email: "",
+    telefone: ""
   });
 
   const { data: clientes = [], refetch } = useSuspenseQuery({
@@ -86,7 +86,7 @@ function ClientesPage() {
     onSuccess: () => {
       toast.success("Cliente cadastrado com sucesso!");
       setIsDialogOpen(false);
-      setNewCliente({ nome: "", cnpj: "", endereco: "", categoria: "C", status: "Ativo" });
+      setNewCliente({ nome: "", cnpj: "", endereco: "", email: "", telefone: "" });
       queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
     },
     onError: (error: any) => {
@@ -96,8 +96,8 @@ function ClientesPage() {
 
   const stats = {
     total: clientes.length,
-    premium: clientes.filter((c: any) => c.categoria === 'A').length,
-    inativos: clientes.filter((c: any) => c.status === 'Inativo').length,
+    premium: 0,
+    inativos: 0,
     novos: clientes.filter((c: any) => {
       const createdDate = new Date(c.criado_em || '');
       const now = new Date();
@@ -159,35 +159,24 @@ function ClientesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="categoria" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Categoria</Label>
-                  <Select 
-                    value={newCliente.categoria} 
-                    onValueChange={(val) => setNewCliente({...newCliente, categoria: val})}
-                  >
-                    <SelectTrigger className="h-11 border-border">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="A">CURVA A (Premium)</SelectItem>
-                      <SelectItem value="B">CURVA B (Frequente)</SelectItem>
-                      <SelectItem value="C">CURVA C (Esporádico)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
+                  <Input 
+                    id="email" 
+                    value={newCliente.email} 
+                    onChange={(e) => setNewCliente({...newCliente, email: e.target.value})}
+                    className="h-11 border-border"
+                    placeholder="contato@empresa.com"
+                  />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="status" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status Inicial</Label>
-                  <Select 
-                    value={newCliente.status} 
-                    onValueChange={(val) => setNewCliente({...newCliente, status: val})}
-                  >
-                    <SelectTrigger className="h-11 border-border">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="Ativo">ATIVO</SelectItem>
-                      <SelectItem value="Inativo">INATIVO</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="telefone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</Label>
+                  <Input 
+                    id="telefone" 
+                    value={newCliente.telefone} 
+                    onChange={(e) => setNewCliente({...newCliente, telefone: e.target.value})}
+                    className="h-11 border-border"
+                    placeholder="(00) 0000-0000"
+                  />
                 </div>
               </div>
             </div>
