@@ -162,7 +162,7 @@ function PedidosPage() {
   });
 
   const filteredPedidos = pedidos.filter(p => 
-    p.clientes?.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.clientes?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.numero_pedido.toString().includes(searchTerm)
   );
 
@@ -210,7 +210,7 @@ function PedidosPage() {
                   </SelectTrigger>
                   <SelectContent className="bg-slate-900 border-slate-800">
                     {clientes.map(c => (
-                      <SelectItem key={c.id} value={c.id} className="text-white hover:bg-primary/20">{c.nome_fantasia}</SelectItem>
+                      <SelectItem key={c.id} value={c.id} className="text-white hover:bg-primary/20">{c.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -369,12 +369,12 @@ function PedidosPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-bold text-white uppercase tracking-tight">{pedido.clientes?.nome_fantasia || "Cliente não identificado"}</div>
+                        <div className="text-sm font-bold text-white uppercase tracking-tight">{pedido.clientes?.nome || "Cliente não identificado"}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <Calendar className="h-3 w-3" />
-                          {new Date(pedido.criado_em).toLocaleDateString('pt-BR')}
+                          {pedido.criado_em ? new Date(pedido.criado_em).toLocaleDateString('pt-BR') : '-'}
                         </div>
                       </td>
                       <td className="px-6 py-4">
