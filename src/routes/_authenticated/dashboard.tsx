@@ -243,7 +243,7 @@ function DashboardLayout() {
         </header>
 
         {/* Page Content Container */}
-        <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-x-hidden">
+        <main className="flex-1 overflow-y-auto scrollbar-hide">
           <Outlet />
         </main>
       </div>
