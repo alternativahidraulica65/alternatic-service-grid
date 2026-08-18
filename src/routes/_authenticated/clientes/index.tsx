@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   Users, 
   UserPlus, 
@@ -11,9 +12,12 @@ import {
   Building2,
   TrendingUp,
   History,
-  AlertCircle
+  AlertCircle,
+  Trash2
 } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +42,7 @@ export const Route = createFileRoute("/_authenticated/clientes/")({
 });
 
 function ClientesPage() {
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: clientes = [], refetch } = useSuspenseQuery({
@@ -140,7 +145,7 @@ function ClientesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clientes.map((cliente) => (
+              {clientes.map((cliente: any) => (
                 <TableRow key={cliente.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
@@ -167,14 +172,14 @@ function ClientesPage() {
                   <TableCell className="py-4">
                     <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase">
                       <MapPin className="h-3 w-3 text-primary" />
-                      {cliente.cidade}
+                      {cliente.endereco?.split(',')[0] || "Não informado"}
                     </div>
                   </TableCell>
-                  <TableCell className="py-4 text-xs font-bold text-foreground">{cliente.ultimaOS}</TableCell>
+                  <TableCell className="py-4 text-xs font-bold text-foreground">{cliente.ultimaOS || "N/A"}</TableCell>
                   <TableCell className="py-4 text-center">
                     <Badge className={`text-[9px] font-black uppercase tracking-widest ${
-                      cliente.status === 'Ativo' ? 'bg-emerald-500 text-white' : 'bg-slate-400 text-white'
-                    }`}>{cliente.status}</Badge>
+                      cliente.status === 'Inativo' ? 'bg-slate-400 text-white' : 'bg-emerald-500 text-white'
+                    }`}>{cliente.status || 'Ativo'}</Badge>
                   </TableCell>
                   <TableCell className="py-4 pr-6 text-right">
                     <DropdownMenu>
@@ -187,6 +192,21 @@ function ClientesPage() {
                         <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Ver Perfil</DropdownMenuItem>
                         <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Nova OS</DropdownMenuItem>
                         <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Histórico Financeiro</DropdownMenuItem>
+                        <DropdownMenuItem 
+                          className="text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 text-red-400 cursor-pointer"
+                          onClick={async () => {
+                            if (confirm(`Remover cliente ${cliente.nome}?`)) {
+                              const { error } = await supabase.from('clientes').delete().eq('id', cliente.id);
+                              if (error) toast.error("Erro ao remover: " + error.message);
+                              else {
+                                toast.success("Cliente removido!");
+                                queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+                              }
+                            }
+                          }}
+                        >
+                          Remover Cliente
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
