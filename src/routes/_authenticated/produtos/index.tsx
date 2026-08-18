@@ -34,7 +34,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 
-export const Route = createFileRoute("/_authenticated/produtos/index")({
+export const Route = createFileRoute("/_authenticated/produtos/")({
   component: ProdutosPage,
 });
 
