@@ -20,6 +20,7 @@ import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authen
 import { Route as AuthenticatedDashboardDiretorRouteImport } from './routes/_authenticated/dashboard/diretor'
 import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_authenticated/dashboard/financeiro'
 import { Route as AuthenticatedDashboardGestorRouteImport } from './routes/_authenticated/dashboard/gestor'
+import { Route as AuthenticatedDashboardOperadorRouteImport } from './routes/_authenticated/dashboard/operador'
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
 import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
@@ -83,6 +84,12 @@ const AuthenticatedDashboardGestorRoute =
     path: '/gestor',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardOperadorRoute =
+  AuthenticatedDashboardOperadorRouteImport.update({
+    id: '/operador',
+    path: '/operador',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedEngenhariaMateriaisRoute =
   AuthenticatedEngenhariaMateriaisRouteImport.update({
     id: '/engenharia/materiais',
@@ -119,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
   '/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
+  '/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
@@ -135,6 +143,7 @@ export interface FileRoutesByTo {
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
   '/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
+  '/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
@@ -153,6 +162,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
   '/_authenticated/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/_authenticated/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
+  '/_authenticated/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/dashboard/diretor'
     | '/dashboard/financeiro'
     | '/dashboard/gestor'
+    | '/dashboard/operador'
     | '/engenharia/materiais'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
@@ -187,6 +198,7 @@ export interface FileRouteTypes {
     | '/dashboard/diretor'
     | '/dashboard/financeiro'
     | '/dashboard/gestor'
+    | '/dashboard/operador'
     | '/engenharia/materiais'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
@@ -204,6 +216,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/diretor'
     | '/_authenticated/dashboard/financeiro'
     | '/_authenticated/dashboard/gestor'
+    | '/_authenticated/dashboard/operador'
     | '/_authenticated/engenharia/materiais'
     | '/_authenticated/orcamento/pdf'
     | '/_authenticated/orcamento/precificacao'
@@ -294,6 +307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardGestorRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/operador': {
+      id: '/_authenticated/dashboard/operador'
+      path: '/operador'
+      fullPath: '/dashboard/operador'
+      preLoaderRoute: typeof AuthenticatedDashboardOperadorRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/engenharia/materiais': {
       id: '/_authenticated/engenharia/materiais'
       path: '/engenharia/materiais'
@@ -329,6 +349,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardDiretorRoute: typeof AuthenticatedDashboardDiretorRoute
   AuthenticatedDashboardFinanceiroRoute: typeof AuthenticatedDashboardFinanceiroRoute
   AuthenticatedDashboardGestorRoute: typeof AuthenticatedDashboardGestorRoute
+  AuthenticatedDashboardOperadorRoute: typeof AuthenticatedDashboardOperadorRoute
 }
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
@@ -337,6 +358,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardFinanceiroRoute:
       AuthenticatedDashboardFinanceiroRoute,
     AuthenticatedDashboardGestorRoute: AuthenticatedDashboardGestorRoute,
+    AuthenticatedDashboardOperadorRoute: AuthenticatedDashboardOperadorRoute,
   }
 
 const AuthenticatedDashboardRouteWithChildren =
