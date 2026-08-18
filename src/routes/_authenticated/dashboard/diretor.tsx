@@ -8,7 +8,10 @@ import {
   Factory,
   BarChart3,
   Calendar,
-  Filter
+  Filter,
+  Users,
+  Package,
+  Receipt
 } from "lucide-react";
 import { 
   BarChart, 
@@ -69,6 +72,38 @@ const mockStatusData = [
 ];
 
 function DashboardDiretor() {
+  const { data: dbStats } = useQuery({
+    queryKey: ['dashboard_diretor_db_stats'],
+    queryFn: async () => {
+      const [
+        { count: clientesCount },
+        { count: produtosCount },
+        { data: pedidosData },
+        { count: pedidosPendentesCount }
+      ] = await Promise.all([
+        supabase.from('clientes').select('*', { count: 'exact', head: true }),
+        supabase.from('produtos').select('*', { count: 'exact', head: true }),
+        supabase.from('pedidos').select('valor_total, criado_em'),
+        supabase.from('pedidos').select('*', { count: 'exact', head: true }).eq('status', 'pendente')
+      ]);
+
+      const now = new Date();
+      const currentMonthVendas = pedidosData
+        ?.filter(p => {
+          const d = new Date(p.criado_em!);
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        })
+        .reduce((acc, p) => acc + (p.valor_total || 0), 0) || 0;
+
+      return {
+        clientesCount: clientesCount || 0,
+        produtosCount: produtosCount || 0,
+        currentMonthVendas,
+        pedidosPendentesCount: pedidosPendentesCount || 0
+      };
+    }
+  });
+
   const { data: ordens = [] } = useQuery({
     queryKey: ['dashboard_diretor_os'],
     queryFn: async () => {
@@ -114,35 +149,35 @@ function DashboardDiretor() {
         </div>
       </div>
 
-      {/* Grid de KPIs Financeiros */}
+      {/* KPIs Financeiros Detalhados (Dinamizados) */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard 
-          title="Faturamento" 
-          value={`R$ ${stats.faturamento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} 
-          subtext="Total em carteira" 
-          icon={DollarSign} 
+          title="Total de Clientes" 
+          value={dbStats?.clientesCount.toString() || "0"} 
+          subtext="Base total de clientes" 
+          icon={Users} 
           colorClass="text-emerald-500"
         />
         <KPICard 
-          title="Custos Totais" 
-          value="R$ 624.000,00" 
-          subtext="Margem operacional: 40%" 
-          icon={TrendingUp} 
-          colorClass="text-red-500"
+          title="Total de Produtos" 
+          value={dbStats?.produtosCount.toString() || "0"} 
+          subtext="Itens cadastrados" 
+          icon={Package} 
+          colorClass="text-blue-500"
         />
         <KPICard 
-          title="Lucro Líquido" 
-          value="R$ 416.000,00" 
-          subtext="+12% em relação ao mês anterior" 
-          icon={BarChart3} 
+          title="Vendas do Mês" 
+          value={`R$ ${dbStats?.currentMonthVendas.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || "0,00"}`} 
+          subtext="Faturamento bruto (Mês Atual)" 
+          icon={DollarSign} 
           colorClass="text-primary"
         />
         <KPICard 
-          title="Margem Média" 
-          value="38.5%" 
-          subtext="Meta estipulada: 35%" 
-          icon={TrendingUp} 
-          colorClass="text-blue-500"
+          title="Pedidos Pendentes" 
+          value={dbStats?.pedidosPendentesCount.toString() || "0"} 
+          subtext="Aguardando faturamento" 
+          icon={Receipt} 
+          colorClass="text-amber-500"
         />
       </div>
 
