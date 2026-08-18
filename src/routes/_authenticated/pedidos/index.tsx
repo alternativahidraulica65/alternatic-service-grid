@@ -66,7 +66,7 @@ function PedidosPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("pedidos")
-        .select("*, clientes(nome_fantasia)")
+        .select("*, clientes(nome)")
         .order("criado_em", { ascending: false });
       if (error) throw error;
       return data;
@@ -76,7 +76,7 @@ function PedidosPage() {
   const { data: clientes = [] } = useQuery({
     queryKey: ["clientes_simples"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("clientes").select("id, nome_fantasia");
+      const { data, error } = await supabase.from("clientes").select("id, nome");
       if (error) throw error;
       return data;
     },
