@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Calculator, 
   Settings, 
@@ -24,7 +26,6 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/engenharia/materiais")({
   component: EngenhariaMateriaisPage,
@@ -33,7 +34,16 @@ export const Route = createFileRoute("/_authenticated/engenharia/materiais")({
 function EngenhariaMateriaisPage() {
   const [diametro, setDiametro] = useState<number>(50);
   const [comprimento, setComprimento] = useState<number>(500);
-  const [densidade, setDensidade] = useState<number>(7.85); // Aço padrão
+  const [densidade, setDensidade] = useState<number>(7.85);
+
+  const { data: materiais = [] } = useQuery({
+    queryKey: ['materiais_list'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('materiais').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const pesoTeorico = useMemo(() => {
     // Cálculo: (π * r² * L * densidade) / 1000000 (para kg)
@@ -94,17 +104,18 @@ function EngenhariaMateriaisPage() {
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Material / Densidade (kg/dm³)</Label>
                   <Select 
-                    defaultValue="7.85" 
+                    value={densidade.toString()} 
                     onValueChange={(v) => setDensidade(Number(v))}
                   >
                     <SelectTrigger className="h-12 border-border font-bold">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="7.85">Aço Carbono / Cromo (7.85)</SelectItem>
-                      <SelectItem value="2.70">Alumínio (2.70)</SelectItem>
-                      <SelectItem value="8.96">Cobre (8.96)</SelectItem>
-                      <SelectItem value="8.00">Aço Inoxidável (8.00)</SelectItem>
+                      {materiais.length > 0 ? materiais.map((m: any) => (
+                        <SelectItem key={m.id} value={m.densidade.toString()}>{m.nome} ({m.densidade})</SelectItem>
+                      )) : (
+                        <SelectItem value="7.85">Aço Carbono / Cromo (7.85)</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -160,7 +171,7 @@ function EngenhariaMateriaisPage() {
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
                   <span>Material Selecionado</span>
-                  <span className="text-primary">Aço Cromo SAE 1045</span>
+                  <span className="text-primary">{materiais.find((m: any) => m.densidade === densidade)?.nome || "Aço Carbono / Cromo"}</span>
                 </div>
               </div>
 
