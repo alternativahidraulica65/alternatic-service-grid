@@ -12,6 +12,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/dashboard/operador")({
   component: DashboardOperador,
@@ -86,15 +88,29 @@ function OperadorKPICard({ title, value, icon: Icon, color = "primary" }: any) {
 function DashboardOperador() {
   const router = useRouter();
 
+  const { data: myOrders = [] } = useQuery({
+    queryKey: ['operador_minha_bancada'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const { data: profile } = await supabase.from('usuarios').select('id').eq('email', user.email).single();
+      if (!profile) return [];
+
+      const { data, error } = await supabase
+        .from('ordens_servico')
+        .select('*')
+        .eq('tecnico_id', profile.id)
+        .in('status', ['aberta', 'vistoria', 'orcamento_pendente', 'usinagem', 'montagem']);
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const handleAccessOS = (id: string) => {
     router.navigate({ to: `/os/${id}` as any });
   };
-
-  const myOrders = [
-    { id: "1", numero_os: "OS-1024", cliente: "Mineradora Vale", descricao: "Cilindro Hidráulico de Elevação", status: "em_andamento", prazo: "18/08 (Hoje)", prioridade: "Alta" },
-    { id: "2", numero_os: "OS-1025", cliente: "Transportadora Rápido", descricao: "Bomba Hidráulica 45cc", status: "aberta", prazo: "20/08", prioridade: "Média" },
-    { id: "3", numero_os: "OS-1018", cliente: "Agrícola Terra Viva", descricao: "Motor Hidráulico Orbital", status: "atrasada", prazo: "15/08", prioridade: "Crítica" },
-  ];
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-10">
@@ -105,10 +121,10 @@ function DashboardOperador() {
 
       {/* KPIs Rápidos */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <OperadorKPICard title="Minha Fila" value="03" icon={ClipboardList} color="primary" />
-        <OperadorKPICard title="Prioridades" value="01" icon={AlertTriangle} color="red" />
-        <OperadorKPICard title="Checklist Pendente" value="02" icon={CheckCircle2} color="amber" />
-        <OperadorKPICard title="Atrasadas" value="01" icon={Clock} color="red" />
+        <OperadorKPICard title="Minha Fila" value={myOrders.length.toString().padStart(2, '0')} icon={ClipboardList} color="primary" />
+        <OperadorKPICard title="Alta Prioridade" value={myOrders.filter(o => o.prioridade === 'alta').length.toString().padStart(2, '0')} icon={AlertTriangle} color="red" />
+        <OperadorKPICard title="Em Triagem" value={myOrders.filter(o => o.status === 'aberta').length.toString().padStart(2, '0')} icon={CheckCircle2} color="amber" />
+        <OperadorKPICard title="Em Vistoria" value={myOrders.filter(o => o.status === 'vistoria').length.toString().padStart(2, '0')} icon={Clock} color="red" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
