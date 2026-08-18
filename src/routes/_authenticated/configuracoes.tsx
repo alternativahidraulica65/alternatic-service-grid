@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Shield, 
   UserPlus, 
@@ -41,13 +43,14 @@ export const Route = createFileRoute("/_authenticated/configuracoes")({
 
 function ConfiguracoesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const usuarios = [
-    { id: 1, nome: "Admin Alternativa", email: "admin@alternativa.com.br", cargo: "Diretor", status: "Ativo", acesso: "Total" },
-    { id: 2, nome: "João Silva", email: "joao.silva@alternativa.com.br", cargo: "Operador", status: "Ativo", acesso: "Produção" },
-    { id: 3, nome: "Carlos Souza", email: "carlos.souza@alternativa.com.br", cargo: "Gestor", status: "Ativo", acesso: "Gerencial" },
-    { id: 4, nome: "Maria Financeiro", email: "financeiro@alternativa.com.br", cargo: "Financeiro", status: "Ativo", acesso: "Financeiro" },
-  ];
+  const { data: usuarios = [] } = useQuery({
+    queryKey: ['usuarios_config_list'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('usuarios').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
@@ -94,7 +97,7 @@ function ConfiguracoesPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {usuarios.map((user) => (
+                  {usuarios.map((user: any) => (
                     <TableRow key={user.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
                       <TableCell className="py-4 pl-6">
                         <div className="flex items-center gap-3">
@@ -115,12 +118,12 @@ function ConfiguracoesPage() {
                       <TableCell className="py-4">
                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-600 uppercase">
                            <Key className="h-3 w-3 text-primary" />
-                           {user.acesso}
+                           {user.cargo === 'diretor' ? 'Total' : 'Limitado'}
                          </div>
                       </TableCell>
                       <TableCell className="py-4 text-center">
-                        <Badge className="bg-emerald-500 text-white text-[9px] font-black uppercase tracking-widest border-none">
-                          {user.status}
+                        <Badge className={`${user.ativo ? 'bg-emerald-500' : 'bg-slate-400'} text-white text-[9px] font-black uppercase tracking-widest border-none`}>
+                          {user.ativo ? 'Ativo' : 'Inativo'}
                         </Badge>
                       </TableCell>
                       <TableCell className="py-4 pr-6 text-right">

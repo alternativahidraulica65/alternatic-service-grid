@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   History, 
   Search, 
@@ -41,20 +43,22 @@ export const Route = createFileRoute("/_authenticated/historico")({
 function HistoricoPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const ordens = [
-    { id: "1024", cliente: "Indústria Metalúrgica SA", data: "12/08/2026", status: "Em Vistoria", prioridade: "Alta", tecnico: "João Silva", valor: 3600.00 },
-    { id: "1023", cliente: "Construtora Horizonte", data: "10/08/2026", status: "Aprovado", prioridade: "Normal", tecnico: "Carlos Souza", valor: 12450.00 },
-    { id: "1022", cliente: "Agrícola Vale Verde", data: "08/08/2026", status: "Pronto", prioridade: "Alta", tecnico: "João Silva", valor: 890.00 },
-    { id: "1021", cliente: "Transportes Rapidez", data: "05/08/2026", status: "Orcamento", prioridade: "Baixa", tecnico: "Marcos Paulo", valor: 5200.00 },
-    { id: "1020", cliente: "Usina Delta Power", data: "01/08/2026", status: "Entregue", prioridade: "Normal", tecnico: "Carlos Souza", valor: 22100.00 },
-  ];
+  const { data: ordens = [] } = useQuery({
+    queryKey: ['historico_os_list'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ordens_servico').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'em vistoria': return <Badge className="bg-amber-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Vistoria</Badge>;
-      case 'aprovado': return <Badge className="bg-emerald-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Aprovado</Badge>;
+      case 'aberta': return <Badge className="bg-slate-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Triagem</Badge>;
+      case 'vistoria': return <Badge className="bg-amber-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Vistoria</Badge>;
+      case 'aprovada': return <Badge className="bg-emerald-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Aprovado</Badge>;
       case 'pronto': return <Badge className="bg-blue-600 text-white border-none text-[9px] font-black uppercase tracking-widest">Pronto</Badge>;
-      case 'orcamento': return <Badge className="bg-slate-700 text-white border-none text-[9px] font-black uppercase tracking-widest">Orçamento</Badge>;
+      case 'orcamento_pendente': return <Badge className="bg-slate-700 text-white border-none text-[9px] font-black uppercase tracking-widest">Orçamento</Badge>;
       case 'entregue': return <Badge className="bg-slate-400 text-white border-none text-[9px] font-black uppercase tracking-widest">Entregue</Badge>;
       default: return <Badge variant="outline">{status}</Badge>;
     }
@@ -137,10 +141,10 @@ function HistoricoPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {ordens.map((os) => (
+               {ordens.map((os: any) => (
                 <TableRow key={os.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
                   <TableCell className="py-4 pl-6">
-                    <span className="text-xs font-black text-foreground group-hover:text-primary transition-colors">#{os.id}</span>
+                    <span className="text-xs font-black text-foreground group-hover:text-primary transition-colors">{os.numero_os}</span>
                   </TableCell>
                   <TableCell className="py-4">
                     <div>
@@ -159,9 +163,9 @@ function HistoricoPage() {
                       {os.tecnico}
                     </div>
                   </TableCell>
-                  <TableCell className="py-4 text-xs font-bold text-foreground">{os.data}</TableCell>
+                  <TableCell className="py-4 text-xs font-bold text-foreground">{os.data_abertura ? new Date(os.data_abertura).toLocaleDateString() : 'N/A'}</TableCell>
                   <TableCell className="py-4 text-right pr-6 font-black text-foreground">
-                    {os.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    {(os.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </TableCell>
                   <TableCell className="py-4 pr-6 text-right">
                     <DropdownMenu>
