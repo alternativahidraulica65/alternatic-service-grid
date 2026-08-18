@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function DashboardLayout() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, profile, isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado } = Route.useRouteContext();
+  const { user, profile, roles, isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado } = Route.useRouteContext();
   
   const [activeView, setActiveView] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
