@@ -87,7 +87,7 @@ function DashboardLayout() {
   ];
 
   const filteredMenu = menuItems.filter(item => 
-    isDiretor || item.roles.some(role => profile?.cargo === role || roles.includes(role))
+    isDiretor || item.roles.some(role => profile?.cargo === role || (roles as string[]).includes(role))
   );
 
   const ViewSwitcher = () => {
