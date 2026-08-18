@@ -51,7 +51,7 @@ function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }
 
 function DashboardFinanceiro() {
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-8 p-6 md:p-10 pb-10">
       <div>
         <h2 className="font-display text-3xl font-black text-foreground tracking-tight">DASHBOARD <span className="text-primary">FINANCEIRO</span></h2>
         <p className="text-sm text-muted-foreground font-medium">Controle de orçamentos, aprovações e fluxo de caixa.</p>

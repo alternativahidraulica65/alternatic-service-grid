@@ -67,7 +67,7 @@ const mockStatusData = [
 
 function DashboardDiretor() {
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-8 p-6 md:p-10 pb-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="font-display text-3xl font-black text-foreground tracking-tight">DASHBOARD <span className="text-primary">DIRETOR</span></h2>

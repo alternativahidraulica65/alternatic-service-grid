@@ -97,7 +97,7 @@ function DashboardOperador() {
   ];
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-8 p-6 md:p-10 pb-10">
       <div className="flex flex-col gap-2">
         <h2 className="font-display text-3xl font-black text-foreground tracking-tight">MINHA <span className="text-primary">BANCADA</span></h2>
         <p className="text-sm text-muted-foreground font-medium">Ordens de serviço atribuídas a você.</p>
