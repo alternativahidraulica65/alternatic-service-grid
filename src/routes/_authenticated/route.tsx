@@ -44,7 +44,7 @@ export const Route = createFileRoute("/_authenticated")({
       isGestor: isGestor || hasFullAccess,
       isOperador: isOperador || hasFullAccess,
       isTerceirizado: isTerceirizado || hasFullAccess,
-      isAdmin: hasFullAccess // Legado
+      isAdmin: hasFullAccess
     };
   },
   component: () => <Outlet />,

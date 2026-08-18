@@ -1,21 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { 
-  ArrowLeft, 
-  Box, 
   Calculator, 
+  Settings, 
+  ArrowLeft, 
   Save, 
-  Trash2, 
-  Plus,
-  Scale,
-  DollarSign,
-  Info
+  Info,
+  Layers,
+  Wrench,
+  Dna,
+  Scale
 } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
@@ -25,180 +22,175 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/engenharia/materiais")({
-  component: MateriaisPage,
+  component: EngenhariaMateriaisPage,
 });
 
-function MateriaisPage() {
-  const queryClient = useQueryClient();
-  const [selectedMaterialId, setSelectedMaterialId] = useState<string>("");
-  const [diametro, setDiametro] = useState<number>(0);
-  const [comprimento, setComprimento] = useState<number>(0);
+function EngenhariaMateriaisPage() {
+  const [diametro, setDiametro] = useState<number>(50);
+  const [comprimento, setComprimento] = useState<number>(500);
+  const [densidade, setDensidade] = useState<number>(7.85); // Aço padrão
 
-  const { data: materiais } = useSuspenseQuery({
-    queryKey: ['materiais_base'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('materiais').select('*');
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const material = materiais?.find(m => m.id === selectedMaterialId);
-  
-  // Cálculo: Volume = π * r² * L
-  // Raio em decímetros (dm) para que densidade em kg/dm³ resulte em kg
-  // 1 mm = 0.01 dm
-  const raioDm = (diametro / 2) * 0.01;
-  const comprimentoDm = comprimento * 0.01;
-  const volumeDm3 = Math.PI * Math.pow(raioDm, 2) * comprimentoDm;
-  const pesoEstimado = volumeDm3 * (Number(material?.densidade) || 0);
-  const custoEstimado = pesoEstimado * (Number(material?.preco_base_kg) || 0);
+  const pesoTeorico = useMemo(() => {
+    // Cálculo: (π * r² * L * densidade) / 1000000 (para kg)
+    const raio = diametro / 2;
+    const volume = Math.PI * Math.pow(raio, 2) * comprimento;
+    return (volume * densidade) / 1000000;
+  }, [diametro, comprimento, densidade]);
 
   return (
-    <div className="min-h-screen bg-slate-50 industrial-theme pb-20">
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur-sm">
-        <div className="container-industrial flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
+    <div className="space-y-8 p-6 md:p-10 pb-20">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="font-display text-lg font-bold text-slate-900">Matéria-Prima Inteligente</h1>
+          </Link>
+          <div>
+            <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase tracking-tighter">ENGENHARIA / <span className="text-primary">MATERIAIS</span></h2>
+            <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Cálculo de peso teórico e especificações de matéria-prima.</p>
           </div>
-          <Button className="btn-industrial bg-slate-900 text-primary hover:bg-slate-800">
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Cadastro
-          </Button>
         </div>
-      </header>
+        <Button className="h-10 bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] px-6">
+          <Save className="mr-2 h-4 w-4 text-primary" />
+          Salvar Especificação
+        </Button>
+      </div>
 
-      <main className="container-industrial mt-6 grid gap-6 lg:grid-cols-12">
+      <div className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7 space-y-6">
-          <Card className="shadow-sm border-l-4 border-l-primary">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+          <Card className="border-border shadow-md overflow-hidden">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <div className="flex items-center gap-2">
                 <Calculator className="h-5 w-5 text-primary" />
-                Calculadora de Peso Teórico
-              </CardTitle>
-              <CardDescription>Cálculo baseado em barras redondas e densidade do material.</CardDescription>
+                <CardTitle className="text-base font-bold uppercase tracking-widest">Calculadora de Hastes e Cilindros</CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
+            <CardContent className="pt-6 space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>Material Base</Label>
-                  <Select value={selectedMaterialId} onValueChange={setSelectedMaterialId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o material..." />
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Diâmetro Nominal (mm)</Label>
+                  <Input 
+                    type="number" 
+                    value={diametro} 
+                    onChange={(e) => setDiametro(Number(e.target.value))}
+                    className="h-12 border-border font-black text-lg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Comprimento Total (mm)</Label>
+                  <Input 
+                    type="number" 
+                    value={comprimento} 
+                    onChange={(e) => setComprimento(Number(e.target.value))}
+                    className="h-12 border-border font-black text-lg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Material / Densidade (kg/dm³)</Label>
+                  <Select 
+                    defaultValue="7.85" 
+                    onValueChange={(v) => setDensidade(Number(v))}
+                  >
+                    <SelectTrigger className="h-12 border-border font-bold">
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {materiais?.map(m => (
-                        <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>
-                      ))}
+                      <SelectItem value="7.85">Aço Carbono / Cromo (7.85)</SelectItem>
+                      <SelectItem value="2.70">Alumínio (2.70)</SelectItem>
+                      <SelectItem value="8.96">Cobre (8.96)</SelectItem>
+                      <SelectItem value="8.00">Aço Inoxidável (8.00)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Densidade (kg/dm³)</Label>
-                  <Input 
-                    value={material?.densidade || ""} 
-                    disabled 
-                    className="bg-slate-100 font-mono"
-                  />
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tipo de Peça</Label>
+                  <Select defaultValue="macica">
+                    <SelectTrigger className="h-12 border-border font-bold">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="macica">Haste Maciça</SelectItem>
+                      <SelectItem value="tubo">Tubo Hidráulico (Camisa)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Diâmetro (mm)</Label>
-                  <Input 
-                    type="number" 
-                    placeholder="Ex: 50.8" 
-                    value={diametro || ""}
-                    onChange={e => setDiametro(Number(e.target.value))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Comprimento (mm)</Label>
-                  <Input 
-                    type="number" 
-                    placeholder="Ex: 1000" 
-                    value={comprimento || ""}
-                    onChange={e => setComprimento(Number(e.target.value))}
-                  />
-                </div>
-              </div>
-
-              {material && (
-                <div className="p-6 rounded-xl bg-slate-900 text-white space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center border-b border-slate-700 pb-3">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Peso Estimado</span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-black text-primary">{pesoEstimado.toFixed(3)}</span>
-                      <span className="text-sm font-bold text-primary">kg</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Custo de Material</span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-xs text-slate-400">R$</span>
-                      <span className="text-2xl font-black text-emerald-400">
-                        {custoEstimado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-bold">Base de Dados de Materiais</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {materiais?.map(m => (
-                  <div key={m.id} className="flex justify-between items-center p-3 rounded-lg border border-slate-100 bg-white">
-                    <div>
-                      <p className="font-bold text-slate-900">{m.nome}</p>
-                      <p className="text-[10px] text-slate-500">DENSIDADE: {m.densidade} kg/dm³</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-mono text-xs text-slate-700">R$ {Number(m.preco_base_kg).toFixed(2)} /kg</p>
-                    </div>
-                  </div>
-                ))}
+          <Card className="border-border shadow-md border-l-4 border-l-primary bg-slate-50">
+            <CardContent className="pt-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <Info className="h-5 w-5 text-primary shrink-0" />
+                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                  Valores para referência de orçamentação. Considerar margem de 5% para perda em usinagem.
+                </p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="lg:col-span-5">
-          <Card className="bg-primary/5 border-primary/20">
-            <CardHeader>
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Info className="h-4 w-4 text-primary" />
-                Informação Técnica
+        <div className="lg:col-span-5 space-y-6">
+          <Card className="bg-slate-900 text-white border-border shadow-xl overflow-hidden">
+            <CardHeader className="bg-slate-800/50 border-b border-white/5">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Scale className="h-5 w-5 text-primary" />
+                Resultado do Cálculo
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-xs text-slate-600 space-y-4 leading-relaxed">
-              <p>
-                O cálculo de peso teórico é fundamental para a orçamentação precisa de usinagem e fabricação de hastes e camisas.
-              </p>
-              <div className="p-3 bg-white rounded border border-primary/10 font-mono">
-                Fórmula: (π * r² * L) * δ
-                <br />
-                δ = Densidade específica
+            <CardContent className="pt-8 space-y-8">
+              <div className="text-center space-y-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Peso Estimado</p>
+                <p className="text-6xl font-black text-white leading-none">
+                  {pesoTeorico.toFixed(2)}
+                  <span className="text-2xl text-primary ml-1">kg</span>
+                </p>
               </div>
-              <p className="font-bold text-slate-900 italic">
-                Nota: Adicione sempre 5% de margem para perdas de corte e cavacos.
-              </p>
+
+              <div className="pt-6 border-t border-white/5 space-y-4">
+                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  <span>Volume Total</span>
+                  <span className="text-white">{(diametro * diametro * comprimento / 1000).toFixed(0)} mm³</span>
+                </div>
+                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  <span>Material Selecionado</span>
+                  <span className="text-primary">Aço Cromo SAE 1045</span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={() => toast.success("Valores copiados para o orçamento")}
+                className="w-full h-12 bg-primary text-primary-foreground hover:bg-white hover:text-slate-900 font-black uppercase tracking-widest text-xs transition-all"
+              >
+                APLICAR AO ORÇAMENTO
+              </Button>
             </CardContent>
           </Card>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Card className="border-border shadow-sm">
+              <CardContent className="pt-4 text-center">
+                <Layers className="h-4 w-4 text-primary mx-auto mb-2" />
+                <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Área Transversal</p>
+                <p className="text-sm font-black">{(Math.PI * Math.pow(diametro/2, 2)).toFixed(0)} mm²</p>
+              </CardContent>
+            </Card>
+            <Card className="border-border shadow-sm">
+              <CardContent className="pt-4 text-center">
+                <Dna className="h-4 w-4 text-primary mx-auto mb-2" />
+                <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Tolerância h9</p>
+                <p className="text-sm font-black">ISO 286-2</p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

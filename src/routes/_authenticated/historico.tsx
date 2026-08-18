@@ -1,194 +1,207 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { 
-  ArrowLeft, 
+  History, 
   Search, 
   Filter, 
-  FileText, 
-  Calendar, 
-  User, 
-  Clock, 
+  Download, 
+  Eye, 
+  MoreVertical,
+  Calendar,
+  Clock,
+  ArrowRight,
+  ChevronLeft,
   ChevronRight,
-  ExternalLink,
-  ShieldAlert
+  AlertCircle
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/historico")({
   component: HistoricoPage,
 });
 
 function HistoricoPage() {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("todas");
 
-  const { data: orders } = useSuspenseQuery({
-    queryKey: ['historico_os_global', searchTerm, statusFilter],
-    queryFn: async () => {
-      let query = supabase
-        .from('ordens_servico')
-        .select('*')
-        .order('criado_em', { ascending: false });
-
-      if (statusFilter !== "todas") {
-        query = query.eq('status', statusFilter);
-      }
-
-      if (searchTerm) {
-        query = query.or(`numero_os.ilike.%${searchTerm}%,cliente.ilike.%${searchTerm}%,descricao.ilike.%${searchTerm}%`);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    }
-  });
+  const ordens = [
+    { id: "1024", cliente: "Indústria Metalúrgica SA", data: "12/08/2026", status: "Em Vistoria", prioridade: "Alta", tecnico: "João Silva", valor: 3600.00 },
+    { id: "1023", cliente: "Construtora Horizonte", data: "10/08/2026", status: "Aprovado", prioridade: "Normal", tecnico: "Carlos Souza", valor: 12450.00 },
+    { id: "1022", cliente: "Agrícola Vale Verde", data: "08/08/2026", status: "Pronto", prioridade: "Alta", tecnico: "João Silva", valor: 890.00 },
+    { id: "1021", cliente: "Transportes Rapidez", data: "05/08/2026", status: "Orcamento", prioridade: "Baixa", tecnico: "Marcos Paulo", valor: 5200.00 },
+    { id: "1020", cliente: "Usina Delta Power", data: "01/08/2026", status: "Entregue", prioridade: "Normal", tecnico: "Carlos Souza", valor: 22100.00 },
+  ];
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'pronto': return <Badge className="bg-emerald-500 hover:bg-emerald-600">Finalizada</Badge>;
-      case 'cancelada': return <Badge variant="destructive">Cancelada</Badge>;
-      case 'orcamento_pendente': return <Badge variant="outline" className="border-amber-500 text-amber-600">Em Orçamento</Badge>;
-      default: return <Badge variant="secondary" className="uppercase">{status.replace('_', ' ')}</Badge>;
+    switch (status.toLowerCase()) {
+      case 'em vistoria': return <Badge className="bg-amber-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Vistoria</Badge>;
+      case 'aprovado': return <Badge className="bg-emerald-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Aprovado</Badge>;
+      case 'pronto': return <Badge className="bg-blue-600 text-white border-none text-[9px] font-black uppercase tracking-widest">Pronto</Badge>;
+      case 'orcamento': return <Badge className="bg-slate-700 text-white border-none text-[9px] font-black uppercase tracking-widest">Orçamento</Badge>;
+      case 'entregue': return <Badge className="bg-slate-400 text-white border-none text-[9px] font-black uppercase tracking-widest">Entregue</Badge>;
+      default: return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 industrial-theme pb-20">
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur-sm">
-        <div className="container-industrial flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
-              <ArrowLeft className="h-5 w-5" />
+    <div className="space-y-8 p-6 md:p-10 pb-20">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">HISTÓRICO DE <span className="text-primary">ORDENS DE SERVIÇO</span></h2>
+          <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Rastreabilidade completa de todas as manutenções.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="h-11 border-border font-bold uppercase text-[10px] tracking-widest">
+            <Download className="mr-2 h-4 w-4 text-primary" />
+            Exportar XLS
+          </Button>
+          <Link to="/os/nova">
+            <Button className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6">
+              Nova OS
             </Button>
-            <h1 className="font-display text-lg font-bold text-slate-900">Histórico e Busca Global</h1>
-          </div>
+          </Link>
         </div>
-      </header>
+      </div>
 
-      <main className="container-industrial mt-6 space-y-6">
-        <Card className="shadow-sm border-t-4 border-t-primary">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Filter className="h-4 w-4 text-primary" />
-              Filtros de Pesquisa
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="space-y-2">
-                <Label>Termo de Busca</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input 
-                    placeholder="OS, Cliente ou Laudo..." 
-                    className="pl-10"
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                  />
-                </div>
+      <div className="grid gap-6 md:grid-cols-4">
+        {[
+          { label: "Total em Aberto", value: "48", icon: Clock, color: "primary" },
+          { label: "Finalizadas (Mês)", value: "124", icon: History, color: "emerald" },
+          { label: "Aguardando Aprovação", value: "12", icon: AlertCircle, color: "amber" },
+          { label: "Faturamento Previsto", value: "R$ 84k", icon: ArrowRight, color: "slate" },
+        ].map((stat, i) => (
+          <Card key={i} className="border-border shadow-sm">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <stat.icon className={`h-5 w-5 text-${stat.color}-500`} />
               </div>
-              <div className="space-y-2">
-                <Label>Status da OS</Label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos os status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todas">Todos os Status</SelectItem>
-                    <SelectItem value="aberta">Aberta / Triagem</SelectItem>
-                    <SelectItem value="em_andamento">Em Produção</SelectItem>
-                    <SelectItem value="orcamento_pendente">Aguardando Orçamento</SelectItem>
-                    <SelectItem value="pronto">Finalizadas / Pronto</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Período</Label>
-                <Select defaultValue="30">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Últimos 30 dias" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7">Últimos 7 dias</SelectItem>
-                    <SelectItem value="30">Últimos 30 dias</SelectItem>
-                    <SelectItem value="90">Últimos 90 dias</SelectItem>
-                    <SelectItem value="todas">Todo o histórico</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <p className="text-2xl font-black text-foreground">{stat.value}</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="border-border shadow-md overflow-hidden">
+        <CardHeader className="bg-muted/10 border-b border-border/50 py-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="relative w-full sm:w-96">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input 
+                placeholder="Buscar por OS, cliente ou técnico..." 
+                className="pl-10 h-10 border-border bg-white"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-widest px-2">
-            <span>Resultados Encontrados ({orders?.length || 0})</span>
-            <span className="flex items-center gap-1">
-              <ShieldAlert className="h-3 w-3" />
-              Dados Confidenciais
-            </span>
-          </div>
-
-          <div className="grid gap-3">
-            {orders?.map(os => (
-              <Card 
-                key={os.id} 
-                className="group hover:border-primary transition-all cursor-pointer bg-white"
-                onClick={() => router.navigate({ to: "/dashboard" })}
-              >
-                <CardContent className="p-4">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        <FileText className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-mono text-sm font-bold text-slate-900">{os.numero_os}</span>
-                          {getStatusBadge(os.status)}
-                        </div>
-                        <h3 className="font-bold text-slate-900 group-hover:text-primary transition-colors">{os.cliente}</h3>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-6 text-sm text-slate-500">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        {os.criado_em ? new Date(os.criado_em).toLocaleDateString() : '—'}
-                      </div>
-                      <div className="flex items-center gap-2 font-mono font-bold text-slate-900">
-                        R$ {Number(os.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </div>
-                      <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-
-            {orders?.length === 0 && (
-              <div className="text-center py-20 bg-white rounded-xl border border-dashed text-slate-400">
-                Nenhum registro encontrado com os filtros selecionados.
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-1 border border-border rounded-lg bg-white">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span className="text-[10px] font-bold uppercase text-muted-foreground">Últimos 30 dias</span>
               </div>
-            )}
+              <Button variant="outline" size="sm" className="h-10 border-border font-bold uppercase text-[10px] tracking-widest">
+                <Filter className="mr-2 h-4 w-4 text-primary" />
+                Filtros Avançados
+              </Button>
+            </div>
           </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader className="bg-slate-50">
+              <TableRow className="hover:bg-transparent border-b border-border">
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4 pl-6">ID / OS</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Cliente / Empresa</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4 text-center">Status</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Técnico Resp.</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Data Abertura</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4 text-right">Valor (R$)</TableHead>
+                <TableHead className="py-4 pr-6 text-right"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {ordens.map((os) => (
+                <TableRow key={os.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
+                  <TableCell className="py-4 pl-6">
+                    <span className="text-xs font-black text-foreground group-hover:text-primary transition-colors">#{os.id}</span>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <div>
+                      <p className="text-sm font-bold text-foreground uppercase tracking-tight">{os.cliente}</p>
+                      <Badge variant="outline" className={`text-[8px] font-bold h-4 ${os.prioridade === 'Alta' ? 'text-red-500 border-red-200' : 'text-slate-400 border-slate-200'}`}>
+                        Prioridade {os.prioridade}
+                      </Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 text-center">
+                    {getStatusBadge(os.status)}
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase">
+                      <div className="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-[8px]">JS</div>
+                      {os.tecnico}
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 text-xs font-bold text-foreground">{os.data}</TableCell>
+                  <TableCell className="py-4 text-right pr-6 font-black text-foreground">
+                    {os.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </TableCell>
+                  <TableCell className="py-4 pr-6 text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-200">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
+                        <DropdownMenuItem asChild>
+                          <Link to="/os/$id" params={{ id: os.id }} className="w-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer flex items-center gap-2">
+                            <Eye className="h-3 w-3" /> Ver Detalhes
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Reabrir OS</DropdownMenuItem>
+                        <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Imprimir Laudo</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Exibindo 5 de 1.240 ordens de serviço</p>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" className="h-8 w-8 border-border">
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" className="h-8 px-3 border-primary text-primary text-[10px] font-bold uppercase">1</Button>
+          <Button variant="outline" className="h-8 px-3 border-border text-[10px] font-bold uppercase">2</Button>
+          <Button variant="outline" className="h-8 px-3 border-border text-[10px] font-bold uppercase">3</Button>
+          <Button variant="outline" size="icon" className="h-8 w-8 border-border">
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
