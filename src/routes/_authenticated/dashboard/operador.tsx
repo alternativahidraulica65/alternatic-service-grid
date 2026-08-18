@@ -94,6 +94,8 @@ function DashboardOperador() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
+      if (!user?.email) return [];
+
       const { data: profile } = await supabase.from('usuarios').select('id').eq('email', user.email).single();
       if (!profile) return [];
 
