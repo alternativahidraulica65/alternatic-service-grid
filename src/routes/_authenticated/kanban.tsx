@@ -26,27 +26,41 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/kanban")({
   component: KanbanPage,
 });
 
 function KanbanPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const { data: ordens = [] } = useQuery({
+    queryKey: ['kanban_os'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ordens_servico')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const columns = [
-    { id: "triagem", label: "Triagem", icon: ClipboardCheck, color: "slate" },
+    { id: "aberta", label: "Triagem", icon: ClipboardCheck, color: "slate" },
     { id: "vistoria", label: "Vistoria Técnica", icon: Wrench, color: "amber" },
-    { id: "orcamento", label: "Orçamento", icon: Factory, color: "blue" },
+    { id: "orcamento_pendente", label: "Orçamento", icon: Factory, color: "blue" },
     { id: "usinagem", label: "Usinagem / Bancada", icon: Trello, color: "indigo" },
-    { id: "montagem", label: "Montagem / Teste", icon: emerald, color: "emerald" },
+    { id: "montagem", label: "Montagem / Teste", icon: CheckCircle2, color: "emerald" },
     { id: "pronto", label: "Pronto / Expedição", icon: CheckCircle2, color: "emerald" },
   ];
 
-  const cards = [
-    { id: "1024", cliente: "Indústria Metalúrgica", equipamento: "Cilindro CAT 320D", status: "vistoria", prioridade: "Alta", tecnico: "João Silva", dias: 1 },
-    { id: "1023", cliente: "Construtora Horizonte", equipamento: "Bomba Rexroth", status: "usinagem", prioridade: "Normal", tecnico: "Carlos Souza", dias: 3 },
-    { id: "1022", cliente: "Agrícola Vale Verde", equipamento: "Motor Hidráulico", status: "montagem", prioridade: "Alta", tecnico: "João Silva", dias: 2 },
-    { id: "1025", cliente: "Transportes Rapidez", equipamento: "Cilindro Basculante", status: "triagem", prioridade: "Baixa", tecnico: "Marcos Paulo", dias: 0 },
-  ];
+  const filteredCards = ordens.filter(os => 
+    os.numero_os.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    os.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    os.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="h-[calc(100vh-160px)] flex flex-col space-y-6 p-6 md:p-10">
@@ -58,7 +72,12 @@ function KanbanPage() {
         <div className="flex items-center gap-2">
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Buscar OS ou equipamento..." className="pl-10 h-10 border-border bg-white" />
+            <Input 
+              placeholder="Buscar OS ou equipamento..." 
+              className="pl-10 h-10 border-border bg-white" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           <Button variant="outline" className="h-10 border-border font-bold uppercase text-[10px] tracking-widest">
             <Filter className="mr-2 h-4 w-4 text-primary" />
@@ -75,7 +94,7 @@ function KanbanPage() {
                 <div className={`h-2 w-2 rounded-full ${col.id === 'vistoria' ? 'bg-amber-500 animate-pulse' : 'bg-slate-300'}`} />
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{col.label}</h3>
                 <Badge variant="secondary" className="text-[9px] font-black h-5 px-2 bg-slate-100 border-border">
-                  {cards.filter(c => c.status === col.id).length}
+                  {filteredCards.filter(c => c.status === col.id).length}
                 </Badge>
               </div>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
@@ -84,12 +103,12 @@ function KanbanPage() {
             </div>
 
             <div className="flex-1 bg-slate-50/50 border border-border/50 rounded-2xl p-3 space-y-3 overflow-y-auto custom-scrollbar shadow-inner">
-              {cards.filter(c => c.status === col.id).map((card) => (
+              {filteredCards.filter(c => c.status === col.id).map((card: any) => (
                 <Link key={card.id} to="/os/$id" params={{ id: card.id }}>
                   <Card className="border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer group bg-white">
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black text-primary group-hover:scale-110 transition-transform">#{card.id}</span>
+                        <span className="text-[10px] font-black text-primary group-hover:scale-110 transition-transform">{card.numero_os}</span>
                         <Badge className={`text-[8px] font-black uppercase tracking-widest ${
                           card.prioridade === 'Alta' ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-500 border-none'
                         }`}>
@@ -99,19 +118,19 @@ function KanbanPage() {
                       
                       <div>
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">{card.cliente}</p>
-                        <p className="text-sm font-black text-foreground uppercase tracking-tight leading-tight">{card.equipamento}</p>
+                        <p className="text-sm font-black text-foreground uppercase tracking-tight leading-tight">{card.descricao || "Sem descrição"}</p>
                       </div>
 
                       <div className="pt-3 border-t border-border/50 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="h-6 w-6 rounded-full bg-slate-100 border border-border flex items-center justify-center text-[8px] font-bold">
-                            {card.tecnico.split(' ').map(n => n[0]).join('')}
+                            {card.tecnico_id ? 'T' : 'N'}
                           </div>
-                          <span className="text-[9px] font-bold text-muted-foreground uppercase">{card.tecnico}</span>
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase">{card.tecnico_id ? 'Técnico Atribuído' : 'Sem Técnico'}</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-[9px] font-bold text-amber-600">
                           <Clock className="h-3 w-3" />
-                          {card.dias}d
+                          {Math.floor((Date.now() - new Date(card.data_abertura || Date.now()).getTime()) / (1000 * 60 * 60 * 24))}d
                         </div>
                       </div>
 
@@ -128,7 +147,7 @@ function KanbanPage() {
                 </Link>
               ))}
               
-              {cards.filter(c => c.status === col.id).length === 0 && (
+              {filteredCards.filter(c => c.status === col.id).length === 0 && (
                 <div className="h-32 flex flex-col items-center justify-center text-muted-foreground opacity-20">
                   <Trello className="h-8 w-8 mb-2" />
                   <p className="text-[8px] font-bold uppercase tracking-widest">Coluna Vazia</p>
