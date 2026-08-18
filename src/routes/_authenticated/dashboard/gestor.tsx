@@ -49,7 +49,7 @@ function DashboardGestor() {
       {/* KPIs Operacionais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <Card className="col-span-2 lg:col-span-1 bg-primary text-primary-foreground border-none shadow-lg">
-          </CardHeader>
+          <CardHeader className="p-4"><CardTitle className="text-2xl font-black">12</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">OS na Fila</CardContent>
         </Card>
         <Card className="col-span-2 lg:col-span-1 bg-red-500 text-white border-none shadow-lg">
