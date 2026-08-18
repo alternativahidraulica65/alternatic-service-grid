@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { 
   Trello, 
   Search, 
@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   MoreHorizontal,
   Camera,
-  MessageSquare
+  MessageSquare,
+  ArrowLeft
 } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/_authenticated/kanban")({
 });
 
 function KanbanPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   
   const { data: ordens = [] } = useQuery({
@@ -65,9 +67,14 @@ function KanbanPage() {
   return (
     <div className="h-[calc(100vh-160px)] flex flex-col space-y-6 p-6 md:p-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between shrink-0">
-        <div>
-          <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">QUADRO DE <span className="text-primary">PRODUÇÃO (KANBAN)</span></h2>
-          <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Fluxo operacional em tempo real.</p>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">QUADRO DE <span className="text-primary">PRODUÇÃO (KANBAN)</span></h2>
+            <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Fluxo operacional em tempo real.</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="relative w-64">
