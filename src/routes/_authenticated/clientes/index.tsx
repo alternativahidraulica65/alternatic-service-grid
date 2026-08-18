@@ -40,12 +40,14 @@ export const Route = createFileRoute("/_authenticated/clientes/")({
 function ClientesPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const clientes = [
-    { id: 1, nome: "Indústria Metalúrgica SA", cnpj: "12.345.678/0001-90", cidade: "Joinville/SC", categoria: "A", status: "Ativo", ultimaOS: "10/08/2026" },
-    { id: 2, nome: "Construtora Horizonte", cnpj: "98.765.432/0001-10", cidade: "Curitiba/PR", categoria: "B", status: "Ativo", ultimaOS: "05/08/2026" },
-    { id: 3, nome: "Transportes Rapidez Ltda", cnpj: "45.678.901/0001-22", cidade: "Blumenau/SC", categoria: "C", status: "Inativo", ultimaOS: "15/06/2026" },
-    { id: 4, nome: "Agrícola Vale Verde", cnpj: "11.222.333/0001-44", cidade: "Cascavel/PR", categoria: "A", status: "Ativo", ultimaOS: "12/08/2026" },
-  ];
+  const { data: clientes = [], refetch } = useSuspenseQuery({
+    queryKey: ['clientes_list'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('clientes').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
