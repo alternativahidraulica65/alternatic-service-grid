@@ -25,8 +25,6 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell
@@ -38,6 +36,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { ClientOnly } from "@/components/ClientOnly";
 
 export const Route = createFileRoute("/_authenticated/relatorios")({
   component: RelatoriosPage,
@@ -145,141 +144,143 @@ function RelatoriosPage() {
         </Card>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <Card className="border-border shadow-md">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-bold uppercase tracking-widest">Evolução de Faturamento</CardTitle>
-                <CardDescription className="text-[10px] font-bold uppercase tracking-tighter">Valores brutos mensais (Semestre atual)</CardDescription>
-              </div>
-              <BarChart3 className="h-5 w-5 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6 h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dataFaturamento}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis 
-                  dataKey="mes" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} 
-                />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }}
-                  tickFormatter={(value) => `R$ ${value/1000}k`}
-                />
-                <Tooltip 
-                  cursor={{ fill: '#f8fafc' }}
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
-                />
-                <Bar dataKey="valor" fill="#FFD700" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border shadow-md">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-bold uppercase tracking-widest">Produtividade por Equipe</CardTitle>
-                <CardDescription className="text-[10px] font-bold uppercase tracking-tighter">OS Finalizadas vs. Média de Avaliação</CardDescription>
-              </div>
-              <Users className="h-5 w-5 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6 h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dataProdutividade} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                <XAxis type="number" hide />
-                <YAxis 
-                  dataKey="tecnico" 
-                  type="category" 
-                  axisLine={false} 
-                  tickLine={false}
-                  tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }}
-                  width={100}
-                />
-                <Tooltip 
-                  cursor={{ fill: '#f8fafc' }}
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
-                />
-                <Bar dataKey="os" fill="#1e293b" radius={[0, 4, 4, 0]} barSize={20} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border shadow-md">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-bold uppercase tracking-widest">Distribuição de Status</CardTitle>
-                <CardDescription className="text-[10px] font-bold uppercase tracking-tighter">Carga de trabalho atual na oficina</CardDescription>
-              </div>
-              <Target className="h-5 w-5 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6 h-[300px] flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={statusOS}
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {statusOS.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex flex-col gap-2 ml-4">
-               {statusOS.map((item) => (
-                 <div key={item.name} className="flex items-center gap-2">
-                   <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-                   <span className="text-[10px] font-bold uppercase text-muted-foreground">{item.name} ({item.value})</span>
-                 </div>
-               ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border shadow-md bg-slate-900 text-white overflow-hidden">
-          <CardHeader className="bg-slate-800/50 border-b border-white/5">
-            <CardTitle className="text-base font-bold uppercase tracking-widest">Alertas de Gargalo</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
-            {[
-              { label: "Setor de Usinagem", info: "3 OS aguardando há mais de 48h", status: "Crítico", color: "bg-red-500" },
-              { label: "Compras / Vedações", info: "Atraso na entrega de kit (Fornecedor X)", status: "Atenção", color: "bg-amber-500" },
-              { label: "Aprovação Financeira", info: "Cliente Ind. Metalúrgica bloqueado", status: "Alerta", color: "bg-amber-500" },
-            ].map((alerta, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-slate-800 border border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className={`h-2 w-2 rounded-full ${alerta.color}`} />
-                  <div>
-                    <p className="text-sm font-bold text-white uppercase tracking-tight">{alerta.label}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">{alerta.info}</p>
-                  </div>
+      <ClientOnly>
+        <div className="grid gap-8 lg:grid-cols-2">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold uppercase tracking-widest">Evolução de Faturamento</CardTitle>
+                  <CardDescription className="text-[10px] font-bold uppercase tracking-tighter">Valores brutos mensais (Semestre atual)</CardDescription>
                 </div>
-                <Badge variant="outline" className="border-white/10 text-white text-[8px] font-black uppercase tracking-widest">{alerta.status}</Badge>
+                <BarChart3 className="h-5 w-5 text-primary" />
               </div>
-            ))}
-            <Button className="w-full mt-2 h-10 bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest">Gerar Plano de Ação</Button>
-          </CardContent>
-        </Card>
-      </div>
+            </CardHeader>
+            <CardContent className="pt-6 h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dataFaturamento}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis 
+                    dataKey="mes" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} 
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }}
+                    tickFormatter={(value) => `R$ ${value/1000}k`}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: '#f8fafc' }}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                  />
+                  <Bar dataKey="valor" fill="#FFD700" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold uppercase tracking-widest">Produtividade por Equipe</CardTitle>
+                  <CardDescription className="text-[10px] font-bold uppercase tracking-tighter">OS Finalizadas vs. Média de Avaliação</CardDescription>
+                </div>
+                <Users className="h-5 w-5 text-primary" />
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6 h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dataProdutividade} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                  <XAxis type="number" hide />
+                  <YAxis 
+                    dataKey="tecnico" 
+                    type="category" 
+                    axisLine={false} 
+                    tickLine={false}
+                    tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }}
+                    width={100}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: '#f8fafc' }}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                  />
+                  <Bar dataKey="os" fill="#1e293b" radius={[0, 4, 4, 0]} barSize={20} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold uppercase tracking-widest">Distribuição de Status</CardTitle>
+                  <CardDescription className="text-[10px] font-bold uppercase tracking-tighter">Carga de trabalho atual na oficina</CardDescription>
+                </div>
+                <Target className="h-5 w-5 text-primary" />
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6 h-[300px] flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={statusOS}
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {statusOS.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-col gap-2 ml-4">
+                 {statusOS.map((item) => (
+                   <div key={item.name} className="flex items-center gap-2">
+                     <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+                     <span className="text-[10px] font-bold uppercase text-muted-foreground">{item.name} ({item.value})</span>
+                   </div>
+                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border shadow-md bg-slate-900 text-white overflow-hidden">
+            <CardHeader className="bg-slate-800/50 border-b border-white/5">
+              <CardTitle className="text-base font-bold uppercase tracking-widest">Alertas de Gargalo</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-4">
+              {[
+                { label: "Setor de Usinagem", info: "3 OS aguardando há mais de 48h", status: "Crítico", color: "bg-red-500" },
+                { label: "Compras / Vedações", info: "Atraso na entrega de kit (Fornecedor X)", status: "Atenção", color: "bg-amber-500" },
+                { label: "Aprovação Financeira", info: "Cliente Ind. Metalúrgica bloqueado", status: "Alerta", color: "bg-amber-500" },
+              ].map((alerta, i) => (
+                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-slate-800 border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-2 w-2 rounded-full ${alerta.color}`} />
+                    <div>
+                      <p className="text-sm font-bold text-white uppercase tracking-tight">{alerta.label}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">{alerta.info}</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="border-white/10 text-white text-[8px] font-black uppercase tracking-widest">{alerta.status}</Badge>
+                </div>
+              ))}
+              <Button className="w-full mt-2 h-10 bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest">Gerar Plano de Ação</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </ClientOnly>
     </div>
   );
 }
