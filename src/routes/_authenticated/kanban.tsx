@@ -49,7 +49,7 @@ function KanbanPage() {
   ];
 
   return (
-    <div className="h-[calc(100vh-160px)] flex flex-col space-y-6">
+    <div className="h-[calc(100vh-160px)] flex flex-col space-y-6 p-6 md:p-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between shrink-0">
         <div>
           <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">QUADRO DE <span className="text-primary">PRODUÇÃO (KANBAN)</span></h2>
