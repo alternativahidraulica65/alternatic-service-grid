@@ -17,6 +17,9 @@ import {
   MoreVertical
 } from "lucide-react";
 import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +34,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { MapPin, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/os/$id")({
   component: GestaoOSPage,
@@ -59,13 +63,13 @@ function GestaoOSPage() {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="font-display text-2xl font-black text-foreground tracking-tight uppercase">ORDEM DE SERVIÇO <span className="text-primary">#{id || "1024"}</span></h2>
-              <Badge className="bg-amber-500 text-white font-black uppercase text-[9px] tracking-widest">Em Vistoria</Badge>
+              <h2 className="font-display text-2xl font-black text-foreground tracking-tight uppercase">ORDEM DE SERVIÇO <span className="text-primary">{os.numero_os}</span></h2>
+              <Badge className="bg-amber-500 text-white font-black uppercase text-[9px] tracking-widest">{os.status}</Badge>
             </div>
             <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-2">
-              Cliente: <span className="text-foreground">Indústria Metalúrgica SA</span>
+              Cliente: <span className="text-foreground">{os.cliente}</span>
               <span className="h-1 w-1 rounded-full bg-border" />
-              Série: <span className="text-foreground">AH-8890-X</span>
+              Técnico: <span className="text-foreground">{os.tecnico?.nome || "Não atribuído"}</span>
             </p>
           </div>
         </div>
@@ -132,15 +136,15 @@ function GestaoOSPage() {
                 <div className="grid grid-cols-2 gap-y-4 text-sm">
                   <div>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Tipo</p>
-                    <p className="font-bold text-foreground uppercase">Cilindro Hidráulico</p>
+                    <p className="font-bold text-foreground uppercase">{os.descricao || "Não informada"}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Modelo / Aplicação</p>
-                    <p className="font-bold text-foreground uppercase">Escavadeira CAT 320D - Caçamba</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade</p>
+                    <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
                   </div>
                   <div className="col-span-2 pt-2 border-t border-border/50">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Solicitação do Cliente</p>
-                    <p className="text-muted-foreground font-medium italic">"Vazamento intenso na vedação da haste e perda de força durante a operação."</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
+                    <p className="text-muted-foreground font-medium italic">{os.observacoes || "Nenhuma observação."}</p>
                   </div>
                 </div>
               </CardContent>
@@ -170,7 +174,7 @@ function GestaoOSPage() {
                     <Calendar className="h-4 w-4 text-emerald-500" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Previsão</span>
                   </div>
-                  <span className="text-xs font-black text-emerald-700 uppercase">22/08/2026</span>
+                  <span className="text-xs font-black text-emerald-700 uppercase">{os.data_previsao_conclusao ? new Date(os.data_previsao_conclusao).toLocaleDateString() : "N/A"}</span>
                 </div>
               </CardContent>
             </Card>
@@ -294,29 +298,22 @@ function GestaoOSPage() {
              </CardHeader>
              <CardContent className="pt-6">
                 <div className="space-y-4">
-                  {[
-                    { peca: "Haste Principal", local: "Gaveta 04-A", status: "Na Bancada", responsavel: "João Silva" },
-                    { peca: "Êmbolo", local: "Prateleira C-12", status: "Aguardando Torneiro", responsavel: "Carlos Souza" },
-                    { peca: "Cabeçote Guia", local: "Terceirizado (Cromo)", status: "Em Transporte", responsavel: "Transp. Expresso" },
-                  ].map((peca, i) => (
+                  {pecas.map((peca: any, i: number) => (
                     <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
                       <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border">
                           <Box className="h-5 w-5 text-slate-400" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.peca}</p>
+                          <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
                           <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
                             <MapPin className="h-3 w-3 text-primary" />
-                            {peca.local}
+                            {peca.localizacao}
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <Badge variant="outline" className={`text-[9px] font-black uppercase tracking-widest mb-1 ${
-                          peca.status === 'Na Bancada' ? 'bg-blue-50 text-blue-600' :
-                          peca.status === 'Em Transporte' ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-600'
-                        }`}>{peca.status}</Badge>
+                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
                         <p className="text-[9px] font-bold text-muted-foreground uppercase">{peca.responsavel}</p>
                       </div>
                     </div>
