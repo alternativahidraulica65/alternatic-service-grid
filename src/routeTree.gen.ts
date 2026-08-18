@@ -26,6 +26,7 @@ import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_
 import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 import { Route as AuthenticatedOrdensServicoNovaRouteImport } from './routes/_authenticated/ordens-servico/nova'
+import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -121,6 +122,11 @@ const AuthenticatedOrdensServicoNovaRoute =
     path: '/ordens-servico/nova',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOsNovaRoute = AuthenticatedOsNovaRouteImport.update({
+  id: '/os/nova',
+  path: '/os/nova',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
+  '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
+  '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
 }
 export interface FileRoutesById {
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/_authenticated/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
+  '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
 }
 export interface FileRouteTypes {
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/ordens-servico/nova'
+    | '/os/nova'
     | '/clientes/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/ordens-servico/nova'
+    | '/os/nova'
     | '/clientes'
   id:
     | '__root__'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamento/pdf'
     | '/_authenticated/orcamento/precificacao'
     | '/_authenticated/ordens-servico/nova'
+    | '/_authenticated/os/nova'
     | '/_authenticated/clientes/'
   fileRoutesById: FileRoutesById
 }
@@ -362,6 +374,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdensServicoNovaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/os/nova': {
+      id: '/_authenticated/os/nova'
+      path: '/os/nova'
+      fullPath: '/os/nova'
+      preLoaderRoute: typeof AuthenticatedOsNovaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -412,6 +431,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
   AuthenticatedOrdensServicoNovaRoute: typeof AuthenticatedOrdensServicoNovaRoute
+  AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
 }
 
@@ -424,6 +444,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
   AuthenticatedOrdensServicoNovaRoute: AuthenticatedOrdensServicoNovaRoute,
+  AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
 }
 
