@@ -87,7 +87,7 @@ function DashboardLayout() {
   ];
 
   const filteredMenu = menuItems.filter(item => 
-    isDiretor || item.roles.some(role => profile?.perfil === role)
+    isDiretor || item.roles.some(role => profile?.cargo === role || roles.includes(role))
   );
 
   const ViewSwitcher = () => {
@@ -236,7 +236,7 @@ function DashboardLayout() {
             <div className="hidden sm:flex items-center gap-3 ml-2">
               <div className="text-right">
                 <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.nome || "Admin"}</p>
-                <p className="text-[9px] font-bold text-primary uppercase tracking-tighter mt-1">{profile?.perfil || "Acesso"}</p>
+                <p className="text-[9px] font-bold text-primary uppercase tracking-tighter mt-1">{profile?.cargo || "Acesso"}</p>
               </div>
             </div>
           </div>
