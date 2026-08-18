@@ -18,6 +18,7 @@ import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedDashboardDiretorRouteImport } from './routes/_authenticated/dashboard/diretor'
+import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_authenticated/dashboard/financeiro'
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
 import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
@@ -69,6 +70,12 @@ const AuthenticatedDashboardDiretorRoute =
     path: '/diretor',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardFinanceiroRoute =
+  AuthenticatedDashboardFinanceiroRouteImport.update({
+    id: '/financeiro',
+    path: '/financeiro',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedEngenhariaMateriaisRoute =
   AuthenticatedEngenhariaMateriaisRouteImport.update({
     id: '/engenharia/materiais',
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
+  '/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
@@ -117,6 +125,7 @@ export interface FileRoutesByTo {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
+  '/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
@@ -133,6 +142,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
+  '/_authenticated/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/admin/usuarios'
     | '/dashboard/diretor'
+    | '/dashboard/financeiro'
     | '/engenharia/materiais'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/admin/usuarios'
     | '/dashboard/diretor'
+    | '/dashboard/financeiro'
     | '/engenharia/materiais'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
@@ -178,6 +190,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamento'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/dashboard/diretor'
+    | '/_authenticated/dashboard/financeiro'
     | '/_authenticated/engenharia/materiais'
     | '/_authenticated/orcamento/pdf'
     | '/_authenticated/orcamento/precificacao'
@@ -254,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardDiretorRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/financeiro': {
+      id: '/_authenticated/dashboard/financeiro'
+      path: '/financeiro'
+      fullPath: '/dashboard/financeiro'
+      preLoaderRoute: typeof AuthenticatedDashboardFinanceiroRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/engenharia/materiais': {
       id: '/_authenticated/engenharia/materiais'
       path: '/engenharia/materiais'
@@ -287,11 +307,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardDiretorRoute: typeof AuthenticatedDashboardDiretorRoute
+  AuthenticatedDashboardFinanceiroRoute: typeof AuthenticatedDashboardFinanceiroRoute
 }
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
     AuthenticatedDashboardDiretorRoute: AuthenticatedDashboardDiretorRoute,
+    AuthenticatedDashboardFinanceiroRoute:
+      AuthenticatedDashboardFinanceiroRoute,
   }
 
 const AuthenticatedDashboardRouteWithChildren =
