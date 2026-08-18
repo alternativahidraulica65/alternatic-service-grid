@@ -1,138 +1,205 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { 
-  ClipboardList, 
-  Clock, 
   History, 
   Search, 
   Filter, 
+  Download, 
   Eye, 
-  Download,
-  AlertTriangle,
-  ArrowRight
+  MoreVertical,
+  Calendar,
+  Clock,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
 } from "@/components/ui/table";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/historico")({
-  component: HistoricoGlobal,
+  component: HistoricoPage,
 });
 
-const mockHistorico = [
-  { id: "1", numero_os: "OS-1024", cliente: "Indústria Metalúrgica SA", data: "18/08/2026", status: "EM ANDAMENTO", tecnico: "João Silva", valor: "R$ 4.500,00" },
-  { id: "2", numero_os: "OS-1020", cliente: "Agrícola Vale Verde", data: "15/08/2026", status: "ORÇAMENTO", tecnico: "Carlos Souza", valor: "R$ 2.800,00" },
-  { id: "3", numero_os: "OS-1015", cliente: "Transportes Rodoviários", data: "12/08/2026", status: "PRONTO", tecnico: "Ana Costa", valor: "R$ 1.200,00" },
-  { id: "4", numero_os: "OS-1010", cliente: "Mineradora Serra Azul", data: "10/08/2026", status: "ENTREGUE", tecnico: "Roberto Lima", valor: "R$ 12.400,00" },
-  { id: "5", numero_os: "OS-0995", cliente: "Construções Delta", data: "05/08/2026", status: "GARANTIA", tecnico: "João Silva", valor: "R$ 0,00" },
-];
+function HistoricoPage() {
+  const [searchTerm, setSearchTerm] = useState("");
 
-function HistoricoGlobal() {
+  const ordens = [
+    { id: "1024", cliente: "Indústria Metalúrgica SA", data: "12/08/2026", status: "Em Vistoria", prioridade: "Alta", tecnico: "João Silva", valor: 3600.00 },
+    { id: "1023", cliente: "Construtora Horizonte", data: "10/08/2026", status: "Aprovado", prioridade: "Normal", tecnico: "Carlos Souza", valor: 12450.00 },
+    { id: "1022", cliente: "Agrícola Vale Verde", data: "08/08/2026", status: "Pronto", prioridade: "Alta", tecnico: "João Silva", valor: 890.00 },
+    { id: "1021", cliente: "Transportes Rapidez", data: "05/08/2026", status: "Orcamento", prioridade: "Baixa", tecnico: "Marcos Paulo", valor: 5200.00 },
+    { id: "1020", cliente: "Usina Delta Power", data: "01/08/2026", status: "Entregue", prioridade: "Normal", tecnico: "Carlos Souza", valor: 22100.00 },
+  ];
+
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'em vistoria': return <Badge className="bg-amber-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Vistoria</Badge>;
+      case 'aprovado': return <Badge className="bg-emerald-500 text-white border-none text-[9px] font-black uppercase tracking-widest">Aprovado</Badge>;
+      case 'pronto': return <Badge className="bg-blue-600 text-white border-none text-[9px] font-black uppercase tracking-widest">Pronto</Badge>;
+      case 'orcamento': return <Badge className="bg-slate-700 text-white border-none text-[9px] font-black uppercase tracking-widest">Orçamento</Badge>;
+      case 'entregue': return <Badge className="bg-slate-400 text-white border-none text-[9px] font-black uppercase tracking-widest">Entregue</Badge>;
+      default: return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-8 pb-20">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">Histórico <span className="text-primary">Global</span></h2>
-          <p className="text-sm text-muted-foreground font-medium">Rastreabilidade total de todas as Ordens de Serviço.</p>
+          <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">HISTÓRICO DE <span className="text-primary">ORDENS DE SERVIÇO</span></h2>
+          <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Rastreabilidade completa de todas as manutenções.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="h-11 border-border font-bold uppercase text-[10px] tracking-widest bg-white">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="h-11 border-border font-bold uppercase text-[10px] tracking-widest">
             <Download className="mr-2 h-4 w-4 text-primary" />
-            Exportar Relatório
+            Exportar XLS
           </Button>
+          <Link to="/os/nova">
+            <Button className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6">
+              Nova OS
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Filtros Avançados */}
-      <Card className="border-border shadow-sm bg-white overflow-hidden">
-        <CardContent className="p-6">
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="md:col-span-2 relative">
+      <div className="grid gap-6 md:grid-cols-4">
+        {[
+          { label: "Total em Aberto", value: "48", icon: Clock, color: "primary" },
+          { label: "Finalizadas (Mês)", value: "124", icon: History, color: "emerald" },
+          { label: "Aguardando Aprovação", value: "12", icon: AlertCircle, color: "amber" },
+          { label: "Faturamento Previsto", value: "R$ 84k", icon: ArrowRight, color: "slate" },
+        ].map((stat, i) => (
+          <Card key={i} className="border-border shadow-sm">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <stat.icon className={`h-5 w-5 text-${stat.color}-500`} />
+              </div>
+              <p className="text-2xl font-black text-foreground">{stat.value}</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="border-border shadow-md overflow-hidden">
+        <CardHeader className="bg-muted/10 border-b border-border/50 py-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="relative w-full sm:w-96">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input 
-                placeholder="Pesquisar por OS, Cliente, Técnico ou CNPJ..." 
-                className="pl-10 h-11 border-border focus:ring-primary"
+                placeholder="Buscar por OS, cliente ou técnico..." 
+                className="pl-10 h-10 border-border bg-white"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input 
-                type="date" 
-                className="pl-10 h-11 border-border focus:ring-primary"
-              />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-1 border border-border rounded-lg bg-white">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span className="text-[10px] font-bold uppercase text-muted-foreground">Últimos 30 dias</span>
+              </div>
+              <Button variant="outline" size="sm" className="h-10 border-border font-bold uppercase text-[10px] tracking-widest">
+                <Filter className="mr-2 h-4 w-4 text-primary" />
+                Filtros Avançados
+              </Button>
             </div>
-            <Button className="h-11 bg-slate-900 text-white font-black uppercase tracking-widest text-[10px]">
-              Filtrar Registros
-            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Tabela de Resultados */}
-      <Card className="border-border shadow-md bg-white overflow-hidden">
-        <div className="overflow-x-auto">
+        </CardHeader>
+        <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-slate-50">
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground py-4">Nº OS</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Data Abertura</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Técnico</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Valor Total</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Ações</TableHead>
+              <TableRow className="hover:bg-transparent border-b border-border">
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4 pl-6">ID / OS</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Cliente / Empresa</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4 text-center">Status</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Técnico Resp.</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Data Abertura</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4 text-right">Valor (R$)</TableHead>
+                <TableHead className="py-4 pr-6 text-right"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockHistorico.map((item) => (
-                <TableRow key={item.id} className="border-border hover:bg-slate-50 transition-colors">
-                  <TableCell className="py-4">
-                    <span className="text-xs font-black text-primary uppercase tracking-widest">{item.numero_os}</span>
+              {ordens.map((os) => (
+                <TableRow key={os.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
+                  <TableCell className="py-4 pl-6">
+                    <span className="text-xs font-black text-foreground group-hover:text-primary transition-colors">#{os.id}</span>
                   </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-bold text-foreground uppercase">{item.cliente}</span>
+                  <TableCell className="py-4">
+                    <div>
+                      <p className="text-sm font-bold text-foreground uppercase tracking-tight">{os.cliente}</p>
+                      <Badge variant="outline" className={`text-[8px] font-bold h-4 ${os.prioridade === 'Alta' ? 'text-red-500 border-red-200' : 'text-slate-400 border-slate-200'}`}>
+                        Prioridade {os.prioridade}
+                      </Badge>
                     </div>
                   </TableCell>
-                  <TableCell className="text-xs font-medium text-muted-foreground">{item.data}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={`text-[9px] font-black uppercase tracking-widest ${
-                      item.status === 'PRONTO' || item.status === 'ENTREGUE' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' :
-                      item.status === 'ATRASADA' || item.status === 'GARANTIA' ? 'bg-red-50 text-red-600 border-red-200' :
-                      'bg-primary/5 text-primary border-primary/20'
-                    }`}>
-                      {item.status}
-                    </Badge>
+                  <TableCell className="py-4 text-center">
+                    {getStatusBadge(os.status)}
                   </TableCell>
-                  <TableCell className="text-xs font-bold text-foreground uppercase tracking-tighter">{item.tecnico}</TableCell>
-                  <TableCell className="text-xs font-black text-foreground">{item.valor}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="h-8 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-primary">
-                      <Eye className="mr-2 h-3.5 w-3.5" />
-                      Visualizar
-                    </Button>
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase">
+                      <div className="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-[8px]">JS</div>
+                      {os.tecnico}
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 text-xs font-bold text-foreground">{os.data}</TableCell>
+                  <TableCell className="py-4 text-right pr-6 font-black text-foreground">
+                    {os.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </TableCell>
+                  <TableCell className="py-4 pr-6 text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-200">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
+                        <DropdownMenuItem asChild>
+                          <Link to={`/os/${os.id}`} className="w-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer flex items-center gap-2">
+                            <Eye className="h-3 w-3" /> Ver Detalhes
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Reabrir OS</DropdownMenuItem>
+                        <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Imprimir Laudo</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </div>
+        </CardContent>
       </Card>
 
-      {/* Paginação Mockada */}
       <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground font-medium">Exibindo 5 de 156 registros encontrados</p>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-9 border-border text-[10px] font-black uppercase" disabled>Anterior</Button>
-          <Button variant="outline" size="sm" className="h-9 border-border text-[10px] font-black uppercase">Próximo</Button>
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Exibindo 5 de 1.240 ordens de serviço</p>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" className="h-8 w-8 border-border">
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" className="h-8 px-3 border-primary text-primary text-[10px] font-bold uppercase">1</Button>
+          <Button variant="outline" className="h-8 px-3 border-border text-[10px] font-bold uppercase">2</Button>
+          <Button variant="outline" className="h-8 px-3 border-border text-[10px] font-bold uppercase">3</Button>
+          <Button variant="outline" size="icon" className="h-8 w-8 border-border">
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </div>
