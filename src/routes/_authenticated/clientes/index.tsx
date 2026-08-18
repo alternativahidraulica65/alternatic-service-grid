@@ -80,7 +80,14 @@ function ClientesPage() {
 
   const createMutation = useMutation({
     mutationFn: async (cliente: typeof newCliente) => {
-      const { error } = await supabase.from('clientes').insert([cliente]);
+      // Garantimos que apenas os campos existentes no banco sejam enviados
+      const { error } = await supabase.from('clientes').insert([{
+        nome: cliente.nome,
+        cnpj: cliente.cnpj,
+        endereco: cliente.endereco,
+        email: cliente.email,
+        telefone: cliente.telefone
+      }]);
       if (error) throw error;
     },
     onSuccess: () => {
