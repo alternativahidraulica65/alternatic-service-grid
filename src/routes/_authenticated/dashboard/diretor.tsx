@@ -26,6 +26,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClientOnly } from "@/components/ClientOnly";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/diretor")({
   component: DashboardDiretor,
@@ -66,6 +69,32 @@ const mockStatusData = [
 ];
 
 function DashboardDiretor() {
+  const { data: ordens = [] } = useQuery({
+    queryKey: ['dashboard_diretor_os'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ordens_servico').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const stats = useMemo(() => {
+    const faturamento = ordens.reduce((acc, os) => acc + (os.valor_total || 0), 0);
+    const abertas = ordens.filter(os => os.status === 'aberta').length;
+    const atrasadas = ordens.filter(os => os.status === 'atrasada').length;
+    const concluidas = ordens.filter(os => os.status === 'pronto').length;
+    const emAndamento = ordens.length - abertas - atrasadas - concluidas;
+
+    const statusData = [
+      { name: "Abertas", value: abertas, fill: "#FFD700" },
+      { name: "Andamento", value: emAndamento, fill: "#60A5FA" },
+      { name: "Atrasadas", value: atrasadas, fill: "#EF4444" },
+      { name: "Concluídas", value: concluidas, fill: "#10B981" },
+    ];
+
+    return { faturamento, abertas, atrasadas, statusData };
+  }, [ordens]);
+
   return (
     <div className="space-y-8 p-6 md:p-10 pb-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -89,8 +118,8 @@ function DashboardDiretor() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard 
           title="Faturamento" 
-          value="R$ 1.040.000,00" 
-          subtext="Meta: R$ 1.2M (86%)" 
+          value={`R$ ${stats.faturamento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} 
+          subtext="Total em carteira" 
           icon={DollarSign} 
           colorClass="text-emerald-500"
         />
@@ -121,14 +150,14 @@ function DashboardDiretor() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard 
           title="OS Abertas" 
-          value="45" 
-          subtext="8 novas hoje" 
+          value={stats.abertas.toString()} 
+          subtext="Aguardando início" 
           icon={ClipboardList} 
         />
         <KPICard 
           title="OS Atrasadas" 
-          value="07" 
-          subtext="Risco alto de SLA" 
+          value={stats.atrasadas.toString()} 
+          subtext="Risco de SLA" 
           icon={AlertTriangle} 
           colorClass="text-red-600"
         />
@@ -195,7 +224,7 @@ function DashboardDiretor() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={mockStatusData}
+                      data={stats.statusData}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
@@ -203,7 +232,7 @@ function DashboardDiretor() {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {mockStatusData.map((entry, index) => (
+                      {stats.statusData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
                     </Pie>
@@ -213,7 +242,7 @@ function DashboardDiretor() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="grid grid-cols-2 gap-4 pl-4 text-xs font-bold uppercase tracking-wider">
-                  {mockStatusData.map((item) => (
+                  {stats.statusData.map((item) => (
                     <div key={item.name} className="flex items-center gap-2">
                       <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.fill }} />
                       <span className="text-muted-foreground whitespace-nowrap">{item.name}: {item.value}</span>
