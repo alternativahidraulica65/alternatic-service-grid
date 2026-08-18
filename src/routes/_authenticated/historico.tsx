@@ -172,7 +172,7 @@ function HistoricoPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
                         <DropdownMenuItem asChild>
-                          <Link to={`/os/${os.id}`} className="w-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer flex items-center gap-2">
+                          <Link to="/os/$id" params={{ id: os.id }} className="w-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer flex items-center gap-2">
                             <Eye className="h-3 w-3" /> Ver Detalhes
                           </Link>
                         </DropdownMenuItem>
