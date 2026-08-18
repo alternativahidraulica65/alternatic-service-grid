@@ -14,7 +14,9 @@ import {
   Truck,
   ShieldCheck,
   History,
-  MoreVertical
+  MoreVertical,
+  MapPin,
+  Calendar as CalendarIcon
 } from "lucide-react";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,7 +36,6 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { MapPin, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/os/$id")({
   component: GestaoOSPage,
@@ -42,16 +43,45 @@ export const Route = createFileRoute("/_authenticated/os/$id")({
 
 function GestaoOSPage() {
   const { id } = Route.useParams();
-  const [currentStatus, setCurrentStatus] = useState("Triagem");
+  const queryClient = useQueryClient();
+
+  const { data: os, isLoading } = useQuery({
+    queryKey: ['os_detail', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ordens_servico')
+        .select(`
+          *,
+          clientes (*),
+          tecnico:usuarios!ordens_servico_tecnico_id_fkey (*)
+        `)
+        .eq('id', id)
+        .single();
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: pecas = [] } = useQuery({
+    queryKey: ['os_pecas', id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('os_guarda_pecas').select('*').eq('os_id', id);
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const steps = [
-    { label: "Triagem", status: "completed" },
-    { label: "Vistoria", status: "current" },
-    { label: "Orçamento", status: "pending" },
-    { label: "Aprovação", status: "pending" },
-    { label: "Execução", status: "pending" },
-    { label: "Pronto", status: "pending" },
+    { label: "Triagem", status: os?.status === 'aberta' ? 'current' : 'completed' },
+    { label: "Vistoria", status: os?.status === 'vistoria' ? 'current' : (['aberta'].includes(os?.status || '') ? 'pending' : 'completed') },
+    { label: "Orçamento", status: os?.status === 'orcamento_pendente' ? 'current' : (['aberta', 'vistoria'].includes(os?.status || '') ? 'pending' : 'completed') },
+    { label: "Aprovação", status: os?.status === 'aprovada' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente'].includes(os?.status || '') ? 'pending' : 'completed') },
+    { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed') },
+    { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending' },
   ];
+
+  if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
+  if (!os) return <div className="p-10 text-center uppercase font-black text-red-500">Ordem de Serviço não encontrada.</div>;
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
@@ -135,7 +165,7 @@ function GestaoOSPage() {
               <CardContent className="pt-6">
                 <div className="grid grid-cols-2 gap-y-4 text-sm">
                   <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Tipo</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Descrição</p>
                     <p className="font-bold text-foreground uppercase">{os.descricao || "Não informada"}</p>
                   </div>
                   <div>
@@ -171,7 +201,7 @@ function GestaoOSPage() {
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-100">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-emerald-500" />
+                    <CalendarIcon className="h-4 w-4 text-emerald-500" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Previsão</span>
                   </div>
                   <span className="text-xs font-black text-emerald-700 uppercase">{os.data_previsao_conclusao ? new Date(os.data_previsao_conclusao).toLocaleDateString() : "N/A"}</span>
@@ -193,8 +223,7 @@ function GestaoOSPage() {
              <CardContent className="pt-6 px-0">
                 {[
                   { user: "João Silva", action: "Iniciou a Vistoria Técnica", time: "Há 10 min", icon: Wrench },
-                  { user: "Sistema", action: "OS-1024 Alterada para status 'Vistoria'", time: "Há 15 min", icon: Settings },
-                  { user: "Admin", action: "Criou a Ordem de Serviço", time: "Há 4h", icon: Plus },
+                  { user: "Sistema", action: `OS ${os.numero_os} Alterada para status '${os.status}'`, time: "Agora", icon: Settings },
                 ].map((log, i) => (
                   <div key={i} className="flex items-center gap-4 px-6 py-4 border-b border-border/50 last:border-0 hover:bg-slate-50 transition-colors">
                     <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center border border-border shrink-0">
@@ -314,7 +343,6 @@ function GestaoOSPage() {
                       </div>
                       <div className="text-right">
                         <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase">{peca.responsavel}</p>
                       </div>
                     </div>
                   ))}
@@ -323,33 +351,6 @@ function GestaoOSPage() {
            </Card>
         </TabsContent>
       </Tabs>
-    </div>
-  );
-}
-
-function Calendar({ className, ...props }: any) {
-  return (
-    <Clock className={className} {...props} />
-  );
-}
-
-function MapPin({ className, ...props }: any) {
-  return (
-    <div className={className} {...props}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-        <circle cx="12" cy="10" r="3" />
-      </svg>
     </div>
   );
 }
