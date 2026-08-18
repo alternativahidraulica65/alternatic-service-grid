@@ -17,6 +17,7 @@ import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated/nova-os'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
+import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedDashboardDiretorRouteImport } from './routes/_authenticated/dashboard/diretor'
 import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_authenticated/dashboard/financeiro'
 import { Route as AuthenticatedDashboardGestorRouteImport } from './routes/_authenticated/dashboard/gestor'
@@ -64,6 +65,12 @@ const AuthenticatedAdminUsuariosRoute =
   AuthenticatedAdminUsuariosRouteImport.update({
     id: '/admin/usuarios',
     path: '/admin/usuarios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedClientesIndexRoute =
+  AuthenticatedClientesIndexRouteImport.update({
+    id: '/clientes/',
+    path: '/clientes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedDashboardDiretorRoute =
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
+  '/clientes/': typeof AuthenticatedClientesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -148,6 +156,7 @@ export interface FileRoutesByTo {
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
+  '/clientes': typeof AuthenticatedClientesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -167,6 +176,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/_authenticated/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
+  '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/ordens-servico/nova'
+    | '/clientes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/ordens-servico/nova'
+    | '/clientes'
   id:
     | '__root__'
     | '/'
@@ -221,6 +233,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamento/pdf'
     | '/_authenticated/orcamento/precificacao'
     | '/_authenticated/ordens-servico/nova'
+    | '/_authenticated/clientes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/usuarios'
       fullPath: '/admin/usuarios'
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/clientes/': {
+      id: '/_authenticated/clientes/'
+      path: '/clientes'
+      fullPath: '/clientes/'
+      preLoaderRoute: typeof AuthenticatedClientesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard/diretor': {
@@ -392,6 +412,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
   AuthenticatedOrdensServicoNovaRoute: typeof AuthenticatedOrdensServicoNovaRoute
+  AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -403,6 +424,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
   AuthenticatedOrdensServicoNovaRoute: AuthenticatedOrdensServicoNovaRoute,
+  AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
