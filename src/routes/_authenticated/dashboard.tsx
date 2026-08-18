@@ -17,7 +17,9 @@ import {
   Bell,
   ChevronRight,
   ClipboardList,
-  FileText
+  FileText,
+  Package,
+  Receipt
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -78,6 +80,8 @@ function DashboardLayout() {
   const menuItems = [
     { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
     { label: "Clientes", icon: Users, to: "/clientes", roles: ["diretor", "administrativo_financeiro", "gestor"] },
+    { label: "Produtos", icon: Package, to: "/produtos", roles: ["diretor", "administrativo_financeiro", "gestor"] },
+    { label: "Pedidos", icon: Receipt, to: "/pedidos", roles: ["diretor", "administrativo_financeiro", "gestor"] },
     { label: "Nova OS / Triagem", icon: Wrench, to: "/os/nova", roles: ["diretor", "gestor", "operador"] },
     { label: "Histórico Global", icon: Search, to: "/historico", roles: ["diretor", "administrativo_financeiro", "gestor"] },
     { label: "Kanban", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },

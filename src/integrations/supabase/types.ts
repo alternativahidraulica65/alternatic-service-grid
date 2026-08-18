@@ -189,6 +189,51 @@ export type Database = {
           },
         ]
       }
+      itens_pedido: {
+        Row: {
+          criado_em: string | null
+          id: string
+          pedido_id: string | null
+          preco_unitario: number
+          produto_id: string | null
+          quantidade: number
+          subtotal: number
+        }
+        Insert: {
+          criado_em?: string | null
+          id?: string
+          pedido_id?: string | null
+          preco_unitario: number
+          produto_id?: string | null
+          quantidade?: number
+          subtotal: number
+        }
+        Update: {
+          criado_em?: string | null
+          id?: string
+          pedido_id?: string | null
+          preco_unitario?: number
+          produto_id?: string | null
+          quantidade?: number
+          subtotal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itens_pedido_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "itens_pedido_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       materiais: {
         Row: {
           criado_em: string | null
@@ -453,6 +498,80 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pedidos: {
+        Row: {
+          cliente_id: string | null
+          criado_em: string | null
+          id: string
+          numero_pedido: number
+          observacoes: string | null
+          status: string
+          updated_at: string | null
+          valor_total: number
+        }
+        Insert: {
+          cliente_id?: string | null
+          criado_em?: string | null
+          id?: string
+          numero_pedido?: number
+          observacoes?: string | null
+          status?: string
+          updated_at?: string | null
+          valor_total?: number
+        }
+        Update: {
+          cliente_id?: string | null
+          criado_em?: string | null
+          id?: string
+          numero_pedido?: number
+          observacoes?: string | null
+          status?: string
+          updated_at?: string | null
+          valor_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      produtos: {
+        Row: {
+          categoria: string | null
+          criado_em: string | null
+          descricao: string | null
+          estoque: number
+          id: string
+          nome: string
+          preco_venda: number
+          updated_at: string | null
+        }
+        Insert: {
+          categoria?: string | null
+          criado_em?: string | null
+          descricao?: string | null
+          estoque?: number
+          id?: string
+          nome: string
+          preco_venda?: number
+          updated_at?: string | null
+        }
+        Update: {
+          categoria?: string | null
+          criado_em?: string | null
+          descricao?: string | null
+          estoque?: number
+          id?: string
+          nome?: string
+          preco_venda?: number
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
