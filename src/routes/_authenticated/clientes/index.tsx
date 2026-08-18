@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   Users, 
@@ -13,11 +13,14 @@ import {
   TrendingUp,
   History,
   AlertCircle,
-  Trash2
+  Trash2,
+  ArrowLeft,
+  Download
 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { exportToCSV } from "@/utils/export";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +45,7 @@ export const Route = createFileRoute("/_authenticated/clientes/")({
 });
 
 function ClientesPage() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -57,9 +61,14 @@ function ClientesPage() {
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">GESTÃO DE <span className="text-primary">CLIENTES</span></h2>
-          <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Base de dados unificada e histórico comercial.</p>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">GESTÃO DE <span className="text-primary">CLIENTES</span></h2>
+            <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Base de dados unificada e histórico comercial.</p>
+          </div>
         </div>
         <Button className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6 shadow-lg shadow-primary/20">
           <UserPlus className="mr-2 h-4 w-4" />
@@ -127,7 +136,15 @@ function ClientesPage() {
                 <Filter className="mr-2 h-4 w-4 text-primary" />
                 Filtros
               </Button>
-              <Button variant="ghost" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Exportar</Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => exportToCSV(clientes, 'clientes.csv')}
+                className="h-10 text-[10px] font-black uppercase tracking-widest text-muted-foreground"
+              >
+                <Download className="mr-2 h-3.5 w-3.5" />
+                Exportar
+              </Button>
             </div>
           </div>
         </CardHeader>
