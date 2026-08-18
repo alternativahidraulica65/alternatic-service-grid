@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { 
   Users, 
   UserPlus, 
@@ -15,7 +15,9 @@ import {
   AlertCircle,
   Trash2,
   ArrowLeft,
-  Download
+  Download,
+  Check,
+  Loader2
 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +41,16 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/clientes/")({
   component: ClientesPage,
@@ -48,6 +60,14 @@ function ClientesPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newCliente, setNewCliente] = useState({
+    nome: "",
+    cnpj: "",
+    endereco: "",
+    categoria: "C",
+    status: "Ativo"
+  });
 
   const { data: clientes = [], refetch } = useSuspenseQuery({
     queryKey: ['clientes_list'],
@@ -57,6 +77,33 @@ function ClientesPage() {
       return data;
     }
   });
+
+  const createMutation = useMutation({
+    mutationFn: async (cliente: typeof newCliente) => {
+      const { error } = await supabase.from('clientes').insert([cliente]);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Cliente cadastrado com sucesso!");
+      setIsDialogOpen(false);
+      setNewCliente({ nome: "", cnpj: "", endereco: "", categoria: "C", status: "Ativo" });
+      queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao cadastrar cliente: " + error.message);
+    }
+  });
+
+  const stats = {
+    total: clientes.length,
+    premium: clientes.filter((c: any) => c.categoria === 'A').length,
+    inativos: clientes.filter((c: any) => c.status === 'Inativo').length,
+    novos: clientes.filter((c: any) => {
+      const createdDate = new Date(c.criado_em || '');
+      const now = new Date();
+      return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
+    }).length
+  };
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
@@ -70,10 +117,99 @@ function ClientesPage() {
             <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Base de dados unificada e histórico comercial.</p>
           </div>
         </div>
-        <Button className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6 shadow-lg shadow-primary/20">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Novo Cliente
-        </Button>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6 shadow-lg shadow-primary/20">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Novo Cliente
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px] bg-white">
+            <DialogHeader>
+              <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">CADASTRAR <span className="text-primary">NOVO CLIENTE</span></DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="nome" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social / Nome Fantasia</Label>
+                <Input 
+                  id="nome" 
+                  value={newCliente.nome} 
+                  onChange={(e) => setNewCliente({...newCliente, nome: e.target.value})}
+                  className="h-11 border-border"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
+                <Input 
+                  id="cnpj" 
+                  value={newCliente.cnpj} 
+                  onChange={(e) => setNewCliente({...newCliente, cnpj: e.target.value})}
+                  className="h-11 border-border font-mono"
+                  placeholder="00.000.000/0000-00"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
+                <Input 
+                  id="endereco" 
+                  value={newCliente.endereco} 
+                  onChange={(e) => setNewCliente({...newCliente, endereco: e.target.value})}
+                  className="h-11 border-border"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="categoria" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Categoria</Label>
+                  <Select 
+                    value={newCliente.categoria} 
+                    onValueChange={(val) => setNewCliente({...newCliente, categoria: val})}
+                  >
+                    <SelectTrigger className="h-11 border-border">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="A">CURVA A (Premium)</SelectItem>
+                      <SelectItem value="B">CURVA B (Frequente)</SelectItem>
+                      <SelectItem value="C">CURVA C (Esporádico)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="status" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status Inicial</Label>
+                  <Select 
+                    value={newCliente.status} 
+                    onValueChange={(val) => setNewCliente({...newCliente, status: val})}
+                  >
+                    <SelectTrigger className="h-11 border-border">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="Ativo">ATIVO</SelectItem>
+                      <SelectItem value="Inativo">INATIVO</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            <DialogFooter className="pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsDialogOpen(false)}
+                className="h-11 font-bold uppercase text-[10px] tracking-widest"
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={() => createMutation.mutate(newCliente)}
+                disabled={createMutation.isPending || !newCliente.nome}
+                className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] px-8"
+              >
+                {createMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+                Confirmar Cadastro
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-6 md:grid-cols-4">
@@ -83,7 +219,7 @@ function ClientesPage() {
               <Users className="h-5 w-5 text-primary" />
               <Badge variant="outline" className="text-[9px] font-black uppercase">Total</Badge>
             </div>
-            <p className="text-2xl font-black text-foreground">1.240</p>
+            <p className="text-2xl font-black text-foreground">{stats.total}</p>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Clientes Cadastrados</p>
           </CardContent>
         </Card>
@@ -93,7 +229,7 @@ function ClientesPage() {
               <TrendingUp className="h-5 w-5 text-emerald-500" />
               <Badge className="bg-emerald-500 text-white text-[9px] font-black uppercase tracking-widest">Curva A</Badge>
             </div>
-            <p className="text-2xl font-black text-foreground">85</p>
+            <p className="text-2xl font-black text-foreground">{stats.premium}</p>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Clientes Premium</p>
           </CardContent>
         </Card>
@@ -103,7 +239,7 @@ function ClientesPage() {
               <History className="h-5 w-5 text-amber-500" />
               <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest">Inativos</Badge>
             </div>
-            <p className="text-2xl font-black text-foreground">12</p>
+            <p className="text-2xl font-black text-foreground">{stats.inativos}</p>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Sem OS (90 dias)</p>
           </CardContent>
         </Card>
@@ -113,7 +249,7 @@ function ClientesPage() {
               <AlertCircle className="h-5 w-5 text-primary" />
               <Badge className="bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest">Prospecção</Badge>
             </div>
-            <p className="text-2xl font-black text-foreground">24</p>
+            <p className="text-2xl font-black text-foreground">{stats.novos}</p>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Novos este mês</p>
           </CardContent>
         </Card>
