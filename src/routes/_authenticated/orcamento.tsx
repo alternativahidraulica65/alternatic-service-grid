@@ -76,7 +76,7 @@ function OrcamentoPage() {
   };
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-8 p-6 md:p-10 pb-20">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary">
