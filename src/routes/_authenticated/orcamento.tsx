@@ -10,7 +10,9 @@ import {
   Plus,
   Trash2,
   Lock,
-  ChevronDown
+  ChevronDown,
+  DollarSign,
+  Info
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
