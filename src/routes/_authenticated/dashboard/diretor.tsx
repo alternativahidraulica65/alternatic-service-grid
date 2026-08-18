@@ -25,6 +25,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ClientOnly } from "@/components/ClientOnly";
 
 export const Route = createFileRoute("/_authenticated/dashboard/diretor")({
   component: DashboardDiretor,
@@ -145,83 +146,85 @@ function DashboardDiretor() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Gráfico de Faturamento */}
-        <Card className="border-border shadow-md">
-          <CardHeader className="border-b border-border/50 bg-muted/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-bold">Faturamento por Unidade</CardTitle>
-                <CardDescription>Distribuição de receita bruta.</CardDescription>
+      <ClientOnly>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Gráfico de Faturamento */}
+          <Card className="border-border shadow-md">
+            <CardHeader className="border-b border-border/50 bg-muted/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold">Faturamento por Unidade</CardTitle>
+                  <CardDescription>Distribuição de receita bruta.</CardDescription>
+                </div>
+                <Badge variant="outline" className="border-primary text-primary bg-primary/5">Real vs Meta</Badge>
               </div>
-              <Badge variant="outline" className="border-primary text-primary bg-primary/5">Real vs Meta</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockRevenueData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
-                  <Tooltip 
-                    cursor={{ fill: "transparent" }}
-                    contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", fontWeight: 600 }}
-                    formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Valor"]}
-                  />
-                  <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={50}>
-                    {mockRevenueData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={mockRevenueData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
+                    <Tooltip 
+                      cursor={{ fill: "transparent" }}
+                      contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", fontWeight: 600 }}
+                      formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Valor"]}
+                    />
+                    <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={50}>
+                      {mockRevenueData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Gráfico de Status de OS */}
-        <Card className="border-border shadow-md">
-          <CardHeader className="border-b border-border/50 bg-muted/20">
-            <div>
-              <CardTitle className="text-base font-bold">Distribuição de Status de OS</CardTitle>
-              <CardDescription>Visão geral do fluxo produtivo.</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="flex h-[300px] items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={mockStatusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {mockStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", fontWeight: 600 }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="grid grid-cols-2 gap-4 pl-4 text-xs font-bold uppercase tracking-wider">
-                {mockStatusData.map((item) => (
-                  <div key={item.name} className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.fill }} />
-                    <span className="text-muted-foreground whitespace-nowrap">{item.name}: {item.value}</span>
-                  </div>
-                ))}
+          {/* Gráfico de Status de OS */}
+          <Card className="border-border shadow-md">
+            <CardHeader className="border-b border-border/50 bg-muted/20">
+              <div>
+                <CardTitle className="text-base font-bold">Distribuição de Status de OS</CardTitle>
+                <CardDescription>Visão geral do fluxo produtivo.</CardDescription>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex h-[300px] items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={mockStatusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {mockStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", fontWeight: 600 }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="grid grid-cols-2 gap-4 pl-4 text-xs font-bold uppercase tracking-wider">
+                  {mockStatusData.map((item) => (
+                    <div key={item.name} className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.fill }} />
+                      <span className="text-muted-foreground whitespace-nowrap">{item.name}: {item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </ClientOnly>
     </div>
   );
 }
