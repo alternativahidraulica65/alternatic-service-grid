@@ -359,32 +359,79 @@ function GestaoOSPage() {
            <Card className="border-border shadow-md">
              <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
                <div>
-                 <CardTitle className="text-base font-bold uppercase tracking-widest">Checklist de Entrada</CardTitle>
+                 <CardTitle className="text-base font-bold uppercase tracking-widest text-slate-900">Checklist de Entrada</CardTitle>
                  <CardDescription>Verificação visual e física do equipamento.</CardDescription>
                </div>
-               <Button className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4">Salvar Checklist</Button>
+               <Button 
+                className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
+                onClick={handleFinalizarChecklist}
+                disabled={savingChecklist || checklistData.length === 0}
+               >
+                 {savingChecklist ? "Processando..." : "Finalizar Checklist"}
+               </Button>
              </CardHeader>
              <CardContent className="pt-6">
                <div className="space-y-4">
-                 {[
-                   { item: "Pintura / Carcaça Externa", status: "Aprovado" },
-                   { item: "Conexões Hidráulicas", status: "Danificado" },
-                   { item: "Parafusos de Fixação", status: "Substituir" },
-                   { item: "Haste (Riscos/Empenos)", status: "Aprovado" },
-                 ].map((check, i) => (
-                   <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50/30">
-                     <span className="text-sm font-bold text-foreground uppercase tracking-tight">{check.item}</span>
-                     <div className="flex items-center gap-4">
-                       <Badge className={`text-[9px] font-black uppercase tracking-widest ${
-                         check.status === 'Aprovado' ? 'bg-emerald-500 text-white' : 
-                         check.status === 'Danificado' ? 'bg-amber-500 text-white' : 'bg-red-500 text-white'
-                       }`}>{check.status}</Badge>
-                       <Button variant="outline" size="icon" className="h-8 w-8 border-border text-slate-400">
-                         <Camera className="h-4 w-4" />
-                       </Button>
-                     </div>
+                 {checklistData.length === 0 ? (
+                   <div className="flex flex-col items-center justify-center py-10 text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50">
+                     <ClipboardCheck className="h-10 w-10 mb-2 opacity-20" />
+                     <p className="text-xs font-bold uppercase tracking-widest">Nenhum item de checklist encontrado.</p>
                    </div>
-                 ))}
+                 ) : (
+                   checklistData.map((item: any) => (
+                     <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start p-4 rounded-xl border border-border bg-slate-50/30">
+                       <div className="md:col-span-4">
+                         <span className="text-sm font-bold text-foreground uppercase tracking-tight">{item.item}</span>
+                       </div>
+                       
+                       <div className="md:col-span-3">
+                         <Select 
+                          value={item.status || "Pendente"} 
+                          onValueChange={(val) => handleUpdateChecklistItem(item.id, { status: val })}
+                         >
+                           <SelectTrigger className="h-9 text-[10px] font-bold uppercase border-slate-300">
+                             <SelectValue placeholder="Status" />
+                           </SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="Pendente">Pendente</SelectItem>
+                             <SelectItem value="Aprovado">Aprovado</SelectItem>
+                             <SelectItem value="Danificado">Danificado</SelectItem>
+                             <SelectItem value="Substituir">Substituir</SelectItem>
+                             <SelectItem value="Recuperar">Recuperar</SelectItem>
+                             <SelectItem value="Não Aplicável">N/A</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       </div>
+
+                       <div className="md:col-span-3">
+                         <Input 
+                          placeholder="Observação..." 
+                          className="h-9 text-xs border-slate-300"
+                          value={item.observacao || ""}
+                          onChange={(e) => handleUpdateChecklistItem(item.id, { observacao: e.target.value })}
+                         />
+                       </div>
+
+                       <div className="md:col-span-2 flex justify-end gap-2">
+                         <div className="relative group">
+                           {item.foto_url && (
+                             <div className="absolute -top-10 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
+                               <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-xl" />
+                             </div>
+                           )}
+                           <Button 
+                            variant={item.foto_url ? "default" : "outline"} 
+                            size="icon" 
+                            className={`h-9 w-9 border-border ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 animate-pulse' : ''}`}
+                            onClick={() => handleChecklistPhoto(item.id)}
+                           >
+                             <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
+                           </Button>
+                         </div>
+                       </div>
+                     </div>
+                   ))
+                 )}
                </div>
              </CardContent>
            </Card>
