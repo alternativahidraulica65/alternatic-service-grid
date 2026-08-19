@@ -207,8 +207,8 @@ function ClientesPage() {
                 <Label htmlFor="nome" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social / Nome Fantasia</Label>
                 <Input 
                   id="nome" 
-                  value={newCliente.nome} 
-                  onChange={(e) => setNewCliente({...newCliente, nome: e.target.value})}
+                  value={formValues.nome} 
+                  onChange={(e) => setFormValues({...formValues, nome: e.target.value})}
                   className="h-11 border-border"
                 />
               </div>
@@ -216,8 +216,8 @@ function ClientesPage() {
                 <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
                 <Input 
                   id="cnpj" 
-                  value={newCliente.cnpj} 
-                  onChange={(e) => setNewCliente({...newCliente, cnpj: e.target.value})}
+                  value={formValues.cnpj} 
+                  onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
                   className="h-11 border-border font-mono"
                   placeholder="00.000.000/0000-00"
                 />
@@ -226,8 +226,8 @@ function ClientesPage() {
                 <Label htmlFor="endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
                 <Input 
                   id="endereco" 
-                  value={newCliente.endereco} 
-                  onChange={(e) => setNewCliente({...newCliente, endereco: e.target.value})}
+                  value={formValues.endereco} 
+                  onChange={(e) => setFormValues({...formValues, endereco: e.target.value})}
                   className="h-11 border-border"
                 />
               </div>
@@ -236,8 +236,8 @@ function ClientesPage() {
                   <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
                   <Input 
                     id="email" 
-                    value={newCliente.email} 
-                    onChange={(e) => setNewCliente({...newCliente, email: e.target.value})}
+                    value={formValues.email} 
+                    onChange={(e) => setFormValues({...formValues, email: e.target.value})}
                     className="h-11 border-border"
                     placeholder="contato@empresa.com"
                   />
@@ -246,8 +246,8 @@ function ClientesPage() {
                   <Label htmlFor="telefone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</Label>
                   <Input 
                     id="telefone" 
-                    value={newCliente.telefone} 
-                    onChange={(e) => setNewCliente({...newCliente, telefone: e.target.value})}
+                    value={formValues.telefone} 
+                    onChange={(e) => setFormValues({...formValues, telefone: e.target.value})}
                     className="h-11 border-border"
                     placeholder="(00) 0000-0000"
                   />
@@ -263,8 +263,8 @@ function ClientesPage() {
                 Cancelar
               </Button>
               <Button 
-                onClick={() => createMutation.mutate(newCliente)}
-                disabled={createMutation.isPending || !newCliente.nome}
+                onClick={() => createMutation.mutate(formValues)}
+                disabled={createMutation.isPending || !formValues.nome}
                 className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] px-8"
               >
                 {createMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
