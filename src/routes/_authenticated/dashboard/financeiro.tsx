@@ -9,12 +9,18 @@ import {
   Wallet,
   Clock,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Truck,
+  Plus
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   component: DashboardFinanceiro,
@@ -50,6 +56,45 @@ function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }
 }
 
 function DashboardFinanceiro() {
+  const currentMonthStart = new Date();
+  currentMonthStart.setDate(1);
+  currentMonthStart.setHours(0, 0, 0, 0);
+
+  const { data: supplierData, isLoading } = useQuery({
+    queryKey: ['supplier-costs', currentMonthStart.toISOString()],
+    queryFn: async () => {
+      // 1. Fetch costs from lancamentos_financeiros linked to suppliers
+      const { data: lancamentos, error: lError } = await supabase
+        .from('lancamentos_financeiros')
+        .select(`
+          valor,
+          fornecedor:fornecedores(nome),
+          os_id,
+          ordem_servico:ordens_servico(numero_os)
+        `)
+        .gte('data_competencia', currentMonthStart.toISOString().split('T')[0])
+        .eq('tipo', 'saida');
+
+      if (lError) throw lError;
+
+      // Group by supplier
+      const grouped = (lancamentos || []).reduce((acc: any, curr: any) => {
+        const supplierName = curr.fornecedor?.nome || 'Não Identificado';
+        if (!acc[supplierName]) {
+          acc[supplierName] = { name: supplierName, total: 0, entries: [] };
+        }
+        acc[supplierName].total += Number(curr.valor);
+        acc[supplierName].entries.push({
+          valor: curr.valor,
+          os: curr.ordem_servico?.numero_os || null
+        });
+        return acc;
+      }, {});
+
+      return Object.values(grouped).sort((a: any, b: any) => b.total - a.total);
+    }
+  });
+
   return (
     <div className="space-y-8 p-6 md:p-10 pb-10">
       <div>
@@ -177,6 +222,79 @@ function DashboardFinanceiro() {
                 Existem 4 orçamentos pendentes de aprovação há mais de 48h.
                </p>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Card de Controle de Fornecedores do Mês */}
+      <div className="mt-6">
+        <Card className="border-border shadow-md">
+          <CardHeader className="bg-muted/10 border-b border-border/50">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Truck className="h-5 w-5 text-primary" />
+                  Controle de Fornecedores do Mês
+                </CardTitle>
+                <CardDescription>
+                  Custos acumulados por fornecedor em {format(new Date(), 'MMMM yyyy', { locale: ptBR })}.
+                </CardDescription>
+              </div>
+              <Button size="sm" className="bg-primary text-primary-foreground font-bold uppercase tracking-wider text-[10px]">
+                <Plus className="mr-1 h-3 w-3" /> Novo Lançamento
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-10">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              </div>
+            ) : supplierData && supplierData.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {supplierData.map((item: any, idx: number) => (
+                  <div key={idx} className="flex flex-col p-4 rounded-xl border border-border bg-slate-50/50 hover:bg-white transition-all shadow-sm hover:shadow-md group">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="h-10 w-10 rounded-lg bg-white border border-border flex items-center justify-center shadow-sm group-hover:border-primary/30 transition-colors">
+                        <Truck className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Gasto Total</p>
+                        <p className="text-lg font-black text-foreground">
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total)}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <h4 className="text-sm font-bold text-foreground mb-3 truncate">{item.name}</h4>
+                    
+                    <div className="space-y-2 mt-auto">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Últimos Lançamentos / OSs</p>
+                      {item.entries.slice(0, 3).map((entry: any, eIdx: number) => (
+                        <div key={eIdx} className="flex items-center justify-between py-1 border-b border-border/40 last:border-0">
+                          <span className="text-[10px] font-medium text-slate-600">
+                            {entry.os ? `OS #${entry.os}` : 'Lançamento Direto'}
+                          </span>
+                          <span className="text-[10px] font-bold text-foreground">
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(entry.valor)}
+                          </span>
+                        </div>
+                      ))}
+                      {item.entries.length > 3 && (
+                        <p className="text-[9px] text-primary font-bold text-center mt-2 cursor-pointer hover:underline">
+                          + {item.entries.length - 3} outros lançamentos
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 border-2 border-dashed border-border rounded-xl">
+                <Truck className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm font-medium text-muted-foreground">Nenhum custo registrado para fornecedores este mês.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
