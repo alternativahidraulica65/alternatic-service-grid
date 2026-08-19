@@ -55,6 +55,88 @@ export type Database = {
           },
         ]
       }
+      cliente_contatos: {
+        Row: {
+          cargo: string | null
+          cliente_id: string
+          created_at: string | null
+          email: string | null
+          id: string
+          nome: string
+          telefone: string | null
+        }
+        Insert: {
+          cargo?: string | null
+          cliente_id: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome: string
+          telefone?: string | null
+        }
+        Update: {
+          cargo?: string | null
+          cliente_id?: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome?: string
+          telefone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cliente_contatos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cliente_equipamentos: {
+        Row: {
+          cliente_id: string
+          created_at: string | null
+          fabricante: string | null
+          id: string
+          modelo: string | null
+          nome: string
+          numero_serie: string | null
+          tipo: string | null
+          ultima_manutencao: string | null
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string | null
+          fabricante?: string | null
+          id?: string
+          modelo?: string | null
+          nome: string
+          numero_serie?: string | null
+          tipo?: string | null
+          ultima_manutencao?: string | null
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string | null
+          fabricante?: string | null
+          id?: string
+          modelo?: string | null
+          nome?: string
+          numero_serie?: string | null
+          tipo?: string | null
+          ultima_manutencao?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cliente_equipamentos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clientes: {
         Row: {
           cnpj: string | null
