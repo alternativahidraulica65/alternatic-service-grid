@@ -151,6 +151,30 @@ export type Database = {
         }
         Relationships: []
       }
+      fornecedores: {
+        Row: {
+          cnpj: string | null
+          contato: string | null
+          criado_em: string | null
+          id: string
+          nome: string
+        }
+        Insert: {
+          cnpj?: string | null
+          contato?: string | null
+          criado_em?: string | null
+          id?: string
+          nome: string
+        }
+        Update: {
+          cnpj?: string | null
+          contato?: string | null
+          criado_em?: string | null
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
       historico_processo_os: {
         Row: {
           criado_em: string | null
@@ -230,6 +254,54 @@ export type Database = {
             columns: ["produto_id"]
             isOneToOne: false
             referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lancamentos_financeiros: {
+        Row: {
+          criado_em: string | null
+          data_competencia: string
+          descricao: string | null
+          fornecedor_id: string | null
+          id: string
+          os_id: string | null
+          tipo: string | null
+          valor: number
+        }
+        Insert: {
+          criado_em?: string | null
+          data_competencia?: string
+          descricao?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          os_id?: string | null
+          tipo?: string | null
+          valor: number
+        }
+        Update: {
+          criado_em?: string | null
+          data_competencia?: string
+          descricao?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          os_id?: string | null
+          tipo?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lancamentos_financeiros_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lancamentos_financeiros_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
             referencedColumns: ["id"]
           },
         ]
