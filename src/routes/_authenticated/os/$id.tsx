@@ -89,12 +89,12 @@ function GestaoOSPage() {
   });
 
   const steps = [
-    { label: "Triagem", status: os?.status === 'aberta' ? 'current' : 'completed' },
-    { label: "Vistoria", status: os?.status === 'vistoria' ? 'current' : (['aberta'].includes(os?.status || '') ? 'pending' : 'completed') },
-    { label: "Orçamento", status: os?.status === 'orcamento_pendente' ? 'current' : (['aberta', 'vistoria'].includes(os?.status || '') ? 'pending' : 'completed') },
-    { label: "Aprovação", status: os?.status === 'aprovada' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente'].includes(os?.status || '') ? 'pending' : 'completed') },
-    { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed') },
-    { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending' },
+    { label: "Triagem", status: os?.status === 'aberta' ? 'current' : 'completed', id: 'triagem' },
+    { label: "Vistoria", status: os?.status === 'vistoria' ? 'current' : (['aberta'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'checklist' },
+    { label: "Laudo", status: os?.status === 'aguardando_gestor' ? 'current' : (['aberta', 'vistoria'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'laudo-técnico' },
+    { label: "Orçamento", status: os?.status === 'orcamento_pendente' ? 'current' : (['aberta', 'vistoria', 'aguardando_gestor'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'orçamento' },
+    { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'aguardando_gestor', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'execução' },
+    { label: "Entrega", status: os?.status === 'pronto' ? 'current' : 'pending', id: 'entrega' },
   ];
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
@@ -391,20 +391,34 @@ function GestaoOSPage() {
       </div>
 
       {/* Fluxo de Processo (Stepper) */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-        {steps.map((step, i) => (
-          <div key={i} className="flex flex-col gap-2 group cursor-default">
-            <div className={`h-1.5 w-full rounded-full transition-all ${
-              step.status === 'completed' ? 'bg-emerald-500' :
-              step.status === 'current' ? 'bg-primary' : 'bg-slate-200'
-            }`} />
-            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
-              step.status === 'current' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
-            }`}>
-              {step.label}
-            </span>
-          </div>
-        ))}
+      <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-6 relative">
+          {steps.map((step, i) => (
+            <div key={i} className="flex flex-col gap-3 group cursor-default relative z-10">
+              <div className="flex items-center gap-2">
+                <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 transition-all ${
+                  step.status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' :
+                  step.status === 'current' ? 'bg-white border-primary text-primary shadow-sm' : 
+                  'bg-white border-slate-200 text-slate-300'
+                }`}>
+                  {step.status === 'completed' ? <Check className="h-4 w-4" /> : <span className="text-[10px] font-black">{i + 1}</span>}
+                </div>
+                <div className="flex-1 h-[2px] bg-slate-100 hidden md:block last:hidden" />
+              </div>
+              <div className="flex flex-col">
+                <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                  step.status === 'current' ? 'text-primary' : 
+                  step.status === 'completed' ? 'text-emerald-600' : 'text-slate-400'
+                }`}>
+                  {step.label}
+                </span>
+                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">
+                  {step.status === 'completed' ? 'Concluído' : step.status === 'current' ? 'Em andamento' : 'Pendente'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <Tabs defaultValue="resumo" className="w-full">
@@ -419,19 +433,28 @@ function GestaoOSPage() {
             "Orçamento", 
             "Aprovação", 
             "Execução",
-            "Faturamento",
             "Entrega",
+            "Faturamento",
             "Garantia",
             "Auditoria"
-          ].map((tab) => (
-            <TabsTrigger 
-              key={tab} 
-              value={tab.toLowerCase().replace(" ", "-")} 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0"
-            >
-              {tab}
-            </TabsTrigger>
-          ))}
+          ].map((tab) => {
+            const tabValue = tab.toLowerCase().replace(" ", "-");
+            const isCompleted = 
+              (tabValue === 'checklist' && (os?.status !== 'aberta' && os?.status !== 'vistoria')) ||
+              (tabValue === 'laudo-técnico' && !['aberta', 'vistoria', 'aguardando_gestor'].includes(os?.status || '')) ||
+              (tabValue === 'orçamento' && ['aprovada', 'usinagem', 'montagem', 'pronto', 'entregue', 'concluida'].includes(os?.status || ''));
+
+            return (
+              <TabsTrigger 
+                key={tab} 
+                value={tabValue} 
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0 flex items-center gap-2"
+              >
+                {tab}
+                {isCompleted && <CheckCircle2 className="h-3 w-3 text-emerald-500" />}
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
 
         <TabsContent value="resumo" className="space-y-6">
@@ -912,23 +935,6 @@ function GestaoOSPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="faturamento">
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-primary" />
-                Dados de Faturamento
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Receipt className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Faturamento ainda não processado.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="entrega">
           <Card className="border-border shadow-md">
             <CardHeader className="bg-muted/10 border-b border-border/50">
@@ -941,6 +947,23 @@ function GestaoOSPage() {
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                 <Truck className="h-12 w-12 mb-4 opacity-20" />
                 <p className="text-xs font-bold uppercase tracking-widest">Aguardando prontidão do equipamento.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="faturamento">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Receipt className="h-5 w-5 text-primary" />
+                Dados de Faturamento
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Receipt className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest">Faturamento ainda não processado.</p>
               </div>
             </CardContent>
           </Card>
