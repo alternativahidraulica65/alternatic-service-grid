@@ -16,7 +16,12 @@ import {
   History,
   MoreVertical,
   MapPin,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  Users,
+  DollarSign,
+  Receipt,
+  PackageCheck,
+  Activity
 } from "lucide-react";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -145,11 +150,25 @@ function GestaoOSPage() {
 
       <Tabs defaultValue="resumo" className="w-full">
         <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
-          {["Resumo", "Checklist", "Laudo Técnico", "Peças", "Orçamento", "Aprovação", "Auditoria"].map((tab) => (
+          {[
+            "Resumo", 
+            "Checklist", 
+            "Laudo Técnico", 
+            "Peças", 
+            "Terceiros",
+            "Custos",
+            "Orçamento", 
+            "Aprovação", 
+            "Execução",
+            "Faturamento",
+            "Entrega",
+            "Garantia",
+            "Auditoria"
+          ].map((tab) => (
             <TabsTrigger 
               key={tab} 
               value={tab.toLowerCase().replace(" ", "-")} 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all"
+              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0"
             >
               {tab}
             </TabsTrigger>
@@ -346,6 +365,185 @@ function GestaoOSPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+             </CardContent>
+           </Card>
+        </TabsContent>
+        <TabsContent value="terceiros">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                Serviços de Terceiros
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Users className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
+                <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="custos">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-primary" />
+                Custos da Ordem de Serviço
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid gap-6 md:grid-cols-3 mb-6">
+                <div className="p-4 rounded-xl border border-border bg-slate-50">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
+                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
+                </div>
+                <div className="p-4 rounded-xl border border-border bg-slate-50">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
+                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
+                </div>
+                <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
+                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
+                  <p className="text-lg font-black text-primary">R$ 0,00</p>
+                </div>
+              </div>
+              <Button variant="outline" className="w-full border-dashed border-2 font-bold uppercase text-[10px] tracking-widest">Lançar Novo Custo</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="orçamento">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Receipt className="h-5 w-5 text-primary" />
+                Orçamento Comercial
+              </CardTitle>
+              <Button className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4">Gerar Orçamento</Button>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Receipt className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest">Nenhum orçamento gerado para esta OS.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="aprovação">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                Status de Aprovação
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50">
+                  <div>
+                    <p className="text-sm font-bold text-foreground uppercase tracking-tight">Aprovação Técnica (Gerência)</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Revisão do laudo e custos.</p>
+                  </div>
+                  <Badge className="bg-slate-200 text-slate-500 font-black uppercase text-[9px] tracking-widest">Pendente</Badge>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50">
+                  <div>
+                    <p className="text-sm font-bold text-foreground uppercase tracking-tight">Aprovação Comercial (Cliente)</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Aceite formal do orçamento.</p>
+                  </div>
+                  <Badge className="bg-slate-200 text-slate-500 font-black uppercase text-[9px] tracking-widest">Pendente</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="execução">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Execução de Serviços
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Activity className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest">Aguardando início da execução.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="faturamento">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Receipt className="h-5 w-5 text-primary" />
+                Dados de Faturamento
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Receipt className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest">Faturamento ainda não processado.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="entrega">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Truck className="h-5 w-5 text-primary" />
+                Logística de Entrega
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Truck className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest">Aguardando prontidão do equipamento.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="garantia">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                Certificado de Garantia
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <ShieldCheck className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest">Garantia será ativada na entrega.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="auditoria">
+           <Card className="border-border shadow-md overflow-hidden">
+             <CardHeader className="bg-slate-900 text-white border-b border-white/5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <History className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base font-bold uppercase tracking-widest">Log de Auditoria da OS</CardTitle>
+                  </div>
+                </div>
+             </CardHeader>
+             <CardContent className="pt-6 px-0">
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <History className="h-12 w-12 mb-4 opacity-20" />
+                  <p className="text-xs font-bold uppercase tracking-widest">Histórico de alterações sendo processado.</p>
                 </div>
              </CardContent>
            </Card>
