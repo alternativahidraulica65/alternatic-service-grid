@@ -89,7 +89,7 @@ function ClienteDetalhesPage() {
         .from('lancamentos_financeiros')
         .select('*')
         .eq('cliente_id', id)
-        .order('data_vencimento', { ascending: false });
+        .order('data_competencia', { ascending: false });
       if (error) throw error;
       return data;
     }
