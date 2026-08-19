@@ -3,11 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     const { data: { user }, error } = await supabase.auth.getUser();
     
     if (error || !user) {
-      throw redirect({ to: "/" });
+      if (location.pathname !== "/") {
+        throw redirect({ to: "/" });
+      }
+      return null;
     }
 
     // Fetch user profile and role
