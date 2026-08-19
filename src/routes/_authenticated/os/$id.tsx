@@ -391,20 +391,34 @@ function GestaoOSPage() {
       </div>
 
       {/* Fluxo de Processo (Stepper) */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-        {steps.map((step, i) => (
-          <div key={i} className="flex flex-col gap-2 group cursor-default">
-            <div className={`h-1.5 w-full rounded-full transition-all ${
-              step.status === 'completed' ? 'bg-emerald-500' :
-              step.status === 'current' ? 'bg-primary' : 'bg-slate-200'
-            }`} />
-            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
-              step.status === 'current' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
-            }`}>
-              {step.label}
-            </span>
-          </div>
-        ))}
+      <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-6 relative">
+          {steps.map((step, i) => (
+            <div key={i} className="flex flex-col gap-3 group cursor-default relative z-10">
+              <div className="flex items-center gap-2">
+                <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 transition-all ${
+                  step.status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' :
+                  step.status === 'current' ? 'bg-white border-primary text-primary shadow-sm' : 
+                  'bg-white border-slate-200 text-slate-300'
+                }`}>
+                  {step.status === 'completed' ? <Check className="h-4 w-4" /> : <span className="text-[10px] font-black">{i + 1}</span>}
+                </div>
+                <div className="flex-1 h-[2px] bg-slate-100 hidden md:block last:hidden" />
+              </div>
+              <div className="flex flex-col">
+                <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                  step.status === 'current' ? 'text-primary' : 
+                  step.status === 'completed' ? 'text-emerald-600' : 'text-slate-400'
+                }`}>
+                  {step.label}
+                </span>
+                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">
+                  {step.status === 'completed' ? 'Concluído' : step.status === 'current' ? 'Em andamento' : 'Pendente'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <Tabs defaultValue="resumo" className="w-full">
