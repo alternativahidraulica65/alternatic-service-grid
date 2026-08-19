@@ -45,7 +45,15 @@ export type Database = {
           valores_antigos?: Json | null
           valores_novos?: Json | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "auditoria_financeira_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clientes: {
         Row: {
