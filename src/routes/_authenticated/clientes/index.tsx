@@ -174,9 +174,13 @@ function ClientesPage() {
   };
 
   const handleDelete = (cliente: any) => {
-    if (confirm(`Remover cliente ${cliente.nome}? Esta ação não pode ser desfeita.`)) {
-      deleteMutation.mutate(cliente.id);
-    }
+    toast.error("Remoção confirmada", {
+      description: `Deseja remover ${cliente.nome}?`,
+      action: {
+        label: "Remover",
+        onClick: () => deleteMutation.mutate(cliente.id)
+      }
+    });
   };
 
   return (
