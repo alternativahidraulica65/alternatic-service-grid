@@ -322,8 +322,11 @@ function NovaOSPage() {
                       checked={item.checked}
                       onChange={(e) => {
                         const newCheck = [...checklist];
-                        newCheck[idx].checked = e.target.checked;
-                        setChecklist(newCheck);
+                        const itemToUpdate = newCheck[idx];
+                        if (itemToUpdate) {
+                          itemToUpdate.checked = e.target.checked;
+                          setChecklist(newCheck);
+                        }
                       }}
                       className="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                     />
