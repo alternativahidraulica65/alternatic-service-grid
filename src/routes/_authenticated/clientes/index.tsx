@@ -57,6 +57,9 @@ export const Route = createFileRoute("/_authenticated/clientes/")({
 });
 
 function ClientesPage() {
+  const { isDiretor, isFinanceiro, isGestor } = Route.useRouteContext();
+  const canWrite = isDiretor || isFinanceiro || isGestor;
+  const canDelete = isDiretor || isGestor;
   const router = useRouter();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
