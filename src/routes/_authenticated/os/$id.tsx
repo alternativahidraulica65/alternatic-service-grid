@@ -22,7 +22,9 @@ import {
   Receipt,
   PackageCheck,
   Activity,
-  ClipboardCheck
+  ClipboardCheck,
+  Image as ImageIcon,
+  Check
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
