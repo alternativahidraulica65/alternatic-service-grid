@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { 
   ClipboardList, 
   Wrench, 
@@ -57,6 +57,7 @@ export const Route = createFileRoute("/_authenticated/os/$id")({
 
 function GestaoOSPage() {
   const { id } = Route.useParams();
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data: os, isLoading } = useQuery({
@@ -148,6 +149,8 @@ function GestaoOSPage() {
       // Se for um item temporário, precisamos primeiro garantir que ele exista no banco
       if (itemId.startsWith('temp-')) {
         const item = checklistData.find((i: any) => i.id === itemId);
+        if (!item) return;
+        
         const { data, error } = await supabase
           .from('os_checklist' as any)
           .insert({
