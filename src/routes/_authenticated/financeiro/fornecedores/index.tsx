@@ -150,7 +150,7 @@ function FornecedoresPage() {
         .from('auditoria_financeira')
         .select(`
           *,
-          perfil:usuarios(nome)
+          usuarios(nome)
         `)
         .eq('tabela', 'fornecedores')
         .order('criado_em', { ascending: false })
