@@ -89,12 +89,12 @@ function GestaoOSPage() {
   });
 
   const steps = [
-    { label: "Triagem", status: os?.status === 'aberta' ? 'current' : 'completed' },
-    { label: "Vistoria", status: os?.status === 'vistoria' ? 'current' : (['aberta'].includes(os?.status || '') ? 'pending' : 'completed') },
-    { label: "Orçamento", status: os?.status === 'orcamento_pendente' ? 'current' : (['aberta', 'vistoria'].includes(os?.status || '') ? 'pending' : 'completed') },
-    { label: "Aprovação", status: os?.status === 'aprovada' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente'].includes(os?.status || '') ? 'pending' : 'completed') },
-    { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed') },
-    { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending' },
+    { label: "Triagem", status: os?.status === 'aberta' ? 'current' : 'completed', id: 'triagem' },
+    { label: "Vistoria", status: os?.status === 'vistoria' ? 'current' : (['aberta'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'checklist' },
+    { label: "Laudo", status: os?.status === 'aguardando_gestor' ? 'current' : (['aberta', 'vistoria'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'laudo-técnico' },
+    { label: "Orçamento", status: os?.status === 'orcamento_pendente' ? 'current' : (['aberta', 'vistoria', 'aguardando_gestor'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'orçamento' },
+    { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'aguardando_gestor', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'execução' },
+    { label: "Entrega", status: os?.status === 'pronto' ? 'current' : 'pending', id: 'entrega' },
   ];
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
