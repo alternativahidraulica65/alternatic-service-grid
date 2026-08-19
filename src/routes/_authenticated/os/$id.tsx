@@ -21,7 +21,8 @@ import {
   DollarSign,
   Receipt,
   PackageCheck,
-  Activity
+  Activity,
+  ClipboardCheck
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
