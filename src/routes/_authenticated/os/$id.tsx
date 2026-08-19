@@ -148,10 +148,10 @@ function GestaoOSPage() {
     try {
       // Se for um item temporário, precisamos primeiro garantir que ele exista no banco
       if (itemId.startsWith('temp-')) {
-        const item = checklistData.find((i: any) => i.id === itemId);
+        const item: any = checklistData.find((i: any) => i.id === itemId);
         if (!item) return;
         
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('os_checklist' as any)
           .insert({
             os_id: id,
@@ -159,9 +159,7 @@ function GestaoOSPage() {
             status: updates.status || item.status,
             observacao: updates.observacao || item.observacao,
             foto_url: updates.foto_url || item.foto_url
-          })
-          .select()
-          .single();
+          });
         
         if (error) throw error;
       } else {
