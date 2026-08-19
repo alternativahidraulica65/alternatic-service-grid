@@ -20,6 +20,7 @@ import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
+import { Route as AuthenticatedClientesIdRouteImport } from './routes/_authenticated/clientes/$id'
 import { Route as AuthenticatedDashboardDiretorRouteImport } from './routes/_authenticated/dashboard/diretor'
 import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_authenticated/dashboard/financeiro'
 import { Route as AuthenticatedDashboardGestorRouteImport } from './routes/_authenticated/dashboard/gestor'
@@ -88,6 +89,11 @@ const AuthenticatedClientesIndexRoute =
     path: '/clientes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedClientesIdRoute = AuthenticatedClientesIdRouteImport.update({
+  id: '/clientes/$id',
+  path: '/clientes/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardDiretorRoute =
   AuthenticatedDashboardDiretorRouteImport.update({
     id: '/diretor',
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
   '/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
   '/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/_authenticated/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
   '/_authenticated/dashboard/financeiro': typeof AuthenticatedDashboardFinanceiroRoute
   '/_authenticated/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/relatorios'
     | '/admin/usuarios'
+    | '/clientes/$id'
     | '/dashboard/diretor'
     | '/dashboard/financeiro'
     | '/dashboard/gestor'
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/relatorios'
     | '/admin/usuarios'
+    | '/clientes/$id'
     | '/dashboard/diretor'
     | '/dashboard/financeiro'
     | '/dashboard/gestor'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamento'
     | '/_authenticated/relatorios'
     | '/_authenticated/admin/usuarios'
+    | '/_authenticated/clientes/$id'
     | '/_authenticated/dashboard/diretor'
     | '/_authenticated/dashboard/financeiro'
     | '/_authenticated/dashboard/gestor'
@@ -367,6 +379,13 @@ declare module '@tanstack/react-router' {
       path: '/clientes'
       fullPath: '/clientes/'
       preLoaderRoute: typeof AuthenticatedClientesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/clientes/$id': {
+      id: '/_authenticated/clientes/$id'
+      path: '/clientes/$id'
+      fullPath: '/clientes/$id'
+      preLoaderRoute: typeof AuthenticatedClientesIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard/diretor': {
@@ -489,6 +508,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedClientesIdRoute: typeof AuthenticatedClientesIdRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
   AuthenticatedOrdensServicoNovaRoute: typeof AuthenticatedOrdensServicoNovaRoute
   AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRoute
@@ -505,6 +525,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedClientesIdRoute: AuthenticatedClientesIdRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
   AuthenticatedOrdensServicoNovaRoute: AuthenticatedOrdensServicoNovaRoute,
   AuthenticatedOsIdRoute: AuthenticatedOsIdRoute,
