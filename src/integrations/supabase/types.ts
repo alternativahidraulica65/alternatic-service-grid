@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      auditoria_financeira: {
+        Row: {
+          acao: string
+          criado_em: string | null
+          id: string
+          registro_id: string
+          tabela: string
+          user_id: string | null
+          valores_antigos: Json | null
+          valores_novos: Json | null
+        }
+        Insert: {
+          acao: string
+          criado_em?: string | null
+          id?: string
+          registro_id: string
+          tabela: string
+          user_id?: string | null
+          valores_antigos?: Json | null
+          valores_novos?: Json | null
+        }
+        Update: {
+          acao?: string
+          criado_em?: string | null
+          id?: string
+          registro_id?: string
+          tabela?: string
+          user_id?: string | null
+          valores_antigos?: Json | null
+          valores_novos?: Json | null
+        }
+        Relationships: []
+      }
       clientes: {
         Row: {
           cnpj: string | null
