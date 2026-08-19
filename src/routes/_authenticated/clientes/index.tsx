@@ -61,7 +61,10 @@ function ClientesPage() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newCliente, setNewCliente] = useState({
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedCliente, setSelectedCliente] = useState<any>(null);
+  
+  const [formValues, setFormValues] = useState({
     nome: "",
     cnpj: "",
     endereco: "",
@@ -69,37 +72,83 @@ function ClientesPage() {
     telefone: ""
   });
 
-  const { data: clientes = [], refetch } = useSuspenseQuery({
+  const { data: clientes = [] } = useSuspenseQuery({
     queryKey: ['clientes_list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('clientes').select('*');
+      const { data, error } = await supabase.from('clientes').select('*').order('nome');
       if (error) throw error;
       return data;
     }
   });
 
   const createMutation = useMutation({
-    mutationFn: async (cliente: typeof newCliente) => {
-      // Garantimos que apenas os campos existentes no banco sejam enviados
+    mutationFn: async (values: typeof formValues) => {
+      if (!values.nome.trim()) throw new Error("O nome é obrigatório");
+      
       const { error } = await supabase.from('clientes').insert([{
-        nome: cliente.nome,
-        cnpj: cliente.cnpj,
-        endereco: cliente.endereco,
-        email: cliente.email,
-        telefone: cliente.telefone
+        nome: values.nome,
+        cnpj: values.cnpj,
+        endereco: values.endereco,
+        email: values.email,
+        telefone: values.telefone
       }]);
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Cliente cadastrado com sucesso!");
       setIsDialogOpen(false);
-      setNewCliente({ nome: "", cnpj: "", endereco: "", email: "", telefone: "" });
+      setFormValues({ nome: "", cnpj: "", endereco: "", email: "", telefone: "" });
       queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
     },
     onError: (error: any) => {
       toast.error("Erro ao cadastrar cliente: " + error.message);
     }
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async (values: typeof formValues & { id: string }) => {
+      if (!values.nome.trim()) throw new Error("O nome é obrigatório");
+      
+      const { error } = await supabase.from('clientes').update({
+        nome: values.nome,
+        cnpj: values.cnpj,
+        endereco: values.endereco,
+        email: values.email,
+        telefone: values.telefone
+      }).eq('id', values.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Cliente atualizado com sucesso!");
+      setIsEditDialogOpen(false);
+      setSelectedCliente(null);
+      queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao atualizar cliente: " + error.message);
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('clientes').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Cliente removido com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao remover: " + error.message);
+    }
+  });
+
+  const filteredClientes = clientes.filter((c: any) => 
+    c.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.cnpj?.includes(searchTerm) ||
+    c.endereco?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const stats = {
     total: clientes.length,
@@ -110,6 +159,28 @@ function ClientesPage() {
       const now = new Date();
       return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
     }).length
+  };
+
+  const handleEdit = (cliente: any) => {
+    setSelectedCliente(cliente);
+    setFormValues({
+      nome: cliente.nome || "",
+      cnpj: cliente.cnpj || "",
+      endereco: cliente.endereco || "",
+      email: cliente.email || "",
+      telefone: cliente.telefone || ""
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (cliente: any) => {
+    toast.error("Remoção confirmada", {
+      description: `Deseja remover ${cliente.nome}?`,
+      action: {
+        label: "Remover",
+        onClick: () => deleteMutation.mutate(cliente.id)
+      }
+    });
   };
 
   return (
@@ -140,8 +211,8 @@ function ClientesPage() {
                 <Label htmlFor="nome" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social / Nome Fantasia</Label>
                 <Input 
                   id="nome" 
-                  value={newCliente.nome} 
-                  onChange={(e) => setNewCliente({...newCliente, nome: e.target.value})}
+                  value={formValues.nome} 
+                  onChange={(e) => setFormValues({...formValues, nome: e.target.value})}
                   className="h-11 border-border"
                 />
               </div>
@@ -149,8 +220,8 @@ function ClientesPage() {
                 <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
                 <Input 
                   id="cnpj" 
-                  value={newCliente.cnpj} 
-                  onChange={(e) => setNewCliente({...newCliente, cnpj: e.target.value})}
+                  value={formValues.cnpj} 
+                  onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
                   className="h-11 border-border font-mono"
                   placeholder="00.000.000/0000-00"
                 />
@@ -159,8 +230,8 @@ function ClientesPage() {
                 <Label htmlFor="endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
                 <Input 
                   id="endereco" 
-                  value={newCliente.endereco} 
-                  onChange={(e) => setNewCliente({...newCliente, endereco: e.target.value})}
+                  value={formValues.endereco} 
+                  onChange={(e) => setFormValues({...formValues, endereco: e.target.value})}
                   className="h-11 border-border"
                 />
               </div>
@@ -169,8 +240,8 @@ function ClientesPage() {
                   <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
                   <Input 
                     id="email" 
-                    value={newCliente.email} 
-                    onChange={(e) => setNewCliente({...newCliente, email: e.target.value})}
+                    value={formValues.email} 
+                    onChange={(e) => setFormValues({...formValues, email: e.target.value})}
                     className="h-11 border-border"
                     placeholder="contato@empresa.com"
                   />
@@ -179,8 +250,8 @@ function ClientesPage() {
                   <Label htmlFor="telefone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</Label>
                   <Input 
                     id="telefone" 
-                    value={newCliente.telefone} 
-                    onChange={(e) => setNewCliente({...newCliente, telefone: e.target.value})}
+                    value={formValues.telefone} 
+                    onChange={(e) => setFormValues({...formValues, telefone: e.target.value})}
                     className="h-11 border-border"
                     placeholder="(00) 0000-0000"
                   />
@@ -196,8 +267,8 @@ function ClientesPage() {
                 Cancelar
               </Button>
               <Button 
-                onClick={() => createMutation.mutate(newCliente)}
-                disabled={createMutation.isPending || !newCliente.nome}
+                onClick={() => createMutation.mutate(formValues)}
+                disabled={createMutation.isPending || !formValues.nome}
                 className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] px-8"
               >
                 {createMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
@@ -294,7 +365,7 @@ function ClientesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clientes.map((cliente: any) => (
+              {filteredClientes.map((cliente: any) => (
                 <TableRow key={cliente.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
@@ -338,21 +409,17 @@ function ClientesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
+                        <DropdownMenuItem 
+                          className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                          onClick={() => handleEdit(cliente)}
+                        >
+                          Editar Cliente
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Ver Perfil</DropdownMenuItem>
                         <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Nova OS</DropdownMenuItem>
-                        <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Histórico Financeiro</DropdownMenuItem>
                         <DropdownMenuItem 
                           className="text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 text-red-400 cursor-pointer"
-                          onClick={async () => {
-                            if (confirm(`Remover cliente ${cliente.nome}?`)) {
-                              const { error } = await supabase.from('clientes').delete().eq('id', cliente.id);
-                              if (error) toast.error("Erro ao remover: " + error.message);
-                              else {
-                                toast.success("Cliente removido!");
-                                queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
-                              }
-                            }
-                          }}
+                          onClick={() => handleDelete(cliente)}
                         >
                           Remover Cliente
                         </DropdownMenuItem>
@@ -365,6 +432,83 @@ function ClientesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[500px] bg-white">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">EDITAR <span className="text-primary">CLIENTE</span></DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="edit-nome" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social / Nome Fantasia</Label>
+              <Input 
+                id="edit-nome" 
+                value={formValues.nome} 
+                onChange={(e) => setFormValues({...formValues, nome: e.target.value})}
+                className="h-11 border-border"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
+              <Input 
+                id="edit-cnpj" 
+                value={formValues.cnpj} 
+                onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
+                className="h-11 border-border font-mono"
+                placeholder="00.000.000/0000-00"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
+              <Input 
+                id="edit-endereco" 
+                value={formValues.endereco} 
+                onChange={(e) => setFormValues({...formValues, endereco: e.target.value})}
+                className="h-11 border-border"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="edit-email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
+                <Input 
+                  id="edit-email" 
+                  value={formValues.email} 
+                  onChange={(e) => setFormValues({...formValues, email: e.target.value})}
+                  className="h-11 border-border"
+                  placeholder="contato@empresa.com"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-telefone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</Label>
+                <Input 
+                  id="edit-telefone" 
+                  value={formValues.telefone} 
+                  onChange={(e) => setFormValues({...formValues, telefone: e.target.value})}
+                  className="h-11 border-border"
+                  placeholder="(00) 0000-0000"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsEditDialogOpen(false)}
+              className="h-11 font-bold uppercase text-[10px] tracking-widest"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => updateMutation.mutate({ ...formValues, id: selectedCliente?.id })}
+              disabled={updateMutation.isPending || !formValues.nome}
+              className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] px-8"
+            >
+              {updateMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+              Salvar Alterações
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

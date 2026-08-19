@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,6 +43,16 @@ function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.navigate({ to: "/dashboard", replace: true });
+      }
+    };
+    checkUser();
+  }, [router]);
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -90,7 +100,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
+    <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background industrial com overlay robusto */}
       <div 
         className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
@@ -238,7 +248,7 @@ function LoginPage() {
             </p>
           </div>
           <p className="mt-4 text-[10px] font-medium text-white/40">
-            © {new Date().getFullYear()} ALTERNATIVA HIDRÁULICA. TODOS OS DIREITOS RESERVADOS.
+            © 2026 ALTERNATIVA HIDRÁULICA. TODOS OS DIREITOS RESERVADOS.
           </p>
         </footer>
       </div>
