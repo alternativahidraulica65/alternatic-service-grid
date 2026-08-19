@@ -61,7 +61,10 @@ function ClientesPage() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newCliente, setNewCliente] = useState({
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedCliente, setSelectedCliente] = useState<any>(null);
+  
+  const [formValues, setFormValues] = useState({
     nome: "",
     cnpj: "",
     endereco: "",
@@ -69,37 +72,83 @@ function ClientesPage() {
     telefone: ""
   });
 
-  const { data: clientes = [], refetch } = useSuspenseQuery({
+  const { data: clientes = [] } = useSuspenseQuery({
     queryKey: ['clientes_list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('clientes').select('*');
+      const { data, error } = await supabase.from('clientes').select('*').order('nome');
       if (error) throw error;
       return data;
     }
   });
 
   const createMutation = useMutation({
-    mutationFn: async (cliente: typeof newCliente) => {
-      // Garantimos que apenas os campos existentes no banco sejam enviados
+    mutationFn: async (values: typeof formValues) => {
+      if (!values.nome.trim()) throw new Error("O nome é obrigatório");
+      
       const { error } = await supabase.from('clientes').insert([{
-        nome: cliente.nome,
-        cnpj: cliente.cnpj,
-        endereco: cliente.endereco,
-        email: cliente.email,
-        telefone: cliente.telefone
+        nome: values.nome,
+        cnpj: values.cnpj,
+        endereco: values.endereco,
+        email: values.email,
+        telefone: values.telefone
       }]);
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Cliente cadastrado com sucesso!");
       setIsDialogOpen(false);
-      setNewCliente({ nome: "", cnpj: "", endereco: "", email: "", telefone: "" });
+      setFormValues({ nome: "", cnpj: "", endereco: "", email: "", telefone: "" });
       queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
     },
     onError: (error: any) => {
       toast.error("Erro ao cadastrar cliente: " + error.message);
     }
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async (values: typeof formValues & { id: string }) => {
+      if (!values.nome.trim()) throw new Error("O nome é obrigatório");
+      
+      const { error } = await supabase.from('clientes').update({
+        nome: values.nome,
+        cnpj: values.cnpj,
+        endereco: values.endereco,
+        email: values.email,
+        telefone: values.telefone
+      }).eq('id', values.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Cliente atualizado com sucesso!");
+      setIsEditDialogOpen(false);
+      setSelectedCliente(null);
+      queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao atualizar cliente: " + error.message);
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('clientes').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Cliente removido com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao remover: " + error.message);
+    }
+  });
+
+  const filteredClientes = clientes.filter((c: any) => 
+    c.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.cnpj?.includes(searchTerm) ||
+    c.endereco?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const stats = {
     total: clientes.length,
@@ -110,6 +159,24 @@ function ClientesPage() {
       const now = new Date();
       return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
     }).length
+  };
+
+  const handleEdit = (cliente: any) => {
+    setSelectedCliente(cliente);
+    setFormValues({
+      nome: cliente.nome || "",
+      cnpj: cliente.cnpj || "",
+      endereco: cliente.endereco || "",
+      email: cliente.email || "",
+      telefone: cliente.telefone || ""
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (cliente: any) => {
+    if (confirm(`Remover cliente ${cliente.nome}? Esta ação não pode ser desfeita.`)) {
+      deleteMutation.mutate(cliente.id);
+    }
   };
 
   return (
