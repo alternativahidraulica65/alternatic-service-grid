@@ -104,7 +104,7 @@ function NovaOSPage() {
 
   // Form State
   const [cliente, setCliente] = useState("");
-  const [tipoEquipamento, setTipoEquipamento] = useState<"Cilindro" | "Bomba" | "Motor" | "">("");
+  const [tipoEquipamento, setTipoEquipamento] = useState<string>("");
   const [pecas, setPecas] = useState<Peca[]>([]);
   const [checklist, setChecklist] = useState<{label: string, checked: boolean}[]>([]);
   const [loading, setLoading] = useState(false);
@@ -293,9 +293,11 @@ function NovaOSPage() {
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Cilindro">Cilindro Hidráulico</SelectItem>
-                    <SelectItem value="Bomba">Bomba Hidráulica</SelectItem>
-                    <SelectItem value="Motor">Motor Hidráulico</SelectItem>
+                    {templates?.map((t: any) => (
+                      <SelectItem key={t.id} value={t.tipo_equipamento}>
+                        {t.tipo_equipamento}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
