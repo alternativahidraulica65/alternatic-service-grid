@@ -10,13 +10,13 @@ export const Route = createFileRoute("/_authenticated")({
       throw redirect({ to: "/" });
     }
 
-    // Fetch user profile and role
+    // Fetch user profile and role using auth.uid() which is user.id
     const { data: profile } = await supabase
       .from("usuarios")
       .select("*")
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .single();
-
+    
     const { data: userRoles } = await supabase
       .from("user_roles")
       .select("role")
