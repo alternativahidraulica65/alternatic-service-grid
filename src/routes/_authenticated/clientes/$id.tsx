@@ -95,6 +95,33 @@ function ClienteDetalhesPage() {
     }
   });
 
+  const { data: orcamentos = [] } = useQuery({
+    queryKey: ['cliente_orcamentos', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orcamentos')
+        .select('*')
+        .eq('cliente_id', id)
+        .order('data_emissao', { ascending: false });
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: historico = [] } = useQuery({
+    queryKey: ['cliente_historico', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('auditoria_financeira')
+        .select('*')
+        .eq('registro_id', id)
+        .order('criado_em', { ascending: false });
+      if (error) throw error;
+      return data;
+    }
+  });
+
+
 
   const { data: ordens = [], isLoading: isLoadingOS } = useQuery({
     queryKey: ['cliente_os', id],
