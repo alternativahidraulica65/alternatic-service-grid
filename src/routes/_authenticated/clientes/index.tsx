@@ -198,88 +198,90 @@ function ClientesPage() {
             <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Base de dados unificada e histórico comercial.</p>
           </div>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6 shadow-lg shadow-primary/20">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Novo Cliente
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px] bg-white">
-            <DialogHeader>
-              <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">CADASTRAR <span className="text-primary">NOVO CLIENTE</span></DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="nome" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social / Nome Fantasia</Label>
-                <Input 
-                  id="nome" 
-                  value={formValues.nome} 
-                  onChange={(e) => setFormValues({...formValues, nome: e.target.value})}
-                  className="h-11 border-border"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
-                <Input 
-                  id="cnpj" 
-                  value={formValues.cnpj} 
-                  onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
-                  className="h-11 border-border font-mono"
-                  placeholder="00.000.000/0000-00"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
-                <Input 
-                  id="endereco" 
-                  value={formValues.endereco} 
-                  onChange={(e) => setFormValues({...formValues, endereco: e.target.value})}
-                  className="h-11 border-border"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+        {canWrite && (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6 shadow-lg shadow-primary/20">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Novo Cliente
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px] bg-white">
+              <DialogHeader>
+                <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">CADASTRAR <span className="text-primary">NOVO CLIENTE</span></DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
+                  <Label htmlFor="nome" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social / Nome Fantasia</Label>
                   <Input 
-                    id="email" 
-                    value={formValues.email} 
-                    onChange={(e) => setFormValues({...formValues, email: e.target.value})}
+                    id="nome" 
+                    value={formValues.nome} 
+                    onChange={(e) => setFormValues({...formValues, nome: e.target.value})}
                     className="h-11 border-border"
-                    placeholder="contato@empresa.com"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="telefone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</Label>
+                  <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
                   <Input 
-                    id="telefone" 
-                    value={formValues.telefone} 
-                    onChange={(e) => setFormValues({...formValues, telefone: e.target.value})}
-                    className="h-11 border-border"
-                    placeholder="(00) 0000-0000"
+                    id="cnpj" 
+                    value={formValues.cnpj} 
+                    onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
+                    className="h-11 border-border font-mono"
+                    placeholder="00.000.000/0000-00"
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
+                  <Input 
+                    id="endereco" 
+                    value={formValues.endereco} 
+                    onChange={(e) => setFormValues({...formValues, endereco: e.target.value})}
+                    className="h-11 border-border"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
+                    <Input 
+                      id="email" 
+                      value={formValues.email} 
+                      onChange={(e) => setFormValues({...formValues, email: e.target.value})}
+                      className="h-11 border-border"
+                      placeholder="contato@empresa.com"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="telefone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</Label>
+                    <Input 
+                      id="telefone" 
+                      value={formValues.telefone} 
+                      onChange={(e) => setFormValues({...formValues, telefone: e.target.value})}
+                      className="h-11 border-border"
+                      placeholder="(00) 0000-0000"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            <DialogFooter className="pt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setIsDialogOpen(false)}
-                className="h-11 font-bold uppercase text-[10px] tracking-widest"
-              >
-                Cancelar
-              </Button>
-              <Button 
-                onClick={() => createMutation.mutate(formValues)}
-                disabled={createMutation.isPending || !formValues.nome}
-                className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] px-8"
-              >
-                {createMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
-                Confirmar Cadastro
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter className="pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                  className="h-11 font-bold uppercase text-[10px] tracking-widest"
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={() => createMutation.mutate(formValues)}
+                  disabled={createMutation.isPending || !formValues.nome}
+                  className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] px-8"
+                >
+                  {createMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+                  Confirmar Cadastro
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-4">
