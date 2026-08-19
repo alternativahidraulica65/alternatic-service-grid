@@ -238,7 +238,7 @@ function LoginPage() {
             </p>
           </div>
           <p className="mt-4 text-[10px] font-medium text-white/40">
-            © {new Date().getFullYear()} ALTERNATIVA HIDRÁULICA. TODOS OS DIREITOS RESERVADOS.
+            © 2026 ALTERNATIVA HIDRÁULICA. TODOS OS DIREITOS RESERVADOS.
           </p>
         </footer>
       </div>
