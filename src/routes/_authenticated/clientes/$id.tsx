@@ -175,153 +175,208 @@ function ClienteDetalhesPage() {
             <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">{cliente.nome}</p>
           </div>
         </div>
-        <Button 
-          onClick={() => router.navigate({ to: "/os/nova", search: { cliente_id: cliente.id } as any })}
-          className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6 shadow-lg shadow-primary/20"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Nova OS para Cliente
-        </Button>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Dados Cadastrais */}
-        <Card className="lg:col-span-2 border-border shadow-sm bg-white">
-          <CardHeader className="border-b border-slate-50">
-            <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-primary" />
-              Informações Cadastrais
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
-            <div className="space-y-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social</p>
-              <p className="text-sm font-bold uppercase">{cliente.nome}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</p>
-              <p className="text-sm font-mono font-medium">{cliente.cnpj || "Não informado"}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</p>
-              <div className="flex items-center gap-2">
-                <Mail className="h-3 w-3 text-slate-400" />
-                <p className="text-sm font-medium">{cliente.email || "Não informado"}</p>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</p>
-              <div className="flex items-center gap-2">
-                <Phone className="h-3 w-3 text-slate-400" />
-                <p className="text-sm font-medium">{cliente.telefone || "Não informado"}</p>
-              </div>
-            </div>
-            <div className="md:col-span-2 space-y-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço</p>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-3 w-3 text-slate-400" />
-                <p className="text-sm font-medium">{cliente.endereco || "Não informado"}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Resumo Financeiro/Operacional */}
-        <div className="space-y-6">
-          <Card className="border-border shadow-sm bg-white border-l-4 border-l-primary">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <Wrench className="h-5 w-5 text-primary" />
-                <Badge variant="outline" className="text-[9px] font-black uppercase">Volume OS</Badge>
-              </div>
-              <p className="text-2xl font-black text-foreground">{stats.totalOS}</p>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Ordens de Serviço Totais</p>
-            </CardContent>
-          </Card>
-          <Card className="border-border shadow-sm bg-white border-l-4 border-l-amber-500">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <Clock className="h-5 w-5 text-amber-500" />
-                <Badge className="bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest">Pendentes</Badge>
-              </div>
-              <p className="text-2xl font-black text-foreground">{stats.osAbertas}</p>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">OS em Execução</p>
-            </CardContent>
-          </Card>
+        <div className="flex gap-2">
+          <Button variant="outline" className="h-11 font-black uppercase tracking-widest text-xs px-6">
+            <Edit className="mr-2 h-4 w-4" />
+            Editar
+          </Button>
+          <Button 
+            onClick={() => router.navigate({ to: "/os/nova", search: { cliente_id: cliente.id } as any })}
+            className="h-11 bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-6 shadow-lg shadow-primary/20"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Nova OS
+          </Button>
         </div>
       </div>
 
-      {/* Histórico de OS */}
-      <Card className="border-border shadow-md overflow-hidden bg-white">
-        <CardHeader className="bg-slate-50 border-b border-border/50 py-4">
-          <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-primary" />
-            Histórico de Ordens de Serviço
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-slate-50/50">
-              <TableRow className="hover:bg-transparent border-b border-border">
-                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4 pl-6">Nº OS</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Data Abertura</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Status</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Prioridade</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest py-4">Valor Total</TableHead>
-                <TableHead className="py-4 pr-6 text-right"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {ordens.length > 0 ? (
-                ordens.map((os) => (
-                  <TableRow key={os.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
-                    <TableCell className="py-4 pl-6 text-sm font-black text-primary">{os.numero_os}</TableCell>
-                    <TableCell className="py-4 text-xs font-medium text-muted-foreground">
-                      {os.data_abertura ? format(new Date(os.data_abertura), "dd/MM/yyyy", { locale: ptBR }) : "N/A"}
-                    </TableCell>
-                    <TableCell className="py-4">
-                      <Badge className={`text-[9px] font-black uppercase tracking-widest ${
-                        os.status === 'Concluída' ? 'bg-emerald-500 text-white' :
-                        os.status === 'Cancelada' ? 'bg-red-500 text-white' :
-                        'bg-amber-500 text-white'
-                      }`}>
-                        {os.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="py-4">
-                      <Badge variant="outline" className={`text-[9px] font-black uppercase tracking-widest ${
-                        os.prioridade === 'Alta' || os.prioridade === 'Urgente' ? 'text-red-500 border-red-200 bg-red-50' : ''
-                      }`}>
-                        {os.prioridade}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="py-4 text-sm font-bold text-foreground">
-                      {os.valor_total ? os.valor_total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : "—"}
-                    </TableCell>
-                    <TableCell className="py-4 pr-6 text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-primary"
-                        onClick={() => router.navigate({ to: '/kanban' })}
-                      >
-                        <ExternalLink className="mr-2 h-3.5 w-3.5" />
-                        Ver Detalhes
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-32 text-center text-muted-foreground italic text-xs">
-                    Nenhuma Ordem de Serviço registrada para este cliente.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="resumo" className="w-full">
+        <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
+          {["Resumo", "Dados Cadastrais", "Contatos", "Equipamentos", "OS", "Orçamentos", "Financeiro", "Histórico"].map((tab) => (
+            <TabsTrigger 
+              key={tab} 
+              value={tab.toLowerCase().replace(" ", "-")} 
+              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all"
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        <TabsContent value="resumo">
+           <div className="grid gap-6 md:grid-cols-4">
+             <Card className="border-border shadow-sm bg-white border-l-4 border-l-primary">
+               <CardContent className="pt-6">
+                 <div className="flex items-center justify-between mb-2">
+                   <Wrench className="h-5 w-5 text-primary" />
+                   <Badge variant="outline" className="text-[9px] font-black uppercase">Volume</Badge>
+                 </div>
+                 <p className="text-2xl font-black text-foreground">{stats.totalOS}</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Ordens de Serviço</p>
+               </CardContent>
+             </Card>
+             <Card className="border-border shadow-sm bg-white border-l-4 border-l-amber-500">
+               <CardContent className="pt-6">
+                 <div className="flex items-center justify-between mb-2">
+                   <Clock className="h-5 w-5 text-amber-500" />
+                   <Badge className="bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest">Pendentes</Badge>
+                 </div>
+                 <p className="text-2xl font-black text-foreground">{stats.osAbertas}</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">OS em Execução</p>
+               </CardContent>
+             </Card>
+             <Card className="border-border shadow-sm bg-white border-l-4 border-l-emerald-500">
+               <CardContent className="pt-6">
+                 <div className="flex items-center justify-between mb-2">
+                   <DollarSign className="h-5 w-5 text-emerald-500" />
+                   <Badge className="bg-emerald-500 text-white text-[9px] font-black uppercase tracking-widest">Faturado</Badge>
+                 </div>
+                 <p className="text-2xl font-black text-foreground">{stats.totalValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Faturamento Acumulado</p>
+               </CardContent>
+             </Card>
+             <Card className="border-border shadow-sm bg-white border-l-4 border-l-blue-500">
+               <CardContent className="pt-6">
+                 <div className="flex items-center justify-between mb-2">
+                   <Box className="h-5 w-5 text-blue-500" />
+                   <Badge className="bg-blue-500 text-white text-[9px] font-black uppercase tracking-widest">Inventário</Badge>
+                 </div>
+                 <p className="text-2xl font-black text-foreground">{equipamentos.length}</p>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Equipamentos Cadastrados</p>
+               </CardContent>
+             </Card>
+           </div>
+        </TabsContent>
+
+        <TabsContent value="dados-cadastrais">
+           <Card className="border-border shadow-sm bg-white">
+             <CardHeader>
+               <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                 <Building2 className="h-4 w-4 text-primary" />
+                 Informações Cadastrais
+               </CardTitle>
+             </CardHeader>
+             <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social</p>
+                  <p className="text-sm font-bold uppercase">{cliente.nome}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</p>
+                  <p className="text-sm font-mono font-medium">{cliente.cnpj || "Não informado"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</p>
+                  <p className="text-sm font-medium">{cliente.email || "Não informado"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</p>
+                  <p className="text-sm font-medium">{cliente.telefone || "Não informado"}</p>
+                </div>
+                <div className="md:col-span-2 space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço</p>
+                  <p className="text-sm font-medium">{cliente.endereco || "Não informado"}</p>
+                </div>
+             </CardContent>
+           </Card>
+        </TabsContent>
+
+        <TabsContent value="contatos">
+           <Card className="border-border shadow-sm bg-white">
+              <CardContent className="p-6">
+                 {contatos.length > 0 ? (
+                    <div className="grid gap-4 md:grid-cols-2">
+                       {contatos.map(c => (
+                         <div key={c.id} className="p-4 rounded-lg border border-border flex items-center justify-between bg-slate-50/50">
+                           <div>
+                             <p className="font-bold uppercase text-xs">{c.nome}</p>
+                             <p className="text-[10px] text-muted-foreground">{c.cargo}</p>
+                           </div>
+                           <div className="text-[10px] font-mono text-muted-foreground">{c.telefone}</div>
+                         </div>
+                       ))}
+                    </div>
+                 ) : (
+                    <div className="text-center py-12 text-muted-foreground text-xs uppercase italic">Nenhum contato cadastrado.</div>
+                 )}
+              </CardContent>
+           </Card>
+        </TabsContent>
+
+        <TabsContent value="equipamentos">
+           <Card className="border-border shadow-sm bg-white">
+              <CardContent className="p-6">
+                 {equipamentos.length > 0 ? (
+                   <Table>
+                     <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-[10px] font-black uppercase tracking-widest">Equipamento</TableHead>
+                          <TableHead className="text-[10px] font-black uppercase tracking-widest">Tipo</TableHead>
+                          <TableHead className="text-[10px] font-black uppercase tracking-widest">Modelo</TableHead>
+                        </TableRow>
+                     </TableHeader>
+                     <TableBody>
+                        {equipamentos.map(e => (
+                           <TableRow key={e.id}>
+                             <TableCell className="font-bold text-xs">{e.nome}</TableCell>
+                             <TableCell className="text-xs">{e.tipo}</TableCell>
+                             <TableCell className="text-xs font-mono">{e.modelo}</TableCell>
+                           </TableRow>
+                        ))}
+                     </TableBody>
+                   </Table>
+                 ) : (
+                    <div className="text-center py-12 text-muted-foreground text-xs uppercase italic">Nenhum equipamento registrado.</div>
+                 )}
+              </CardContent>
+           </Card>
+        </TabsContent>
+
+        <TabsContent value="os">
+           <Card className="border-border shadow-sm bg-white">
+              <CardContent className="p-0">
+                  <Table>
+                     <TableHeader>
+                       <TableRow>
+                         <TableHead className="text-[10px] font-black uppercase tracking-widest pl-6">Nº OS</TableHead>
+                         <TableHead className="text-[10px] font-black uppercase tracking-widest">Data</TableHead>
+                         <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
+                       </TableRow>
+                     </TableHeader>
+                     <TableBody>
+                       {ordens.map(os => (
+                         <TableRow key={os.id}>
+                           <TableCell className="pl-6 font-bold text-primary">{os.numero_os}</TableCell>
+                           <TableCell className="text-xs">{os.data_abertura ? format(new Date(os.data_abertura), "dd/MM/yyyy") : "—"}</TableCell>
+                           <TableCell><Badge variant="secondary" className="text-[9px] uppercase">{os.status}</Badge></TableCell>
+                         </TableRow>
+                       ))}
+                     </TableBody>
+                  </Table>
+              </CardContent>
+           </Card>
+        </TabsContent>
+        
+        <TabsContent value="orçamentos">
+           <Card className="border-border shadow-sm bg-white">
+              <CardContent className="p-6 text-center text-muted-foreground text-xs italic">Em implementação.</CardContent>
+           </Card>
+        </TabsContent>
+
+        <TabsContent value="financeiro">
+           <Card className="border-border shadow-sm bg-white">
+              <CardContent className="p-6 text-center text-muted-foreground text-xs italic">Em implementação.</CardContent>
+           </Card>
+        </TabsContent>
+
+        <TabsContent value="histórico">
+           <Card className="border-border shadow-sm bg-white">
+              <CardContent className="p-6 text-center text-muted-foreground text-xs italic">Logs de auditoria.</CardContent>
+           </Card>
+        </TabsContent>
+
+      </Tabs>
     </div>
   );
+
 }
