@@ -433,19 +433,28 @@ function GestaoOSPage() {
             "Orçamento", 
             "Aprovação", 
             "Execução",
-            "Faturamento",
             "Entrega",
+            "Faturamento",
             "Garantia",
             "Auditoria"
-          ].map((tab) => (
-            <TabsTrigger 
-              key={tab} 
-              value={tab.toLowerCase().replace(" ", "-")} 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0"
-            >
-              {tab}
-            </TabsTrigger>
-          ))}
+          ].map((tab) => {
+            const tabValue = tab.toLowerCase().replace(" ", "-");
+            const isCompleted = 
+              (tabValue === 'checklist' && (os?.status !== 'aberta' && os?.status !== 'vistoria')) ||
+              (tabValue === 'laudo-técnico' && !['aberta', 'vistoria', 'aguardando_gestor'].includes(os?.status || '')) ||
+              (tabValue === 'orçamento' && ['aprovada', 'usinagem', 'montagem', 'pronto', 'entregue', 'concluida'].includes(os?.status || ''));
+
+            return (
+              <TabsTrigger 
+                key={tab} 
+                value={tabValue} 
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0 flex items-center gap-2"
+              >
+                {tab}
+                {isCompleted && <CheckCircle2 className="h-3 w-3 text-emerald-500" />}
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
 
         <TabsContent value="resumo" className="space-y-6">
