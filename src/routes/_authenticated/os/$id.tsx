@@ -21,9 +21,10 @@ import {
   DollarSign,
   Receipt,
   PackageCheck,
-  Activity
+  Activity,
+  ClipboardCheck
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -41,6 +42,14 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/os/$id")({
   component: GestaoOSPage,
@@ -84,6 +93,94 @@ function GestaoOSPage() {
     { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed') },
     { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending' },
   ];
+
+  const { data: checklistData = [], refetch: refetchChecklist } = useQuery({
+    queryKey: ['os_checklist', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_checklist' as any)
+        .select('*')
+        .eq('os_id', id);
+      if (error) {
+        console.warn("Checklist table error:", error);
+        return [];
+      }
+      return data || [];
+    }
+  });
+
+  const [savingChecklist, setSavingChecklist] = useState(false);
+
+  const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
+    try {
+      const { error } = await supabase
+        .from('os_checklist' as any)
+        .update(updates)
+        .eq('id', itemId);
+      if (error) throw error;
+      refetchChecklist();
+    } catch (error: any) {
+      toast.error("Erro ao atualizar item: " + error.message);
+    }
+  };
+
+  const handleChecklistPhoto = async (itemId: string) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${id}/checklist/${itemId}-${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('os-assets')
+          .upload(fileName, file);
+        
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
+        await handleUpdateChecklistItem(itemId, { foto_url: urlData.publicUrl });
+        toast.success("Foto anexada com sucesso");
+      } catch (error: any) {
+        toast.error("Erro no upload: " + error.message);
+      }
+    };
+    input.click();
+  };
+
+  const handleFinalizarChecklist = async () => {
+    const itemsPendingPhoto = checklistData.filter((item: any) => 
+      (item.status === 'Danificado' || item.status === 'Substituir') && !item.foto_url
+    );
+
+    if (itemsPendingPhoto.length > 0) {
+      toast.error("Fotos obrigatórias pendentes", {
+        description: "Itens com status 'Danificado' ou 'Substituir' exigem comprovação por foto."
+      });
+      return;
+    }
+
+    setSavingChecklist(true);
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ status: 'vistoria' })
+        .eq('id', id);
+      if (error) throw error;
+      
+      toast.success("Checklist finalizado", {
+        description: "OS avançada para Vistoria Técnica."
+      });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+    } catch (error: any) {
+      toast.error("Erro ao finalizar: " + error.message);
+    } finally {
+      setSavingChecklist(false);
+    }
+  };
 
   if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
   if (!os) return <div className="p-10 text-center uppercase font-black text-red-500">Ordem de Serviço não encontrada.</div>;
@@ -263,32 +360,79 @@ function GestaoOSPage() {
            <Card className="border-border shadow-md">
              <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
                <div>
-                 <CardTitle className="text-base font-bold uppercase tracking-widest">Checklist de Entrada</CardTitle>
+                 <CardTitle className="text-base font-bold uppercase tracking-widest text-slate-900">Checklist de Entrada</CardTitle>
                  <CardDescription>Verificação visual e física do equipamento.</CardDescription>
                </div>
-               <Button className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4">Salvar Checklist</Button>
+               <Button 
+                className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
+                onClick={handleFinalizarChecklist}
+                disabled={savingChecklist || checklistData.length === 0}
+               >
+                 {savingChecklist ? "Processando..." : "Finalizar Checklist"}
+               </Button>
              </CardHeader>
              <CardContent className="pt-6">
                <div className="space-y-4">
-                 {[
-                   { item: "Pintura / Carcaça Externa", status: "Aprovado" },
-                   { item: "Conexões Hidráulicas", status: "Danificado" },
-                   { item: "Parafusos de Fixação", status: "Substituir" },
-                   { item: "Haste (Riscos/Empenos)", status: "Aprovado" },
-                 ].map((check, i) => (
-                   <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50/30">
-                     <span className="text-sm font-bold text-foreground uppercase tracking-tight">{check.item}</span>
-                     <div className="flex items-center gap-4">
-                       <Badge className={`text-[9px] font-black uppercase tracking-widest ${
-                         check.status === 'Aprovado' ? 'bg-emerald-500 text-white' : 
-                         check.status === 'Danificado' ? 'bg-amber-500 text-white' : 'bg-red-500 text-white'
-                       }`}>{check.status}</Badge>
-                       <Button variant="outline" size="icon" className="h-8 w-8 border-border text-slate-400">
-                         <Camera className="h-4 w-4" />
-                       </Button>
-                     </div>
+                 {checklistData.length === 0 ? (
+                   <div className="flex flex-col items-center justify-center py-10 text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50">
+                     <ClipboardCheck className="h-10 w-10 mb-2 opacity-20" />
+                     <p className="text-xs font-bold uppercase tracking-widest">Nenhum item de checklist encontrado.</p>
                    </div>
-                 ))}
+                 ) : (
+                   checklistData.map((item: any) => (
+                     <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start p-4 rounded-xl border border-border bg-slate-50/30">
+                       <div className="md:col-span-4">
+                         <span className="text-sm font-bold text-foreground uppercase tracking-tight">{item.item}</span>
+                       </div>
+                       
+                       <div className="md:col-span-3">
+                         <Select 
+                          value={item.status || "Pendente"} 
+                          onValueChange={(val) => handleUpdateChecklistItem(item.id, { status: val })}
+                         >
+                           <SelectTrigger className="h-9 text-[10px] font-bold uppercase border-slate-300">
+                             <SelectValue placeholder="Status" />
+                           </SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="Pendente">Pendente</SelectItem>
+                             <SelectItem value="Aprovado">Aprovado</SelectItem>
+                             <SelectItem value="Danificado">Danificado</SelectItem>
+                             <SelectItem value="Substituir">Substituir</SelectItem>
+                             <SelectItem value="Recuperar">Recuperar</SelectItem>
+                             <SelectItem value="Não Aplicável">N/A</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       </div>
+
+                       <div className="md:col-span-3">
+                         <Input 
+                          placeholder="Observação..." 
+                          className="h-9 text-xs border-slate-300"
+                          value={item.observacao || ""}
+                          onChange={(e) => handleUpdateChecklistItem(item.id, { observacao: e.target.value })}
+                         />
+                       </div>
+
+                       <div className="md:col-span-2 flex justify-end gap-2">
+                         <div className="relative group">
+                           {item.foto_url && (
+                             <div className="absolute -top-10 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
+                               <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-xl" />
+                             </div>
+                           )}
+                           <Button 
+                            variant={item.foto_url ? "default" : "outline"} 
+                            size="icon" 
+                            className={`h-9 w-9 border-border ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 animate-pulse' : ''}`}
+                            onClick={() => handleChecklistPhoto(item.id)}
+                           >
+                             <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
+                           </Button>
+                         </div>
+                       </div>
+                     </div>
+                   ))
+                 )}
                </div>
              </CardContent>
            </Card>
