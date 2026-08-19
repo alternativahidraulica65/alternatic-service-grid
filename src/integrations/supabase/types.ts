@@ -392,6 +392,7 @@ export type Database = {
       }
       lancamentos_financeiros: {
         Row: {
+          cliente_id: string | null
           criado_em: string | null
           data_competencia: string
           descricao: string | null
@@ -402,6 +403,7 @@ export type Database = {
           valor: number
         }
         Insert: {
+          cliente_id?: string | null
           criado_em?: string | null
           data_competencia?: string
           descricao?: string | null
@@ -412,6 +414,7 @@ export type Database = {
           valor: number
         }
         Update: {
+          cliente_id?: string | null
           criado_em?: string | null
           data_competencia?: string
           descricao?: string | null
@@ -422,6 +425,13 @@ export type Database = {
           valor?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "lancamentos_financeiros_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "lancamentos_financeiros_fornecedor_id_fkey"
             columns: ["fornecedor_id"]
@@ -461,6 +471,50 @@ export type Database = {
           preco_base_kg?: number
         }
         Relationships: []
+      }
+      orcamentos: {
+        Row: {
+          cliente_id: string
+          created_at: string | null
+          data_emissao: string | null
+          id: string
+          numero_orcamento: string
+          observacoes: string | null
+          status: string | null
+          validade: string | null
+          valor_total: number | null
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string | null
+          data_emissao?: string | null
+          id?: string
+          numero_orcamento: string
+          observacoes?: string | null
+          status?: string | null
+          validade?: string | null
+          valor_total?: number | null
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string | null
+          data_emissao?: string | null
+          id?: string
+          numero_orcamento?: string
+          observacoes?: string | null
+          status?: string | null
+          validade?: string | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamentos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ordens_servico: {
         Row: {
