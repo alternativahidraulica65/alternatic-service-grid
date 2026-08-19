@@ -19,7 +19,8 @@ import {
   ClipboardList,
   FileText,
   Package,
-  Receipt
+  Receipt,
+  Truck
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -84,6 +85,7 @@ function DashboardLayout() {
     { label: "Histórico Global", icon: Search, to: "/historico", roles: ["diretor", "administrativo_financeiro", "gestor"] },
     { label: "Kanban", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
     { label: "Materiais", icon: Factory, to: "/engenharia/materiais", roles: ["diretor", "gestor"] },
+    { label: "Fornecedores", icon: Truck, to: "/financeiro/fornecedores", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Usuários", icon: Users, to: "/admin/usuarios", roles: ["diretor"] },
     { label: "Relatórios", icon: FileText, to: "/relatorios", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor"] },

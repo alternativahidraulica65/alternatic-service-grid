@@ -11,7 +11,11 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Truck,
-  Plus
+  Plus,
+  Calendar,
+  Download,
+  FileSpreadsheet,
+  FileIcon
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,8 +23,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   component: DashboardFinanceiro,
@@ -56,32 +63,39 @@ function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }
 }
 
 function DashboardFinanceiro() {
-  const currentMonthStart = new Date();
-  currentMonthStart.setDate(1);
-  currentMonthStart.setHours(0, 0, 0, 0);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+
+  const filterStartDate = new Date(parseInt(selectedYear), parseInt(selectedMonth), 1);
+  const filterEndDate = endOfMonth(filterStartDate);
 
   const { data: supplierData, isLoading } = useQuery({
-    queryKey: ['supplier-costs', currentMonthStart.toISOString()],
+    queryKey: ['supplier-costs', filterStartDate.toISOString()],
     queryFn: async () => {
-      // 1. Fetch costs from lancamentos_financeiros linked to suppliers
       const { data: lancamentos, error: lError } = await supabase
         .from('lancamentos_financeiros')
         .select(`
           valor,
-          fornecedor:fornecedores(nome),
+          fornecedor:fornecedores(nome, limite_mensal, cnpj),
           os_id,
           ordem_servico:ordens_servico(numero_os)
         `)
-        .gte('data_competencia', currentMonthStart.toISOString().split('T')[0])
+        .gte('data_competencia', filterStartDate.toISOString().split('T')[0])
+        .lte('data_competencia', filterEndDate.toISOString().split('T')[0])
         .eq('tipo', 'saida');
 
       if (lError) throw lError;
 
-      // Group by supplier
       const grouped = (lancamentos || []).reduce((acc: any, curr: any) => {
         const supplierName = curr.fornecedor?.nome || 'Não Identificado';
         if (!acc[supplierName]) {
-          acc[supplierName] = { name: supplierName, total: 0, entries: [] };
+          acc[supplierName] = { 
+            name: supplierName, 
+            total: 0, 
+            entries: [], 
+            limite: curr.fornecedor?.limite_mensal || 0,
+            cnpj: curr.fornecedor?.cnpj || ''
+          };
         }
         acc[supplierName].total += Number(curr.valor);
         acc[supplierName].entries.push({
@@ -95,51 +109,57 @@ function DashboardFinanceiro() {
     }
   });
 
+  const exportCSV = () => {
+    if (!supplierData || supplierData.length === 0) return;
+    
+    const headers = ["Fornecedor", "CNPJ", "Gasto Total", "Limite Mensal", "Status"];
+    const rows = supplierData.map((s: any) => [
+      s.name,
+      s.cnpj,
+      s.total.toFixed(2),
+      s.limite.toFixed(2),
+      s.total > s.limite && s.limite > 0 ? "Excedido" : "Dentro do Limite"
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `fornecedores_${selectedMonth}_${selectedYear}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("CSV exportado com sucesso");
+  };
+
+  const exportPDF = () => {
+    window.print();
+  };
+
+  const months = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+
   return (
-    <div className="space-y-8 p-6 md:p-10 pb-10">
-      <div>
-        <h2 className="font-display text-3xl font-black text-foreground tracking-tight">DASHBOARD <span className="text-primary">FINANCEIRO</span></h2>
-        <p className="text-sm text-muted-foreground font-medium">Controle de orçamentos, aprovações e fluxo de caixa.</p>
+    <div className="space-y-8 p-6 md:p-10 pb-10 print:p-0">
+      <div className="flex justify-between items-center print:hidden">
+        <div>
+          <h2 className="font-display text-3xl font-black text-foreground tracking-tight">DASHBOARD <span className="text-primary">FINANCEIRO</span></h2>
+          <p className="text-sm text-muted-foreground font-medium">Controle de orçamentos, aprovações e fluxo de caixa.</p>
+        </div>
       </div>
 
-      {/* KPIs Financeiros Detalhados */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <FinanceKPICard 
-          title="Orçamentos" 
-          value="24" 
-          subtext="vs mês anterior" 
-          icon={FileText} 
-          trend="up"
-          trendValue="+15%"
-        />
-        <FinanceKPICard 
-          title="Aprovações" 
-          value="18" 
-          subtext="SLA de 75%" 
-          icon={CheckCircle2} 
-          trend="up"
-          trendValue="+5%"
-        />
-        <FinanceKPICard 
-          title="Faturamento" 
-          value="R$ 840k" 
-          subtext="Meta mensal" 
-          icon={TrendingUp} 
-          trend="down"
-          trendValue="-2%"
-        />
-        <FinanceKPICard 
-          title="Inadimplência" 
-          value="R$ 12k" 
-          subtext="Risco monitorado" 
-          icon={AlertTriangle} 
-          trend="up"
-          trendValue="+0.5%"
-        />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
+        <FinanceKPICard title="Orçamentos" value="24" subtext="vs mês anterior" icon={FileText} trend="up" trendValue="+15%" />
+        <FinanceKPICard title="Aprovações" value="18" subtext="SLA de 75%" icon={CheckCircle2} trend="up" trendValue="+5%" />
+        <FinanceKPICard title="Faturamento" value="R$ 840k" subtext="Meta mensal" icon={TrendingUp} trend="down" trendValue="-2%" />
+        <FinanceKPICard title="Inadimplência" value="R$ 12k" subtext="Risco monitorado" icon={AlertTriangle} trend="up" trendValue="+0.5%" />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Próximos Recebimentos */}
+      <div className="grid gap-6 lg:grid-cols-3 print:hidden">
         <Card className="lg:col-span-2 border-border shadow-md">
           <CardHeader className="bg-muted/10 border-b border-border/50">
             <div className="flex items-center justify-between">
@@ -184,7 +204,6 @@ function DashboardFinanceiro() {
           </CardContent>
         </Card>
 
-        {/* Resumo de Metas Financeiras */}
         <Card className="border-border shadow-md">
           <CardHeader className="bg-muted/10 border-b border-border/50">
             <CardTitle className="text-base font-bold">Metas do Mês</CardTitle>
@@ -215,34 +234,57 @@ function DashboardFinanceiro() {
                 Fechar Caixa do Dia
               </Button>
             </div>
-
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-100">
-               <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
-               <p className="text-[10px] text-red-700 font-bold leading-tight">
-                Existem 4 orçamentos pendentes de aprovação há mais de 48h.
-               </p>
-            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Card de Controle de Fornecedores do Mês */}
       <div className="mt-6">
-        <Card className="border-border shadow-md">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
-            <div className="flex items-center justify-between">
+        <Card className="border-border shadow-md print:shadow-none print:border-none">
+          <CardHeader className="bg-muted/10 border-b border-border/50 print:bg-white">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Truck className="h-5 w-5 text-primary" />
                   Controle de Fornecedores do Mês
                 </CardTitle>
-                <CardDescription>
-                  Custos acumulados por fornecedor em {format(new Date(), 'MMMM yyyy', { locale: ptBR })}.
+                <CardDescription className="print:text-black">
+                  Custos acumulados em {months[parseInt(selectedMonth)]} de {selectedYear}.
                 </CardDescription>
               </div>
-              <Button size="sm" className="bg-primary text-primary-foreground font-bold uppercase tracking-wider text-[10px]">
-                <Plus className="mr-1 h-3 w-3" /> Novo Lançamento
-              </Button>
+              
+              <div className="flex flex-wrap items-center gap-2 print:hidden">
+                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                  <SelectTrigger className="w-[120px] h-8 text-[10px] font-bold uppercase tracking-wider">
+                    <Calendar className="mr-2 h-3 w-3 text-primary" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((m, i) => (
+                      <SelectItem key={i} value={i.toString()} className="text-[10px] uppercase font-bold">{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedYear} onValueChange={setSelectedYear}>
+                  <SelectTrigger className="w-[100px] h-8 text-[10px] font-bold uppercase tracking-wider">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["2024", "2025", "2026"].map(y => (
+                      <SelectItem key={y} value={y} className="text-[10px] uppercase font-bold">{y}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <div className="flex gap-1 ml-2">
+                  <Button variant="outline" size="sm" onClick={exportCSV} title="Exportar CSV" className="h-8 w-8 p-0">
+                    <FileSpreadsheet className="h-4 w-4 text-emerald-500" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={exportPDF} title="Exportar PDF" className="h-8 w-8 p-0">
+                    <FileIcon className="h-4 w-4 text-red-500" />
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="pt-6">
@@ -251,48 +293,76 @@ function DashboardFinanceiro() {
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               </div>
             ) : supplierData && supplierData.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {supplierData.map((item: any, idx: number) => (
-                  <div key={idx} className="flex flex-col p-4 rounded-xl border border-border bg-slate-50/50 hover:bg-white transition-all shadow-sm hover:shadow-md group">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="h-10 w-10 rounded-lg bg-white border border-border flex items-center justify-center shadow-sm group-hover:border-primary/30 transition-colors">
-                        <Truck className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Gasto Total</p>
-                        <p className="text-lg font-black text-foreground">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total)}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <h4 className="text-sm font-bold text-foreground mb-3 truncate">{item.name}</h4>
-                    
-                    <div className="space-y-2 mt-auto">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Últimos Lançamentos / OSs</p>
-                      {item.entries.slice(0, 3).map((entry: any, eIdx: number) => (
-                        <div key={eIdx} className="flex items-center justify-between py-1 border-b border-border/40 last:border-0">
-                          <span className="text-[10px] font-medium text-slate-600">
-                            {entry.os ? `OS #${entry.os}` : 'Lançamento Direto'}
-                          </span>
-                          <span className="text-[10px] font-bold text-foreground">
-                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(entry.valor)}
-                          </span>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 print:grid-cols-2">
+                {supplierData.map((item: any, idx: number) => {
+                  const isExceeded = item.limite > 0 && item.total > item.limite;
+                  
+                  return (
+                    <div key={idx} className={`flex flex-col p-4 rounded-xl border transition-all shadow-sm group print:shadow-none ${
+                      isExceeded 
+                        ? 'border-red-500/50 bg-red-50/30' 
+                        : 'border-border bg-slate-50/50 hover:bg-white'
+                    }`}>
+                      <div className="flex justify-between items-start mb-3">
+                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center shadow-sm border transition-colors ${
+                          isExceeded ? 'bg-red-100 border-red-200' : 'bg-white border-border group-hover:border-primary/30'
+                        }`}>
+                          <Truck className={`h-5 w-5 transition-colors ${
+                            isExceeded ? 'text-red-500' : 'text-slate-400 group-hover:text-primary'
+                          }`} />
                         </div>
-                      ))}
-                      {item.entries.length > 3 && (
-                        <p className="text-[9px] text-primary font-bold text-center mt-2 cursor-pointer hover:underline">
-                          + {item.entries.length - 3} outros lançamentos
-                        </p>
+                        <div className="text-right">
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Gasto Total</p>
+                          <p className={`text-lg font-black ${isExceeded ? 'text-red-600' : 'text-foreground'}`}>
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total)}
+                          </p>
+                          {isExceeded && (
+                            <div className="flex items-center gap-1 justify-end text-[9px] text-red-500 font-bold uppercase mt-0.5 animate-pulse">
+                              <AlertCircle className="h-3 w-3" />
+                              Limite Excedido
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <h4 className="text-sm font-bold text-foreground mb-3 truncate">{item.name}</h4>
+                      
+                      {item.limite > 0 && (
+                        <div className="mb-4 space-y-1">
+                          <div className="flex justify-between text-[9px] font-bold uppercase tracking-tighter">
+                            <span className="text-muted-foreground">Uso do Limite</span>
+                            <span className={isExceeded ? 'text-red-600' : 'text-slate-600'}>
+                              {Math.round((item.total / item.limite) * 100)}%
+                            </span>
+                          </div>
+                          <Progress 
+                            value={Math.min((item.total / item.limite) * 100, 100)} 
+                            className={`h-1.5 ${isExceeded ? 'bg-red-100' : 'bg-slate-200'}`} 
+                          />
+                        </div>
                       )}
+                      
+                      <div className="space-y-2 mt-auto">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Detalhes do Mês</p>
+                        {item.entries.slice(0, 3).map((entry: any, eIdx: number) => (
+                          <div key={eIdx} className="flex items-center justify-between py-1 border-b border-border/40 last:border-0">
+                            <span className="text-[10px] font-medium text-slate-600">
+                              {entry.os ? `OS #${entry.os}` : 'Lançamento Direto'}
+                            </span>
+                            <span className="text-[10px] font-bold text-foreground">
+                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(entry.valor)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-12 border-2 border-dashed border-border rounded-xl">
                 <Truck className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm font-medium text-muted-foreground">Nenhum custo registrado para fornecedores este mês.</p>
+                <p className="text-sm font-medium text-muted-foreground">Nenhum custo registrado para fornecedores neste período.</p>
               </div>
             )}
           </CardContent>
