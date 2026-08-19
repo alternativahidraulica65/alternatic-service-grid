@@ -135,17 +135,17 @@ function NovaOSPage() {
   const { data: templates } = useSuspenseQuery({
     queryKey: ['checklist_templates'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('checklist_templates').select('*');
+      const { data, error } = await (supabase as any).from('checklist_templates').select('*');
       if (error) throw error;
-      return data;
+      return data as any[];
     }
   });
 
   useEffect(() => {
     if (tipoEquipamento && templates) {
-      const template = templates.find(t => t.tipo_equipamento === tipoEquipamento);
+      const template = templates.find((t: any) => t.tipo_equipamento === tipoEquipamento);
       if (template && template.itens) {
-        setChecklist(template.itens.map((item: any) => ({ label: item.label, checked: false })));
+        setChecklist((template.itens as any[]).map((item: any) => ({ label: item.label, checked: false })));
       } else {
         setChecklist([]);
       }
@@ -388,20 +388,22 @@ function NovaOSPage() {
                               onChange={(e) => handleFileChange(index, e)}
                             />
                           </div>
-                          <div className="flex-1 space-y-2">
-                            <Input 
-                              placeholder="Nome da peça (ex: Haste)" 
-                              value={peca.nome}
-                              onChange={(e) => handlePecaChange(index, 'nome', e.target.value)}
-                              className="h-8 text-sm border-slate-200"
-                            />
-                            <Input 
-                              placeholder="Localização (ex: Gaveta 04)" 
-                              value={peca.localizacao}
-                              onChange={(e) => handlePecaChange(index, 'localizacao', e.target.value)}
-                              className="h-8 text-sm border-slate-200"
-                            />
-                          </div>
+                          {peca && (
+                            <div className="flex-1 space-y-2">
+                              <Input 
+                                placeholder="Nome da peça (ex: Haste)" 
+                                value={peca.nome}
+                                onChange={(e) => handlePecaChange(index, 'nome', e.target.value)}
+                                className="h-8 text-sm border-slate-200"
+                              />
+                              <Input 
+                                placeholder="Localização (ex: Gaveta 04)" 
+                                value={peca.localizacao}
+                                onChange={(e) => handlePecaChange(index, 'localizacao', e.target.value)}
+                                className="h-8 text-sm border-slate-200"
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
