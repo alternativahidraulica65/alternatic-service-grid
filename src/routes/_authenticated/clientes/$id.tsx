@@ -358,22 +358,98 @@ function ClienteDetalhesPage() {
         </TabsContent>
         
         <TabsContent value="orçamentos">
-           <Card className="border-border shadow-sm bg-white">
-              <CardContent className="p-6 text-center text-muted-foreground text-xs italic">Em implementação.</CardContent>
+           <Card className="border-border shadow-sm bg-white overflow-hidden">
+              <CardContent className="p-0">
+                 {orcamentos.length > 0 ? (
+                    <Table>
+                       <TableHeader className="bg-slate-50">
+                          <TableRow>
+                             <TableHead className="text-[10px] font-black uppercase tracking-widest pl-6">Nº Orçamento</TableHead>
+                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Data</TableHead>
+                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Valor</TableHead>
+                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
+                          </TableRow>
+                       </TableHeader>
+                       <TableBody>
+                          {orcamentos.map(o => (
+                             <TableRow key={o.id}>
+                                <TableCell className="pl-6 font-bold text-primary">{o.numero_orcamento}</TableCell>
+                                <TableCell className="text-xs">{o.data_emissao ? format(new Date(o.data_emissao), "dd/MM/yyyy") : "—"}</TableCell>
+                                <TableCell className="text-xs font-bold">{o.valor_total?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
+                                <TableCell><Badge variant="outline" className="text-[9px] uppercase">{o.status}</Badge></TableCell>
+                             </TableRow>
+                          ))}
+                       </TableBody>
+                    </Table>
+                 ) : (
+                    <div className="text-center py-12 text-muted-foreground text-xs uppercase italic">Nenhum orçamento encontrado.</div>
+                 )}
+              </CardContent>
            </Card>
         </TabsContent>
 
         <TabsContent value="financeiro">
-           <Card className="border-border shadow-sm bg-white">
-              <CardContent className="p-6 text-center text-muted-foreground text-xs italic">Em implementação.</CardContent>
+           <Card className="border-border shadow-sm bg-white overflow-hidden">
+              <CardContent className="p-0">
+                 {financeiro.length > 0 ? (
+                    <Table>
+                       <TableHeader className="bg-slate-50">
+                          <TableRow>
+                             <TableHead className="text-[10px] font-black uppercase tracking-widest pl-6">Descrição</TableHead>
+                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Vencimento</TableHead>
+                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Valor</TableHead>
+                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Tipo</TableHead>
+                          </TableRow>
+                       </TableHeader>
+                       <TableBody>
+                          {financeiro.map(f => (
+                             <TableRow key={f.id}>
+                                <TableCell className="pl-6 text-xs font-bold uppercase">{f.descricao}</TableCell>
+                                <TableCell className="text-xs">{f.data_competencia ? format(new Date(f.data_competencia), "dd/MM/yyyy") : "—"}</TableCell>
+                                <TableCell className={`text-xs font-black ${f.tipo === 'receita' ? 'text-emerald-600' : 'text-red-600'}`}>
+                                   {f.valor?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                </TableCell>
+                                <TableCell><Badge className="text-[9px] uppercase">{f.tipo}</Badge></TableCell>
+                             </TableRow>
+                          ))}
+                       </TableBody>
+                    </Table>
+                 ) : (
+                    <div className="text-center py-12 text-muted-foreground text-xs uppercase italic">Nenhum lançamento financeiro.</div>
+                 )}
+              </CardContent>
            </Card>
         </TabsContent>
 
         <TabsContent value="histórico">
-           <Card className="border-border shadow-sm bg-white">
-              <CardContent className="p-6 text-center text-muted-foreground text-xs italic">Logs de auditoria.</CardContent>
+           <Card className="border-border shadow-sm bg-white overflow-hidden">
+              <CardContent className="p-0">
+                 {historico.length > 0 ? (
+                    <div className="divide-y divide-border">
+                       {historico.map(h => (
+                          <div key={h.id} className="p-4 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                             <div className="flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center">
+                                   <History className="h-4 w-4 text-slate-400" />
+                                </div>
+                                <div>
+                                   <p className="text-xs font-bold uppercase">{h.acao}</p>
+                                   <p className="text-[10px] text-muted-foreground uppercase">{h.tabela}</p>
+                                </div>
+                             </div>
+                             <div className="text-[10px] font-medium text-muted-foreground">
+                                {h.criado_em ? format(new Date(h.criado_em), "dd/MM/yyyy HH:mm") : "—"}
+                             </div>
+                          </div>
+                       ))}
+                    </div>
+                 ) : (
+                    <div className="text-center py-12 text-muted-foreground text-xs uppercase italic">Nenhum histórico registrado.</div>
+                 )}
+              </CardContent>
            </Card>
         </TabsContent>
+
 
       </Tabs>
     </div>
