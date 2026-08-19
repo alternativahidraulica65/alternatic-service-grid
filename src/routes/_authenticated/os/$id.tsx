@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { 
   ClipboardList, 
   Wrench, 
@@ -57,6 +57,7 @@ export const Route = createFileRoute("/_authenticated/os/$id")({
 
 function GestaoOSPage() {
   const { id } = Route.useParams();
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data: os, isLoading } = useQuery({
@@ -94,30 +95,80 @@ function GestaoOSPage() {
     { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending' },
   ];
 
-  const { data: checklistData = [], refetch: refetchChecklist } = useQuery({
+  const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
     queryKey: ['os_checklist', id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // 1. Tentar buscar checklist já vinculado à OS
+      const { data: existing, error } = await supabase
         .from('os_checklist' as any)
         .select('*')
         .eq('os_id', id);
+      
       if (error) {
-        console.warn("Checklist table error:", error);
-        return [];
+        console.warn("Checklist fetch error:", error);
       }
-      return data || [];
-    }
+
+      if (existing && existing.length > 0) {
+        return existing;
+      }
+
+      // 2. Se não existir, buscar o tipo de equipamento da OS para carregar do template
+      if (os?.descricao) {
+        // Tentamos extrair o tipo da descrição ou usamos um fallback
+        // Em um cenário real, haveria um campo 'tipo_equipamento' na tabela 'ordens_servico'
+        const { data: templates } = await (supabase as any)
+          .from('checklist_templates')
+          .select('*');
+        
+        // Tenta encontrar um template que bata com a descrição
+        const template = templates?.find((t: any) => 
+          os.descricao?.toLowerCase().includes(t.tipo_equipamento.toLowerCase())
+        );
+
+        if (template && template.itens) {
+          // Criar itens iniciais (não salvos ainda, apenas para exibição/preenchimento)
+          return (template.itens as any[]).map((item: any, idx: number) => ({
+            id: `temp-${idx}`,
+            item: item.label,
+            status: 'Pendente',
+            observacao: '',
+            foto_url: null
+          }));
+        }
+      }
+
+      return [];
+    },
+    enabled: !!os
   });
 
   const [savingChecklist, setSavingChecklist] = useState(false);
 
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
-      const { error } = await supabase
-        .from('os_checklist' as any)
-        .update(updates)
-        .eq('id', itemId);
-      if (error) throw error;
+      // Se for um item temporário, precisamos primeiro garantir que ele exista no banco
+      if (itemId.startsWith('temp-')) {
+        const item: any = checklistData.find((i: any) => i.id === itemId);
+        if (!item) return;
+        
+        const { error } = await supabase
+          .from('os_checklist' as any)
+          .insert({
+            os_id: id,
+            item: item.item,
+            status: updates.status || item.status,
+            observacao: updates.observacao || item.observacao,
+            foto_url: updates.foto_url || item.foto_url
+          });
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('os_checklist' as any)
+          .update(updates)
+          .eq('id', itemId);
+        if (error) throw error;
+      }
       refetchChecklist();
     } catch (error: any) {
       toast.error("Erro ao atualizar item: " + error.message);
@@ -358,81 +409,127 @@ function GestaoOSPage() {
 
         <TabsContent value="checklist">
            <Card className="border-border shadow-md">
-             <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
-               <div>
-                 <CardTitle className="text-base font-bold uppercase tracking-widest text-slate-900">Checklist de Entrada</CardTitle>
-                 <CardDescription>Verificação visual e física do equipamento.</CardDescription>
+             <CardHeader className="bg-muted/10 border-b border-border/50">
+               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                 <div>
+                   <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                     Ordem de Serviço #{os.numero_os} / Checklist
+                   </div>
+                   <CardTitle className="text-xl font-black uppercase tracking-tight text-slate-900 flex items-center gap-2">
+                     <ClipboardCheck className="h-6 w-6 text-primary" />
+                     Checklist de Equipamento
+                   </CardTitle>
+                 </div>
+                 <div className="text-right">
+                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Equipamento: <span className="text-slate-900">{os.descricao || "N/A"}</span></p>
+                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Cliente: <span className="text-slate-900">{os.cliente}</span></p>
+                 </div>
                </div>
-               <Button 
-                className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
-                onClick={handleFinalizarChecklist}
-                disabled={savingChecklist || checklistData.length === 0}
-               >
-                 {savingChecklist ? "Processando..." : "Finalizar Checklist"}
-               </Button>
              </CardHeader>
              <CardContent className="pt-6">
-               <div className="space-y-4">
-                 {checklistData.length === 0 ? (
-                   <div className="flex flex-col items-center justify-center py-10 text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50">
-                     <ClipboardCheck className="h-10 w-10 mb-2 opacity-20" />
-                     <p className="text-xs font-bold uppercase tracking-widest">Nenhum item de checklist encontrado.</p>
-                   </div>
-                 ) : (
-                   checklistData.map((item: any) => (
-                     <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start p-4 rounded-xl border border-border bg-slate-50/30">
-                       <div className="md:col-span-4">
-                         <span className="text-sm font-bold text-foreground uppercase tracking-tight">{item.item}</span>
-                       </div>
-                       
-                       <div className="md:col-span-3">
-                         <Select 
-                          value={item.status || "Pendente"} 
-                          onValueChange={(val) => handleUpdateChecklistItem(item.id, { status: val })}
-                         >
-                           <SelectTrigger className="h-9 text-[10px] font-bold uppercase border-slate-300">
-                             <SelectValue placeholder="Status" />
-                           </SelectTrigger>
-                           <SelectContent>
-                             <SelectItem value="Pendente">Pendente</SelectItem>
-                             <SelectItem value="Aprovado">Aprovado</SelectItem>
-                             <SelectItem value="Danificado">Danificado</SelectItem>
-                             <SelectItem value="Substituir">Substituir</SelectItem>
-                             <SelectItem value="Recuperar">Recuperar</SelectItem>
-                             <SelectItem value="Não Aplicável">N/A</SelectItem>
-                           </SelectContent>
-                         </Select>
-                       </div>
+               <div className="mb-6 flex items-center justify-between">
+                 <div>
+                   <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Itens do Checklist</h3>
+                   <p className="text-[10px] text-muted-foreground font-medium">Fotos obrigatórias para itens com defeito.</p>
+                 </div>
+                 <Badge variant="outline" className="text-[10px] font-black uppercase">{checklistData.length} itens</Badge>
+               </div>
 
-                       <div className="md:col-span-3">
-                         <Input 
-                          placeholder="Observação..." 
-                          className="h-9 text-xs border-slate-300"
-                          value={item.observacao || ""}
-                          onChange={(e) => handleUpdateChecklistItem(item.id, { observacao: e.target.value })}
-                         />
-                       </div>
-
-                       <div className="md:col-span-2 flex justify-end gap-2">
-                         <div className="relative group">
-                           {item.foto_url && (
-                             <div className="absolute -top-10 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                               <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-xl" />
+               <div className="rounded-xl border border-border overflow-hidden">
+                 <table className="w-full text-left border-collapse">
+                   <thead>
+                     <tr className="bg-slate-50 border-b border-border">
+                       <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Item</th>
+                       <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
+                       <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 w-1/3">Observação</th>
+                       <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Foto</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y divide-border">
+                     {loadingChecklist ? (
+                       <tr>
+                         <td colSpan={4} className="px-4 py-10 text-center animate-pulse text-[10px] font-bold uppercase text-slate-400">Carregando itens...</td>
+                       </tr>
+                     ) : checklistData.length === 0 ? (
+                       <tr>
+                         <td colSpan={4} className="px-4 py-10 text-center text-[10px] font-bold uppercase text-slate-400">Nenhum item definido para este equipamento.</td>
+                       </tr>
+                     ) : (
+                       checklistData.map((item: any) => (
+                         <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                           <td className="px-4 py-4">
+                             <span className="text-sm font-bold text-slate-700 uppercase">{item.item}</span>
+                           </td>
+                           <td className="px-4 py-4">
+                             <Select 
+                               value={item.status || "Pendente"} 
+                               onValueChange={(val) => handleUpdateChecklistItem(item.id, { status: val })}
+                             >
+                               <SelectTrigger className="h-9 w-40 text-[10px] font-bold uppercase border-slate-200 bg-white">
+                                 <SelectValue placeholder="Status" />
+                               </SelectTrigger>
+                               <SelectContent>
+                                 <SelectItem value="Pendente" className="text-[10px] font-bold uppercase">Pendente</SelectItem>
+                                 <SelectItem value="Aprovado" className="text-[10px] font-bold uppercase">Aprovado</SelectItem>
+                                 <SelectItem value="Danificado" className="text-[10px] font-bold uppercase text-red-600">Danificado</SelectItem>
+                                 <SelectItem value="Substituir" className="text-[10px] font-bold uppercase text-amber-600">Substituir</SelectItem>
+                                 <SelectItem value="Recuperar" className="text-[10px] font-bold uppercase text-blue-600">Recuperar</SelectItem>
+                                 <SelectItem value="Não Aplicável" className="text-[10px] font-bold uppercase">Não Aplicável</SelectItem>
+                               </SelectContent>
+                             </Select>
+                           </td>
+                           <td className="px-4 py-4">
+                             <Input 
+                               placeholder="Descreva o estado ou observação..." 
+                               className="h-9 text-xs border-slate-200 bg-white"
+                               defaultValue={item.observacao || ""}
+                               onBlur={(e) => handleUpdateChecklistItem(item.id, { observacao: e.target.value })}
+                             />
+                           </td>
+                           <td className="px-4 py-4">
+                             <div className="flex items-center justify-center gap-2">
+                               <div className="relative group">
+                                 {item.foto_url && (
+                                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
+                                     <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
+                                   </div>
+                                 )}
+                                 <Button 
+                                   variant={item.foto_url ? "default" : "outline"} 
+                                   size="sm" 
+                                   className={`h-9 gap-2 px-3 border-slate-200 ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
+                                   onClick={() => handleChecklistPhoto(item.id)}
+                                 >
+                                   <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
+                                   <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
+                                 </Button>
+                               </div>
+                               {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
+                                 <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
+                               )}
                              </div>
-                           )}
-                           <Button 
-                            variant={item.foto_url ? "default" : "outline"} 
-                            size="icon" 
-                            className={`h-9 w-9 border-border ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 animate-pulse' : ''}`}
-                            onClick={() => handleChecklistPhoto(item.id)}
-                           >
-                             <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
-                           </Button>
-                         </div>
-                       </div>
-                     </div>
-                   ))
-                 )}
+                           </td>
+                         </tr>
+                       ))
+                     )}
+                   </tbody>
+                 </table>
+               </div>
+
+               <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-50/50 p-4 rounded-xl">
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">Ao finalizar, a OS avança para a próxima etapa.</p>
+                 <div className="flex gap-3">
+                   <Button variant="outline" className="h-10 border-slate-300 font-bold uppercase text-[10px] tracking-widest px-6" onClick={() => router.history.back()}>
+                     Voltar
+                   </Button>
+                   <Button 
+                    className="h-10 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest px-8 shadow-lg shadow-slate-200"
+                    onClick={handleFinalizarChecklist}
+                    disabled={savingChecklist || checklistData.length === 0}
+                   >
+                     {savingChecklist ? "Finalizando..." : "Finalizar Checklist"}
+                   </Button>
+                 </div>
                </div>
              </CardContent>
            </Card>
