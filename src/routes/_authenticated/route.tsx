@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated")({
     const isTerceirizado = roles.includes("terceirizado");
 
     // Usuário DEV sempre tem acesso total (tratado como Diretor)
-    const isDev = user.email === "dev@admin.com" || user.email === "teste.dev@alternativahidraulica.local";
+    const isDev = user.email === "dev@admin.com" || user.email === "teste.dev@alternativahidraulica.local" || user.email === "admin@teste.com";
     const hasFullAccess = isDiretor || isDev;
 
     return { 
