@@ -235,6 +235,115 @@ function GestaoOSPage() {
     }
   };
 
+  const [laudoData, setLaudoData] = useState({
+    diagnostico: "",
+    defeitos: "",
+    servicos_necessarios: ""
+  });
+  const [fotosInternas, setFotosInternas] = useState<any[]>([]);
+  const [fotosPecas, setFotosPecas] = useState<any[]>([]);
+  const [finalizingLaudo, setFinalizingLaudo] = useState(false);
+
+  useEffect(() => {
+    if (os) {
+      setLaudoData({
+        diagnostico: os.laudo_diagnostico || "",
+        defeitos: os.laudo_defeitos || "",
+        servicos_necessarios: os.laudo_servicos_necessarios || ""
+      });
+    }
+  }, [os]);
+
+  const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
+    queryKey: ['os_fotos_laudo', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_fotos_anexos')
+        .select('*')
+        .eq('os_id', id)
+        .in('tipo', ['laudo_interno', 'laudo_pecas']);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!os
+  });
+
+  useEffect(() => {
+    if (fotosLaudo) {
+      setFotosInternas(fotosLaudo.filter((f: any) => f.tipo === 'laudo_interno'));
+      setFotosPecas(fotosLaudo.filter((f: any) => f.tipo === 'laudo_pecas'));
+    }
+  }, [fotosLaudo]);
+
+  const handleUploadFotoLaudo = async (tipo: 'laudo_interno' | 'laudo_pecas') => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = async (e: any) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+
+      for (const file of files) {
+        try {
+          const fileExt = (file as File).name.split('.').pop();
+          const fileName = `${id}/laudo/${tipo}-${Math.random()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage
+            .from('os-assets')
+            .upload(fileName, file as File);
+          
+          if (uploadError) throw uploadError;
+
+          const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
+          
+          await supabase.from('os_fotos_anexos').insert({
+            os_id: id,
+            foto_url: urlData.publicUrl,
+            tipo: tipo
+          });
+        } catch (error: any) {
+          toast.error("Erro no upload: " + error.message);
+        }
+      }
+      refetchFotos();
+      toast.success("Fotos anexadas com sucesso");
+    };
+    input.click();
+  };
+
+  const handleFinalizarLaudo = async () => {
+    if (!laudoData.diagnostico || !laudoData.defeitos || !laudoData.servicos_necessarios) {
+      toast.error("Campos obrigatórios", {
+        description: "Preencha o diagnóstico, defeitos e serviços necessários."
+      });
+      return;
+    }
+
+    setFinalizingLaudo(true);
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ 
+          laudo_diagnostico: laudoData.diagnostico,
+          laudo_defeitos: laudoData.defeitos,
+          laudo_servicos_necessarios: laudoData.servicos_necessarios,
+          status: 'aguardando_gestor' // Altera status conforme solicitado
+        })
+        .eq('id', id);
+      
+      if (error) throw error;
+
+      toast.success("Laudo Técnico finalizado", {
+        description: "OS alterada para 'Aguardando Gestor'."
+      });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+    } catch (error: any) {
+      toast.error("Erro ao finalizar laudo: " + error.message);
+    } finally {
+      setFinalizingLaudo(false);
+    }
+  };
+
   if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
   if (!os) return <div className="p-10 text-center uppercase font-black text-red-500">Ordem de Serviço não encontrada.</div>;
 
