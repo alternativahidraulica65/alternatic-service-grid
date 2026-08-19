@@ -58,6 +58,44 @@ function ClienteDetalhesPage() {
     }
   });
 
+  const { data: contatos = [] } = useQuery({
+    queryKey: ['cliente_contatos', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('cliente_contatos')
+        .select('*')
+        .eq('cliente_id', id);
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: equipamentos = [] } = useQuery({
+    queryKey: ['cliente_equipamentos', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('cliente_equipamentos')
+        .select('*')
+        .eq('cliente_id', id);
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: financeiro = [] } = useQuery({
+    queryKey: ['cliente_financeiro', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('lancamentos_financeiros')
+        .select('*')
+        .eq('cliente_id', id)
+        .order('data_vencimento', { ascending: false });
+      if (error) throw error;
+      return data;
+    }
+  });
+
+
   const { data: ordens = [], isLoading: isLoadingOS } = useQuery({
     queryKey: ['cliente_os', id],
     queryFn: async () => {
