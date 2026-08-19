@@ -71,7 +71,7 @@ function FornecedoresPage() {
     let p = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
     
     for (let i = t; i >= 1; i--) {
-        s += parseInt(b.charAt(t - i)) * p[p.length - i - 1];
+        s += parseInt(b.charAt(t - i)) * p[p.length - i - 1]!;
     }
     
     let res = s % 11 < 2 ? 0 : 11 - (s % 11);
@@ -84,7 +84,7 @@ function FornecedoresPage() {
     p = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
     
     for (let i = t; i >= 1; i--) {
-        s += parseInt(b.charAt(t - i)) * p[p.length - i - 1];
+        s += parseInt(b.charAt(t - i)) * p[p.length - i - 1]!;
     }
     
     res = s % 11 < 2 ? 0 : 11 - (s % 11);
@@ -526,11 +526,11 @@ function FornecedoresPage() {
                           {log.acao}
                         </Badge>
                         <span className="text-[10px] font-bold text-slate-900 uppercase">
-                          {log.perfil?.nome || 'Sistema / Dev'}
+                          {(log as any).usuarios?.nome || 'Sistema / Dev'}
                         </span>
                       </div>
                       <span className="text-[10px] font-medium text-muted-foreground uppercase">
-                        {format(new Date(log.criado_em), "dd MMM yyyy 'às' HH:mm", { locale: ptBR })}
+                        {log.criado_em ? format(new Date(log.criado_em), "dd MMM yyyy 'às' HH:mm", { locale: ptBR }) : '---'}
                       </span>
                     </div>
                     
