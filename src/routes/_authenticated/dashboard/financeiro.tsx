@@ -16,7 +16,8 @@ import {
   Download,
   FileSpreadsheet,
   FileIcon,
-  AlertCircle
+  AlertCircle,
+  BarChart3
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,11 +25,21 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, startOfMonth, endOfMonth } from "date-fns";
+import { format, startOfMonth, endOfMonth, subMonths, eachMonthOfInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   component: DashboardFinanceiro,
@@ -107,6 +118,38 @@ function DashboardFinanceiro() {
       }, {});
 
       return Object.values(grouped).sort((a: any, b: any) => b.total - a.total);
+    }
+  });
+
+  const { data: trendData } = useQuery({
+    queryKey: ['financial-trends'],
+    queryFn: async () => {
+      const start = startOfMonth(subMonths(new Date(), 6));
+      const end = endOfMonth(new Date());
+
+      const { data, error } = await supabase
+        .from('lancamentos_financeiros')
+        .select('valor, data_competencia, tipo')
+        .gte('data_competencia', start.toISOString().split('T')[0])
+        .lte('data_competencia', end.toISOString().split('T')[0]);
+
+      if (error) throw error;
+
+      const months = eachMonthOfInterval({ start, end });
+      return months.map(month => {
+        const monthStr = format(month, 'yyyy-MM');
+        const monthLabel = format(month, 'MMM', { locale: ptBR });
+        
+        const monthlyData = data?.filter(d => d.data_competencia.startsWith(monthStr)) || [];
+        const saidas = monthlyData
+          .filter(d => d.tipo === 'saida')
+          .reduce((acc, curr) => acc + Number(curr.valor), 0);
+        
+        return {
+          month: monthLabel,
+          gastos: saidas
+        };
+      });
     }
   });
 
@@ -366,6 +409,63 @@ function DashboardFinanceiro() {
                 <p className="text-sm font-medium text-muted-foreground">Nenhum custo registrado para fornecedores neste período.</p>
               </div>
             )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-6">
+        <Card className="border-border shadow-md">
+          <CardHeader className="bg-muted/10 border-b border-border/50">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  Tendência de Gastos (Últimos 6 Meses)
+                </CardTitle>
+                <CardDescription>Evolução mensal dos custos com fornecedores e OS.</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="h-[300px] w-full">
+              <ChartContainer config={{
+                gastos: {
+                  label: "Gastos (R$)",
+                  color: "hsl(var(--primary))"
+                }
+              }}>
+                <AreaChart data={trendData || []}>
+                  <defs>
+                    <linearGradient id="colorGastos" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-gastos)" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="var(--color-gastos)" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="month" 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
+                  />
+                  <YAxis 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
+                    tickFormatter={(value) => `R$ ${value/1000}k`}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                  <Area 
+                    type="monotone" 
+                    dataKey="gastos" 
+                    stroke="var(--color-gastos)" 
+                    fillOpacity={1} 
+                    fill="url(#colorGastos)" 
+                    strokeWidth={3}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
       </div>
