@@ -153,25 +153,34 @@ export type Database = {
       }
       fornecedores: {
         Row: {
+          ativo: boolean | null
           cnpj: string | null
           contato: string | null
           criado_em: string | null
           id: string
+          limite_mensal: number | null
           nome: string
+          observacoes: string | null
         }
         Insert: {
+          ativo?: boolean | null
           cnpj?: string | null
           contato?: string | null
           criado_em?: string | null
           id?: string
+          limite_mensal?: number | null
           nome: string
+          observacoes?: string | null
         }
         Update: {
+          ativo?: boolean | null
           cnpj?: string | null
           contato?: string | null
           criado_em?: string | null
           id?: string
+          limite_mensal?: number | null
           nome?: string
+          observacoes?: string | null
         }
         Relationships: []
       }
