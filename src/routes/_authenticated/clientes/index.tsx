@@ -414,20 +414,34 @@ function ClientesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
+                        {canWrite && (
+                          <DropdownMenuItem 
+                            className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                            onClick={() => handleEdit(cliente)}
+                          >
+                            Editar Cliente
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem 
                           className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
-                          onClick={() => handleEdit(cliente)}
+                          onClick={() => router.navigate({ to: `/clientes/$id`, params: { id: cliente.id } })}
                         >
-                          Editar Cliente
+                          Ver Perfil
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Ver Perfil</DropdownMenuItem>
-                        <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Nova OS</DropdownMenuItem>
                         <DropdownMenuItem 
-                          className="text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 text-red-400 cursor-pointer"
-                          onClick={() => handleDelete(cliente)}
+                          className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                          onClick={() => router.navigate({ to: "/os/nova", search: { cliente_id: cliente.id } as any })}
                         >
-                          Remover Cliente
+                          Nova OS
                         </DropdownMenuItem>
+                        {canDelete && (
+                          <DropdownMenuItem 
+                            className="text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 text-red-400 cursor-pointer"
+                            onClick={() => handleDelete(cliente)}
+                          >
+                            Remover Cliente
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
