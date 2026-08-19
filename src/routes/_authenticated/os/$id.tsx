@@ -22,7 +22,9 @@ import {
   Receipt,
   PackageCheck,
   Activity,
-  ClipboardCheck
+  ClipboardCheck,
+  Image as ImageIcon,
+  Check
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -230,6 +232,115 @@ function GestaoOSPage() {
       toast.error("Erro ao finalizar: " + error.message);
     } finally {
       setSavingChecklist(false);
+    }
+  };
+
+  const [laudoData, setLaudoData] = useState({
+    diagnostico: "",
+    defeitos: "",
+    servicos_necessarios: ""
+  });
+  const [fotosInternas, setFotosInternas] = useState<any[]>([]);
+  const [fotosPecas, setFotosPecas] = useState<any[]>([]);
+  const [finalizingLaudo, setFinalizingLaudo] = useState(false);
+
+  useEffect(() => {
+    if (os) {
+      setLaudoData({
+        diagnostico: os.laudo_diagnostico || "",
+        defeitos: os.laudo_defeitos || "",
+        servicos_necessarios: os.laudo_servicos_necessarios || ""
+      });
+    }
+  }, [os]);
+
+  const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
+    queryKey: ['os_fotos_laudo', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_fotos_anexos')
+        .select('*')
+        .eq('os_id', id)
+        .in('tipo', ['laudo_interno', 'laudo_pecas']);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!os
+  });
+
+  useEffect(() => {
+    if (fotosLaudo) {
+      setFotosInternas(fotosLaudo.filter((f: any) => f.tipo === 'laudo_interno'));
+      setFotosPecas(fotosLaudo.filter((f: any) => f.tipo === 'laudo_pecas'));
+    }
+  }, [fotosLaudo]);
+
+  const handleUploadFotoLaudo = async (tipo: 'laudo_interno' | 'laudo_pecas') => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = async (e: any) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+
+      for (const file of files) {
+        try {
+          const fileExt = (file as File).name.split('.').pop();
+          const fileName = `${id}/laudo/${tipo}-${Math.random()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage
+            .from('os-assets')
+            .upload(fileName, file as File);
+          
+          if (uploadError) throw uploadError;
+
+          const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
+          
+          await supabase.from('os_fotos_anexos').insert({
+            os_id: id,
+            foto_url: urlData.publicUrl,
+            tipo: tipo
+          });
+        } catch (error: any) {
+          toast.error("Erro no upload: " + error.message);
+        }
+      }
+      refetchFotos();
+      toast.success("Fotos anexadas com sucesso");
+    };
+    input.click();
+  };
+
+  const handleFinalizarLaudo = async () => {
+    if (!laudoData.diagnostico || !laudoData.defeitos || !laudoData.servicos_necessarios) {
+      toast.error("Campos obrigatórios", {
+        description: "Preencha o diagnóstico, defeitos e serviços necessários."
+      });
+      return;
+    }
+
+    setFinalizingLaudo(true);
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ 
+          laudo_diagnostico: laudoData.diagnostico,
+          laudo_defeitos: laudoData.defeitos,
+          laudo_servicos_necessarios: laudoData.servicos_necessarios,
+          status: 'aguardando_gestor' // Altera status conforme solicitado
+        })
+        .eq('id', id);
+      
+      if (error) throw error;
+
+      toast.success("Laudo Técnico finalizado", {
+        description: "OS alterada para 'Aguardando Gestor'."
+      });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+    } catch (error: any) {
+      toast.error("Erro ao finalizar laudo: " + error.message);
+    } finally {
+      setFinalizingLaudo(false);
     }
   };
 
@@ -536,41 +647,122 @@ function GestaoOSPage() {
         </TabsContent>
 
         <TabsContent value="laudo-técnico">
-           <Card className="border-border shadow-md border-l-4 border-l-primary">
-             <CardHeader className="bg-muted/10 border-b border-border/50">
-               <CardTitle className="text-base font-bold uppercase tracking-widest">Diagnóstico Técnico</CardTitle>
-             </CardHeader>
-             <CardContent className="pt-6 space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                    OS #{os.numero_os} · Cliente: {os.cliente}
+                  </div>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight text-slate-900">
+                    Laudo Técnico
+                  </CardTitle>
+                </div>
+                <div className="flex gap-2">
+                  <Badge variant="outline" className="h-7 text-[10px] font-bold uppercase border-slate-200">
+                    Status: {os.status === 'aguardando_gestor' ? 'Aguardando Gestor' : 'Em Diagnóstico'}
+                  </Badge>
+                  <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold uppercase" onClick={() => router.history.back()}>
+                    Voltar
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid md:grid-cols-3 gap-8">
+                {/* Coluna da Esquerda: Textareas */}
+                <div className="md:col-span-2 space-y-6">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Constatações (Defeitos)</Label>
-                    <div className="p-4 rounded-xl border border-border bg-slate-50 min-h-[100px] text-sm font-medium">
-                      Gaxetas estouradas devido a contaminação do óleo. Haste apresenta leve desgaste cromo, porém recuperável.
-                    </div>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Diagnóstico</Label>
+                    <Textarea 
+                      placeholder="Descreva o diagnóstico técnico..." 
+                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                      value={laudoData.diagnostico}
+                      onChange={(e) => setLaudoData(prev => ({ ...prev, diagnostico: e.target.value }))}
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Serviços Propostos</Label>
-                    <div className="p-4 rounded-xl border border-border bg-slate-50 min-h-[100px] text-sm font-medium">
-                      1. Brunimento interno da camisa.
-                      2. Polimento da haste.
-                      3. Substituição completa do kit de vedações.
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Defeitos</Label>
+                    <Textarea 
+                      placeholder="Liste os defeitos encontrados..." 
+                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                      value={laudoData.defeitos}
+                      onChange={(e) => setLaudoData(prev => ({ ...prev, defeitos: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Serviços Necessários</Label>
+                    <Textarea 
+                      placeholder="Descreva os serviços que precisam ser realizados..." 
+                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                      value={laudoData.servicos_necessarios}
+                      onChange={(e) => setLaudoData(prev => ({ ...prev, servicos_necessarios: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                {/* Coluna da Direita: Fotos */}
+                <div className="space-y-8">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Fotos Internas</Label>
+                    <div className="rounded-xl border border-border p-4 bg-slate-50/50 space-y-4">
+                      <div className="grid grid-cols-2 gap-2 min-h-[100px] content-start">
+                        {fotosInternas.length === 0 ? (
+                          <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
+                        ) : (
+                          fotosInternas.map((foto, idx) => (
+                            <img key={idx} src={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Interna" />
+                          ))
+                        )}
+                      </div>
+                      <Button variant="outline" className="w-full h-9 text-[10px] font-bold uppercase tracking-widest gap-2 bg-white" onClick={() => handleUploadFotoLaudo('laudo_interno')}>
+                        <ImageIcon className="h-4 w-4 text-slate-400" />
+                        Escolher arquivos
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Fotos Peças</Label>
+                    <div className="rounded-xl border border-border p-4 bg-slate-50/50 space-y-4">
+                      <div className="grid grid-cols-2 gap-2 min-h-[100px] content-start">
+                        {fotosPecas.length === 0 ? (
+                          <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
+                        ) : (
+                          fotosPecas.map((foto, idx) => (
+                            <img key={idx} src={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Peça" />
+                          ))
+                        )}
+                      </div>
+                      <Button variant="outline" className="w-full h-9 text-[10px] font-bold uppercase tracking-widest gap-2 bg-white" onClick={() => handleUploadFotoLaudo('laudo_pecas')}>
+                        <ImageIcon className="h-4 w-4 text-slate-400" />
+                        Escolher arquivos
+                      </Button>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                   <div className="h-20 w-20 rounded-lg bg-slate-100 border border-border flex items-center justify-center text-slate-300">
-                      <Camera className="h-8 w-8" />
-                   </div>
-                   <div className="h-20 w-20 rounded-lg bg-slate-100 border border-border flex items-center justify-center text-slate-300">
-                      <Camera className="h-8 w-8" />
-                   </div>
-                   <Button variant="outline" className="h-20 w-20 rounded-lg border-2 border-dashed border-border text-slate-400 flex flex-col items-center justify-center gap-1 hover:border-primary hover:text-primary transition-all">
-                      <Plus className="h-5 w-5" />
-                      <span className="text-[8px] font-bold uppercase">Foto Laudo</span>
-                   </Button>
+              </div>
+
+              {/* Rodapé do Card */}
+              <div className="mt-12 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">
+                  Ao finalizar, o status da OS será alterado para "Aguardando Gestor".
+                </p>
+                <div className="flex gap-3">
+                  <Button variant="outline" className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300">
+                    Cancelar
+                  </Button>
+                  <Button 
+                    className="h-10 px-8 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200 gap-2"
+                    onClick={handleFinalizarLaudo}
+                    disabled={finalizingLaudo}
+                  >
+                    {finalizingLaudo ? "Finalizando..." : "Finalizar Diagnóstico"}
+                  </Button>
                 </div>
-             </CardContent>
-           </Card>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="peças">
