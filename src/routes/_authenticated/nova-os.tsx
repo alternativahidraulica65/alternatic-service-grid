@@ -106,6 +106,7 @@ function NovaOSPage() {
   const [cliente, setCliente] = useState("");
   const [tipoEquipamento, setTipoEquipamento] = useState<"Cilindro" | "Bomba" | "Motor" | "">("");
   const [pecas, setPecas] = useState<Peca[]>([]);
+  const [checklist, setChecklist] = useState<{label: string, checked: boolean}[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Queries
@@ -130,6 +131,26 @@ function NovaOSPage() {
       return data;
     }
   });
+
+  const { data: templates } = useSuspenseQuery({
+    queryKey: ['checklist_templates'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('checklist_templates').select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  useEffect(() => {
+    if (tipoEquipamento && templates) {
+      const template = templates.find(t => t.tipo_equipamento === tipoEquipamento);
+      if (template && template.itens) {
+        setChecklist(template.itens.map((item: any) => ({ label: item.label, checked: false })));
+      } else {
+        setChecklist([]);
+      }
+    }
+  }, [tipoEquipamento, templates]);
 
   const handleAddPeca = () => {
     setPecas([...pecas, { nome: "", localizacao: "" }]);
@@ -280,6 +301,40 @@ function NovaOSPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* 1.5 Checklist Dinâmico */}
+          {checklist.length > 0 && (
+            <Card className="shadow-md bg-white border-l-4 border-l-primary">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-2 text-primary mb-1">
+                  <ClipboardCheck className="h-4 w-4" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Checklist Técnico</span>
+                </div>
+                <CardTitle className="text-xl text-slate-900 font-display">Inspeção Inicial</CardTitle>
+                <CardDescription>Verifique os itens conforme o tipo de equipamento.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 sm:grid-cols-2">
+                {checklist.map((item, idx) => (
+                  <div key={idx} className="flex items-center space-x-3 p-3 rounded-lg border border-slate-100 bg-slate-50/50">
+                    <input
+                      type="checkbox"
+                      id={`chk-${idx}`}
+                      checked={item.checked}
+                      onChange={(e) => {
+                        const newCheck = [...checklist];
+                        newCheck[idx].checked = e.target.checked;
+                        setChecklist(newCheck);
+                      }}
+                      className="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                    />
+                    <Label htmlFor={`chk-${idx}`} className="text-sm font-medium text-slate-700 cursor-pointer">
+                      {item.label}
+                    </Label>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* 2. Módulo de Organização de Peças */}
           <Card className="shadow-md bg-white">
