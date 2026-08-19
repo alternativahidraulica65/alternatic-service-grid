@@ -526,6 +526,9 @@ export type Database = {
           descricao: string | null
           empresa_id: string | null
           id: string
+          laudo_defeitos: string | null
+          laudo_diagnostico: string | null
+          laudo_servicos_necessarios: string | null
           margem_lucro: number | null
           numero_os: string
           observacoes: string | null
@@ -545,6 +548,9 @@ export type Database = {
           descricao?: string | null
           empresa_id?: string | null
           id?: string
+          laudo_defeitos?: string | null
+          laudo_diagnostico?: string | null
+          laudo_servicos_necessarios?: string | null
           margem_lucro?: number | null
           numero_os: string
           observacoes?: string | null
@@ -564,6 +570,9 @@ export type Database = {
           descricao?: string | null
           empresa_id?: string | null
           id?: string
+          laudo_defeitos?: string | null
+          laudo_diagnostico?: string | null
+          laudo_servicos_necessarios?: string | null
           margem_lucro?: number | null
           numero_os?: string
           observacoes?: string | null
