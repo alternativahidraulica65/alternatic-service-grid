@@ -424,7 +424,7 @@ function ClientesPage() {
                         )}
                         <DropdownMenuItem 
                           className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
-                          onClick={() => router.navigate({ to: `/clientes/$id`, params: { id: cliente.id } })}
+                          onClick={() => router.navigate({ to: `/clientes/${cliente.id}` as any })}
                         >
                           Ver Perfil
                         </DropdownMenuItem>
