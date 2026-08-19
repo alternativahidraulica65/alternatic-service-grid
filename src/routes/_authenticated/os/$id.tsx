@@ -16,7 +16,12 @@ import {
   History,
   MoreVertical,
   MapPin,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  Users,
+  DollarSign,
+  Receipt,
+  PackageCheck,
+  Activity
 } from "lucide-react";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -145,11 +150,25 @@ function GestaoOSPage() {
 
       <Tabs defaultValue="resumo" className="w-full">
         <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
-          {["Resumo", "Checklist", "Laudo Técnico", "Peças", "Orçamento", "Aprovação", "Auditoria"].map((tab) => (
+          {[
+            "Resumo", 
+            "Checklist", 
+            "Laudo Técnico", 
+            "Peças", 
+            "Terceiros",
+            "Custos",
+            "Orçamento", 
+            "Aprovação", 
+            "Execução",
+            "Faturamento",
+            "Entrega",
+            "Garantia",
+            "Auditoria"
+          ].map((tab) => (
             <TabsTrigger 
               key={tab} 
               value={tab.toLowerCase().replace(" ", "-")} 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all"
+              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0"
             >
               {tab}
             </TabsTrigger>
