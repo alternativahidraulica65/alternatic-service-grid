@@ -93,6 +93,94 @@ function GestaoOSPage() {
     { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending' },
   ];
 
+  const { data: checklistData = [], refetch: refetchChecklist } = useQuery({
+    queryKey: ['os_checklist', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_checklist' as any)
+        .select('*')
+        .eq('os_id', id);
+      if (error) {
+        console.warn("Checklist table error:", error);
+        return [];
+      }
+      return data || [];
+    }
+  });
+
+  const [savingChecklist, setSavingChecklist] = useState(false);
+
+  const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
+    try {
+      const { error } = await supabase
+        .from('os_checklist' as any)
+        .update(updates)
+        .eq('id', itemId);
+      if (error) throw error;
+      refetchChecklist();
+    } catch (error: any) {
+      toast.error("Erro ao atualizar item: " + error.message);
+    }
+  };
+
+  const handleChecklistPhoto = async (itemId: string) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${id}/checklist/${itemId}-${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('os-assets')
+          .upload(fileName, file);
+        
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
+        await handleUpdateChecklistItem(itemId, { foto_url: urlData.publicUrl });
+        toast.success("Foto anexada com sucesso");
+      } catch (error: any) {
+        toast.error("Erro no upload: " + error.message);
+      }
+    };
+    input.click();
+  };
+
+  const handleFinalizarChecklist = async () => {
+    const itemsPendingPhoto = checklistData.filter((item: any) => 
+      (item.status === 'Danificado' || item.status === 'Substituir') && !item.foto_url
+    );
+
+    if (itemsPendingPhoto.length > 0) {
+      toast.error("Fotos obrigatórias pendentes", {
+        description: "Itens com status 'Danificado' ou 'Substituir' exigem comprovação por foto."
+      });
+      return;
+    }
+
+    setSavingChecklist(true);
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ status: 'vistoria' })
+        .eq('id', id);
+      if (error) throw error;
+      
+      toast.success("Checklist finalizado", {
+        description: "OS avançada para Vistoria Técnica."
+      });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+    } catch (error: any) {
+      toast.error("Erro ao finalizar: " + error.message);
+    } finally {
+      setSavingChecklist(false);
+    }
+  };
+
   if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
   if (!os) return <div className="p-10 text-center uppercase font-black text-red-500">Ordem de Serviço não encontrada.</div>;
 
