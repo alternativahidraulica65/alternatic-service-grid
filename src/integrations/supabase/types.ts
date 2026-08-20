@@ -900,6 +900,72 @@ export type Database = {
         }
         Relationships: []
       }
+      vendedor_empresas: {
+        Row: {
+          empresa_id: string
+          vendedor_id: string
+        }
+        Insert: {
+          empresa_id: string
+          vendedor_id: string
+        }
+        Update: {
+          empresa_id?: string
+          vendedor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendedor_empresas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas_emissoras"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendedor_empresas_vendedor_id_fkey"
+            columns: ["vendedor_id"]
+            isOneToOne: false
+            referencedRelation: "vendedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendedores: {
+        Row: {
+          ativo: boolean
+          created_at: string | null
+          id: string
+          nome: string
+          observacao: string | null
+          percentual: number
+          regra_comissao: Database["public"]["Enums"]["tipo_regra_comissao"]
+          tipo_calculo: Database["public"]["Enums"]["tipo_calculo_comissao"]
+          updated_at: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string | null
+          id?: string
+          nome: string
+          observacao?: string | null
+          percentual?: number
+          regra_comissao?: Database["public"]["Enums"]["tipo_regra_comissao"]
+          tipo_calculo?: Database["public"]["Enums"]["tipo_calculo_comissao"]
+          updated_at?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string | null
+          id?: string
+          nome?: string
+          observacao?: string | null
+          percentual?: number
+          regra_comissao?: Database["public"]["Enums"]["tipo_regra_comissao"]
+          tipo_calculo?: Database["public"]["Enums"]["tipo_calculo_comissao"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -923,7 +989,9 @@ export type Database = {
         | "tecnico"
         | "administrativo_financeiro"
         | "terceirizado"
+      tipo_calculo_comissao: "percentual" | "divisao_custos"
       tipo_comissao: "padrao" | "divisao_50_50"
+      tipo_regra_comissao: "percentual_bruto" | "lucro_liquido"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1060,7 +1128,9 @@ export const Constants = {
         "administrativo_financeiro",
         "terceirizado",
       ],
+      tipo_calculo_comissao: ["percentual", "divisao_custos"],
       tipo_comissao: ["padrao", "divisao_50_50"],
+      tipo_regra_comissao: ["percentual_bruto", "lucro_liquido"],
     },
   },
 } as const

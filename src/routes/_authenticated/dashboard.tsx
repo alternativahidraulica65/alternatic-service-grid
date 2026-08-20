@@ -87,6 +87,7 @@ function DashboardLayout() {
     { label: "Kanban", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
     { label: "Materiais", icon: Factory, to: "/engenharia/materiais", roles: ["diretor", "gestor"] },
     { label: "Fornecedores", icon: Truck, to: "/financeiro/fornecedores", roles: ["diretor", "administrativo_financeiro"] },
+    { label: "Vendedores", icon: Users, to: "/admin/vendedores", roles: ["diretor", "gestor"] },
     { label: "Usuários", icon: Users, to: "/admin/usuarios", roles: ["diretor"] },
     { label: "Relatórios", icon: FileText, to: "/relatorios", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor"] },
