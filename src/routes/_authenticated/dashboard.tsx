@@ -57,6 +57,7 @@ function DashboardLayout() {
   const [isPinned, setIsPinned] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('sidebar_pinned');
+      // Default to true (pinned) if not set
       return saved !== null ? JSON.parse(saved) : true;
     }
     return true;
@@ -64,7 +65,9 @@ function DashboardLayout() {
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('sidebar_pinned', JSON.stringify(isPinned));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebar_pinned', JSON.stringify(isPinned));
+    }
   }, [isPinned]);
 
   const isExpanded = isPinned || isHovered;
@@ -161,8 +164,8 @@ function DashboardLayout() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "hidden md:flex flex-col bg-slate-900 text-white sticky top-0 h-screen border-r border-white/5 shadow-2xl transition-all duration-300 ease-in-out z-40",
-          isExpanded ? "w-64" : "w-20"
+          "hidden md:flex flex-col bg-slate-900 text-white border-r border-white/5 shadow-2xl transition-all duration-300 ease-in-out z-40",
+          isPinned ? "sticky top-0 h-screen w-64" : (isHovered ? "fixed top-0 left-0 w-64 h-full" : "sticky top-0 h-screen w-20")
         )}
       >
         <div className={cn(
@@ -252,7 +255,7 @@ function DashboardLayout() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className={cn("flex-1 flex flex-col min-w-0", !isPinned && "md:ml-20")}>
         {/* Top Header */}
         <header className="h-16 bg-white border-b border-border sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 shadow-sm">
           <div className="flex items-center gap-4">
