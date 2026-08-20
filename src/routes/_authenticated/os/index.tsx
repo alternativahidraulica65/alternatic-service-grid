@@ -44,6 +44,7 @@ export const Route = createFileRoute("/_authenticated/os/")({
 });
 
 function OSListPage() {
+  const { user, isDiretor, isGestor } = Route.useRouteContext();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,13 +52,18 @@ function OSListPage() {
   const { data: ordens = [], isLoading } = useQuery({
     queryKey: ['os_list'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('ordens_servico')
         .select(`
           *,
           clientes (nome)
-        `)
-        .order('numero_os', { ascending: false });
+        `);
+
+      if (!isDiretor && !isGestor) {
+        query = query.eq('tecnico_id', user.id);
+      }
+
+      const { data, error } = await query.order('numero_os', { ascending: false });
       if (error) throw error;
       return data;
     }

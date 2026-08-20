@@ -35,15 +35,20 @@ export const Route = createFileRoute("/_authenticated/kanban")({
 });
 
 function KanbanPage() {
+  const { user, isDiretor, isGestor } = Route.useRouteContext();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   
   const { data: ordens = [] } = useQuery({
     queryKey: ['kanban_os'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ordens_servico')
-        .select('*');
+      let query = supabase.from('ordens_servico').select('*');
+      
+      if (!isDiretor && !isGestor) {
+        query = query.eq('tecnico_id', user.id);
+      }
+      
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     }
