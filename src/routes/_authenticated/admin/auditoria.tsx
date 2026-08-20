@@ -120,6 +120,15 @@ function AuditoriaPage() {
             Logs de Auditoria
           </h1>
         </div>
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-end">
+            <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+              <HardDrive className="h-3 w-3" />
+              Storage: {formatBytes(totalGeralBytes)} / 1GB ({porcentagemUso.toFixed(1)}%)
+            </div>
+          </div>
+        </div>
+      </div>
         <div className="flex items-center gap-3">
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
