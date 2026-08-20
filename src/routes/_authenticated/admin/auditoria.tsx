@@ -21,12 +21,34 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Progress } from "@/components/ui/progress";
+import { AlertCircle, HardDrive } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/auditoria")({
   component: AuditoriaPage,
 });
 
 function AuditoriaPage() {
+  const { data: storageStats, isLoading: isLoadingStorage, error: storageError } = useQuery({
+    queryKey: ["storage-stats"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dev_get_storage_stats");
+      if (error) throw error;
+      return data as Array<{ nome_bucket: string; quantidade_arquivos: number; total_bytes: number }>;
+    },
+  });
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const totalGeralBytes = storageStats?.reduce((acc, curr) => acc + Number(curr.total_bytes), 0) || 0;
+  const limitBytes = 1024 * 1024 * 1024; // 1GB
+  const porcentagemUso = Math.min((totalGeralBytes / limitBytes) * 100, 100);
   const [search, setSearch] = useState("");
   const [usuario, setUsuario] = useState("todos");
   const [periodo, setPeriodo] = useState("30");
@@ -129,6 +151,81 @@ function AuditoriaPage() {
           </Button>
         </div>
       </div>
+
+      {/* Card de Storage */}
+      <Card className="border-border shadow-md overflow-hidden bg-slate-900 text-white">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-white/10 py-4 px-6">
+          <div className="flex items-center gap-2">
+            <HardDrive className="h-4 w-4 text-primary" />
+            <CardTitle className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+              Consumo de Storage (Supabase)
+            </CardTitle>
+          </div>
+          <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+            <span>Limite Free Tier: 1 GB</span>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          {storageError ? (
+            <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-4 rounded border border-red-400/20">
+              <AlertCircle className="h-4 w-4" />
+              <span className="text-xs font-bold uppercase tracking-tight">Erro ao carregar storage: {storageError instanceof Error ? storageError.message : "Erro desconhecido"}</span>
+            </div>
+          ) : isLoadingStorage ? (
+            <div className="h-24 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex items-end justify-between">
+                <div>
+                  <div className="text-4xl font-black tracking-tighter text-white uppercase">
+                    {formatBytes(totalGeralBytes)}
+                  </div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">
+                    Uso total em todos os buckets
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-black text-primary italic">
+                    {porcentagemUso.toFixed(1)}%
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase">
+                    Capacidade utilizada
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Progress value={porcentagemUso} className="h-3 bg-white/5" indicatorClassName="bg-primary shadow-[0_0_10px_rgba(255,215,0,0.5)]" />
+                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-600">
+                  <span>0 GB</span>
+                  <span>1 GB</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/5">
+                {storageStats?.map((bucket) => (
+                  <div key={bucket.nome_bucket} className="bg-white/5 border border-white/10 p-3 rounded group hover:bg-white/10 transition-colors">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 flex items-center gap-2">
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      {bucket.nome_bucket}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-[9px] font-bold text-slate-500 uppercase">
+                        {bucket.quantidade_arquivos} arquivos
+                      </div>
+                      <div className="text-xs font-black text-white">
+                        {formatBytes(Number(bucket.total_bytes))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Filtros */}
       <Card className="border-border shadow-md overflow-hidden">
