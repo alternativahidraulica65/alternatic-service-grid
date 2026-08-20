@@ -147,30 +147,65 @@ function ConfiguracoesPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border shadow-md">
-             <CardHeader className="bg-slate-900 text-white border-b border-white/5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="border-border shadow-md">
+              <CardHeader className="bg-slate-900 text-white border-b border-white/5">
                 <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
                   <Lock className="h-5 w-5 text-primary" />
                   Segurança e Auditoria
                 </CardTitle>
-             </CardHeader>
-             <CardContent className="pt-6 space-y-4">
+              </CardHeader>
+              <CardContent className="pt-6 space-y-4">
                 <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50/50">
-                   <div className="space-y-0.5">
-                      <p className="text-sm font-black text-foreground uppercase tracking-tight">Autenticação de Dois Fatores (2FA)</p>
-                      <p className="text-[10px] text-muted-foreground font-medium uppercase">Exigir código via app para cargos Administrativos.</p>
-                   </div>
-                   <Badge variant="outline" className="border-slate-200 text-slate-400 text-[8px] font-black uppercase">Desativado</Badge>
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-black text-foreground uppercase tracking-tight">Autenticação de Dois Fatores (2FA)</p>
+                    <p className="text-[10px] text-muted-foreground font-medium uppercase">Exigir código via app para cargos Administrativos.</p>
+                  </div>
+                  <Badge variant="outline" className="border-slate-200 text-slate-400 text-[8px] font-black uppercase">Desativado</Badge>
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50/50">
-                   <div className="space-y-0.5">
-                      <p className="text-sm font-black text-foreground uppercase tracking-tight">Logs de Acesso Sensível</p>
-                      <p className="text-[10px] text-muted-foreground font-medium uppercase">Auditoria automática de exclusões e alterações financeiras.</p>
-                   </div>
-                   <Badge className="bg-emerald-500 text-white text-[8px] font-black uppercase">Ativo</Badge>
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-black text-foreground uppercase tracking-tight">Logs de Acesso Sensível</p>
+                    <p className="text-[10px] text-muted-foreground font-medium uppercase">Auditoria automática de exclusões e alterações financeiras.</p>
+                  </div>
+                  <Badge className="bg-emerald-500 text-white text-[8px] font-black uppercase">Ativo</Badge>
                 </div>
-             </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border shadow-md border-t-4 border-t-primary">
+              <CardHeader className="bg-slate-50 border-b border-border/50">
+                <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                  <Bell className="h-5 w-5 text-primary" />
+                  Notificações e Alertas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50/50">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-black text-foreground uppercase tracking-tight">Alertas do Sistema</p>
+                    <p className="text-[10px] text-muted-foreground font-medium uppercase">Gatilhos automáticos baseados em eventos do banco.</p>
+                  </div>
+                  <Link to="/admin/alertas">
+                    <Button variant="outline" size="sm" className="h-8 text-[9px] font-bold uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5">
+                      Configurar
+                    </Button>
+                  </Link>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50/50">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-black text-foreground uppercase tracking-tight">Central de Notificações</p>
+                    <p className="text-[10px] text-muted-foreground font-medium uppercase">Acesso à lista completa de alertas recebidos.</p>
+                  </div>
+                  <Link to="/notificacoes">
+                    <Button variant="outline" size="sm" className="h-8 text-[9px] font-bold uppercase tracking-widest border-slate-200 text-slate-500 hover:bg-slate-100">
+                      Visualizar
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="space-y-6">
