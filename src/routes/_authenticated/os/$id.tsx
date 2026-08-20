@@ -881,6 +881,81 @@ function GestaoOSPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base font-bold uppercase tracking-widest">Galeria de Anexos e Fotos da OS</CardTitle>
+                  </div>
+                  <Button variant="ghost" className="text-[10px] font-bold uppercase text-primary" onClick={() => handleUploadFotoLaudo('outros')}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Adicionar Novo Anexo
+                  </Button>
+                </div>
+             </CardHeader>
+             <CardContent className="pt-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {(fotos as any[]).length === 0 ? (
+                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-muted-foreground opacity-20">
+                      <ImageIcon className="h-16 w-16 mb-4" />
+                      <p className="text-xs font-black uppercase tracking-widest">Nenhuma foto anexada a esta OS.</p>
+                    </div>
+                  ) : (
+                    (fotos as any[]).map((foto, idx) => (
+                      <div key={idx} className="group relative rounded-xl border border-border overflow-hidden bg-slate-50 hover:border-primary transition-all">
+                        <SignedImage 
+                          storagePath={foto.storage_path} 
+                          fallbackUrl={foto.foto_url} 
+                          className="aspect-square w-full object-cover transition-transform group-hover:scale-110" 
+                          alt={`Anexo ${idx + 1}`} 
+                        />
+                        <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <Button size="icon" variant="ghost" className="text-white hover:text-primary hover:bg-white/10">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="text-white hover:text-red-400 hover:bg-white/10">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-slate-900/80 to-transparent">
+                          <p className="text-[8px] font-bold text-white uppercase tracking-tighter truncate">{foto.categoria || foto.tipo || 'ANEXO'}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+             </CardContent>
+           </Card>
+        </TabsContent>
+
+        <TabsContent value="orçamento">
+          <Card className="border-border shadow-md overflow-hidden">
+             <CardHeader className="bg-slate-50 border-b border-border/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Receipt className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base font-bold uppercase tracking-widest">Resumo do Orçamento</CardTitle>
+                  </div>
+                  <Button 
+                    className="h-8 bg-slate-900 text-white font-black uppercase text-[9px] tracking-widest px-4"
+                    onClick={() => router.navigate({ to: '/os/$id/orcamento', params: { id } } as any)}
+                  >
+                    Gerenciar Orçamento
+                  </Button>
+                </div>
+             </CardHeader>
+             <CardContent className="pt-6">
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Receipt className="h-12 w-12 mb-4 opacity-20" />
+                  <p className="text-xs font-bold uppercase tracking-widest">
+                    Acesse o módulo de orçamento para visualizar e editar valores.
+                  </p>
+                </div>
+             </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="aprovação">
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5 text-primary" />
                     <CardTitle className="text-base font-bold uppercase tracking-widest text-white">Anexos e Documentação</CardTitle>
                   </div>
                   <Button variant="outline" size="sm" className="h-9 border-white/20 text-white hover:bg-white/10 font-bold text-[10px] uppercase">
