@@ -18,6 +18,7 @@ import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated/nova-os'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
+import { Route as AuthenticatedAdminAuditoriaRouteImport } from './routes/_authenticated/admin/auditoria'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedClientesIdRouteImport } from './routes/_authenticated/clientes/$id'
@@ -32,6 +33,7 @@ import { Route as AuthenticatedOrdensServicoNovaRouteImport } from './routes/_au
 import { Route as AuthenticatedOsIdRouteImport } from './routes/_authenticated/os/$id'
 import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
 import { Route as AuthenticatedFinanceiroFornecedoresIndexRouteImport } from './routes/_authenticated/financeiro/fornecedores/index'
+import { Route as AuthenticatedOsIdOrcamentoRouteImport } from './routes/_authenticated/os/$id.orcamento'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -78,6 +80,12 @@ const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   path: '/relatorios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminAuditoriaRoute =
+  AuthenticatedAdminAuditoriaRouteImport.update({
+    id: '/admin/auditoria',
+    path: '/admin/auditoria',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminUsuariosRoute =
   AuthenticatedAdminUsuariosRouteImport.update({
     id: '/admin/usuarios',
@@ -159,6 +167,12 @@ const AuthenticatedFinanceiroFornecedoresIndexRoute =
     path: '/financeiro/fornecedores/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOsIdOrcamentoRoute =
+  AuthenticatedOsIdOrcamentoRouteImport.update({
+    id: '/orcamento',
+    path: '/orcamento',
+    getParentRoute: () => AuthenticatedOsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -169,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
@@ -179,9 +194,10 @@ export interface FileRoutesByFullPath {
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
-  '/os/$id': typeof AuthenticatedOsIdRoute
+  '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
 export interface FileRoutesByTo {
@@ -193,6 +209,7 @@ export interface FileRoutesByTo {
   '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
@@ -203,9 +220,10 @@ export interface FileRoutesByTo {
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
-  '/os/$id': typeof AuthenticatedOsIdRoute
+  '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
+  '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/financeiro/fornecedores': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
 export interface FileRoutesById {
@@ -219,6 +237,7 @@ export interface FileRoutesById {
   '/_authenticated/nova-os': typeof AuthenticatedNovaOsRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/_authenticated/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/_authenticated/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
@@ -229,9 +248,10 @@ export interface FileRoutesById {
   '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/_authenticated/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
-  '/_authenticated/os/$id': typeof AuthenticatedOsIdRoute
+  '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/_authenticated/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/_authenticated/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
 export interface FileRouteTypes {
@@ -245,6 +265,7 @@ export interface FileRouteTypes {
     | '/nova-os'
     | '/orcamento'
     | '/relatorios'
+    | '/admin/auditoria'
     | '/admin/usuarios'
     | '/clientes/$id'
     | '/dashboard/diretor'
@@ -258,6 +279,7 @@ export interface FileRouteTypes {
     | '/os/$id'
     | '/os/nova'
     | '/clientes/'
+    | '/os/$id/orcamento'
     | '/financeiro/fornecedores/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -269,6 +291,7 @@ export interface FileRouteTypes {
     | '/nova-os'
     | '/orcamento'
     | '/relatorios'
+    | '/admin/auditoria'
     | '/admin/usuarios'
     | '/clientes/$id'
     | '/dashboard/diretor'
@@ -282,6 +305,7 @@ export interface FileRouteTypes {
     | '/os/$id'
     | '/os/nova'
     | '/clientes'
+    | '/os/$id/orcamento'
     | '/financeiro/fornecedores'
   id:
     | '__root__'
@@ -294,6 +318,7 @@ export interface FileRouteTypes {
     | '/_authenticated/nova-os'
     | '/_authenticated/orcamento'
     | '/_authenticated/relatorios'
+    | '/_authenticated/admin/auditoria'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/clientes/$id'
     | '/_authenticated/dashboard/diretor'
@@ -307,6 +332,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
     | '/_authenticated/clientes/'
+    | '/_authenticated/os/$id/orcamento'
     | '/_authenticated/financeiro/fornecedores/'
   fileRoutesById: FileRoutesById
 }
@@ -378,6 +404,13 @@ declare module '@tanstack/react-router' {
       path: '/relatorios'
       fullPath: '/relatorios'
       preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/auditoria': {
+      id: '/_authenticated/admin/auditoria'
+      path: '/admin/auditoria'
+      fullPath: '/admin/auditoria'
+      preLoaderRoute: typeof AuthenticatedAdminAuditoriaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/usuarios': {
@@ -478,6 +511,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFinanceiroFornecedoresIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/os/$id/orcamento': {
+      id: '/_authenticated/os/$id/orcamento'
+      path: '/orcamento'
+      fullPath: '/os/$id/orcamento'
+      preLoaderRoute: typeof AuthenticatedOsIdOrcamentoRouteImport
+      parentRoute: typeof AuthenticatedOsIdRoute
+    }
   }
 }
 
@@ -519,6 +559,17 @@ const AuthenticatedOrcamentoRouteWithChildren =
     AuthenticatedOrcamentoRouteChildren,
   )
 
+interface AuthenticatedOsIdRouteChildren {
+  AuthenticatedOsIdOrcamentoRoute: typeof AuthenticatedOsIdOrcamentoRoute
+}
+
+const AuthenticatedOsIdRouteChildren: AuthenticatedOsIdRouteChildren = {
+  AuthenticatedOsIdOrcamentoRoute: AuthenticatedOsIdOrcamentoRoute,
+}
+
+const AuthenticatedOsIdRouteWithChildren =
+  AuthenticatedOsIdRoute._addFileChildren(AuthenticatedOsIdRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
@@ -527,11 +578,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNovaOsRoute: typeof AuthenticatedNovaOsRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
+  AuthenticatedAdminAuditoriaRoute: typeof AuthenticatedAdminAuditoriaRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedClientesIdRoute: typeof AuthenticatedClientesIdRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
   AuthenticatedOrdensServicoNovaRoute: typeof AuthenticatedOrdensServicoNovaRoute
-  AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRoute
+  AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRouteWithChildren
   AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
   AuthenticatedFinanceiroFornecedoresIndexRoute: typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -545,11 +597,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNovaOsRoute: AuthenticatedNovaOsRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
+  AuthenticatedAdminAuditoriaRoute: AuthenticatedAdminAuditoriaRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedClientesIdRoute: AuthenticatedClientesIdRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
   AuthenticatedOrdensServicoNovaRoute: AuthenticatedOrdensServicoNovaRoute,
-  AuthenticatedOsIdRoute: AuthenticatedOsIdRoute,
+  AuthenticatedOsIdRoute: AuthenticatedOsIdRouteWithChildren,
   AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
   AuthenticatedFinanceiroFornecedoresIndexRoute:
