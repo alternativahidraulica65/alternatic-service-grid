@@ -195,7 +195,7 @@ function ClienteDetalhesPage() {
           {["Visão Geral", "Dados Cadastrais", "Contatos", "Equipamentos", "OS", "Orçamentos", "Financeiro", "Histórico"].map((tab) => (
             <TabsTrigger 
               key={tab} 
-              value={tab.toLowerCase().replace(" ", "-")} 
+              value={tab === "Visão Geral" ? "resumo" : tab.toLowerCase().replace(" ", "-")} 
               className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all"
             >
               {tab}
