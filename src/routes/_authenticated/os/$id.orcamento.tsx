@@ -212,9 +212,22 @@ function OrcamentoOSPage() {
             <Save className="mr-2 h-4 w-4" />
             Salvar Versão
           </Button>
-          <Button className="h-10 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest px-6" onClick={handleGerarPDF}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Gerar PDF Proposta
+          <Button 
+            className="h-10 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest px-6" 
+            onClick={handleGerarPDF}
+            disabled={gerandoPdf}
+          >
+            {gerandoPdf ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white border-t-transparent animate-spin mr-2" />
+                Gerando...
+              </>
+            ) : (
+              <>
+                <FileDown className="mr-2 h-4 w-4" />
+                Gerar PDF Proposta
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -478,9 +491,14 @@ function OrcamentoOSPage() {
                   ))
                 )}
               </div>
-              <p className="mt-4 text-[9px] text-muted-foreground font-bold uppercase tracking-tight italic">
-                * Selecione as fotos que devem compor o laudo visual do PDF. As imagens são carregadas com link seguro temporário.
-              </p>
+              <div className="mt-4 flex items-center justify-between">
+                <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-tight italic">
+                  * Selecione as fotos que devem compor o laudo visual do PDF. As imagens são carregadas com link seguro temporário.
+                </p>
+                <div className="text-[10px] font-black uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">
+                  {fotosSelecionadas.length} fotos selecionadas
+                </div>
+              </div>
             </CardContent>
           </Card>
 
