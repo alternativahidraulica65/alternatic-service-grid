@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export const Route = createFileRoute("/_authenticated/admin/auditoria")({
+export const Route = createFileRoute("/_authenticated/admin/auditoria" as any)({
   component: AuditoriaPage,
 });
 
