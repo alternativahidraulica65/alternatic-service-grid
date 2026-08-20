@@ -30,6 +30,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadOsPhoto, formatBytes } from "@/lib/media/upload";
+import { SignedImage } from "@/components/media/SignedImage";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -766,7 +767,7 @@ function GestaoOSPage() {
                           <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
                         ) : (
                           fotosInternas.map((foto, idx) => (
-                            <img key={idx} src={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Interna" />
+                            <SignedImage key={idx} storagePath={foto.storage_path} fallbackUrl={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Interna" />
                           ))
                         )}
                       </div>
@@ -785,7 +786,7 @@ function GestaoOSPage() {
                           <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
                         ) : (
                           fotosPecas.map((foto, idx) => (
-                            <img key={idx} src={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Peça" />
+                            <SignedImage key={idx} storagePath={foto.storage_path} fallbackUrl={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Peça" />
                           ))
                         )}
                       </div>
