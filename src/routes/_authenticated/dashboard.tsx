@@ -21,7 +21,8 @@ import {
   Package,
   Receipt,
   Truck,
-  History as HistoryIcon
+  History as HistoryIcon,
+  UserCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";

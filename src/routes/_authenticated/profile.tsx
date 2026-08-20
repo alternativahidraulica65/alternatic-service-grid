@@ -167,7 +167,7 @@ function ProfilePage() {
 
       const { error: updateError } = await supabase
         .from('usuarios')
-        .update({ foto_url: publicUrl })
+        .update({ avatar_url: publicUrl })
         .eq('user_id', user.id);
 
       if (updateError) throw updateError;
@@ -212,8 +212,8 @@ function ProfilePage() {
             <CardContent className="pt-8 flex flex-col items-center">
               <div className="relative group">
                 <div className="h-32 w-32 rounded-full bg-slate-100 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden">
-                  {profile?.foto_url ? (
-                    <img src={profile.foto_url} alt="Profile" className="h-full w-full object-cover" />
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
                     <UserCircle className="h-20 w-20 text-slate-300" />
                   )}
