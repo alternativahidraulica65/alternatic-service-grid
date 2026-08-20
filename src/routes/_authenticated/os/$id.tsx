@@ -900,7 +900,7 @@ function GestaoOSPage() {
                       <p className="text-xs font-black uppercase tracking-widest">Nenhuma foto anexada a esta OS.</p>
                     </div>
                   ) : (
-                    (fotos as any[]).map((foto, idx) => (
+                    (fotosLaudo as any[]).map((foto, idx) => (
                       <div key={idx} className="group relative rounded-xl border border-border overflow-hidden bg-slate-50 hover:border-primary transition-all">
                         <SignedImage 
                           storagePath={foto.storage_path} 
