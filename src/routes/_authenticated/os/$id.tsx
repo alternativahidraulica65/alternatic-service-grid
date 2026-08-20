@@ -894,7 +894,7 @@ function GestaoOSPage() {
              </CardHeader>
              <CardContent className="pt-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  {(fotos as any[]).length === 0 ? (
+                  {(fotosLaudo as any[]).length === 0 ? (
                     <div className="col-span-full py-20 flex flex-col items-center justify-center text-muted-foreground opacity-20">
                       <ImageIcon className="h-16 w-16 mb-4" />
                       <p className="text-xs font-black uppercase tracking-widest">Nenhuma foto anexada a esta OS.</p>
