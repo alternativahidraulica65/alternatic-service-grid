@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated")({
       .from("usuarios")
       .select("*")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
     
     const { data: userRoles } = await supabase
       .from("user_roles")
