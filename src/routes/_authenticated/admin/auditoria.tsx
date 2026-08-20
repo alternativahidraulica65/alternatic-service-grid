@@ -202,7 +202,7 @@ function AuditoriaPage() {
 
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                <History className="h-3 w-3" /> OS
+                <HistoryIcon className="h-3 w-3" /> OS
               </label>
               <Select value={os} onValueChange={setOs}>
                 <SelectTrigger className="h-10 bg-white border-slate-200 font-bold text-xs">
