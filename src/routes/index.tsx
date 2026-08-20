@@ -232,6 +232,18 @@ function LoginPage() {
                 )}
               />
 
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <Checkbox
+                  checked={keepSignedIn}
+                  onCheckedChange={(v) => setKeepSignedIn(v === true)}
+                  disabled={isLoading}
+                  className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">
+                  Manter-me conectado
+                </span>
+              </label>
+
               <Button
                 type="submit"
                 disabled={isLoading}
