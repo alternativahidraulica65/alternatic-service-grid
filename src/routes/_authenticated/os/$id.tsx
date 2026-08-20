@@ -403,9 +403,19 @@ function GestaoOSPage() {
               step.status === 'completed' ? 'bg-emerald-500' :
               step.status === 'current' ? 'bg-primary' : 'bg-slate-200'
             }`} />
-            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
-              step.status === 'current' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
-            }`}>
+            <div className="flex items-center justify-between">
+              <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
+                step.status === 'current' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+              }`}>
+                {step.label}
+              </span>
+              <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${
+                step.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 
+                step.status === 'current' ? 'bg-primary/20 text-primary' : 'bg-slate-100 text-slate-400'
+              }`}>
+                {step.sla}
+              </span>
+            </div>
               {step.label}
             </span>
           </div>
