@@ -48,5 +48,13 @@ export const Route = createFileRoute("/_authenticated")({
       isAdmin: hasFullAccess
     };
   },
-  component: () => <Outlet />,
+  component: AuthenticatedLayout,
 });
+
+function AuthenticatedLayout() {
+  return (
+    <AppShell>
+      <Outlet />
+    </AppShell>
+  );
+}
