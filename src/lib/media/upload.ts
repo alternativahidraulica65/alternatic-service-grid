@@ -72,6 +72,8 @@ export interface UploadOsPhotoParams {
   pecaId?: string | null;
   /** grava metadados em public.os_fotos_anexos (padrão: true) */
   registrarMetadados?: boolean;
+  /** Callback para progresso do upload (0 a 100) */
+  onProgress?: (progress: number) => void;
 }
 
 export interface UploadOsPhotoResult {
@@ -81,6 +83,21 @@ export interface UploadOsPhotoResult {
   originalSize: number;
   compressedSize: number;
   registroId?: string | undefined;
+}
+
+/** Utilitário genérico de retry com backoff exponencial simples */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  delay = 1000
+): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    if (retries <= 0) throw error;
+    await new Promise(resolve => setTimeout(resolve, delay));
+    return withRetry(fn, retries - 1, delay * 2);
+  }
 }
 
 /**
@@ -93,17 +110,31 @@ export async function uploadOsPhoto({
   legenda,
   pecaId = null,
   registrarMetadados = true,
+  onProgress,
 }: UploadOsPhotoParams): Promise<UploadOsPhotoResult> {
   const { file: compressed, originalSize, compressedSize, extension } = await compressImage(file);
 
   const safeName = slugify(file.name.replace(/\.[^.]+$/, "")).slice(0, 48);
   const storagePath = `os_${osId}/${slugify(categoria)}/${Date.now()}_${safeName}.${extension}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from(OS_MEDIA_BUCKET)
-    .upload(storagePath, compressed, { contentType: compressed.type, upsert: false });
+  const performUpload = async () => {
+    const { error } = await supabase.storage
+      .from(OS_MEDIA_BUCKET)
+      .upload(storagePath, compressed, { 
+        contentType: compressed.type, 
+        upsert: false,
+        // @ts-ignore - a tipagem do supabase-js pode variar dependendo da versão, mas a API suporta
+        onUploadProgress: (progress: any) => {
+          if (onProgress && progress.totalBytes > 0) {
+            const percent = (progress.loadedBytes / progress.totalBytes) * 100;
+            onProgress(Math.round(percent));
+          }
+        }
+      });
+    if (error) throw error;
+  };
 
-  if (uploadError) throw uploadError;
+  await withRetry(performUpload);
 
   const signedUrl = await getSignedUrl(OS_MEDIA_BUCKET, storagePath);
 
