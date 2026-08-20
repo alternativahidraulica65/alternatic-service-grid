@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { 
-  History, 
+  History as HistoryIcon, 
   Search, 
   Filter, 
   Download, 
