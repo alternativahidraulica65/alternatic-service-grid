@@ -65,9 +65,13 @@ export const Route = createFileRoute("/_authenticated/os/$id")({
 
 function GestaoOSPage() {
   const { id } = Route.useParams();
+  const { isDiretor, isFinanceiro, isGestor } = Route.useRouteContext();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("resumo");
+
+  const canViewFinance = isDiretor || isFinanceiro;
+  const canViewManagement = isDiretor || isGestor;
 
 
   const { data: os, isLoading } = useQuery({

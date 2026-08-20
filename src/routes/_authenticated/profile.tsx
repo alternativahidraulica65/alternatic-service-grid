@@ -62,12 +62,34 @@ function ProfilePage() {
   const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ["user_profile", user?.id],
     queryFn: async () => {
+      if (!user?.id) return null;
+      
       const { data, error } = await supabase
         .from("usuarios")
         .select("*")
-        .eq("user_id", user?.id)
-        .single();
+        .eq("user_id", user.id)
+        .maybeSingle();
+
       if (error) throw error;
+      
+      if (!data) {
+        // Se não existir perfil, criar um básico para não travar a tela
+        const { data: newProfile, error: createError } = await supabase
+          .from("usuarios")
+          .insert({
+            user_id: user.id,
+            nome: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário',
+            email: user.email,
+            cargo: 'operador',
+            ativo: true
+          })
+          .select()
+          .single();
+          
+        if (createError) throw createError;
+        return newProfile;
+      }
+      
       return data;
     },
     enabled: !!user?.id,
