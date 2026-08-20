@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      alertas: {
+        Row: {
+          ativo: boolean
+          canais_notificacao: string[]
+          condicao_disparo: Json
+          criado_por: string | null
+          data_criacao: string
+          destinatarios: string[]
+          id: string
+          mensagem: string
+          tempo_expiracao: string | null
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          ativo?: boolean
+          canais_notificacao: string[]
+          condicao_disparo: Json
+          criado_por?: string | null
+          data_criacao?: string
+          destinatarios: string[]
+          id?: string
+          mensagem: string
+          tempo_expiracao?: string | null
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          ativo?: boolean
+          canais_notificacao?: string[]
+          condicao_disparo?: Json
+          criado_por?: string | null
+          data_criacao?: string
+          destinatarios?: string[]
+          id?: string
+          mensagem?: string
+          tempo_expiracao?: string | null
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
       auditoria_financeira: {
         Row: {
           acao: string
@@ -518,6 +560,50 @@ export type Database = {
           preco_base_kg?: number
         }
         Relationships: []
+      }
+      notificacoes: {
+        Row: {
+          alerta_id: string | null
+          canal_utilizado: string
+          data_envio: string
+          id: string
+          mensagem_enviada: string
+          metadados: Json | null
+          status_envio: string
+          titulo_enviado: string | null
+          usuario_id: string
+        }
+        Insert: {
+          alerta_id?: string | null
+          canal_utilizado: string
+          data_envio?: string
+          id?: string
+          mensagem_enviada: string
+          metadados?: Json | null
+          status_envio?: string
+          titulo_enviado?: string | null
+          usuario_id: string
+        }
+        Update: {
+          alerta_id?: string | null
+          canal_utilizado?: string
+          data_envio?: string
+          id?: string
+          mensagem_enviada?: string
+          metadados?: Json | null
+          status_envio?: string
+          titulo_enviado?: string | null
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_alerta_id_fkey"
+            columns: ["alerta_id"]
+            isOneToOne: false
+            referencedRelation: "alertas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orcamento_revisoes: {
         Row: {
