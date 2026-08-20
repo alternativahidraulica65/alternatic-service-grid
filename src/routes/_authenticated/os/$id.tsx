@@ -522,8 +522,9 @@ function GestaoOSPage() {
                 </div>
               </CardContent>
             </Card>
+            </div>
           </div>
-      </TabsContent>
+        </TabsContent>
         
         <Card className="border-border shadow-md overflow-hidden mt-6">
              <CardHeader className="bg-slate-900 text-white border-b border-white/5">
