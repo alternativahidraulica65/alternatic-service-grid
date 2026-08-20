@@ -192,7 +192,7 @@ function ClienteDetalhesPage() {
 
       <Tabs defaultValue="resumo" className="w-full">
         <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
-          {["Resumo", "Dados Cadastrais", "Contatos", "Equipamentos", "OS", "Orçamentos", "Financeiro", "Histórico"].map((tab) => (
+          {["Visão Geral", "Dados Cadastrais", "Contatos", "Equipamentos", "OS", "Orçamentos", "Financeiro", "Histórico"].map((tab) => (
             <TabsTrigger 
               key={tab} 
               value={tab.toLowerCase().replace(" ", "-")} 
