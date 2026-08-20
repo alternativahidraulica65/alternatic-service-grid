@@ -23,7 +23,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
-export const Route = createFileRoute("/_authenticated/os/$id/orcamento" as any)({
+export const Route = createFileRoute("/_authenticated/os/$id/orcamento")({
   component: OrcamentoOSPage,
 });
 
