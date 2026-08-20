@@ -108,11 +108,7 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Melhore responsividade da aba relatorios. Esta sem margem.
-
-        Adicionar busca e filtros na listagem de clientes para navegar mais rápido pelos dados reais do Supabase.
-
-        Adicionar feedback de loading e mensagens de erro quando a conexão com o Supabase falhar nas telas de clientes e no dashboard.
+        Ajustar a aba de relatórios para ficar responsiva com margens e espaçamento corretos em todas as telas.
 
         Padronizar o layout autenticado (menu lateral fixo/pin e overlay) em todas as rotas _authenticated para manter consistência total.
       </div>
