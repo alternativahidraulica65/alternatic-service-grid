@@ -78,8 +78,8 @@ function ProfilePage() {
           .from("usuarios")
           .insert({
             user_id: user.id,
-            nome: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário',
-            email: user.email,
+            nome: (user.user_metadata?.['full_name'] as string) || user.email?.split('@')[0] || 'Usuário',
+            email: user.email || '',
             cargo: 'operador',
             ativo: true
           })
