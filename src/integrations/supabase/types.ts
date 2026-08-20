@@ -971,6 +971,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      dev_get_storage_stats: {
+        Args: never
+        Returns: {
+          nome_bucket: string
+          quantidade_arquivos: number
+          total_bytes: number
+        }[]
+      }
       get_email_by_username: { Args: { p_username: string }; Returns: string }
       has_role: {
         Args: {
