@@ -12,8 +12,10 @@ import {
   Package, 
   AlertTriangle,
   PlayCircle,
-  Clock
+  Clock,
+  CheckCircle2
 } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,15 +49,24 @@ function DashboardGestor() {
   const { data: osStats } = useQuery({
     queryKey: ['dashboard_gestor_stats'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('ordens_servico').select('status');
-      if (error) throw error;
+      const [os, users, vendors] = await Promise.all([
+        supabase.from('ordens_servico').select('status, tecnico_id'),
+        supabase.from('usuarios').select('id'),
+        supabase.from('vendedores').select('id')
+      ]);
+
+      if (os.error) throw os.error;
       
       return {
-        naFila: data.filter(os => os.status === 'aberta').length,
-        atrasadas: data.filter(os => os.status === 'atrasada').length,
+        naFila: os.data.filter(item => item.status === 'aberta').length,
+        atrasadas: os.data.filter(item => item.status === 'atrasada').length,
+        tecnicos: users.data?.length || 0,
+        vendedores: vendors.data?.length || 0,
+        parados: os.data.filter(item => item.status === 'orcamento_pendente').length
       };
     }
   });
+
 
   const { data: kanbanData } = useQuery({
     queryKey: ['dashboard_gestor_kanban'],
@@ -89,8 +100,9 @@ function DashboardGestor() {
     }
   });
 
-  const stats = osStats || { naFila: 0, atrasadas: 0 };
+  const stats = osStats || { naFila: 0, atrasadas: 0, tecnicos: 0, vendedores: 0, parados: 0 };
   const kanban = kanbanData || [];
+
   return (
     <div className="space-y-8 p-6 md:p-10 pb-10">
       <div>
@@ -115,21 +127,22 @@ function DashboardGestor() {
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">OS Atrasadas</CardContent>
         </Card>
         <Card className="col-span-2 lg:col-span-1 bg-slate-900 text-white border-none shadow-lg">
-          <CardHeader className="p-4"><CardTitle className="text-2xl font-black">02</CardTitle></CardHeader>
+          <CardHeader className="p-4"><CardTitle className="text-2xl font-black">{stats.parados.toString().padStart(2, '0')}</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">Equip. Parados</CardContent>
         </Card>
         <Card className="col-span-2 lg:col-span-1 border-border shadow-sm">
-          <CardHeader className="p-4"><CardTitle className="text-lg font-black">08</CardTitle></CardHeader>
-          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Operadores</CardContent>
+          <CardHeader className="p-4"><CardTitle className="text-lg font-black">{stats.tecnicos.toString().padStart(2, '0')}</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Técnicos</CardContent>
         </Card>
         <Card className="col-span-2 lg:col-span-1 border-border shadow-sm">
-          <CardHeader className="p-4"><CardTitle className="text-lg font-black">03</CardTitle></CardHeader>
-          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Terceiros</CardContent>
+          <CardHeader className="p-4"><CardTitle className="text-lg font-black">{stats.vendedores.toString().padStart(2, '0')}</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Vendedores</CardContent>
         </Card>
         <Card className="col-span-2 lg:col-span-1 border-border shadow-sm">
-          <CardHeader className="p-4"><CardTitle className="text-lg font-black">05</CardTitle></CardHeader>
-          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Peças Fora</CardContent>
+          <CardHeader className="p-4"><CardTitle className="text-lg font-black">{(stats.naFila + stats.atrasadas).toString().padStart(2, '0')}</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Total Ativo</CardContent>
         </Card>
+
       </div>
 
       {/* Kanban de Status */}
@@ -151,30 +164,44 @@ function DashboardGestor() {
         ))}
       </div>
 
-      {/* Lista de Tarefas / Pendências */}
+      {/* Alertas Operacionais Dinâmicos */}
       <Card className="border-border shadow-md">
         <CardHeader className="bg-muted/10 border-b border-border/50">
            <CardTitle className="text-base font-bold">Alertas Operacionais</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg border border-red-200 bg-red-50/50 flex gap-3">
-              <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-red-800">OS-1020 Atrasada!</p>
-                <p className="text-xs text-red-600">Gargalo identificado no Torneiro. Prazo crítico excedido.</p>
+            {stats.atrasadas > 0 ? (
+              <div className="p-4 rounded-lg border border-red-200 bg-red-50/50 flex gap-3 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => router.navigate({ to: '/os' })}>
+                <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-red-800">{stats.atrasadas} OS Atrasadas!</p>
+                  <p className="text-xs text-red-600">Prazos excedidos. Requer intervenção imediata no fluxo produtivo.</p>
+                </div>
               </div>
-            </div>
-            <div className="p-4 rounded-lg border border-amber-200 bg-amber-50/50 flex gap-3">
-              <Package className="h-5 w-5 text-amber-500 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-amber-800">Peça pendente: Kit Vedação</p>
-                <p className="text-xs text-amber-600">Fornecedor não confirmou a entrega para hoje.</p>
+            ) : (
+              <div className="p-4 rounded-lg border border-emerald-200 bg-emerald-50/50 flex gap-3">
+                <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-emerald-800">Fluxo Normal</p>
+                  <p className="text-xs text-emerald-600">Nenhuma ordem de serviço com atraso crítico detectado.</p>
+                </div>
               </div>
-            </div>
+            )}
+            
+            {stats.parados > 0 && (
+              <div className="p-4 rounded-lg border border-amber-200 bg-amber-50/50 flex gap-3 cursor-pointer hover:bg-amber-50 transition-colors" onClick={() => router.navigate({ to: '/os' })}>
+                <Package className="h-5 w-5 text-amber-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-amber-800">{stats.parados} OS Aguardando Orçamento</p>
+                  <p className="text-xs text-amber-600">Equipamentos parados aguardando definição comercial ou técnica.</p>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
+
     </div>
   );
 }
