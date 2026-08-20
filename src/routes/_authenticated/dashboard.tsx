@@ -89,6 +89,7 @@ function DashboardLayout() {
     { label: "Usuários", icon: Users, to: "/admin/usuarios", roles: ["diretor"] },
     { label: "Relatórios", icon: FileText, to: "/relatorios", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor"] },
+    { label: "Auditoria", icon: History, to: "/admin/auditoria", roles: ["diretor"] },
   ];
 
   const filteredMenu = menuItems.filter(item => 
