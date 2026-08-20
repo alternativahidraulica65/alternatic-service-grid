@@ -383,7 +383,12 @@ function GestaoOSPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
-              <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Exportar PDF</DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                onClick={() => toast.info("Gerando resumo da OS...", { description: "O download do PDF começará em breve." })}
+              >
+                Exportar Resumo (PDF)
+              </DropdownMenuItem>
               <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer text-red-400">Cancelar OS</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
