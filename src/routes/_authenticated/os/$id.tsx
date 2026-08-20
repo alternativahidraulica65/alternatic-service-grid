@@ -518,7 +518,7 @@ function GestaoOSPage() {
         </div>
       </TabsContent>
 
-          <Card className="border-border shadow-md overflow-hidden">
+          <Card className="border-border shadow-md overflow-hidden mt-6">
              <CardHeader className="bg-slate-900 text-white border-b border-white/5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
