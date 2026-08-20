@@ -9,6 +9,7 @@ import {
   Image as ImageIcon,
   CheckCircle2,
   AlertCircle,
+  History as HistoryIcon,
   Link as LinkIcon
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
@@ -22,6 +23,9 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { SignedImage } from "@/components/media/SignedImage";
+import { gerarESalvarRevisao } from "@/lib/pdf/orcamento-pdf";
+import { getSignedUrl, ORCAMENTOS_BUCKET } from "@/lib/media/upload";
 
 export const Route = createFileRoute("/_authenticated/os/$id/orcamento")({
   component: OrcamentoOSPage,
