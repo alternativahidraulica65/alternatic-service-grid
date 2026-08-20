@@ -441,30 +441,53 @@ function GestaoOSPage() {
 
         <TabsContent value="resumo" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
-            <Card className="md:col-span-2 border-border shadow-md">
-              <CardHeader className="bg-muted/10 border-b border-border/50">
-                <CardTitle className="text-base font-bold uppercase tracking-widest">Informações do Equipamento</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-2 gap-y-4 text-sm">
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Descrição</p>
-                    <p className="font-bold text-foreground uppercase">{os.descricao || "Não informada"}</p>
+            <div className="md:col-span-2 space-y-6">
+              <Card className="border-border shadow-md">
+                <CardHeader className="bg-muted/10 border-b border-border/50">
+                  <CardTitle className="text-base font-bold uppercase tracking-widest">Informações do Equipamento</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <div className="grid grid-cols-2 gap-y-4 text-sm">
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Descrição</p>
+                      <p className="font-bold text-foreground uppercase">{os.descricao || "Não informada"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade</p>
+                      <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
+                    </div>
+                    <div className="col-span-2 pt-2 border-t border-border/50">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
+                      <p className="text-muted-foreground font-medium italic">{os.observacoes || "Nenhuma observação."}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade</p>
-                    <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
-                  </div>
-                  <div className="col-span-2 pt-2 border-t border-border/50">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
-                    <p className="text-muted-foreground font-medium italic">{os.observacoes || "Nenhuma observação."}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card className="border-border shadow-md">
-              <CardHeader className="bg-muted/10 border-b border-border/50">
+              {/* Auditoria de Reabertura */}
+              <Card className="border-border shadow-md">
+                <CardHeader className="bg-slate-50 border-b border-border/50">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                      <History className="h-4 w-4 text-slate-400" />
+                      Histórico de Reabertura
+                    </CardTitle>
+                    <Button variant="ghost" size="sm" className="text-[9px] font-black uppercase text-primary">
+                      Solicitar Revisão
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="text-[10px] text-muted-foreground text-center py-4 font-bold uppercase tracking-widest bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
+                    Nenhuma reabertura registrada para esta OS.
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="space-y-6">
+              <Card className="border-border shadow-md">
+                <CardHeader className="bg-muted/10 border-b border-border/50">
                 <CardTitle className="text-base font-bold uppercase tracking-widest">SLA e Prazos</CardTitle>
               </CardHeader>
               <CardContent className="pt-6 space-y-4">
