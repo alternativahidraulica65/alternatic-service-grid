@@ -409,7 +409,7 @@ function OrcamentoOSPage() {
           <Card className="border-border shadow-md">
             <CardHeader className="bg-slate-50 border-b border-border/50 flex flex-row items-center justify-between">
               <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                <History className="h-4 w-4 text-primary" />
+                <HistoryIcon className="h-4 w-4 text-primary" />
                 Histórico de Revisões
               </CardTitle>
               <Badge variant="secondary" className="text-[9px] font-black uppercase bg-slate-100 text-slate-600 border-slate-200">
