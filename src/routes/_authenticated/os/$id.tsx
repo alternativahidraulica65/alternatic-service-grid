@@ -416,9 +416,9 @@ function GestaoOSPage() {
                 {step.sla}
               </span>
             </div>
-              {step.label}
-            </span>
           </div>
+        ))}
+      </div>
         ))}
       </div>
 
