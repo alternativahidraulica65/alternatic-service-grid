@@ -158,13 +158,13 @@ function DashboardDiretor() {
         />
         <KPICard 
           title="MTTR Médio" 
-          value="4.2 dias" 
+          value="Calculando..." 
           subtext="Tempo Médio de Reparo" 
           icon={Clock} 
         />
         <KPICard 
           title="Produtividade" 
-          value="92%" 
+          value="Em análise" 
           subtext="Eficiência da equipe técnica" 
           icon={Factory} 
         />
