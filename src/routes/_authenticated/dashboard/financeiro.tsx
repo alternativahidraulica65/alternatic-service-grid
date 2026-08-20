@@ -189,7 +189,7 @@ function DashboardFinanceiro() {
       return data.map(os => ({
         cliente: os.cliente,
         valor: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(os.valor_total)),
-        data: format(new Date(os.data_abertura), 'dd/MM'),
+        data: os.data_abertura ? format(new Date(os.data_abertura), 'dd/MM') : '--/--',
         status: os.status === 'pronto' ? 'Confirmado' : 'Pendente'
       }));
     }

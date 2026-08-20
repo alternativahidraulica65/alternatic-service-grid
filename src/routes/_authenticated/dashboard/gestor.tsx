@@ -81,7 +81,7 @@ function DashboardGestor() {
           .filter(os => os.status === col.id)
           .map(os => ({
             numero_os: os.numero_os,
-            data: format(new Date(os.data_abertura), 'dd/MM'),
+            data: os.data_abertura ? format(new Date(os.data_abertura), 'dd/MM') : '--/--',
             descricao: os.descricao,
             operador: 'Técnico'
           }))
