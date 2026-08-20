@@ -952,71 +952,34 @@ function GestaoOSPage() {
         </TabsContent>
 
         <TabsContent value="aprovação">
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ImageIcon className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base font-bold uppercase tracking-widest text-white">Anexos e Documentação</CardTitle>
-                  </div>
-                  <Button variant="outline" size="sm" className="h-9 border-white/20 text-white hover:bg-white/10 font-bold text-[10px] uppercase">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Novo Anexo
-                  </Button>
-                </div>
-             </CardHeader>
-             <CardContent className="pt-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  {fotosLaudo.map((foto: any) => (
-                    <div key={foto.id} className="group relative aspect-square rounded-xl overflow-hidden border border-border bg-slate-50">
-                      <SignedImage 
-                        storagePath={foto.storage_path} 
-                        className="h-full w-full object-cover transition-transform group-hover:scale-110" 
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                         <Badge className="bg-white text-slate-900 text-[8px] uppercase">{foto.tipo}</Badge>
-                      </div>
-                    </div>
-                  ))}
-                  {fotosLaudo.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-muted-foreground italic text-xs uppercase tracking-widest">
-                       Nenhum anexo encontrado para esta OS.
-                    </div>
-                  )}
-                </div>
-             </CardContent>
-           </Card>
-        </TabsContent>
-
-
-        <TabsContent value="orçamento">
           <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
               <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-primary" />
-                Orçamento Comercial
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                Status de Aprovação
               </CardTitle>
-              <Button 
-                className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
-                onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
-              >
-                Abrir Módulo de Orçamento
-              </Button>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Receipt className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Utilize o módulo avançado para gerenciar custos, margens e gerar a proposta PDF.</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-6 border-primary text-primary font-black uppercase text-[10px] tracking-widest px-8"
-                  onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
-                >
-                  Configurar Orçamento
-                </Button>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50">
+                  <div>
+                    <p className="text-sm font-bold text-foreground uppercase tracking-tight">Aprovação Técnica (Gerência)</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Revisão do laudo e custos.</p>
+                  </div>
+                  <Badge className="bg-slate-200 text-slate-500 font-black uppercase text-[9px] tracking-widest">Pendente</Badge>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50">
+                  <div>
+                    <p className="text-sm font-bold text-foreground uppercase tracking-tight">Aprovação Comercial (Cliente)</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Aceite formal do orçamento.</p>
+                  </div>
+                  <Badge className="bg-slate-200 text-slate-500 font-black uppercase text-[9px] tracking-widest">Pendente</Badge>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
+
 
         <TabsContent value="aprovação">
           <Card className="border-border shadow-md">
