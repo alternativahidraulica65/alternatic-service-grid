@@ -164,8 +164,8 @@ function DashboardLayout() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "hidden md:flex flex-col bg-slate-900 text-white sticky top-0 h-screen border-r border-white/5 shadow-2xl transition-all duration-300 ease-in-out z-40",
-          isExpanded ? "w-64" : "w-20"
+          "hidden md:flex flex-col bg-slate-900 text-white h-screen border-r border-white/5 shadow-2xl transition-all duration-300 ease-in-out z-40",
+          isPinned ? "sticky top-0 w-64" : (isHovered ? "fixed top-0 left-0 w-64 h-full" : "sticky top-0 w-20")
         )}
       >
         <div className={cn(
