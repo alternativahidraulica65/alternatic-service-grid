@@ -285,7 +285,7 @@ function GestaoOSPage() {
     }
   }, [fotosLaudo]);
 
-  const handleUploadFotoLaudo = async (tipo: 'laudo_interno' | 'laudo_pecas') => {
+  const handleUploadFotoLaudo = async (tipo: 'laudo_interno' | 'laudo_pecas' | 'outros') => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
