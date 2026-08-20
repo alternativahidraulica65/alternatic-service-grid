@@ -479,30 +479,29 @@ function GestaoOSPage() {
         <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
 
           {[
-            "Visão Geral", 
-            "Checklist", 
-            "Laudo Técnico", 
-            "Anexos",
-            "Orçamento", 
-            "Aprovação", 
-            "Execução",
-            "Faturamento",
-            "Entrega",
-            "Histórico"
-          ].map((tab) => {
-
+            { label: "Visão Geral", value: "resumo" },
+            { label: "Checklist", value: "checklist" },
+            { label: "Laudo Técnico", value: "laudo-técnico" },
+            { label: "Anexos", value: "anexos" },
+            { label: "Orçamento", value: "orçamento", hidden: !canViewFinance },
+            { label: "Aprovação", value: "aprovação", hidden: !canViewFinance },
+            { label: "Execução", value: "execucao" },
+            { label: "Faturamento", value: "faturamento", hidden: !canViewFinance },
+            { label: "Entrega", value: "entrega" },
+            { label: "Histórico", value: "auditoria" }
+          ].filter(tab => !tab.hidden).map((tab) => {
             const isCompleted = 
-              (tab === "Checklist" && os.status !== 'aberta') ||
-              (tab === "Laudo Técnico" && ['orcamento_pendente', 'aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status)) ||
-              (tab === "Orçamento" && ['aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status));
+              (tab.label === "Checklist" && os.status !== 'aberta') ||
+              (tab.label === "Laudo Técnico" && ['orcamento_pendente', 'aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status)) ||
+              (tab.label === "Orçamento" && ['aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status));
 
             return (
               <TabsTrigger 
-                key={tab} 
-                value={tab === "Visão Geral" ? "resumo" : (tab === "Anexos" ? "anexos" : (tab === "Histórico" ? "auditoria" : (tab === "Execução" ? "execucao" : tab.toLowerCase().replace(" ", "-"))))} 
+                key={tab.value} 
+                value={tab.value} 
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0 flex items-center gap-2"
               >
-                {tab}
+                {tab.label}
                 {isCompleted && <CheckCircle2 className="h-3 w-3 text-emerald-500" />}
               </TabsTrigger>
             );
