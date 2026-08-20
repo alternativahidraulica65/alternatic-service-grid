@@ -156,13 +156,13 @@ function ProfilePage() {
       const filePath = `${user.id}/${Math.random()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('user-profiles')
+        .from('user-profiles-private')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('user-profiles')
+        .from('user-profiles-private')
         .getPublicUrl(filePath);
 
       const { error: updateError } = await supabase
