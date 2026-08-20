@@ -472,6 +472,53 @@ export type Database = {
         }
         Relationships: []
       }
+      orcamento_revisoes: {
+        Row: {
+          criado_em: string
+          criado_por: string | null
+          fotos_selecionadas: string[]
+          id: string
+          numero_orcamento: string | null
+          numero_revisao: number
+          orcamento_id: string
+          parametros: Json | null
+          pdf_storage_path: string
+          valor_total: number
+        }
+        Insert: {
+          criado_em?: string
+          criado_por?: string | null
+          fotos_selecionadas?: string[]
+          id?: string
+          numero_orcamento?: string | null
+          numero_revisao?: number
+          orcamento_id: string
+          parametros?: Json | null
+          pdf_storage_path: string
+          valor_total?: number
+        }
+        Update: {
+          criado_em?: string
+          criado_por?: string | null
+          fotos_selecionadas?: string[]
+          id?: string
+          numero_orcamento?: string | null
+          numero_revisao?: number
+          orcamento_id?: string
+          parametros?: Json | null
+          pdf_storage_path?: string
+          valor_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamento_revisoes_orcamento_id_fkey"
+            columns: ["orcamento_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orcamentos: {
         Row: {
           cliente_id: string
@@ -647,6 +694,8 @@ export type Database = {
       }
       os_fotos_anexos: {
         Row: {
+          bucket: string | null
+          categoria: string | null
           criado_em: string | null
           criado_por: string | null
           foto_url: string
@@ -654,9 +703,12 @@ export type Database = {
           legenda: string | null
           os_id: string
           peca_id: string | null
+          storage_path: string | null
           tipo: string | null
         }
         Insert: {
+          bucket?: string | null
+          categoria?: string | null
           criado_em?: string | null
           criado_por?: string | null
           foto_url: string
@@ -664,9 +716,12 @@ export type Database = {
           legenda?: string | null
           os_id: string
           peca_id?: string | null
+          storage_path?: string | null
           tipo?: string | null
         }
         Update: {
+          bucket?: string | null
+          categoria?: string | null
           criado_em?: string | null
           criado_por?: string | null
           foto_url?: string
@@ -674,6 +729,7 @@ export type Database = {
           legenda?: string | null
           os_id?: string
           peca_id?: string | null
+          storage_path?: string | null
           tipo?: string | null
         }
         Relationships: [
@@ -968,7 +1024,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      fotos_anexos: {
+        Row: {
+          bucket: string | null
+          categoria: string | null
+          criado_em: string | null
+          criado_por: string | null
+          foto_url: string | null
+          id: string | null
+          legenda: string | null
+          os_id: string | null
+          peca_id: string | null
+          storage_path: string | null
+          tipo: string | null
+        }
+        Insert: {
+          bucket?: string | null
+          categoria?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url?: string | null
+          id?: string | null
+          legenda?: string | null
+          os_id?: string | null
+          peca_id?: string | null
+          storage_path?: string | null
+          tipo?: string | null
+        }
+        Update: {
+          bucket?: string | null
+          categoria?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url?: string | null
+          id?: string | null
+          legenda?: string | null
+          os_id?: string | null
+          peca_id?: string | null
+          storage_path?: string | null
+          tipo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_fotos_anexos_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_fotos_anexos_peca_id_fkey"
+            columns: ["peca_id"]
+            isOneToOne: false
+            referencedRelation: "os_guarda_pecas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       dev_get_storage_stats: {
