@@ -354,8 +354,34 @@ function GestaoOSPage() {
     }
   };
 
-  if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
-  if (!os) return <div className="p-10 text-center uppercase font-black text-red-500">Ordem de Serviço não encontrada.</div>;
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
+          <p className="mt-4 text-xs font-black uppercase tracking-widest text-slate-500">Carregando Ordem de Serviço...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!os) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center bg-slate-50 p-6">
+        <AlertCircle className="h-16 w-16 text-red-500 mb-6 opacity-20" />
+        <h2 className="font-display text-2xl font-black uppercase text-slate-900 tracking-tight">OS Não Encontrada</h2>
+        <p className="text-sm text-slate-500 font-medium mt-2 mb-8">O registro solicitado não existe ou foi removido.</p>
+        <Button 
+          className="h-12 bg-slate-900 text-white font-black uppercase text-xs tracking-widest px-8"
+          onClick={() => router.navigate({ to: '/os' })}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Voltar para Listagem
+        </Button>
+      </div>
+    );
+  }
+
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
