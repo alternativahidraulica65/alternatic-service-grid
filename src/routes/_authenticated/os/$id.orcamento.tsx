@@ -528,11 +528,11 @@ function OrcamentoOSPage() {
          <Button variant="outline" className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300">
             Cancelar
          </Button>
-         <Button className="h-10 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200" onClick={handleSalvarVersao}>
-            Salvar Versão
+         <Button disabled={gerandoPdf} className="h-10 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200" onClick={handleSalvarVersao}>
+            <Save className="mr-2 h-4 w-4" /> Salvar Versão
          </Button>
-         <Button className="h-10 px-8 bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20" onClick={handleGerarPDF}>
-            Gerar PDF Proposta
+         <Button disabled={gerandoPdf} className="h-10 px-8 bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20" onClick={handleGerarPDF}>
+            <FileDown className="mr-2 h-4 w-4" /> {gerandoPdf ? "Gerando..." : "Gerar PDF Proposta"}
          </Button>
       </div>
     </div>
