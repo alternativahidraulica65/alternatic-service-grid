@@ -428,7 +428,7 @@ function GestaoOSPage() {
             <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
               <DropdownMenuItem 
                 className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
-                onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+                onClick={() => router.navigate({ to: '/os/$id/orcamento', params: { id } } as any)}
               >
                 Gerar Orçamento
               </DropdownMenuItem>
