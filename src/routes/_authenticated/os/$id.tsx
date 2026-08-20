@@ -363,8 +363,6 @@ function GestaoOSPage() {
           <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: '/os' })} className="text-muted-foreground hover:text-primary">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-
-        <div className="flex items-center gap-4">
           <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
             <Wrench className="h-8 w-8 text-primary-foreground" />
           </div>
@@ -380,6 +378,7 @@ function GestaoOSPage() {
             </p>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
           <Button variant="outline" className="h-10 border-border font-bold uppercase text-[10px] tracking-widest">
             <Camera className="mr-2 h-4 w-4 text-primary" />
