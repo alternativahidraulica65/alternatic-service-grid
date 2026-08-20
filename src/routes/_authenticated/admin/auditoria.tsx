@@ -47,7 +47,7 @@ function AuditoriaPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const totalGeralBytes = storageStats?.reduce((acc, curr) => acc + Number(curr.total_bytes), 0) || 0;
+  const totalGeralBytes = (storageStats || []).reduce((acc: number, curr: any) => acc + Number(curr.total_bytes), 0);
   const limitBytes = 1024 * 1024 * 1024; // 1GB
   const porcentagemUso = Math.min((totalGeralBytes / limitBytes) * 100, 100);
   const [search, setSearch] = useState("");
@@ -198,7 +198,7 @@ function AuditoriaPage() {
               </div>
 
               <div className="space-y-2">
-                <Progress value={porcentagemUso} className="h-3 bg-white/5" indicatorClassName="bg-primary shadow-[0_0_10px_rgba(255,215,0,0.5)]" />
+                <Progress value={porcentagemUso} className="h-3 bg-white/5 [&>div]:bg-primary" />
                 <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-600">
                   <span>0 GB</span>
                   <span>1 GB</span>
@@ -206,7 +206,7 @@ function AuditoriaPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/5">
-                {storageStats?.map((bucket) => (
+                {(storageStats || []).map((bucket: any) => (
                   <div key={bucket.nome_bucket} className="bg-white/5 border border-white/10 p-3 rounded group hover:bg-white/10 transition-colors">
                     <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary" />
