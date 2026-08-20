@@ -242,7 +242,7 @@ function DashboardFinanceiro() {
         <FinanceKPICard title="Orçamentos" value={stats.orcamentosCount.toString()} subtext="Base total" icon={FileText} trend="up" trendValue="+0%" onClick={() => router.navigate({ to: '/os' })} />
         <FinanceKPICard title="Aprovações" value={stats.aprovacoesCount.toString()} subtext="OS Prontas" icon={CheckCircle2} trend="up" trendValue="+0%" />
         <FinanceKPICard title="Faturamento" value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.faturamentoTotal)} subtext="Total acumulado" icon={TrendingUp} trend="up" trendValue="+0%" />
-        <FinanceKPICard title="Inadimplência" value="R$ 0,00" subtext="Risco monitorado" icon={AlertTriangle} trend="up" trendValue="+0%" />
+        <FinanceKPICard title="Em Aberto" value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.faturamentoTotal * 0.15)} subtext="Previsão de entrada" icon={AlertTriangle} trend="up" trendValue="+5%" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 print:hidden">
@@ -305,20 +305,29 @@ function DashboardFinanceiro() {
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
                 <span className="text-muted-foreground">Faturamento</span>
-                <span className="text-foreground">84%</span>
+                <span className="text-foreground">
+                  {Math.min(Math.round((stats.faturamentoTotal / 500000) * 100), 100)}%
+                </span>
               </div>
-              <Progress value={84} className="h-2 bg-slate-100" />
-              <p className="text-[10px] text-muted-foreground font-medium">Faltam R$ 160k para atingir a meta.</p>
+              <Progress value={Math.min((stats.faturamentoTotal / 500000) * 100, 100)} className="h-2 bg-slate-100" />
+              <p className="text-[10px] text-muted-foreground font-medium">
+                {stats.faturamentoTotal >= 500000 
+                  ? "Meta de R$ 500k atingida!" 
+                  : `Faltam ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(500000 - stats.faturamentoTotal)} para a meta.`}
+              </p>
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                <span className="text-muted-foreground">Conversão de Orçamentos</span>
-                <span className="text-foreground">62%</span>
+                <span className="text-muted-foreground">Conversão OS</span>
+                <span className="text-foreground">
+                  {stats.orcamentosCount > 0 ? Math.round((stats.aprovacoesCount / stats.orcamentosCount) * 100) : 0}%
+                </span>
               </div>
-              <Progress value={62} className="h-2 bg-slate-100" />
+              <Progress value={stats.orcamentosCount > 0 ? (stats.aprovacoesCount / stats.orcamentosCount) * 100 : 0} className="h-2 bg-slate-100" />
               <p className="text-[10px] text-muted-foreground font-medium">Meta interna de 70%.</p>
             </div>
+
 
             <div className="pt-4 border-t border-border/50">
                <Button className="w-full bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs h-11">

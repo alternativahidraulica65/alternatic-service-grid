@@ -448,6 +448,53 @@ export type Database = {
           },
         ]
       }
+      logs_sistema: {
+        Row: {
+          acao: string
+          criado_em: string
+          dados_anteriores: Json | null
+          dados_novos: Json | null
+          entidade: string
+          id: string
+          os_numero: string | null
+          registro_id: string | null
+          usuario_id: string | null
+          usuario_nome: string | null
+        }
+        Insert: {
+          acao: string
+          criado_em?: string
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          entidade: string
+          id?: string
+          os_numero?: string | null
+          registro_id?: string | null
+          usuario_id?: string | null
+          usuario_nome?: string | null
+        }
+        Update: {
+          acao?: string
+          criado_em?: string
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          entidade?: string
+          id?: string
+          os_numero?: string | null
+          registro_id?: string | null
+          usuario_id?: string | null
+          usuario_nome?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_sistema_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       materiais: {
         Row: {
           criado_em: string | null
@@ -1091,7 +1138,30 @@ export type Database = {
           total_bytes: number
         }[]
       }
+      get_distribuicao_status_os: {
+        Args: never
+        Returns: {
+          color: string
+          name: string
+          value: number
+        }[]
+      }
       get_email_by_username: { Args: { p_username: string }; Returns: string }
+      get_faturamento_mensal: {
+        Args: never
+        Returns: {
+          mes: string
+          valor: number
+        }[]
+      }
+      get_produtividade_tecnicos: {
+        Args: never
+        Returns: {
+          media: number
+          os: number
+          tecnico: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
