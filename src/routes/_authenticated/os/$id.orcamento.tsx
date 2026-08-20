@@ -43,7 +43,9 @@ interface ItemOrcamento {
 
 function OrcamentoOSPage() {
   const { id } = Route.useParams();
+  const router = useRouter();
   const queryClient = useQueryClient();
+
   const [itens, setItens] = useState<ItemOrcamento[]>([]);
   const [imposto, setImposto] = useState(8.5);
   const [margem, setMargem] = useState(25);
