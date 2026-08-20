@@ -375,18 +375,18 @@ function OrcamentoOSPage() {
                     Nenhuma foto registrada nesta OS.
                   </div>
                 ) : (
-                  fotos.map((foto, idx) => (
-                    <div key={idx} className="group relative aspect-square rounded-xl border border-slate-200 overflow-hidden bg-slate-50 hover:border-primary transition-all">
-                      <img src={foto.foto_url} className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+                  fotos.map((foto: any, idx: number) => (
+                    <div key={foto.id} className="group relative aspect-square rounded-xl border border-slate-200 overflow-hidden bg-slate-50 hover:border-primary transition-all">
+                      <SignedImage storagePath={foto.storage_path} fallbackUrl={foto.foto_url} className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all" />
                       <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2 flex items-center justify-between backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-all">
-                        <span className="text-[8px] font-bold text-white uppercase truncate">{foto.tipo || `Foto ${idx + 1}`}</span>
+                        <span className="text-[8px] font-bold text-white uppercase truncate">{foto.categoria || foto.tipo || `Foto ${idx + 1}`}</span>
                         <Checkbox 
-                          checked={fotosSelecionadas.includes(foto.foto_url)} 
-                          onCheckedChange={() => toggleFoto(foto.foto_url)}
+                          checked={fotosSelecionadas.includes(foto.id)} 
+                          onCheckedChange={() => toggleFoto(foto.id)}
                           className="border-white data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                         />
                       </div>
-                      {fotosSelecionadas.includes(foto.foto_url) && (
+                      {fotosSelecionadas.includes(foto.id) && (
                         <div className="absolute top-2 right-2 h-5 w-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
                           <CheckCircle2 className="h-3 w-3 text-white" />
                         </div>
@@ -396,8 +396,66 @@ function OrcamentoOSPage() {
                 )}
               </div>
               <p className="mt-4 text-[9px] text-muted-foreground font-bold uppercase tracking-tight italic">
-                * Clique na miniatura para ampliar. Use o checkbox para incluir/excluir fotos do PDF.
+                * Selecione as fotos que devem compor o laudo visual do PDF. As imagens são carregadas com link seguro temporário.
               </p>
+            </CardContent>
+          </Card>
+
+          {/* Histórico de Revisões */}
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-slate-50 border-b border-border/50 flex flex-row items-center justify-between">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                <History className="h-4 w-4 text-primary" />
+                Histórico de Revisões
+              </CardTitle>
+              <Badge variant="secondary" className="text-[9px] font-black uppercase bg-slate-100 text-slate-600 border-slate-200">
+                {revisoes.length} versão(ões)
+              </Badge>
+            </CardHeader>
+            <CardContent className="p-0">
+              {revisoes.length === 0 ? (
+                <div className="py-10 text-center text-[10px] font-bold text-slate-400 uppercase italic">
+                  Nenhuma revisão gerada para esta OS.
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader className="bg-slate-50/50">
+                    <TableRow className="border-border">
+                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Revisão</TableHead>
+                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Data</TableHead>
+                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Fotos</TableHead>
+                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Valor</TableHead>
+                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 text-right">PDF</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {revisoes.map((rev: any) => (
+                      <TableRow key={rev.id} className="border-border hover:bg-slate-50/50">
+                        <TableCell className="text-[11px] font-black text-slate-900">REV {rev.numero_revisao}</TableCell>
+                        <TableCell className="text-[10px] font-bold text-slate-500">
+                          {new Date(rev.criado_em).toLocaleString('pt-BR')}
+                        </TableCell>
+                        <TableCell className="text-[10px] font-bold text-slate-500">
+                          {(rev.fotos_selecionadas || []).length}
+                        </TableCell>
+                        <TableCell className="text-[11px] font-black text-slate-900">
+                          R$ {Number(rev.valor_total).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 text-[9px] font-black uppercase tracking-widest border-slate-200"
+                            onClick={() => handleDownloadRevisao(rev.pdf_storage_path)}
+                          >
+                            <FileDown className="mr-2 h-3 w-3" /> Baixar
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </div>
