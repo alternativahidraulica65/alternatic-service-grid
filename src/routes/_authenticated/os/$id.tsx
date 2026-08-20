@@ -673,11 +673,11 @@ function GestaoOSPage() {
                                     <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
                                     <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
                                   </Button>
-                                  {uploadProgress[item.id] !== undefined && uploadProgress[item.id] < 100 && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-md">
-                                      <span className="text-[8px] font-black text-primary">{uploadProgress[item.id]}%</span>
-                                    </div>
-                                  )}
+                                   {uploadProgress[item.id] !== undefined && (uploadProgress[item.id] ?? 0) < 100 && (
+                                     <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-md">
+                                       <span className="text-[8px] font-black text-primary">{uploadProgress[item.id]}%</span>
+                                     </div>
+                                   )}
                                </div>
                                {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
                                  <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
@@ -784,9 +784,9 @@ function GestaoOSPage() {
                           <ImageIcon className="h-4 w-4 text-slate-400" />
                           Escolher arquivos
                         </Button>
-                        {Object.keys(uploadProgress).some(k => k.startsWith('laudo_interno-') && uploadProgress[k] < 100) && (
+                        {Object.keys(uploadProgress).some(k => k.startsWith('laudo_interno-') && (uploadProgress[k] ?? 0) < 100) && (
                           <div className="mt-2 space-y-1">
-                            <Progress value={Math.max(...Object.keys(uploadProgress).filter(k => k.startsWith('laudo_interno-')).map(k => uploadProgress[k]))} className="h-1" />
+                            <Progress value={Math.max(0, ...Object.keys(uploadProgress).filter(k => k.startsWith('laudo_interno-')).map(k => uploadProgress[k] ?? 0))} className="h-1" />
                             <p className="text-[8px] font-black text-center text-primary uppercase">Enviando...</p>
                           </div>
                         )}
@@ -811,9 +811,9 @@ function GestaoOSPage() {
                           <ImageIcon className="h-4 w-4 text-slate-400" />
                           Escolher arquivos
                         </Button>
-                        {Object.keys(uploadProgress).some(k => k.startsWith('laudo_pecas-') && uploadProgress[k] < 100) && (
+                        {Object.keys(uploadProgress).some(k => k.startsWith('laudo_pecas-') && (uploadProgress[k] ?? 0) < 100) && (
                           <div className="mt-2 space-y-1">
-                            <Progress value={Math.max(...Object.keys(uploadProgress).filter(k => k.startsWith('laudo_pecas-')).map(k => uploadProgress[k]))} className="h-1" />
+                            <Progress value={Math.max(0, ...Object.keys(uploadProgress).filter(k => k.startsWith('laudo_pecas-')).map(k => uploadProgress[k] ?? 0))} className="h-1" />
                             <p className="text-[8px] font-black text-center text-primary uppercase">Enviando...</p>
                           </div>
                         )}
