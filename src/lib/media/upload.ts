@@ -80,7 +80,7 @@ export interface UploadOsPhotoResult {
   signedUrl: string | null;
   originalSize: number;
   compressedSize: number;
-  registroId?: string;
+  registroId?: string | undefined;
 }
 
 /**
