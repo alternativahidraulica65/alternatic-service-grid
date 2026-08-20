@@ -117,7 +117,7 @@ function NovaOSPage() {
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary">
+        <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: '/os' })} className="text-muted-foreground hover:text-primary">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>

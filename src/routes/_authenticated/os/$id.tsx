@@ -67,6 +67,8 @@ function GestaoOSPage() {
   const { id } = Route.useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("resumo");
+
 
   const { data: os, isLoading } = useQuery({
     queryKey: ['os_detail', id],
@@ -469,8 +471,9 @@ function GestaoOSPage() {
         ))}
       </div>
 
-      <Tabs defaultValue="resumo" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
+
           {[
             "Visão Geral", 
             "Checklist", 
@@ -727,7 +730,7 @@ function GestaoOSPage() {
                <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-50/50 p-4 rounded-xl">
                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">Ao finalizar, a OS avança para a próxima etapa.</p>
                  <div className="flex gap-3">
-                   <Button variant="outline" className="h-10 border-slate-300 font-bold uppercase text-[10px] tracking-widest px-6" onClick={() => router.history.back()}>
+                   <Button variant="outline" className="h-10 border-slate-300 font-bold uppercase text-[10px] tracking-widest px-6" onClick={() => setActiveTab("resumo")}>
                      Voltar
                    </Button>
                    <Button 
@@ -759,7 +762,7 @@ function GestaoOSPage() {
                   <Badge variant="outline" className="h-7 text-[10px] font-bold uppercase border-slate-200">
                     Status: {os.status === 'aguardando_gestor' ? 'Aguardando Gestor' : 'Em Diagnóstico'}
                   </Badge>
-                  <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold uppercase" onClick={() => router.history.back()}>
+                  <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold uppercase" onClick={() => setActiveTab("resumo")}>
                     Voltar
                   </Button>
                 </div>
