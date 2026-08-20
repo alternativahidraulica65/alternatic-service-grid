@@ -185,20 +185,22 @@ function GestaoOSPage() {
       const file = e.target.files?.[0];
       if (!file) return;
 
+      const toastId = toast.loading("Comprimindo e enviando foto...");
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${id}/checklist/${itemId}-${Math.random()}.${fileExt}`;
-        const { error: uploadError } = await supabase.storage
-          .from('os-assets')
-          .upload(fileName, file);
-        
-        if (uploadError) throw uploadError;
+        const result = await uploadOsPhoto({
+          osId: id,
+          categoria: 'checklist',
+          file,
+          legenda: `Checklist ${itemId}`,
+        });
 
-        const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
-        await handleUpdateChecklistItem(itemId, { foto_url: urlData.publicUrl });
-        toast.success("Foto anexada com sucesso");
+        await handleUpdateChecklistItem(itemId, { foto_url: result.signedUrl });
+        toast.success(
+          `Foto anexada (${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)})`,
+          { id: toastId }
+        );
       } catch (error: any) {
-        toast.error("Erro no upload: " + error.message);
+        toast.error("Erro no upload: " + error.message, { id: toastId });
       }
     };
     input.click();
@@ -281,32 +283,33 @@ function GestaoOSPage() {
     input.accept = 'image/*';
     input.multiple = true;
     input.onchange = async (e: any) => {
-      const files = Array.from(e.target.files || []);
+      const files = Array.from(e.target.files || []) as File[];
       if (files.length === 0) return;
+
+      const toastId = toast.loading(`Comprimindo ${files.length} foto(s)...`);
+      let enviadas = 0;
+      let economia = 0;
 
       for (const file of files) {
         try {
-          const fileExt = (file as File).name.split('.').pop();
-          const fileName = `${id}/laudo/${tipo}-${Math.random()}.${fileExt}`;
-          const { error: uploadError } = await supabase.storage
-            .from('os-assets')
-            .upload(fileName, file as File);
-          
-          if (uploadError) throw uploadError;
-
-          const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
-          
-          await supabase.from('os_fotos_anexos').insert({
-            os_id: id,
-            foto_url: urlData.publicUrl,
-            tipo: tipo
+          const result = await uploadOsPhoto({
+            osId: id,
+            categoria: tipo,
+            file,
           });
+          enviadas += 1;
+          economia += result.originalSize - result.compressedSize;
         } catch (error: any) {
           toast.error("Erro no upload: " + error.message);
         }
       }
+
       refetchFotos();
-      toast.success("Fotos anexadas com sucesso");
+      if (enviadas > 0) {
+        toast.success(`${enviadas} foto(s) anexada(s) — ${formatBytes(economia)} economizados`, { id: toastId });
+      } else {
+        toast.dismiss(toastId);
+      }
     };
     input.click();
   };
