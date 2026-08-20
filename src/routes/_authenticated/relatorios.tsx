@@ -248,23 +248,24 @@ function RelatoriosPage() {
                     outerRadius={80}
                     paddingAngle={5}
                     dataKey="value"
-                  >
-                    {statusOS.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-col gap-2 ml-4">
-                 {statusOS.map((item) => (
-                   <div key={item.name} className="flex items-center gap-2">
-                     <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-                     <span className="text-[10px] font-bold uppercase text-muted-foreground">{item.name} ({item.value})</span>
-                   </div>
-                 ))}
+                    >
+                      {statusOS.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex flex-col gap-2 ml-4">
+                   {statusOS.map((item: any) => (
+                     <div key={item.name} className="flex items-center gap-2">
+                       <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+                       <span className="text-[10px] font-bold uppercase text-muted-foreground">{item.name} ({item.value})</span>
+                     </div>
+                   ))}
+
               </div>
             </CardContent>
           </Card>
