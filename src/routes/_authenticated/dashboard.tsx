@@ -54,9 +54,19 @@ function DashboardLayout() {
   
   const [activeView, setActiveView] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isPinned, setIsPinned] = useState(true);
+  const [isPinned, setIsPinned] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sidebar_pinned');
+      return saved !== null ? JSON.parse(saved) : true;
+    }
+    return true;
+  });
   const [isHovered, setIsHovered] = useState(false);
-  
+
+  useEffect(() => {
+    localStorage.setItem('sidebar_pinned', JSON.stringify(isPinned));
+  }, [isPinned]);
+
   const isExpanded = isPinned || isHovered;
   
   useEffect(() => {
