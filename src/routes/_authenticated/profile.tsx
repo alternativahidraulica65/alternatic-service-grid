@@ -365,7 +365,9 @@ function ProfilePage() {
                   </FormItem>
                 )}
               />
+              </Form>
             </CardContent>
+
           </Card>
 
           <Card className="border-slate-200 shadow-sm overflow-hidden">
