@@ -20,7 +20,8 @@ import {
   FileText,
   Package,
   Receipt,
-  Truck
+  Truck,
+  History as HistoryIcon
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
