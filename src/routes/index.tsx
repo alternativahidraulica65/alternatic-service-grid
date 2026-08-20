@@ -93,6 +93,9 @@ function LoginPage() {
 
       if (error) throw error;
 
+      localStorage.setItem("keep_signed_in", String(keepSignedIn));
+      sessionStorage.setItem("session_active", "true");
+
       if (!data.session) {
         toast.error("Sessão não iniciada", {
           description: "Verifique seu e-mail antes de continuar.",
