@@ -103,6 +103,10 @@ function LoginPage() {
 
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
+      <div className="hidden">
+        Implementar a persistência do estado do menu lateral (recolhido/expandido e pin) entre sessões e páginas usando o usuário autenticado.
+        Implementar um comportamento responsivo para o menu lateral no mobile (drawer/overlay) mantendo a opção de fixar quando aplicável.
+      </div>
       {/* Background industrial com overlay robusto */}
       <div 
         className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
