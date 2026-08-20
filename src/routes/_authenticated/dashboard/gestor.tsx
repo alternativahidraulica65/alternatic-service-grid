@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { 
   Factory, 
   Settings, 
@@ -39,6 +39,7 @@ function KanbanCard({ os }: any) {
 }
 
 function DashboardGestor() {
+  const router = useRouter();
   return (
     <div className="space-y-8 p-6 md:p-10 pb-10">
       <div>
@@ -48,11 +49,17 @@ function DashboardGestor() {
 
       {/* KPIs Operacionais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-        <Card className="col-span-2 lg:col-span-1 bg-primary text-primary-foreground border-none shadow-lg">
+        <Card 
+          className="col-span-2 lg:col-span-1 bg-primary text-primary-foreground border-none shadow-lg cursor-pointer hover:scale-105 transition-transform"
+          onClick={() => router.navigate({ to: '/os' })}
+        >
           <CardHeader className="p-4"><CardTitle className="text-2xl font-black">12</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">OS na Fila</CardContent>
         </Card>
-        <Card className="col-span-2 lg:col-span-1 bg-red-500 text-white border-none shadow-lg">
+        <Card 
+          className="col-span-2 lg:col-span-1 bg-red-500 text-white border-none shadow-lg cursor-pointer hover:scale-105 transition-transform"
+          onClick={() => router.navigate({ to: '/os' })}
+        >
           <CardHeader className="p-4"><CardTitle className="text-2xl font-black">04</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">OS Atrasadas</CardContent>
         </Card>
@@ -84,7 +91,11 @@ function DashboardGestor() {
           { title: "Teste", items: [] },
           { title: "Pronto", items: [{ numero_os: "OS-0998", descricao: "Teste Hidráulico", operador: "Ana Costa" }] },
         ].map((column) => (
-          <div key={column.title} className="flex flex-col gap-2">
+          <div 
+            key={column.title} 
+            className="flex flex-col gap-2 cursor-pointer group"
+            onClick={() => router.navigate({ to: '/kanban' })}
+          >
             <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
               {column.title}
               <Badge variant="secondary" className="text-[9px]">{column.items.length}</Badge>

@@ -371,14 +371,18 @@ function ClientesPage() {
             </TableHeader>
             <TableBody>
               {filteredClientes.map((cliente: any) => (
-                <TableRow key={cliente.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
+                <TableRow 
+                  key={cliente.id} 
+                  className="group border-b border-border/50 hover:bg-slate-50 transition-colors cursor-pointer"
+                  onClick={() => router.navigate({ to: "/clientes/$id", params: { id: cliente.id } })}
+                >
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border group-hover:border-primary/50 transition-colors">
                         <Building2 className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-foreground uppercase tracking-tight">{cliente.nome}</p>
+                        <p className="text-sm font-bold text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">{cliente.nome}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <Badge variant="secondary" className="text-[8px] font-bold h-4">Contrato Ativo</Badge>
                         </div>

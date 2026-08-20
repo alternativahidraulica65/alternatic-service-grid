@@ -165,7 +165,11 @@ function OSListPage() {
                 ))
               ) : filteredOS.length > 0 ? (
                 filteredOS.map((os) => (
-                  <TableRow key={os.id} className="hover:bg-slate-50 border-b border-slate-100 transition-colors">
+                  <TableRow 
+                    key={os.id} 
+                    className="hover:bg-slate-50 border-b border-slate-100 transition-colors cursor-pointer"
+                    onClick={() => router.navigate({ to: "/os/$id", params: { id: os.id } })}
+                  >
                     <TableCell className="pl-8 py-4">
                       <div className="flex flex-col">
                         <span className="text-sm font-black text-primary tracking-tight">{os.numero_os}</span>
@@ -173,7 +177,7 @@ function OSListPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-xs font-bold uppercase text-slate-700">{(os.clientes as any)?.nome || '—'}</span>
+                      <span className="text-xs font-bold uppercase text-slate-700 hover:text-primary transition-colors">{(os.clientes as any)?.nome || '—'}</span>
                     </TableCell>
                     <TableCell>
                       <div className="max-w-[250px] truncate">

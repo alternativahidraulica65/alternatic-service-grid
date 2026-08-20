@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { 
   TrendingUp, 
   ClipboardList, 
@@ -37,9 +37,12 @@ export const Route = createFileRoute("/_authenticated/dashboard/diretor")({
   component: DashboardDiretor,
 });
 
-function KPICard({ title, value, subtext, icon: Icon, colorClass = "text-primary" }: any) {
+function KPICard({ title, value, subtext, icon: Icon, colorClass = "text-primary", onClick }: any) {
   return (
-    <Card className="border-border bg-card shadow-sm overflow-hidden group">
+    <Card 
+      className={`border-border bg-card shadow-sm overflow-hidden group transition-all ${onClick ? "cursor-pointer hover:shadow-md hover:border-primary/30" : ""}`}
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">
           {title}
@@ -72,6 +75,7 @@ const mockStatusData = [
 ];
 
 function DashboardDiretor() {
+  const router = useRouter();
   const { data: dbStats } = useQuery({
     queryKey: ['dashboard_diretor_db_stats'],
     queryFn: async () => {
@@ -140,12 +144,14 @@ function DashboardDiretor() {
           subtext="Base total de clientes" 
           icon={Users} 
           colorClass="text-emerald-500"
+          onClick={() => router.navigate({ to: '/clientes' })}
         />
         <KPICard 
           title="OS Abertas" 
           value={stats.abertas.toString()} 
           subtext="Aguardando início" 
           icon={ClipboardList} 
+          onClick={() => router.navigate({ to: '/os' })}
         />
         <KPICard 
           title="OS Atrasadas" 
@@ -153,6 +159,7 @@ function DashboardDiretor() {
           subtext="Risco de SLA" 
           icon={AlertTriangle} 
           colorClass="text-red-600"
+          onClick={() => router.navigate({ to: '/os' })}
         />
         <KPICard 
           title="MTTR Médio" 

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { 
   DollarSign,
   CheckCircle2,
@@ -45,9 +45,12 @@ export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   component: DashboardFinanceiro,
 });
 
-function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }: any) {
+function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue, onClick }: any) {
   return (
-    <Card className="border-border bg-card shadow-sm overflow-hidden border-l-4 border-l-primary">
+    <Card 
+      className={`border-border bg-card shadow-sm overflow-hidden border-l-4 border-l-primary transition-all ${onClick ? "cursor-pointer hover:shadow-md hover:border-primary/30" : ""}`}
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
           {title}
@@ -75,6 +78,7 @@ function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }
 }
 
 function DashboardFinanceiro() {
+  const router = useRouter();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
@@ -197,7 +201,7 @@ function DashboardFinanceiro() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
-        <FinanceKPICard title="Orçamentos" value="24" subtext="vs mês anterior" icon={FileText} trend="up" trendValue="+15%" />
+        <FinanceKPICard title="Orçamentos" value="24" subtext="vs mês anterior" icon={FileText} trend="up" trendValue="+15%" onClick={() => router.navigate({ to: '/os' })} />
         <FinanceKPICard title="Aprovações" value="18" subtext="SLA de 75%" icon={CheckCircle2} trend="up" trendValue="+5%" />
         <FinanceKPICard title="Faturamento" value="R$ 840k" subtext="Meta mensal" icon={TrendingUp} trend="down" trendValue="-2%" />
         <FinanceKPICard title="Inadimplência" value="R$ 12k" subtext="Risco monitorado" icon={AlertTriangle} trend="up" trendValue="+0.5%" />
@@ -222,13 +226,17 @@ function DashboardFinanceiro() {
                 { cliente: "Transportes Rodoviários", valor: "R$ 15.800,00", data: "21/08", status: "Confirmado" },
                 { cliente: "Mineradora Serra Azul", valor: "R$ 68.900,00", data: "22/08", status: "Atrasado" },
               ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors">
+                <div 
+                  key={i} 
+                  className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
+                  onClick={() => router.navigate({ to: '/os' })}
+                >
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                       <Receipt className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-foreground">{item.cliente}</p>
+                      <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{item.cliente}</p>
                       <p className="text-xs text-muted-foreground font-medium">Data prevista: {item.data}</p>
                     </div>
                   </div>
@@ -342,11 +350,15 @@ function DashboardFinanceiro() {
                   const isExceeded = item.limite > 0 && item.total > item.limite;
                   
                   return (
-                    <div key={idx} className={`flex flex-col p-4 rounded-xl border transition-all shadow-sm group print:shadow-none ${
-                      isExceeded 
-                        ? 'border-red-500/50 bg-red-50/30' 
-                        : 'border-border bg-slate-50/50 hover:bg-white'
-                    }`}>
+                    <div 
+                      key={idx} 
+                      className={`flex flex-col p-4 rounded-xl border transition-all shadow-sm group print:shadow-none cursor-pointer ${
+                        isExceeded 
+                          ? 'border-red-500/50 bg-red-50/30' 
+                          : 'border-border bg-slate-50/50 hover:bg-white hover:border-primary/30 hover:shadow-md'
+                      }`}
+                      onClick={() => router.navigate({ to: '/financeiro/fornecedores' })}
+                    >
                       <div className="flex justify-between items-start mb-3">
                         <div className={`h-10 w-10 rounded-lg flex items-center justify-center shadow-sm border transition-colors ${
                           isExceeded ? 'bg-red-100 border-red-200' : 'bg-white border-border group-hover:border-primary/30'
