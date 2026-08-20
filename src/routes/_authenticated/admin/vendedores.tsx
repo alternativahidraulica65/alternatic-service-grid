@@ -1,5 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { createFileRoute, Link } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { 
   Users, 
   TrendingUp, 
@@ -10,14 +9,13 @@ import {
   MoreHorizontal, 
   Edit, 
   Trash2, 
-  Building2,
   AlertCircle,
   FileDown
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -65,6 +63,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
+import { Database } from "@/integrations/supabase/types";
+
+type Vendedor = Database['public']['Tables']['vendedores']['Row'] & {
+  vendedor_empresas: {
+    empresa_id: string;
+    empresas_emissoras: {
+      id: string;
+      nome: string;
+    };
+  }[];
+};
 
 const vendedorSchema = z.object({
   nome: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
@@ -86,7 +95,7 @@ function VendedoresPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRegra, setFilterRegra] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingVendedor, setEditingVendedor] = useState<any>(null);
+  const [editingVendedor, setEditingVendedor] = useState<Vendedor | null>(null);
 
   // Queries
   const { data: vendedores, isLoading } = useQuery({
@@ -100,20 +109,20 @@ function VendedoresPage() {
             empresa_id,
             empresas_emissoras (
               id,
-              nome_fantasia
+              nome
             )
           )
         `)
         .order("nome");
       if (error) throw error;
-      return data;
+      return (data as any) as Vendedor[];
     },
   });
 
   const { data: empresas } = useQuery({
     queryKey: ["empresas_emissoras"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("empresas_emissoras").select("id, nome_fantasia");
+      const { data, error } = await supabase.from("empresas_emissoras").select("id, nome");
       if (error) throw error;
       return data;
     },
@@ -122,11 +131,14 @@ function VendedoresPage() {
   // Mutations
   const createMutation = useMutation({
     mutationFn: async (values: VendedorFormValues) => {
-      const { empresas_ids, ...vendedorData } = values;
+      const { empresas_ids, observacao, ...vendedorData } = values;
       
       const { data: vendedor, error: vError } = await supabase
         .from("vendedores")
-        .insert([vendedorData])
+        .insert([{
+          ...vendedorData,
+          observacao: observacao || null
+        }])
         .select()
         .single();
       
@@ -156,11 +168,14 @@ function VendedoresPage() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, values }: { id: string, values: VendedorFormValues }) => {
-      const { empresas_ids, ...vendedorData } = values;
+      const { empresas_ids, observacao, ...vendedorData } = values;
       
       const { error: vError } = await supabase
         .from("vendedores")
-        .update(vendedorData)
+        .update({
+          ...vendedorData,
+          observacao: observacao || null
+        })
         .eq("id", id);
       
       if (vError) throw vError;
@@ -225,7 +240,7 @@ function VendedoresPage() {
     }
   };
 
-  const handleEdit = (vendedor: any) => {
+  const handleEdit = (vendedor: Vendedor) => {
     setEditingVendedor(vendedor);
     form.reset({
       nome: vendedor.nome,
@@ -233,7 +248,7 @@ function VendedoresPage() {
       tipo_calculo: vendedor.tipo_calculo,
       percentual: Number(vendedor.percentual),
       observacao: vendedor.observacao || "",
-      empresas_ids: vendedor.vendedor_empresas.map((ve: any) => ve.empresa_id),
+      empresas_ids: vendedor.vendedor_empresas.map(ve => ve.empresa_id),
     });
     setIsModalOpen(true);
   };
@@ -404,7 +419,7 @@ function VendedoresPage() {
                               }}
                             />
                             <label htmlFor={`emp-${empresa.id}`} className="text-xs font-medium text-slate-700 leading-none cursor-pointer">
-                              {empresa.nome_fantasia}
+                              {empresa.nome}
                             </label>
                           </div>
                         ))}
@@ -557,7 +572,7 @@ function VendedoresPage() {
                       <div className="flex flex-wrap gap-1">
                         {vendedor.vendedor_empresas.slice(0, 2).map((ve: any) => (
                           <Badge key={ve.empresa_id} variant="secondary" className="bg-slate-100 text-slate-600 border-none text-[9px] uppercase font-bold">
-                            {ve.empresas_emissoras.nome_fantasia}
+                            {ve.empresas_emissoras.nome}
                           </Badge>
                         ))}
                         {vendedor.vendedor_empresas.length > 2 && (
