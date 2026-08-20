@@ -114,7 +114,13 @@ function DashboardDiretor() {
       { name: "Concluídas", value: concluidas, fill: "#10B981" },
     ];
 
-    return { faturamento, abertas, atrasadas, statusData };
+    // Using real data for the unit chart as well (grouped by some field if available, 
+    // or just showing overall totals for now to avoid mock data)
+    const revenueData = [
+      { name: "Total", value: faturamento, color: "#FFD700" },
+    ];
+
+    return { faturamento, abertas, atrasadas, statusData, revenueData };
   }, [ordens]);
 
   return (
@@ -191,7 +197,7 @@ function DashboardDiretor() {
             <CardContent className="pt-6">
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={mockRevenueData}>
+                  <BarChart data={stats.revenueData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
@@ -201,7 +207,7 @@ function DashboardDiretor() {
                       formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Valor"]}
                     />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={50}>
-                      {mockRevenueData.map((entry, index) => (
+                      {stats.revenueData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Bar>
