@@ -24,8 +24,12 @@ import {
   Activity,
   ClipboardCheck,
   Image as ImageIcon,
-  Check
+  Check,
+  ArrowLeft,
+  Eye,
+  Trash2
 } from "lucide-react";
+
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,6 +67,8 @@ function GestaoOSPage() {
   const { id } = Route.useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("resumo");
+
 
   const { data: os, isLoading } = useQuery({
     queryKey: ['os_detail', id],
@@ -261,13 +267,14 @@ function GestaoOSPage() {
   }, [os]);
 
   const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
-    queryKey: ['os_fotos_laudo', id],
+    queryKey: ['os_fotos_all', id],
+
     queryFn: async () => {
       const { data, error } = await supabase
         .from('os_fotos_anexos')
         .select('*')
         .eq('os_id', id)
-        .in('tipo', ['laudo_interno', 'laudo_pecas']);
+        .in('tipo', ['laudo_interno', 'laudo_pecas', 'outros', 'checklist']);
       if (error) throw error;
       return data;
     },
@@ -281,7 +288,7 @@ function GestaoOSPage() {
     }
   }, [fotosLaudo]);
 
-  const handleUploadFotoLaudo = async (tipo: 'laudo_interno' | 'laudo_pecas') => {
+  const handleUploadFotoLaudo = async (tipo: 'laudo_interno' | 'laudo_pecas' | 'outros') => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -352,14 +359,43 @@ function GestaoOSPage() {
     }
   };
 
-  if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
-  if (!os) return <div className="p-10 text-center uppercase font-black text-red-500">Ordem de Serviço não encontrada.</div>;
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
+          <p className="mt-4 text-xs font-black uppercase tracking-widest text-slate-500">Carregando Ordem de Serviço...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!os) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center bg-slate-50 p-6">
+        <AlertCircle className="h-16 w-16 text-red-500 mb-6 opacity-20" />
+        <h2 className="font-display text-2xl font-black uppercase text-slate-900 tracking-tight">OS Não Encontrada</h2>
+        <p className="text-sm text-slate-500 font-medium mt-2 mb-8">O registro solicitado não existe ou foi removido.</p>
+        <Button 
+          className="h-12 bg-slate-900 text-white font-black uppercase text-xs tracking-widest px-8"
+          onClick={() => router.navigate({ to: '/os' })}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Voltar para Listagem
+        </Button>
+      </div>
+    );
+  }
+
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
       {/* Cabeçalho da OS */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
         <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: '/os' })} className="text-muted-foreground hover:text-primary">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
             <Wrench className="h-8 w-8 text-primary-foreground" />
           </div>
@@ -375,6 +411,7 @@ function GestaoOSPage() {
             </p>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
           <Button variant="outline" className="h-10 border-border font-bold uppercase text-[10px] tracking-widest">
             <Camera className="mr-2 h-4 w-4 text-primary" />
@@ -393,7 +430,7 @@ function GestaoOSPage() {
             <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
               <DropdownMenuItem 
                 className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
-                onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+                onClick={() => router.navigate({ to: '/os/$id/orcamento', params: { id } } as any)}
               >
                 Gerar Orçamento
               </DropdownMenuItem>
@@ -434,23 +471,22 @@ function GestaoOSPage() {
         ))}
       </div>
 
-      <Tabs defaultValue="resumo" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
+
           {[
-            "Resumo", 
+            "Visão Geral", 
             "Checklist", 
             "Laudo Técnico", 
-            "Peças", 
-            "Terceiros",
-            "Custos",
+            "Anexos",
             "Orçamento", 
             "Aprovação", 
             "Execução",
             "Faturamento",
             "Entrega",
-            "Garantia",
-            "Auditoria"
+            "Histórico"
           ].map((tab) => {
+
             const isCompleted = 
               (tab === "Checklist" && os.status !== 'aberta') ||
               (tab === "Laudo Técnico" && ['orcamento_pendente', 'aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status)) ||
@@ -459,7 +495,7 @@ function GestaoOSPage() {
             return (
               <TabsTrigger 
                 key={tab} 
-                value={tab.toLowerCase().replace(" ", "-")} 
+                value={tab === "Visão Geral" ? "resumo" : (tab === "Anexos" ? "anexos" : (tab === "Histórico" ? "auditoria" : (tab === "Execução" ? "execucao" : tab.toLowerCase().replace(" ", "-"))))} 
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0 flex items-center gap-2"
               >
                 {tab}
@@ -694,7 +730,7 @@ function GestaoOSPage() {
                <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-50/50 p-4 rounded-xl">
                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">Ao finalizar, a OS avança para a próxima etapa.</p>
                  <div className="flex gap-3">
-                   <Button variant="outline" className="h-10 border-slate-300 font-bold uppercase text-[10px] tracking-widest px-6" onClick={() => router.history.back()}>
+                   <Button variant="outline" className="h-10 border-slate-300 font-bold uppercase text-[10px] tracking-widest px-6" onClick={() => setActiveTab("resumo")}>
                      Voltar
                    </Button>
                    <Button 
@@ -726,7 +762,7 @@ function GestaoOSPage() {
                   <Badge variant="outline" className="h-7 text-[10px] font-bold uppercase border-slate-200">
                     Status: {os.status === 'aguardando_gestor' ? 'Aguardando Gestor' : 'Em Diagnóstico'}
                   </Badge>
-                  <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold uppercase" onClick={() => router.history.back()}>
+                  <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold uppercase" onClick={() => setActiveTab("resumo")}>
                     Voltar
                   </Button>
                 </div>
@@ -845,116 +881,80 @@ function GestaoOSPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="peças">
-           <Card className="border-border shadow-md">
-             <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-base font-bold uppercase tracking-widest text-foreground flex items-center gap-2">
-                    <Box className="h-5 w-5 text-primary" />
-                    Rastreamento de Componentes
-                  </CardTitle>
-                  <CardDescription>Localização e situação física de cada peça.</CardDescription>
+        <TabsContent value="anexos">
+           <Card className="border-border shadow-md overflow-hidden">
+             <CardHeader className="bg-slate-900 text-white border-b border-white/5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base font-bold uppercase tracking-widest">Galeria de Anexos e Fotos da OS</CardTitle>
+                  </div>
+                  <Button variant="ghost" className="text-[10px] font-bold uppercase text-primary" onClick={() => handleUploadFotoLaudo('outros')}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Adicionar Novo Anexo
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm" className="h-9 border-primary text-primary hover:bg-primary/5 font-bold text-[10px] uppercase">Registrar Movimentação</Button>
              </CardHeader>
              <CardContent className="pt-6">
-                <div className="space-y-4">
-                  {pecas.map((peca: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border">
-                          <Box className="h-5 w-5 text-slate-400" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
-                          <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                            <MapPin className="h-3 w-3 text-primary" />
-                            {peca.localizacao}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
-                      </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {(fotosLaudo as any[]).length === 0 ? (
+                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-muted-foreground opacity-20">
+                      <ImageIcon className="h-16 w-16 mb-4" />
+                      <p className="text-xs font-black uppercase tracking-widest">Nenhuma foto anexada a esta OS.</p>
                     </div>
-                  ))}
+                  ) : (
+                    (fotosLaudo as any[]).map((foto, idx) => (
+                      <div key={idx} className="group relative rounded-xl border border-border overflow-hidden bg-slate-50 hover:border-primary transition-all">
+                        <SignedImage 
+                          storagePath={foto.storage_path} 
+                          fallbackUrl={foto.foto_url} 
+                          className="aspect-square w-full object-cover transition-transform group-hover:scale-110" 
+                          alt={`Anexo ${idx + 1}`} 
+                        />
+                        <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <Button size="icon" variant="ghost" className="text-white hover:text-primary hover:bg-white/10">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="text-white hover:text-red-400 hover:bg-white/10">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-slate-900/80 to-transparent">
+                          <p className="text-[8px] font-bold text-white uppercase tracking-tighter truncate">{foto.categoria || foto.tipo || 'ANEXO'}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
              </CardContent>
            </Card>
         </TabsContent>
-        <TabsContent value="terceiros">
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Serviços de Terceiros
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Users className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
-                <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="custos">
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-primary" />
-                Custos da Ordem de Serviço
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid gap-6 md:grid-cols-3 mb-6">
-                <div className="p-4 rounded-xl border border-border bg-slate-50">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
-                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
-                </div>
-                <div className="p-4 rounded-xl border border-border bg-slate-50">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
-                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
-                </div>
-                <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
-                  <p className="text-lg font-black text-primary">R$ 0,00</p>
-                </div>
-              </div>
-              <Button variant="outline" className="w-full border-dashed border-2 font-bold uppercase text-[10px] tracking-widest">Lançar Novo Custo</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="orçamento">
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-primary" />
-                Orçamento Comercial
-              </CardTitle>
-              <Button 
-                className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
-                onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
-              >
-                Abrir Módulo de Orçamento
-              </Button>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Receipt className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Utilize o módulo avançado para gerenciar custos, margens e gerar a proposta PDF.</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-6 border-primary text-primary font-black uppercase text-[10px] tracking-widest px-8"
-                  onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
-                >
-                  Configurar Orçamento
-                </Button>
-              </div>
-            </CardContent>
+          <Card className="border-border shadow-md overflow-hidden">
+             <CardHeader className="bg-slate-50 border-b border-border/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Receipt className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base font-bold uppercase tracking-widest">Resumo do Orçamento</CardTitle>
+                  </div>
+                  <Button 
+                    className="h-8 bg-slate-900 text-white font-black uppercase text-[9px] tracking-widest px-4"
+                    onClick={() => router.navigate({ to: '/os/$id/orcamento', params: { id } } as any)}
+
+                  >
+                    Gerenciar Orçamento
+                  </Button>
+                </div>
+             </CardHeader>
+             <CardContent className="pt-6">
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Receipt className="h-12 w-12 mb-4 opacity-20" />
+                  <p className="text-xs font-bold uppercase tracking-widest">
+                    Acesse o módulo de orçamento para visualizar e editar valores.
+                  </p>
+                </div>
+             </CardContent>
           </Card>
         </TabsContent>
 
@@ -987,7 +987,37 @@ function GestaoOSPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="execução">
+
+        <TabsContent value="aprovação">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                Status de Aprovação
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50">
+                  <div>
+                    <p className="text-sm font-bold text-foreground uppercase tracking-tight">Aprovação Técnica (Gerência)</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Revisão do laudo e custos.</p>
+                  </div>
+                  <Badge className="bg-slate-200 text-slate-500 font-black uppercase text-[9px] tracking-widest">Pendente</Badge>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-slate-50">
+                  <div>
+                    <p className="text-sm font-bold text-foreground uppercase tracking-tight">Aprovação Comercial (Cliente)</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Aceite formal do orçamento.</p>
+                  </div>
+                  <Badge className="bg-slate-200 text-slate-500 font-black uppercase text-[9px] tracking-widest">Pendente</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="execucao">
           <Card className="border-border shadow-md">
             <CardHeader className="bg-muted/10 border-b border-border/50">
               <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
@@ -1005,6 +1035,10 @@ function GestaoOSPage() {
         </TabsContent>
 
         <TabsContent value="faturamento">
+
+
+
+
           <Card className="border-border shadow-md">
             <CardHeader className="bg-muted/10 border-b border-border/50">
               <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
@@ -1038,22 +1072,6 @@ function GestaoOSPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="garantia">
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-primary" />
-                Certificado de Garantia
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <ShieldCheck className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Garantia será ativada na entrega.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="auditoria">
            <Card className="border-border shadow-md overflow-hidden">

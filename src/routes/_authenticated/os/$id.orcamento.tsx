@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { 
   Receipt, 
   Plus, 
@@ -10,8 +10,10 @@ import {
   CheckCircle2,
   AlertCircle,
   History as HistoryIcon,
-  Link as LinkIcon
+  Link as LinkIcon,
+  ArrowLeft
 } from "lucide-react";
+
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,7 +43,9 @@ interface ItemOrcamento {
 
 function OrcamentoOSPage() {
   const { id } = Route.useParams();
+  const router = useRouter();
   const queryClient = useQueryClient();
+
   const [itens, setItens] = useState<ItemOrcamento[]>([]);
   const [imposto, setImposto] = useState(8.5);
   const [margem, setMargem] = useState(25);
@@ -199,14 +203,20 @@ function OrcamentoOSPage() {
   return (
     <div className="p-8 space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between border-b pb-6">
-        <div>
-          <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-            OS / #{os?.numero_os} / Orçamento
-          </h2>
-          <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">
-            Orçamento Comercial
-          </h1>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: '/os/$id', params: { id } })} className="text-muted-foreground hover:text-primary">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+              OS / #{os?.numero_os} / Orçamento
+            </h2>
+            <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">
+              Orçamento Comercial
+            </h1>
+          </div>
         </div>
+
         <div className="flex gap-3">
           <Button variant="outline" className="h-10 font-bold uppercase text-[10px] tracking-widest border-slate-300" onClick={handleSalvarVersao}>
             <Save className="mr-2 h-4 w-4" />
