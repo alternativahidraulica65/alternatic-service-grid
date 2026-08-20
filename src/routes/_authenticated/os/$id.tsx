@@ -147,6 +147,7 @@ function GestaoOSPage() {
   });
 
   const [savingChecklist, setSavingChecklist] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
@@ -194,6 +195,7 @@ function GestaoOSPage() {
           categoria: 'checklist',
           file,
           legenda: `Checklist ${itemId}`,
+          onProgress: (p) => setUploadProgress(prev => ({ ...prev, [itemId]: p })),
         });
 
         await handleUpdateChecklistItem(itemId, { foto_url: result.signedUrl });
@@ -298,6 +300,7 @@ function GestaoOSPage() {
             osId: id,
             categoria: tipo,
             file,
+            onProgress: (p) => setUploadProgress(prev => ({ ...prev, [`${tipo}-${file.name}`]: p })),
           });
           enviadas += 1;
           economia += result.originalSize - result.compressedSize;
@@ -667,9 +670,14 @@ function GestaoOSPage() {
                                    className={`h-9 gap-2 px-3 border-slate-200 ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
                                    onClick={() => handleChecklistPhoto(item.id)}
                                  >
-                                   <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
-                                   <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
-                                 </Button>
+                                    <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
+                                    <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
+                                  </Button>
+                                   {uploadProgress[item.id] !== undefined && (uploadProgress[item.id] ?? 0) < 100 && (
+                                     <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-md">
+                                       <span className="text-[8px] font-black text-primary">{uploadProgress[item.id]}%</span>
+                                     </div>
+                                   )}
                                </div>
                                {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
                                  <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
@@ -771,10 +779,18 @@ function GestaoOSPage() {
                           ))
                         )}
                       </div>
-                      <Button variant="outline" className="w-full h-9 text-[10px] font-bold uppercase tracking-widest gap-2 bg-white" onClick={() => handleUploadFotoLaudo('laudo_interno')}>
-                        <ImageIcon className="h-4 w-4 text-slate-400" />
-                        Escolher arquivos
-                      </Button>
+                      <div className="relative">
+                        <Button variant="outline" className="w-full h-9 text-[10px] font-bold uppercase tracking-widest gap-2 bg-white" onClick={() => handleUploadFotoLaudo('laudo_interno')}>
+                          <ImageIcon className="h-4 w-4 text-slate-400" />
+                          Escolher arquivos
+                        </Button>
+                        {Object.keys(uploadProgress).some(k => k.startsWith('laudo_interno-') && (uploadProgress[k] ?? 0) < 100) && (
+                          <div className="mt-2 space-y-1">
+                            <Progress value={Math.max(0, ...Object.keys(uploadProgress).filter(k => k.startsWith('laudo_interno-')).map(k => uploadProgress[k] ?? 0))} className="h-1" />
+                            <p className="text-[8px] font-black text-center text-primary uppercase">Enviando...</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -790,10 +806,18 @@ function GestaoOSPage() {
                           ))
                         )}
                       </div>
-                      <Button variant="outline" className="w-full h-9 text-[10px] font-bold uppercase tracking-widest gap-2 bg-white" onClick={() => handleUploadFotoLaudo('laudo_pecas')}>
-                        <ImageIcon className="h-4 w-4 text-slate-400" />
-                        Escolher arquivos
-                      </Button>
+                      <div className="relative">
+                        <Button variant="outline" className="w-full h-9 text-[10px] font-bold uppercase tracking-widest gap-2 bg-white" onClick={() => handleUploadFotoLaudo('laudo_pecas')}>
+                          <ImageIcon className="h-4 w-4 text-slate-400" />
+                          Escolher arquivos
+                        </Button>
+                        {Object.keys(uploadProgress).some(k => k.startsWith('laudo_pecas-') && (uploadProgress[k] ?? 0) < 100) && (
+                          <div className="mt-2 space-y-1">
+                            <Progress value={Math.max(0, ...Object.keys(uploadProgress).filter(k => k.startsWith('laudo_pecas-')).map(k => uploadProgress[k] ?? 0))} className="h-1" />
+                            <p className="text-[8px] font-black text-center text-primary uppercase">Enviando...</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

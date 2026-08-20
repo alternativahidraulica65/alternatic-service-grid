@@ -212,9 +212,22 @@ function OrcamentoOSPage() {
             <Save className="mr-2 h-4 w-4" />
             Salvar Versão
           </Button>
-          <Button className="h-10 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest px-6" onClick={handleGerarPDF}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Gerar PDF Proposta
+          <Button 
+            className="h-10 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest px-6" 
+            onClick={handleGerarPDF}
+            disabled={gerandoPdf}
+          >
+            {gerandoPdf ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white border-t-transparent animate-spin mr-2" />
+                Gerando...
+              </>
+            ) : (
+              <>
+                <FileDown className="mr-2 h-4 w-4" />
+                Gerar PDF Proposta
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -439,28 +452,53 @@ function OrcamentoOSPage() {
                   </div>
                 ) : (
                   fotos.map((foto: any, idx: number) => (
-                    <div key={foto.id} className="group relative aspect-square rounded-xl border border-slate-200 overflow-hidden bg-slate-50 hover:border-primary transition-all">
-                      <SignedImage storagePath={foto.storage_path} fallbackUrl={foto.foto_url} className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all" />
-                      <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2 flex items-center justify-between backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-all">
+                    <div 
+                      key={foto.id} 
+                      className={`group relative aspect-square rounded-xl border-2 overflow-hidden bg-slate-50 transition-all cursor-pointer ${
+                        fotosSelecionadas.includes(foto.id) ? 'border-primary ring-2 ring-primary/20 ring-offset-2' : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                      onClick={() => toggleFoto(foto.id)}
+                    >
+                      <SignedImage 
+                        storagePath={foto.storage_path} 
+                        fallbackUrl={foto.foto_url} 
+                        className={`h-full w-full object-cover transition-all ${fotosSelecionadas.includes(foto.id) ? 'scale-110' : 'grayscale group-hover:grayscale-0'}`} 
+                      />
+                      <div className={`absolute inset-x-0 bottom-0 bg-black/60 p-2 flex items-center justify-between backdrop-blur-sm transition-all ${
+                        fotosSelecionadas.includes(foto.id) ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'
+                      }`}>
                         <span className="text-[8px] font-bold text-white uppercase truncate">{foto.categoria || foto.tipo || `Foto ${idx + 1}`}</span>
                         <Checkbox 
                           checked={fotosSelecionadas.includes(foto.id)} 
                           onCheckedChange={() => toggleFoto(foto.id)}
                           className="border-white data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                          onClick={(e) => e.stopPropagation()}
                         />
                       </div>
                       {fotosSelecionadas.includes(foto.id) && (
-                        <div className="absolute top-2 right-2 h-5 w-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                          <CheckCircle2 className="h-3 w-3 text-white" />
+                        <div className="absolute top-2 right-2 h-6 w-6 bg-primary rounded-full flex items-center justify-center shadow-lg animate-in zoom-in-50 duration-200">
+                          <CheckCircle2 className="h-4 w-4 text-white" />
+                        </div>
+                      )}
+                      {!fotosSelecionadas.includes(foto.id) && (
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="h-6 w-6 bg-white/80 rounded-full flex items-center justify-center shadow-sm">
+                            <Plus className="h-4 w-4 text-slate-400" />
+                          </div>
                         </div>
                       )}
                     </div>
                   ))
                 )}
               </div>
-              <p className="mt-4 text-[9px] text-muted-foreground font-bold uppercase tracking-tight italic">
-                * Selecione as fotos que devem compor o laudo visual do PDF. As imagens são carregadas com link seguro temporário.
-              </p>
+              <div className="mt-4 flex items-center justify-between">
+                <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-tight italic">
+                  * Selecione as fotos que devem compor o laudo visual do PDF. As imagens são carregadas com link seguro temporário.
+                </p>
+                <div className="text-[10px] font-black uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">
+                  {fotosSelecionadas.length} fotos selecionadas
+                </div>
+              </div>
             </CardContent>
           </Card>
 

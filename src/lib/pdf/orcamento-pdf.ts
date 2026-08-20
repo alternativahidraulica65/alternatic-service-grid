@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { supabase } from "@/integrations/supabase/client";
-import { ORCAMENTOS_BUCKET, OS_MEDIA_BUCKET, getSignedUrl } from "@/lib/media/upload";
+import { ORCAMENTOS_BUCKET, OS_MEDIA_BUCKET, getSignedUrl, withRetry } from "@/lib/media/upload";
 
 export interface ItemPdf {
   descricao: string;
@@ -193,10 +193,14 @@ export async function gerarESalvarRevisao(
   const numeroLimpo = params.numeroOs.replace(/[^A-Za-z0-9-]/g, "");
   const storagePath = `os_${params.osId}/orcamentos/ORC_${numeroLimpo}_REV${numeroRevisao}.pdf`;
 
-  const { error: uploadError } = await supabase.storage
-    .from(ORCAMENTOS_BUCKET)
-    .upload(storagePath, blob, { contentType: "application/pdf", upsert: true });
-  if (uploadError) throw uploadError;
+  const performUpload = async () => {
+    const { error } = await supabase.storage
+      .from(ORCAMENTOS_BUCKET)
+      .upload(storagePath, blob, { contentType: "application/pdf", upsert: true });
+    if (error) throw error;
+  };
+
+  await withRetry(performUpload);
 
   const { data: userData } = await supabase.auth.getUser();
   const { error } = await supabase.from("orcamento_revisoes").insert({
