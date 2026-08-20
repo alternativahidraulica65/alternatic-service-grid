@@ -226,13 +226,17 @@ function DashboardFinanceiro() {
                 { cliente: "Transportes Rodoviários", valor: "R$ 15.800,00", data: "21/08", status: "Confirmado" },
                 { cliente: "Mineradora Serra Azul", valor: "R$ 68.900,00", data: "22/08", status: "Atrasado" },
               ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors">
+                <div 
+                  key={i} 
+                  className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
+                  onClick={() => router.navigate({ to: '/os' })}
+                >
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                       <Receipt className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-foreground">{item.cliente}</p>
+                      <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{item.cliente}</p>
                       <p className="text-xs text-muted-foreground font-medium">Data prevista: {item.data}</p>
                     </div>
                   </div>
@@ -346,11 +350,15 @@ function DashboardFinanceiro() {
                   const isExceeded = item.limite > 0 && item.total > item.limite;
                   
                   return (
-                    <div key={idx} className={`flex flex-col p-4 rounded-xl border transition-all shadow-sm group print:shadow-none ${
-                      isExceeded 
-                        ? 'border-red-500/50 bg-red-50/30' 
-                        : 'border-border bg-slate-50/50 hover:bg-white'
-                    }`}>
+                    <div 
+                      key={idx} 
+                      className={`flex flex-col p-4 rounded-xl border transition-all shadow-sm group print:shadow-none cursor-pointer ${
+                        isExceeded 
+                          ? 'border-red-500/50 bg-red-50/30' 
+                          : 'border-border bg-slate-50/50 hover:bg-white hover:border-primary/30 hover:shadow-md'
+                      }`}
+                      onClick={() => router.navigate({ to: '/financeiro/fornecedores' })}
+                    >
                       <div className="flex justify-between items-start mb-3">
                         <div className={`h-10 w-10 rounded-lg flex items-center justify-center shadow-sm border transition-colors ${
                           isExceeded ? 'bg-red-100 border-red-200' : 'bg-white border-border group-hover:border-primary/30'

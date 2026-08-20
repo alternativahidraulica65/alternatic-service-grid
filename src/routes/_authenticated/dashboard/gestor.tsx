@@ -91,7 +91,11 @@ function DashboardGestor() {
           { title: "Teste", items: [] },
           { title: "Pronto", items: [{ numero_os: "OS-0998", descricao: "Teste Hidráulico", operador: "Ana Costa" }] },
         ].map((column) => (
-          <div key={column.title} className="flex flex-col gap-2">
+          <div 
+            key={column.title} 
+            className="flex flex-col gap-2 cursor-pointer group"
+            onClick={() => router.navigate({ to: '/kanban' })}
+          >
             <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
               {column.title}
               <Badge variant="secondary" className="text-[9px]">{column.items.length}</Badge>
