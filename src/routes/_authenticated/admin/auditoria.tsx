@@ -22,7 +22,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle, HardDrive } from "lucide-react";
+import { AlertCircle, HardDrive, Loader2 } from "lucide-react";
+import { format } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/admin/auditoria")({
   component: AuditoriaPage,
@@ -57,59 +58,44 @@ function AuditoriaPage() {
   const [entidade, setEntidade] = useState("todas");
   const [os, setOs] = useState("todas");
 
-  // Usaremos dados simulados profissionais baseados no mockup enquanto a tabela de auditoria real é populada
-  const logsMock = [
-    {
-      id: 1,
-      usuario: "Maria Silva",
-      acao: "Alteração",
-      data: "15/04/2026 14:32",
-      entidade: "Cliente",
-      os: "OS-2026-0042",
-      dadosAnteriores: 'status: "Aberto"',
-      dadosNovos: 'status: "Em Andamento"'
-    },
-    {
-      id: 2,
-      usuario: "João Santos",
-      acao: "Criação",
-      data: "15/04/2026 11:07",
-      entidade: "OS",
-      os: "OS-2026-0043",
-      dadosAnteriores: "—",
-      dadosNovos: 'cliente: "Empresa X"'
-    },
-    {
-      id: 3,
-      usuario: "Ana Costa",
-      acao: "Exclusão",
-      data: "14/04/2026 16:50",
-      entidade: "Produto",
-      os: "—",
-      dadosAnteriores: 'nome: "Item A"',
-      dadosNovos: "—"
-    },
-    {
-      id: 4,
-      usuario: "Carlos Oliveira",
-      acao: "Alteração",
-      data: "14/04/2026 09:15",
-      entidade: "Cliente",
-      os: "—",
-      dadosAnteriores: 'telefone: "(11) 9999-88..."',
-      dadosNovos: 'telefone: "(11) 7777-66..."'
-    },
-    {
-      id: 5,
-      usuario: "Maria Silva",
-      acao: "Visualização",
-      data: "13/04/2026 22:30",
-      entidade: "Relatório",
-      os: "—",
-      dadosAnteriores: "—",
-      dadosNovos: "—"
+  const { data: logsData, isLoading: isLoadingLogs } = useQuery({
+    queryKey: ['logs-sistema', search, usuario, periodo, acao, entidade, os],
+    queryFn: async () => {
+      let query = supabase.from('logs_sistema').select('*', { count: 'exact' });
+
+      if (search) {
+        query = query.or(`usuario_nome.ilike.%${search}%,os_numero.ilike.%${search}%,acao.ilike.%${search}%,entidade.ilike.%${search}%`);
+      }
+      if (usuario !== 'todos') query = query.eq('usuario_id', usuario);
+      if (acao !== 'todas') query = query.eq('acao', acao);
+      if (entidade !== 'todas') query = query.eq('entidade', entidade);
+      if (os !== 'todas') query = query.eq('os_numero', os);
+      
+      const { data, count, error } = await query
+        .order('criado_em', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      return { data, count };
     }
-  ];
+  });
+
+  const { data: filterOptions } = useQuery({
+    queryKey: ['logs-filter-options'],
+    queryFn: async () => {
+      const [users, osNumbers] = await Promise.all([
+        supabase.from('usuarios').select('id, nome'),
+        supabase.from('ordens_servico').select('numero_os').limit(50)
+      ]);
+      return {
+        users: users.data || [],
+        osNumbers: osNumbers.data || []
+      };
+    }
+  });
+
+  const logs = logsData?.data || [];
+  const totalLogs = logsData?.count || 0;
 
   const getAcaoBadge = (tipo: string) => {
     switch (tipo) {
@@ -119,6 +105,7 @@ function AuditoriaPage() {
       default: return <Badge variant="outline" className="text-[9px] font-bold uppercase border-slate-200 text-slate-600 bg-slate-50">{tipo}</Badge>;
     }
   };
+
 
   return (
     <div className="p-8 space-y-8 max-w-[1600px] mx-auto">
@@ -242,11 +229,13 @@ function AuditoriaPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="maria">Maria Silva</SelectItem>
-                  <SelectItem value="joao">João Santos</SelectItem>
+                  {filterOptions?.users.map((u: any) => (
+                    <SelectItem key={u.id} value={u.id}>{u.nome}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
+
 
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
@@ -274,12 +263,14 @@ function AuditoriaPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todas">Todas</SelectItem>
-                  <SelectItem value="criacao">Criação</SelectItem>
-                  <SelectItem value="alteracao">Alteração</SelectItem>
-                  <SelectItem value="exclusao">Exclusão</SelectItem>
+                  <SelectItem value="Criação">Criação</SelectItem>
+                  <SelectItem value="Alteração">Alteração</SelectItem>
+                  <SelectItem value="Exclusão">Exclusão</SelectItem>
+                  <SelectItem value="Sincronização">Sincronização</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
 
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
@@ -308,11 +299,13 @@ function AuditoriaPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todas">Todas</SelectItem>
-                  <SelectItem value="os1">OS-2026-0042</SelectItem>
-                  <SelectItem value="os2">OS-2026-0043</SelectItem>
+                  {filterOptions?.osNumbers.map((o: any) => (
+                    <SelectItem key={o.numero_os} value={o.numero_os}>{o.numero_os}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
+
           </div>
         </CardContent>
       </Card>
@@ -324,10 +317,11 @@ function AuditoriaPage() {
             Logs de Auditoria
           </CardTitle>
           <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-            <span>Total: 1.247 registros</span>
+            <span>Total: {totalLogs} registros</span>
             <span className="h-1 w-1 rounded-full bg-slate-300" />
-            <span>Página 1 de 42</span>
+            <span>Últimos 50 eventos</span>
           </div>
+
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -344,21 +338,38 @@ function AuditoriaPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {logsMock.map((log) => (
+                {isLoadingLogs ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-32 text-center">
+                      <div className="flex items-center justify-center gap-2 text-muted-foreground uppercase text-[10px] font-bold">
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                        Sincronizando logs reais...
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : logs.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-32 text-center text-muted-foreground uppercase text-[10px] font-bold">
+                      Nenhum log encontrado para os filtros selecionados.
+                    </TableCell>
+                  </TableRow>
+                ) : logs.map((log: any) => (
                   <TableRow key={log.id} className="hover:bg-slate-50/50 border-border group transition-colors">
                     <TableCell className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-600 border border-slate-200 uppercase">
-                          {log.usuario.substring(0, 2)}
+                          {(log.usuario_nome || 'S').substring(0, 2)}
                         </div>
-                        <span className="text-sm font-bold text-slate-700">{log.usuario}</span>
+                        <span className="text-sm font-bold text-slate-700">{log.usuario_nome || 'Sistema'}</span>
                       </div>
                     </TableCell>
                     <TableCell className="py-4">
                       {getAcaoBadge(log.acao)}
                     </TableCell>
                     <TableCell className="py-4">
-                      <span className="text-[11px] font-bold text-slate-500">{log.data}</span>
+                      <span className="text-[11px] font-bold text-slate-500">
+                        {log.criado_em ? format(new Date(log.criado_em), "dd/MM/yyyy HH:mm") : '—'}
+                      </span>
                     </TableCell>
                     <TableCell className="py-4">
                       <Badge variant="secondary" className="text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-600 border-slate-200">
@@ -366,21 +377,22 @@ function AuditoriaPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="py-4">
-                      <span className="text-[11px] font-black text-slate-900 tracking-tight">{log.os}</span>
+                      <span className="text-[11px] font-black text-slate-900 tracking-tight">{log.os_numero || '—'}</span>
                     </TableCell>
                     <TableCell className="py-4">
                       <div className="max-w-[180px] truncate bg-slate-50 p-2 rounded border border-slate-100 font-mono text-[9px] text-slate-500">
-                        {log.dadosAnteriores}
+                        {log.dados_anteriores ? JSON.stringify(log.dados_anteriores) : '—'}
                       </div>
                     </TableCell>
                     <TableCell className="py-4">
                       <div className="max-w-[180px] truncate bg-emerald-50/50 p-2 rounded border border-emerald-100 font-mono text-[9px] text-emerald-600">
-                        {log.dadosNovos}
+                        {log.dados_novos ? JSON.stringify(log.dados_novos) : '—'}
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
+
             </Table>
           </div>
           
