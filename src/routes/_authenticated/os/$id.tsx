@@ -147,6 +147,7 @@ function GestaoOSPage() {
   });
 
   const [savingChecklist, setSavingChecklist] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
@@ -194,6 +195,7 @@ function GestaoOSPage() {
           categoria: 'checklist',
           file,
           legenda: `Checklist ${itemId}`,
+          onProgress: (p) => setUploadProgress(prev => ({ ...prev, [itemId]: p })),
         });
 
         await handleUpdateChecklistItem(itemId, { foto_url: result.signedUrl });
@@ -298,6 +300,7 @@ function GestaoOSPage() {
             osId: id,
             categoria: tipo,
             file,
+            onProgress: (p) => setUploadProgress(prev => ({ ...prev, [`${tipo}-${file.name}`]: p })),
           });
           enviadas += 1;
           economia += result.originalSize - result.compressedSize;
