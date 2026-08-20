@@ -436,15 +436,23 @@ function GestaoOSPage() {
             "Entrega",
             "Garantia",
             "Auditoria"
-          ].map((tab) => (
-            <TabsTrigger 
-              key={tab} 
-              value={tab.toLowerCase().replace(" ", "-")} 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0"
-            >
-              {tab}
-            </TabsTrigger>
-          ))}
+          ].map((tab) => {
+            const isCompleted = 
+              (tab === "Checklist" && os.status !== 'aberta') ||
+              (tab === "Laudo Técnico" && ['orcamento_pendente', 'aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status)) ||
+              (tab === "Orçamento" && ['aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status));
+
+            return (
+              <TabsTrigger 
+                key={tab} 
+                value={tab.toLowerCase().replace(" ", "-")} 
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0 flex items-center gap-2"
+              >
+                {tab}
+                {isCompleted && <CheckCircle2 className="h-3 w-3 text-emerald-500" />}
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
 
         <TabsContent value="resumo" className="space-y-6">
