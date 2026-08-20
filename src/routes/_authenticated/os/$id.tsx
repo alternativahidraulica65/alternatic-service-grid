@@ -265,7 +265,8 @@ function GestaoOSPage() {
   }, [os]);
 
   const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
-    queryKey: ['os_fotos_laudo', id],
+    queryKey: ['os_fotos_all', id],
+
     queryFn: async () => {
       const { data, error } = await supabase
         .from('os_fotos_anexos')
