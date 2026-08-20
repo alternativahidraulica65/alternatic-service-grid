@@ -360,6 +360,11 @@ function GestaoOSPage() {
       {/* Cabeçalho da OS */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
         <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: '/os' })} className="text-muted-foreground hover:text-primary">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+
+        <div className="flex items-center gap-4">
           <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
             <Wrench className="h-8 w-8 text-primary-foreground" />
           </div>
