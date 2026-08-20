@@ -272,7 +272,7 @@ function GestaoOSPage() {
         .from('os_fotos_anexos')
         .select('*')
         .eq('os_id', id)
-        .in('tipo', ['laudo_interno', 'laudo_pecas']);
+        .in('tipo', ['laudo_interno', 'laudo_pecas', 'outros', 'checklist']);
       if (error) throw error;
       return data;
     },
