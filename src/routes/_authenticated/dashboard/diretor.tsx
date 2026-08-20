@@ -61,18 +61,7 @@ function KPICard({ title, value, subtext, icon: Icon, colorClass = "text-primary
   );
 }
 
-const mockRevenueData = [
-  { name: "Matriz", value: 450000, color: "#FFD700" },
-  { name: "Filial Sul", value: 280000, color: "#C0C0C0" },
-  { name: "Filial Norte", value: 310000, color: "#808080" },
-];
-
-const mockStatusData = [
-  { name: "Abertas", value: 12, fill: "#FFD700" },
-  { name: "Em Andamento", value: 18, fill: "#60A5FA" },
-  { name: "Atrasadas", value: 5, fill: "#EF4444" },
-  { name: "Concluídas", value: 25, fill: "#10B981" },
-];
+// Global mock data moved to stats calculation
 
 function DashboardDiretor() {
   const router = useRouter();
@@ -114,7 +103,13 @@ function DashboardDiretor() {
       { name: "Concluídas", value: concluidas, fill: "#10B981" },
     ];
 
-    return { faturamento, abertas, atrasadas, statusData };
+    // Using real data for the unit chart as well (grouped by some field if available, 
+    // or just showing overall totals for now to avoid mock data)
+    const revenueData = [
+      { name: "Total", value: faturamento, color: "#FFD700" },
+    ];
+
+    return { faturamento, abertas, atrasadas, statusData, revenueData };
   }, [ordens]);
 
   return (
@@ -191,7 +186,7 @@ function DashboardDiretor() {
             <CardContent className="pt-6">
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={mockRevenueData}>
+                  <BarChart data={stats.revenueData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
@@ -201,7 +196,7 @@ function DashboardDiretor() {
                       formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Valor"]}
                     />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={50}>
-                      {mockRevenueData.map((entry, index) => (
+                      {stats.revenueData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Bar>

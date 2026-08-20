@@ -1,4 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 import { 
   Factory, 
   Settings, 
@@ -40,6 +43,54 @@ function KanbanCard({ os }: any) {
 
 function DashboardGestor() {
   const router = useRouter();
+  
+  const { data: osStats } = useQuery({
+    queryKey: ['dashboard_gestor_stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('ordens_servico').select('status');
+      if (error) throw error;
+      
+      return {
+        naFila: data.filter(os => os.status === 'aberta').length,
+        atrasadas: data.filter(os => os.status === 'atrasada').length,
+      };
+    }
+  });
+
+  const { data: kanbanData } = useQuery({
+    queryKey: ['dashboard_gestor_kanban'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ordens_servico')
+        .select('numero_os, data_abertura, descricao, status')
+        .limit(20);
+      if (error) throw error;
+      
+      const columns = [
+        { id: 'aberta', title: 'Triagem' },
+        { id: 'desmontagem', title: 'Desmontagem' },
+        { id: 'usinagem', title: 'Torneiro' },
+        { id: 'montagem', title: 'Montagem' },
+        { id: 'teste', title: 'Teste' },
+        { id: 'pronto', title: 'Pronto' },
+      ];
+
+      return columns.map(col => ({
+        title: col.title,
+        items: data
+          .filter(os => os.status === col.id)
+          .map(os => ({
+            numero_os: os.numero_os,
+            data: os.data_abertura ? format(new Date(os.data_abertura), 'dd/MM') : '--/--',
+            descricao: os.descricao,
+            operador: 'Técnico'
+          }))
+      }));
+    }
+  });
+
+  const stats = osStats || { naFila: 0, atrasadas: 0 };
+  const kanban = kanbanData || [];
   return (
     <div className="space-y-8 p-6 md:p-10 pb-10">
       <div>
@@ -53,14 +104,14 @@ function DashboardGestor() {
           className="col-span-2 lg:col-span-1 bg-primary text-primary-foreground border-none shadow-lg cursor-pointer hover:scale-105 transition-transform"
           onClick={() => router.navigate({ to: '/os' })}
         >
-          <CardHeader className="p-4"><CardTitle className="text-2xl font-black">12</CardTitle></CardHeader>
+          <CardHeader className="p-4"><CardTitle className="text-2xl font-black">{stats.naFila.toString().padStart(2, '0')}</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">OS na Fila</CardContent>
         </Card>
         <Card 
           className="col-span-2 lg:col-span-1 bg-red-500 text-white border-none shadow-lg cursor-pointer hover:scale-105 transition-transform"
           onClick={() => router.navigate({ to: '/os' })}
         >
-          <CardHeader className="p-4"><CardTitle className="text-2xl font-black">04</CardTitle></CardHeader>
+          <CardHeader className="p-4"><CardTitle className="text-2xl font-black">{stats.atrasadas.toString().padStart(2, '0')}</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">OS Atrasadas</CardContent>
         </Card>
         <Card className="col-span-2 lg:col-span-1 bg-slate-900 text-white border-none shadow-lg">
@@ -83,14 +134,7 @@ function DashboardGestor() {
 
       {/* Kanban de Status */}
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-        {[
-          { title: "Triagem", items: [{ numero_os: "OS-1024", descricao: "Manutenção Preventiva Cilindro", operador: "João Silva" }] },
-          { title: "Desmontagem", items: [] },
-          { title: "Torneiro", items: [{ numero_os: "OS-1020", descricao: "Retífica de Haste", operador: "Carlos Souza" }] },
-          { title: "Montagem", items: [] },
-          { title: "Teste", items: [] },
-          { title: "Pronto", items: [{ numero_os: "OS-0998", descricao: "Teste Hidráulico", operador: "Ana Costa" }] },
-        ].map((column) => (
+        {kanban.map((column) => (
           <div 
             key={column.title} 
             className="flex flex-col gap-2 cursor-pointer group"
