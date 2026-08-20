@@ -1138,7 +1138,30 @@ export type Database = {
           total_bytes: number
         }[]
       }
+      get_distribuicao_status_os: {
+        Args: never
+        Returns: {
+          color: string
+          name: string
+          value: number
+        }[]
+      }
       get_email_by_username: { Args: { p_username: string }; Returns: string }
+      get_faturamento_mensal: {
+        Args: never
+        Returns: {
+          mes: string
+          valor: number
+        }[]
+      }
+      get_produtividade_tecnicos: {
+        Args: never
+        Returns: {
+          media: number
+          os: number
+          tecnico: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

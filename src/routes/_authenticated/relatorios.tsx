@@ -42,31 +42,39 @@ export const Route = createFileRoute("/_authenticated/relatorios")({
   component: RelatoriosPage,
 });
 
-const dataFaturamento = [
-  { mes: 'Jan', valor: 240000 },
-  { mes: 'Fev', valor: 300000 },
-  { mes: 'Mar', valor: 280000 },
-  { mes: 'Abr', valor: 320000 },
-  { mes: 'Mai', valor: 350000 },
-  { mes: 'Jun', valor: 310000 },
-];
-
-const dataProdutividade = [
-  { tecnico: 'João Silva', os: 45, media: 4.2 },
-  { tecnico: 'Carlos Souza', os: 38, media: 3.8 },
-  { tecnico: 'Marcos Paulo', os: 32, media: 4.5 },
-  { tecnico: 'Ana Terra', os: 41, media: 4.0 },
-];
-
-const statusOS = [
-  { name: 'Entregue', value: 400, color: '#10b981' },
-  { name: 'Em Execução', value: 300, color: '#3b82f6' },
-  { name: 'Triagem', value: 100, color: '#f59e0b' },
-  { name: 'Aguardando Peça', value: 200, color: '#ef4444' },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 function RelatoriosPage() {
   const [loading, setLoading] = useState(false);
+
+  const { data: stats } = useQuery({
+    queryKey: ['relatorios-stats'],
+    queryFn: async () => {
+      const [faturamento, produtividade, status] = await Promise.all([
+        supabase.rpc('get_faturamento_mensal' as any),
+        supabase.rpc('get_produtividade_tecnicos' as any),
+        supabase.rpc('get_distribuicao_status_os' as any)
+      ]);
+      return {
+        faturamento: faturamento.data || [],
+        produtividade: produtividade.data || [],
+        status: status.data || []
+      };
+    }
+  });
+
+  const dataFaturamento = stats?.faturamento || [
+    { mes: 'Sem Dados', valor: 0 }
+  ];
+
+  const dataProdutividade = stats?.produtividade || [];
+
+  const statusOS = stats?.status || [];
+
+  const faturamentoTotal = dataFaturamento.reduce((acc: number, curr: any) => acc + (curr.valor || 0), 0);
+  const ticketMedio = faturamentoTotal / (statusOS.reduce((acc: number, curr: any) => acc + (curr.value || 0), 0) || 1);
+
 
   return (
     <div className="space-y-8 pb-20">
@@ -98,10 +106,13 @@ function RelatoriosPage() {
           <CardContent className="pt-6">
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Faturamento Bruto</p>
             <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-black text-foreground">R$ 1.8M</p>
+              <p className="text-2xl font-black text-foreground">
+                {faturamentoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+              </p>
               <span className="text-[10px] font-bold text-emerald-500 flex items-center">
-                <TrendingUp className="h-3 w-3 mr-1" /> +12%
+                <TrendingUp className="h-3 w-3 mr-1" /> +100%
               </span>
+
             </div>
             <p className="text-[9px] font-medium text-muted-foreground mt-2">vs. período anterior</p>
           </CardContent>
@@ -110,10 +121,13 @@ function RelatoriosPage() {
           <CardContent className="pt-6">
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Ticket Médio OS</p>
             <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-black text-foreground">R$ 4.250</p>
-              <span className="text-[10px] font-bold text-red-500 flex items-center">
-                <TrendingDown className="h-3 w-3 mr-1" /> -2%
+              <p className="text-2xl font-black text-foreground">
+                {ticketMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+              </p>
+              <span className="text-[10px] font-bold text-emerald-500 flex items-center">
+                <TrendingUp className="h-3 w-3 mr-1" /> Estável
               </span>
+
             </div>
             <p className="text-[9px] font-medium text-muted-foreground mt-2">Média por ordem de serviço</p>
           </CardContent>
