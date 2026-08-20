@@ -89,12 +89,12 @@ function GestaoOSPage() {
   });
 
   const steps = [
-    { label: "Triagem", status: os?.status === 'aberta' ? 'current' : 'completed', id: 'triagem' },
-    { label: "Vistoria", status: os?.status === 'vistoria' ? 'current' : (['aberta'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'checklist' },
-    { label: "Laudo", status: os?.status === 'aguardando_gestor' ? 'current' : (['aberta', 'vistoria'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'laudo-técnico' },
-    { label: "Orçamento", status: os?.status === 'orcamento_pendente' ? 'current' : (['aberta', 'vistoria', 'aguardando_gestor'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'orçamento' },
-    { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'aguardando_gestor', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed'), id: 'execução' },
-    { label: "Entrega", status: os?.status === 'pronto' ? 'current' : 'pending', id: 'entrega' },
+    { label: "Triagem", status: os?.status === 'aberta' ? 'current' : 'completed', sla: 'OK' },
+    { label: "Vistoria", status: os?.status === 'vistoria' ? 'current' : (['aberta'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '4h' },
+    { label: "Orçamento", status: os?.status === 'orcamento_pendente' ? 'current' : (['aberta', 'vistoria'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '24h' },
+    { label: "Aprovação", status: os?.status === 'aprovada' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '8h' },
+    { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '48h' },
+    { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending', sla: '-' },
   ];
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
@@ -383,7 +383,12 @@ function GestaoOSPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
-              <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer">Exportar PDF</DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                onClick={() => toast.info("Gerando resumo da OS...", { description: "O download do PDF começará em breve." })}
+              >
+                Exportar Resumo (PDF)
+              </DropdownMenuItem>
               <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer text-red-400">Cancelar OS</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -391,34 +396,28 @@ function GestaoOSPage() {
       </div>
 
       {/* Fluxo de Processo (Stepper) */}
-      <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-6 relative">
-          {steps.map((step, i) => (
-            <div key={i} className="flex flex-col gap-3 group cursor-default relative z-10">
-              <div className="flex items-center gap-2">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 transition-all ${
-                  step.status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' :
-                  step.status === 'current' ? 'bg-white border-primary text-primary shadow-sm' : 
-                  'bg-white border-slate-200 text-slate-300'
-                }`}>
-                  {step.status === 'completed' ? <Check className="h-4 w-4" /> : <span className="text-[10px] font-black">{i + 1}</span>}
-                </div>
-                <div className="flex-1 h-[2px] bg-slate-100 hidden md:block last:hidden" />
-              </div>
-              <div className="flex flex-col">
-                <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
-                  step.status === 'current' ? 'text-primary' : 
-                  step.status === 'completed' ? 'text-emerald-600' : 'text-slate-400'
-                }`}>
-                  {step.label}
-                </span>
-                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">
-                  {step.status === 'completed' ? 'Concluído' : step.status === 'current' ? 'Em andamento' : 'Pendente'}
-                </span>
-              </div>
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+        {steps.map((step, i) => (
+          <div key={i} className="flex flex-col gap-2 group cursor-default">
+            <div className={`h-1.5 w-full rounded-full transition-all ${
+              step.status === 'completed' ? 'bg-emerald-500' :
+              step.status === 'current' ? 'bg-primary' : 'bg-slate-200'
+            }`} />
+            <div className="flex items-center justify-between">
+              <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${
+                step.status === 'current' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+              }`}>
+                {step.label}
+              </span>
+              <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${
+                step.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 
+                step.status === 'current' ? 'bg-primary/20 text-primary' : 'bg-slate-100 text-slate-400'
+              }`}>
+                {step.sla}
+              </span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
       <Tabs defaultValue="resumo" className="w-full">
@@ -433,21 +432,20 @@ function GestaoOSPage() {
             "Orçamento", 
             "Aprovação", 
             "Execução",
-            "Entrega",
             "Faturamento",
+            "Entrega",
             "Garantia",
             "Auditoria"
           ].map((tab) => {
-            const tabValue = tab.toLowerCase().replace(" ", "-");
             const isCompleted = 
-              (tabValue === 'checklist' && (os?.status !== 'aberta' && os?.status !== 'vistoria')) ||
-              (tabValue === 'laudo-técnico' && !['aberta', 'vistoria', 'aguardando_gestor'].includes(os?.status || '')) ||
-              (tabValue === 'orçamento' && ['aprovada', 'usinagem', 'montagem', 'pronto', 'entregue', 'concluida'].includes(os?.status || ''));
+              (tab === "Checklist" && os.status !== 'aberta') ||
+              (tab === "Laudo Técnico" && ['orcamento_pendente', 'aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status)) ||
+              (tab === "Orçamento" && ['aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status));
 
             return (
               <TabsTrigger 
                 key={tab} 
-                value={tabValue} 
+                value={tab.toLowerCase().replace(" ", "-")} 
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0 flex items-center gap-2"
               >
                 {tab}
@@ -459,30 +457,53 @@ function GestaoOSPage() {
 
         <TabsContent value="resumo" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
-            <Card className="md:col-span-2 border-border shadow-md">
-              <CardHeader className="bg-muted/10 border-b border-border/50">
-                <CardTitle className="text-base font-bold uppercase tracking-widest">Informações do Equipamento</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-2 gap-y-4 text-sm">
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Descrição</p>
-                    <p className="font-bold text-foreground uppercase">{os.descricao || "Não informada"}</p>
+            <div className="md:col-span-2 space-y-6">
+              <Card className="border-border shadow-md">
+                <CardHeader className="bg-muted/10 border-b border-border/50">
+                  <CardTitle className="text-base font-bold uppercase tracking-widest">Informações do Equipamento</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <div className="grid grid-cols-2 gap-y-4 text-sm">
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Descrição</p>
+                      <p className="font-bold text-foreground uppercase">{os.descricao || "Não informada"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade</p>
+                      <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
+                    </div>
+                    <div className="col-span-2 pt-2 border-t border-border/50">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
+                      <p className="text-muted-foreground font-medium italic">{os.observacoes || "Nenhuma observação."}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade</p>
-                    <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
-                  </div>
-                  <div className="col-span-2 pt-2 border-t border-border/50">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
-                    <p className="text-muted-foreground font-medium italic">{os.observacoes || "Nenhuma observação."}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card className="border-border shadow-md">
-              <CardHeader className="bg-muted/10 border-b border-border/50">
+              {/* Auditoria de Reabertura */}
+              <Card className="border-border shadow-md">
+                <CardHeader className="bg-slate-50 border-b border-border/50">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                      <History className="h-4 w-4 text-slate-400" />
+                      Histórico de Reabertura
+                    </CardTitle>
+                    <Button variant="ghost" size="sm" className="text-[9px] font-black uppercase text-primary">
+                      Solicitar Revisão
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="text-[10px] text-muted-foreground text-center py-4 font-bold uppercase tracking-widest bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
+                    Nenhuma reabertura registrada para esta OS.
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="space-y-6">
+              <Card className="border-border shadow-md">
+                <CardHeader className="bg-muted/10 border-b border-border/50">
                 <CardTitle className="text-base font-bold uppercase tracking-widest">SLA e Prazos</CardTitle>
               </CardHeader>
               <CardContent className="pt-6 space-y-4">
@@ -509,9 +530,10 @@ function GestaoOSPage() {
                 </div>
               </CardContent>
             </Card>
+            </div>
           </div>
 
-          <Card className="border-border shadow-md overflow-hidden">
+          <Card className="border-border shadow-md overflow-hidden mt-6">
              <CardHeader className="bg-slate-900 text-white border-b border-white/5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -935,23 +957,6 @@ function GestaoOSPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="entrega">
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <Truck className="h-5 w-5 text-primary" />
-                Logística de Entrega
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Truck className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Aguardando prontidão do equipamento.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="faturamento">
           <Card className="border-border shadow-md">
             <CardHeader className="bg-muted/10 border-b border-border/50">
@@ -964,6 +969,23 @@ function GestaoOSPage() {
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                 <Receipt className="h-12 w-12 mb-4 opacity-20" />
                 <p className="text-xs font-bold uppercase tracking-widest">Faturamento ainda não processado.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="entrega">
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Truck className="h-5 w-5 text-primary" />
+                Logística de Entrega
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Truck className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest">Aguardando prontidão do equipamento.</p>
               </div>
             </CardContent>
           </Card>
