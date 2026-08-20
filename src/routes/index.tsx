@@ -49,13 +49,27 @@ function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [keepSignedIn, setKeepSignedIn] = useState(true);
 
   useEffect(() => {
+    const savedPreference = localStorage.getItem("keep_signed_in");
+    if (savedPreference !== null) setKeepSignedIn(savedPreference === "true");
+
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.navigate({ to: "/dashboard", replace: true });
+      if (!session) return;
+
+      // Sessão temporária: se o navegador foi fechado (sessionStorage limpo), encerra o login.
+      const isTemporary = savedPreference === "false";
+      const browserSessionActive = sessionStorage.getItem("session_active") === "true";
+
+      if (isTemporary && !browserSessionActive) {
+        await supabase.auth.signOut();
+        return;
       }
+
+      sessionStorage.setItem("session_active", "true");
+      router.navigate({ to: "/dashboard", replace: true });
     };
     checkUser();
   }, [router]);
