@@ -83,6 +83,7 @@ function DashboardLayout() {
 
   const menuItems = [
     { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
+    { label: "Notificações", icon: Bell, to: "/notificacoes", roles: ["diretor", "administrativo_financeiro", "gestor", "operador", "terceirizado"] },
     { label: "Clientes", icon: Users, to: "/clientes", roles: ["diretor", "administrativo_financeiro", "gestor"] },
     { label: "Ordens de Serviço", icon: ClipboardList, to: "/os", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
     { label: "Kanban", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
@@ -94,6 +95,7 @@ function DashboardLayout() {
     { label: "Usuários", icon: Users, to: "/admin/usuarios", roles: ["diretor"] },
     { label: "Relatórios", icon: FileText, to: "/relatorios", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor"] },
+    { label: "Alertas (Admin)", icon: ShieldCheck, to: "/admin/alertas", roles: ["diretor"] },
     { label: "Auditoria", icon: HistoryIcon, to: "/admin/auditoria", roles: ["diretor"] },
     { label: "Meu Perfil", icon: UserCircle, to: "/dashboard/profile", roles: ["diretor", "administrativo_financeiro", "gestor", "operador", "terceirizado"] },
   ];
