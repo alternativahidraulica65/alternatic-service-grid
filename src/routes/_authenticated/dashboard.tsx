@@ -20,7 +20,8 @@ import {
   FileText,
   Package,
   Receipt,
-  Truck
+  Truck,
+  History as HistoryIcon
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -89,6 +90,7 @@ function DashboardLayout() {
     { label: "Usuários", icon: Users, to: "/admin/usuarios", roles: ["diretor"] },
     { label: "Relatórios", icon: FileText, to: "/relatorios", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor"] },
+    { label: "Auditoria", icon: HistoryIcon, to: "/admin/auditoria", roles: ["diretor"] },
   ];
 
   const filteredMenu = menuItems.filter(item => 
