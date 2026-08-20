@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { uploadOsPhoto, formatBytes } from "@/lib/media/upload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -200,19 +201,21 @@ function NovaOSPage() {
 
       if (osError) throw osError;
 
-      // 2. Upload de fotos e salvar peças
+      // 2. Upload comprimido das fotos (Cláusula Pétrea #01) e registro das peças
       for (const peca of pecas) {
-        let fotoUrl = null;
+        let fotoUrl: string | null = null;
         if (peca.file) {
-          const fileExt = peca.file.name.split('.').pop();
-          const fileName = `${os.id}/${Math.random()}.${fileExt}`;
-          const { error: uploadError } = await supabase.storage
-            .from('os-assets')
-            .upload(fileName, peca.file);
-          
-          if (!uploadError) {
-            const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
-            fotoUrl = urlData.publicUrl;
+          try {
+            const result = await uploadOsPhoto({
+              osId: os.id,
+              categoria: "triagem",
+              file: peca.file,
+              legenda: peca.nome,
+            });
+            fotoUrl = result.signedUrl;
+            toast.success(`Foto comprimida: ${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)}`);
+          } catch (uploadError: any) {
+            toast.error(`Falha no upload da foto de ${peca.nome}: ${uploadError.message}`);
           }
         }
 
