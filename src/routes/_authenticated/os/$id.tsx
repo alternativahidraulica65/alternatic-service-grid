@@ -463,7 +463,7 @@ function GestaoOSPage() {
             return (
               <TabsTrigger 
                 key={tab} 
-                value={tab.toLowerCase().replace(" ", "-")} 
+                value={tab === "Visão Geral" ? "resumo" : (tab === "Anexos" ? "anexos" : (tab === "Histórico" ? "auditoria" : tab.toLowerCase().replace(" ", "-")))} 
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0 flex items-center gap-2"
               >
                 {tab}
