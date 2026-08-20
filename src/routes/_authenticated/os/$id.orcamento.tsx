@@ -68,6 +68,19 @@ function OrcamentoOSPage() {
     }
   });
 
+  const { data: revisoes = [], refetch: refetchRevisoes } = useQuery({
+    queryKey: ['orcamento_revisoes', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orcamento_revisoes')
+        .select('*')
+        .eq('orcamento_id', id)
+        .order('numero_revisao', { ascending: false });
+      if (error) throw error;
+      return data as any[];
+    }
+  });
+
   const custoBase = useMemo(() => itens.reduce((acc, item) => acc + item.total, 0), [itens]);
   
   const calculos = useMemo(() => {
@@ -119,21 +132,67 @@ function OrcamentoOSPage() {
     setItens(itens.filter(item => item.id !== itemId));
   };
 
-  const handleSalvarVersao = () => {
-    toast.success("Versão do orçamento salva com sucesso!");
+  const [gerandoPdf, setGerandoPdf] = useState(false);
+
+  const handleGerarPDF = async () => {
+    if (itens.length === 0) {
+      toast.error("Adicione ao menos um item ao orçamento antes de gerar o PDF.");
+      return;
+    }
+
+    setGerandoPdf(true);
+    const toastId = toast.loading("Gerando proposta comercial...");
+    try {
+      const fotosPdf = (fotos as any[])
+        .filter((f) => fotosSelecionadas.includes(f.id))
+        .map((f) => ({
+          id: f.id,
+          storage_path: f.storage_path,
+          foto_url: f.foto_url,
+          legenda: f.legenda || f.categoria || f.tipo,
+        }));
+
+      const { numeroRevisao } = await gerarESalvarRevisao({
+        osId: id,
+        numeroOs: os?.numero_os || id,
+        cliente: os?.cliente || "Cliente",
+        itens: itens.map((i) => ({ descricao: i.descricao, qtd: i.qtd, valorUnit: i.valorUnit, total: i.total })),
+        fotos: fotosPdf,
+        fotosSelecionadasIds: fotosSelecionadas,
+        totais: {
+          custoBase,
+          imposto,
+          valorImposto: calculos.valorImposto,
+          margem: calculos.margemEfetiva,
+          comissao,
+          valorComissao: calculos.valorComissao,
+          valorFinal: calculos.valorFinal,
+        },
+      });
+
+      await refetchRevisoes();
+      toast.success(`Proposta gerada e arquivada como REV ${numeroRevisao}.`, { id: toastId });
+    } catch (error: any) {
+      toast.error("Erro ao gerar PDF: " + error.message, { id: toastId });
+    } finally {
+      setGerandoPdf(false);
+    }
   };
 
-  const handleGerarPDF = () => {
-    toast.promise(new Promise(resolve => setTimeout(resolve, 1500)), {
-      loading: 'Gerando proposta comercial...',
-      success: 'PDF gerado com sucesso!',
-      error: 'Erro ao gerar PDF',
-    });
+  const handleSalvarVersao = () => handleGerarPDF();
+
+  const handleDownloadRevisao = async (path: string) => {
+    const url = await getSignedUrl(ORCAMENTOS_BUCKET, path, 120);
+    if (!url) {
+      toast.error("Sem permissão para acessar este documento.");
+      return;
+    }
+    window.open(url, "_blank");
   };
 
-  const toggleFoto = (url: string) => {
+  const toggleFoto = (fotoId: string) => {
     setFotosSelecionadas(prev => 
-      prev.includes(url) ? prev.filter(f => f !== url) : [...prev, url]
+      prev.includes(fotoId) ? prev.filter(f => f !== fotoId) : [...prev, fotoId]
     );
   };
 
