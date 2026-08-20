@@ -57,6 +57,7 @@ function DashboardLayout() {
   const [isPinned, setIsPinned] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('sidebar_pinned');
+      // Default to true (pinned) if not set
       return saved !== null ? JSON.parse(saved) : true;
     }
     return true;
@@ -64,7 +65,9 @@ function DashboardLayout() {
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('sidebar_pinned', JSON.stringify(isPinned));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebar_pinned', JSON.stringify(isPinned));
+    }
   }, [isPinned]);
 
   const isExpanded = isPinned || isHovered;
