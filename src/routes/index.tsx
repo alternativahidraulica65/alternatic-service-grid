@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+/**
+ * O menu não está fixado em todas as abas, como prometido, revise essa parte.
+ * Em clientes, tem alguns que não são do banco de dados real supabase, revise.
+ */
 // Admin temp: admin.temp@alternativa.com / admin123
 
 import { createFileRoute, useRouter } from "@tanstack/react-router";
