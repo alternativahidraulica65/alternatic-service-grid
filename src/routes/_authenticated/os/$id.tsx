@@ -849,88 +849,43 @@ function GestaoOSPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="peças">
-           <Card className="border-border shadow-md">
-             <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-base font-bold uppercase tracking-widest text-foreground flex items-center gap-2">
-                    <Box className="h-5 w-5 text-primary" />
-                    Rastreamento de Componentes
-                  </CardTitle>
-                  <CardDescription>Localização e situação física de cada peça.</CardDescription>
+        <TabsContent value="anexos">
+           <Card className="border-border shadow-md overflow-hidden">
+             <CardHeader className="bg-slate-900 text-white border-b border-white/5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base font-bold uppercase tracking-widest text-white">Anexos e Documentação</CardTitle>
+                  </div>
+                  <Button variant="outline" size="sm" className="h-9 border-white/20 text-white hover:bg-white/10 font-bold text-[10px] uppercase">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Novo Anexo
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm" className="h-9 border-primary text-primary hover:bg-primary/5 font-bold text-[10px] uppercase">Registrar Movimentação</Button>
              </CardHeader>
              <CardContent className="pt-6">
-                <div className="space-y-4">
-                  {pecas.map((peca: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border">
-                          <Box className="h-5 w-5 text-slate-400" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
-                          <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                            <MapPin className="h-3 w-3 text-primary" />
-                            {peca.localizacao}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {fotosLaudo.map((foto: any) => (
+                    <div key={foto.id} className="group relative aspect-square rounded-xl overflow-hidden border border-border bg-slate-50">
+                      <SignedImage 
+                        storagePath={foto.storage_path} 
+                        className="h-full w-full object-cover transition-transform group-hover:scale-110" 
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                         <Badge className="bg-white text-slate-900 text-[8px] uppercase">{foto.tipo}</Badge>
                       </div>
                     </div>
                   ))}
+                  {fotosLaudo.length === 0 && (
+                    <div className="col-span-full py-12 text-center text-muted-foreground italic text-xs uppercase tracking-widest">
+                       Nenhum anexo encontrado para esta OS.
+                    </div>
+                  )}
                 </div>
              </CardContent>
            </Card>
         </TabsContent>
-        <TabsContent value="terceiros">
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Serviços de Terceiros
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Users className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
-                <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        <TabsContent value="custos">
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-primary" />
-                Custos da Ordem de Serviço
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid gap-6 md:grid-cols-3 mb-6">
-                <div className="p-4 rounded-xl border border-border bg-slate-50">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
-                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
-                </div>
-                <div className="p-4 rounded-xl border border-border bg-slate-50">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
-                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
-                </div>
-                <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
-                  <p className="text-lg font-black text-primary">R$ 0,00</p>
-                </div>
-              </div>
-              <Button variant="outline" className="w-full border-dashed border-2 font-bold uppercase text-[10px] tracking-widest">Lançar Novo Custo</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="orçamento">
           <Card className="border-border shadow-md">
