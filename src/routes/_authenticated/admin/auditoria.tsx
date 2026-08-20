@@ -120,32 +120,32 @@ function AuditoriaPage() {
             Logs de Auditoria
           </h1>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-end">
-            <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-              <HardDrive className="h-3 w-3" />
-              Storage: {formatBytes(totalGeralBytes)} / 1GB ({porcentagemUso.toFixed(1)}%)
+        
+        <div className="flex flex-col md:flex-row items-center gap-6">
+           {/* Storage Summary Badge */}
+          <div className="hidden sm:flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+            <HardDrive className="h-3 w-3" />
+            Storage: {formatBytes(totalGeralBytes)} / 1GB ({porcentagemUso.toFixed(1)}%)
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="relative w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input 
+                placeholder="Buscar logs..." 
+                className="pl-9 h-11 border-slate-200 shadow-sm focus:border-primary transition-all"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
+            <Button variant="outline" className="h-11 px-6 font-bold uppercase text-[10px] tracking-widest border-slate-200 shadow-sm">
+              <Download className="mr-2 h-4 w-4" />
+              Exportar
+            </Button>
+            <Button className="h-11 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200">
+              Aplicar Filtros
+            </Button>
           </div>
-        </div>
-      </div>
-        <div className="flex items-center gap-3">
-          <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input 
-              placeholder="Buscar logs..." 
-              className="pl-9 h-11 border-slate-200 shadow-sm focus:border-primary transition-all"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <Button variant="outline" className="h-11 px-6 font-bold uppercase text-[10px] tracking-widest border-slate-200 shadow-sm">
-            <Download className="mr-2 h-4 w-4" />
-            Exportar
-          </Button>
-          <Button className="h-11 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200">
-            Aplicar Filtros
-          </Button>
         </div>
       </div>
 
