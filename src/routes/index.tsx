@@ -126,7 +126,7 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Padronizar o layout autenticado (menu lateral fixo/pin e overlay) em todas as rotas _authenticated para manter consistência total.
+        No simulador de RBAC, ao selecionar por exemplo "operador" eu devo ver apenas as abas permitidas por esse usuário. O mesmo para os outros acessos, implemente essa mudança e deixe disponível para alterar somente dentro desse usuário logado
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
