@@ -327,6 +327,7 @@ function ProfilePage() {
               <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">Tema do Sistema</CardTitle>
             </CardHeader>
             <CardContent className="pt-8">
+              <Form {...profileForm}>
               <FormField
                 control={profileForm.control}
                 name="tema"
