@@ -553,7 +553,6 @@ function GestaoOSPage() {
                 ))}
              </CardContent>
           </Card>
-        </TabsContent>
 
         <TabsContent value="checklist">
            <Card className="border-border shadow-md">
