@@ -513,8 +513,9 @@ function GestaoOSPage() {
                   <span className="text-xs font-black text-emerald-700 uppercase">{os.data_previsao_conclusao ? new Date(os.data_previsao_conclusao).toLocaleDateString() : "N/A"}</span>
                 </div>
               </CardContent>
-            </Card>
+            </div>
           </div>
+        </TabsContent>
 
           <Card className="border-border shadow-md overflow-hidden">
              <CardHeader className="bg-slate-900 text-white border-b border-white/5">
