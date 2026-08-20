@@ -29,6 +29,7 @@ import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_
 import { Route as AuthenticatedDashboardGestorRouteImport } from './routes/_authenticated/dashboard/gestor'
 import { Route as AuthenticatedDashboardOperadorRouteImport } from './routes/_authenticated/dashboard/operador'
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
+import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes/index'
 import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 import { Route as AuthenticatedOrdensServicoNovaRouteImport } from './routes/_authenticated/ordens-servico/nova'
@@ -147,6 +148,12 @@ const AuthenticatedEngenhariaMateriaisRoute =
     path: '/engenharia/materiais',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedNotificacoesIndexRoute =
+  AuthenticatedNotificacoesIndexRouteImport.update({
+    id: '/notificacoes/',
+    path: '/notificacoes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrcamentoPdfRoute =
   AuthenticatedOrcamentoPdfRouteImport.update({
     id: '/pdf',
@@ -218,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
   '/os/': typeof AuthenticatedOsIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -247,6 +255,7 @@ export interface FileRoutesByTo {
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesIndexRoute
   '/os': typeof AuthenticatedOsIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/financeiro/fornecedores': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -278,6 +287,7 @@ export interface FileRoutesById {
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/_authenticated/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
   '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
   '/_authenticated/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/_authenticated/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/os/$id'
     | '/os/nova'
     | '/clientes/'
+    | '/notificacoes/'
     | '/os/'
     | '/os/$id/orcamento'
     | '/financeiro/fornecedores/'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/os/$id'
     | '/os/nova'
     | '/clientes'
+    | '/notificacoes'
     | '/os'
     | '/os/$id/orcamento'
     | '/financeiro/fornecedores'
@@ -368,6 +380,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
     | '/_authenticated/clientes/'
+    | '/_authenticated/notificacoes/'
     | '/_authenticated/os/'
     | '/_authenticated/os/$id/orcamento'
     | '/_authenticated/financeiro/fornecedores/'
@@ -520,6 +533,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEngenhariaMateriaisRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/notificacoes/': {
+      id: '/_authenticated/notificacoes/'
+      path: '/notificacoes'
+      fullPath: '/notificacoes/'
+      preLoaderRoute: typeof AuthenticatedNotificacoesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/orcamento/pdf': {
       id: '/_authenticated/orcamento/pdf'
       path: '/pdf'
@@ -646,6 +666,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRouteWithChildren
   AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
+  AuthenticatedNotificacoesIndexRoute: typeof AuthenticatedNotificacoesIndexRoute
   AuthenticatedOsIndexRoute: typeof AuthenticatedOsIndexRoute
   AuthenticatedFinanceiroFornecedoresIndexRoute: typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
@@ -668,6 +689,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOsIdRoute: AuthenticatedOsIdRouteWithChildren,
   AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
+  AuthenticatedNotificacoesIndexRoute: AuthenticatedNotificacoesIndexRoute,
   AuthenticatedOsIndexRoute: AuthenticatedOsIndexRoute,
   AuthenticatedFinanceiroFornecedoresIndexRoute:
     AuthenticatedFinanceiroFornecedoresIndexRoute,

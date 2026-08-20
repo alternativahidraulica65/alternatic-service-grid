@@ -24,7 +24,7 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/notificacoes")({
+export const Route = createFileRoute("/_authenticated/notificacoes/")({
   component: NotificationsPage,
 });
 
