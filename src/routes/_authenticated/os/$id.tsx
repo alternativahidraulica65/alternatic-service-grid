@@ -938,6 +938,7 @@ function GestaoOSPage() {
                   <Button 
                     className="h-8 bg-slate-900 text-white font-black uppercase text-[9px] tracking-widest px-4"
                     onClick={() => router.navigate({ to: '/os/$id/orcamento', params: { id } } as any)}
+
                   >
                     Gerenciar Orçamento
                   </Button>
