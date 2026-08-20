@@ -108,8 +108,6 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Ajustar a aba de relatórios para ficar responsiva com margens e espaçamento corretos em todas as telas.
-
         Padronizar o layout autenticado (menu lateral fixo/pin e overlay) em todas as rotas _authenticated para manter consistência total.
       </div>
       {/* Background industrial com overlay robusto */}
