@@ -82,6 +82,22 @@ function DashboardFinanceiro() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
+  const { data: globalStats } = useQuery({
+    queryKey: ['financial_global_stats'],
+    queryFn: async () => {
+      const { data: ordens, error } = await supabase.from('ordens_servico').select('valor_total, status');
+      if (error) throw error;
+      
+      const faturamentoTotal = ordens.reduce((acc, os) => acc + Number(os.valor_total || 0), 0);
+      const orcamentosCount = ordens.length;
+      const aprovacoesCount = ordens.filter(os => os.status === 'pronto').length;
+
+      return { faturamentoTotal, orcamentosCount, aprovacoesCount };
+    }
+  });
+
+  const stats = globalStats || { faturamentoTotal: 0, orcamentosCount: 0, aprovacoesCount: 0 };
+
   const filterStartDate = new Date(parseInt(selectedYear), parseInt(selectedMonth), 1);
   const filterEndDate = endOfMonth(filterStartDate);
 
@@ -157,6 +173,28 @@ function DashboardFinanceiro() {
     }
   });
 
+  const { data: recebimentos = [], isLoading: isLoadingRecebimentos } = useQuery({
+    queryKey: ['financial-recebimentos'],
+    queryFn: async () => {
+      // In a real scenario, this would come from a 'recebimentos' or 'faturas' table.
+      // For now, we fetch OS with value > 0 that aren't fully processed.
+      const { data, error } = await supabase
+        .from('ordens_servico')
+        .select('cliente, valor_total, data_abertura, status')
+        .gt('valor_total', 0)
+        .limit(5);
+      
+      if (error) throw error;
+      
+      return data.map(os => ({
+        cliente: os.cliente,
+        valor: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(os.valor_total)),
+        data: format(new Date(os.data_abertura), 'dd/MM'),
+        status: os.status === 'pronto' ? 'Confirmado' : 'Pendente'
+      }));
+    }
+  });
+
   const exportCSV = () => {
     if (!supplierData || supplierData.length === 0) return;
     
@@ -201,10 +239,10 @@ function DashboardFinanceiro() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
-        <FinanceKPICard title="Orçamentos" value="24" subtext="vs mês anterior" icon={FileText} trend="up" trendValue="+15%" onClick={() => router.navigate({ to: '/os' })} />
-        <FinanceKPICard title="Aprovações" value="18" subtext="SLA de 75%" icon={CheckCircle2} trend="up" trendValue="+5%" />
-        <FinanceKPICard title="Faturamento" value="R$ 840k" subtext="Meta mensal" icon={TrendingUp} trend="down" trendValue="-2%" />
-        <FinanceKPICard title="Inadimplência" value="R$ 12k" subtext="Risco monitorado" icon={AlertTriangle} trend="up" trendValue="+0.5%" />
+        <FinanceKPICard title="Orçamentos" value={stats.orcamentosCount.toString()} subtext="Base total" icon={FileText} trend="up" trendValue="+0%" onClick={() => router.navigate({ to: '/os' })} />
+        <FinanceKPICard title="Aprovações" value={stats.aprovacoesCount.toString()} subtext="OS Prontas" icon={CheckCircle2} trend="up" trendValue="+0%" />
+        <FinanceKPICard title="Faturamento" value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.faturamentoTotal)} subtext="Total acumulado" icon={TrendingUp} trend="up" trendValue="+0%" />
+        <FinanceKPICard title="Inadimplência" value="R$ 0,00" subtext="Risco monitorado" icon={AlertTriangle} trend="up" trendValue="+0%" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 print:hidden">
@@ -220,12 +258,14 @@ function DashboardFinanceiro() {
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-4">
-              {[
-                { cliente: "Indústria Metalúrgica SA", valor: "R$ 45.000,00", data: "18/08", status: "Confirmado" },
-                { cliente: "Agrícola Vale Verde", valor: "R$ 22.400,00", data: "20/08", status: "Pendente" },
-                { cliente: "Transportes Rodoviários", valor: "R$ 15.800,00", data: "21/08", status: "Confirmado" },
-                { cliente: "Mineradora Serra Azul", valor: "R$ 68.900,00", data: "22/08", status: "Atrasado" },
-              ].map((item, i) => (
+              {isLoadingRecebimentos ? (
+                <div className="py-4 text-center text-xs text-muted-foreground">Carregando...</div>
+              ) : recebimentos.length === 0 ? (
+                <div className="py-8 text-center text-xs text-muted-foreground uppercase font-bold tracking-widest opacity-50">
+                  <Receipt className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                  Nenhum recebimento previsto
+                </div>
+              ) : recebimentos.map((item, i) => (
                 <div 
                   key={i} 
                   className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"

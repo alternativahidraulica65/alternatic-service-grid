@@ -62,16 +62,16 @@ function KPICard({ title, value, subtext, icon: Icon, colorClass = "text-primary
 }
 
 const mockRevenueData = [
-  { name: "Matriz", value: 450000, color: "#FFD700" },
-  { name: "Filial Sul", value: 280000, color: "#C0C0C0" },
-  { name: "Filial Norte", value: 310000, color: "#808080" },
+  { name: "Matriz", value: 0, color: "#FFD700" },
+  { name: "Filial Sul", value: 0, color: "#C0C0C0" },
+  { name: "Filial Norte", value: 0, color: "#808080" },
 ];
 
 const mockStatusData = [
-  { name: "Abertas", value: 12, fill: "#FFD700" },
-  { name: "Em Andamento", value: 18, fill: "#60A5FA" },
-  { name: "Atrasadas", value: 5, fill: "#EF4444" },
-  { name: "Concluídas", value: 25, fill: "#10B981" },
+  { name: "Abertas", value: 0, fill: "#FFD700" },
+  { name: "Em Andamento", value: 0, fill: "#60A5FA" },
+  { name: "Atrasadas", value: 0, fill: "#EF4444" },
+  { name: "Concluídas", value: 0, fill: "#10B981" },
 ];
 
 function DashboardDiretor() {
