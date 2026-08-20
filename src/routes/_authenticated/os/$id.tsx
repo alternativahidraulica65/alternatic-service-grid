@@ -385,6 +385,12 @@ function GestaoOSPage() {
             <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
               <DropdownMenuItem 
                 className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+              >
+                Gerar Orçamento
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
                 onClick={() => toast.info("Gerando resumo da OS...", { description: "O download do PDF começará em breve." })}
               >
                 Exportar Resumo (PDF)
@@ -900,12 +906,24 @@ function GestaoOSPage() {
                 <Receipt className="h-5 w-5 text-primary" />
                 Orçamento Comercial
               </CardTitle>
-              <Button className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4">Gerar Orçamento</Button>
+              <Button 
+                className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
+                onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+              >
+                Abrir Módulo de Orçamento
+              </Button>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                 <Receipt className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Nenhum orçamento gerado para esta OS.</p>
+                <p className="text-xs font-bold uppercase tracking-widest">Utilize o módulo avançado para gerenciar custos, margens e gerar a proposta PDF.</p>
+                <Button 
+                  variant="outline" 
+                  className="mt-6 border-primary text-primary font-black uppercase text-[10px] tracking-widest px-8"
+                  onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+                >
+                  Configurar Orçamento
+                </Button>
               </div>
             </CardContent>
           </Card>
