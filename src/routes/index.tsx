@@ -108,8 +108,13 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Implementar a persistência do estado do menu lateral (recolhido/expandido e pin) entre sessões e páginas usando o usuário autenticado.
-        Implementar um comportamento responsivo para o menu lateral no mobile (drawer/overlay) mantendo a opção de fixar quando aplicável.
+        Melhore responsividade da aba relatorios. Esta sem margem.
+
+        Adicionar busca e filtros na listagem de clientes para navegar mais rápido pelos dados reais do Supabase.
+
+        Adicionar feedback de loading e mensagens de erro quando a conexão com o Supabase falhar nas telas de clientes e no dashboard.
+
+        Padronizar o layout autenticado (menu lateral fixo/pin e overlay) em todas as rotas _authenticated para manter consistência total.
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
