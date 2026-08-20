@@ -443,20 +443,18 @@ function GestaoOSPage() {
       <Tabs defaultValue="resumo" className="w-full">
         <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
           {[
-            "Resumo", 
+            "Visão Geral", 
             "Checklist", 
             "Laudo Técnico", 
-            "Peças", 
-            "Terceiros",
-            "Custos",
+            "Anexos",
             "Orçamento", 
             "Aprovação", 
             "Execução",
             "Faturamento",
             "Entrega",
-            "Garantia",
-            "Auditoria"
+            "Histórico"
           ].map((tab) => {
+
             const isCompleted = 
               (tab === "Checklist" && os.status !== 'aberta') ||
               (tab === "Laudo Técnico" && ['orcamento_pendente', 'aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status)) ||
