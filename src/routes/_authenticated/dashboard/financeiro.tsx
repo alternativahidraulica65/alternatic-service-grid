@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { 
   DollarSign,
   CheckCircle2,
@@ -45,9 +45,12 @@ export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   component: DashboardFinanceiro,
 });
 
-function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }: any) {
+function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue, onClick }: any) {
   return (
-    <Card className="border-border bg-card shadow-sm overflow-hidden border-l-4 border-l-primary">
+    <Card 
+      className={`border-border bg-card shadow-sm overflow-hidden border-l-4 border-l-primary transition-all ${onClick ? "cursor-pointer hover:shadow-md hover:border-primary/30" : ""}`}
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
           {title}
@@ -75,6 +78,7 @@ function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }
 }
 
 function DashboardFinanceiro() {
+  const router = useRouter();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
@@ -197,7 +201,7 @@ function DashboardFinanceiro() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
-        <FinanceKPICard title="Orçamentos" value="24" subtext="vs mês anterior" icon={FileText} trend="up" trendValue="+15%" />
+        <FinanceKPICard title="Orçamentos" value="24" subtext="vs mês anterior" icon={FileText} trend="up" trendValue="+15%" onClick={() => router.navigate({ to: '/os' })} />
         <FinanceKPICard title="Aprovações" value="18" subtext="SLA de 75%" icon={CheckCircle2} trend="up" trendValue="+5%" />
         <FinanceKPICard title="Faturamento" value="R$ 840k" subtext="Meta mensal" icon={TrendingUp} trend="down" trendValue="-2%" />
         <FinanceKPICard title="Inadimplência" value="R$ 12k" subtext="Risco monitorado" icon={AlertTriangle} trend="up" trendValue="+0.5%" />
