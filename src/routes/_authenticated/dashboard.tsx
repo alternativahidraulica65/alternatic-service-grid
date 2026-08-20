@@ -21,7 +21,8 @@ import {
   Package,
   Receipt,
   Truck,
-  History as HistoryIcon
+  History as HistoryIcon,
+  UserCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -92,6 +93,7 @@ function DashboardLayout() {
     { label: "Relatórios", icon: FileText, to: "/relatorios", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor"] },
     { label: "Auditoria", icon: HistoryIcon, to: "/admin/auditoria", roles: ["diretor"] },
+    { label: "Meu Perfil", icon: UserCircle, to: "/profile", roles: ["diretor", "administrativo_financeiro", "gestor", "operador", "terceirizado"] },
   ];
 
   const filteredMenu = menuItems.filter(item => 
