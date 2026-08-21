@@ -126,9 +126,7 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Adicionar no gerenciamento de clientes uma validação/aviso antes de excluir, listando quantas ordens de serviço serão afetadas e pedindo confirmação.
-
-Implementar a exclusão de um cliente já removendo de forma transacional as ordens de serviço relacionadas, evitando erros de constraint no Supabase.
+        No simulador de RBAC, ao selecionar por exemplo "operador" eu devo ver apenas as abas permitidas por esse usuário. O mesmo para os outros acessos, implemente essa mudança e deixe disponível para alterar somente dentro desse usuário logado
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
