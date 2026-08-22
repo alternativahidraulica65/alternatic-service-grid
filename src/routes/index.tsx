@@ -126,7 +126,7 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Aplicar redirecionamento automático por perfil RBAC (Diretor, Financeiro, Gestor, Operador) após o login.
+        Me responda qual a tabela que esta conectada para apresentar os dados na tela clientes?
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
