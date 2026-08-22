@@ -97,6 +97,8 @@ function DashboardDiretor() {
       { name: "Andamento", value: emAndamento, fill: "#60A5FA" },
       { name: "Atrasadas", value: atrasadas, fill: "#EF4444" },
       { name: "Concluídas", value: concluidas, fill: "#10B981" },
+    ];
+
     const revenueData = [
       { name: "Total", value: faturamento, color: "#FFD700" }
     ];
