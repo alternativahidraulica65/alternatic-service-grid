@@ -79,11 +79,44 @@ function GestaoOSPage() {
     }
   });
 
-  const { data: pecas = [] } = useQuery({
+  const { data: pecas = [], isLoading: loadingPecas } = useQuery({
     queryKey: ['os_pecas', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('os_guarda_pecas').select('*').eq('os_id', id);
+      const { data, error } = await supabase
+        .from('os_guarda_pecas')
+        .select('*')
+        .eq('os_id', id);
       if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
+    queryKey: ['os_terceiros', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_servicos_terceiros' as any)
+        .select('*')
+        .eq('os_id', id);
+      if (error) {
+        console.warn("Table os_servicos_terceiros not found, returning empty.");
+        return [];
+      }
+      return data;
+    }
+  });
+
+  const { data: custos = [], isLoading: loadingCustos } = useQuery({
+    queryKey: ['os_custos', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_custos_financeiros' as any)
+        .select('*')
+        .eq('os_id', id);
+      if (error) {
+        console.warn("Table os_custos_financeiros not found, returning empty.");
+        return [];
+      }
       return data;
     }
   });
