@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -50,27 +49,13 @@ function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [keepSignedIn, setKeepSignedIn] = useState(true);
 
   useEffect(() => {
-    const savedPreference = localStorage.getItem("keep_signed_in");
-    if (savedPreference !== null) setKeepSignedIn(savedPreference === "true");
-
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      // Sessão temporária: se o navegador foi fechado (sessionStorage limpo), encerra o login.
-      const isTemporary = savedPreference === "false";
-      const browserSessionActive = sessionStorage.getItem("session_active") === "true";
-
-      if (isTemporary && !browserSessionActive) {
-        await supabase.auth.signOut();
-        return;
+      if (session) {
+        router.navigate({ to: "/dashboard", replace: true });
       }
-
-      sessionStorage.setItem("session_active", "true");
-      router.navigate({ to: "/dashboard", replace: true });
     };
     checkUser();
   }, [router]);
@@ -93,9 +78,6 @@ function LoginPage() {
       });
 
       if (error) throw error;
-
-      localStorage.setItem("keep_signed_in", String(keepSignedIn));
-      sessionStorage.setItem("session_active", "true");
 
       if (!data.session) {
         toast.error("Sessão não iniciada", {
@@ -126,7 +108,8 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Implemente uma lista de usuários na página Configurações, mostrando nome, e-mail, nível de acesso e botão de ações.
+        Implementar a persistência do estado do menu lateral (recolhido/expandido e pin) entre sessões e páginas usando o usuário autenticado.
+        Implementar um comportamento responsivo para o menu lateral no mobile (drawer/overlay) mantendo a opção de fixar quando aplicável.
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
@@ -249,18 +232,6 @@ function LoginPage() {
                   </FormItem>
                 )}
               />
-
-              <label className="flex items-center gap-3 cursor-pointer select-none">
-                <Checkbox
-                  checked={keepSignedIn}
-                  onCheckedChange={(v) => setKeepSignedIn(v === true)}
-                  disabled={isLoading}
-                  className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">
-                  Manter-me conectado
-                </span>
-              </label>
 
               <Button
                 type="submit"
