@@ -126,7 +126,10 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Verifique todo o aplicativo, sugestione melhorias
+        Performance de Listagens: Utilizar virtualização (@tanstack/react-virtual) nas tabelas de Ordens de Serviço e Clientes para suportar milhares de registros sem perda de fluidez.
+        Resiliência: Implementar Error Boundaries granulares por rota para evitar que falhas em componentes específicos (como gráficos) comprometam toda a interface.
+        Percepção de Velocidade: Adicionar Skeleton Screens nos cards de KPI e tabelas enquanto os dados reais do banco são carregados.
+        Modo Offline: Configurar cache persistente no TanStack Query para permitir consultas básicas mesmo em locais de campo com baixa conectividade.
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
