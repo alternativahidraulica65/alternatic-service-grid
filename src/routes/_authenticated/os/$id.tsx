@@ -52,6 +52,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/os/$id")({
   component: GestaoOSPage,
@@ -79,11 +80,44 @@ function GestaoOSPage() {
     }
   });
 
-  const { data: pecas = [] } = useQuery({
+  const { data: pecas = [], isLoading: loadingPecas } = useQuery({
     queryKey: ['os_pecas', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('os_guarda_pecas').select('*').eq('os_id', id);
+      const { data, error } = await supabase
+        .from('os_guarda_pecas')
+        .select('*')
+        .eq('os_id', id);
       if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
+    queryKey: ['os_terceiros', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_servicos_terceiros' as any)
+        .select('*')
+        .eq('os_id', id);
+      if (error) {
+        console.warn("Table os_servicos_terceiros not found, returning empty.");
+        return [];
+      }
+      return data;
+    }
+  });
+
+  const { data: custos = [], isLoading: loadingCustos } = useQuery({
+    queryKey: ['os_custos', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_custos_financeiros' as any)
+        .select('*')
+        .eq('os_id', id);
+      if (error) {
+        console.warn("Table os_custos_financeiros not found, returning empty.");
+        return [];
+      }
       return data;
     }
   });
@@ -859,25 +893,37 @@ function GestaoOSPage() {
              </CardHeader>
              <CardContent className="pt-6">
                 <div className="space-y-4">
-                  {pecas.map((peca: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border">
-                          <Box className="h-5 w-5 text-slate-400" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
-                          <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                            <MapPin className="h-3 w-3 text-primary" />
-                            {peca.localizacao}
+                  {loadingPecas ? (
+                    <div className="space-y-4">
+                      <Skeleton className="h-16 w-full" />
+                      <Skeleton className="h-16 w-full" />
+                    </div>
+                  ) : pecas.length > 0 ? (
+                    pecas.map((peca: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border">
+                            <Box className="h-5 w-5 text-slate-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
+                              <MapPin className="h-3 w-3 text-primary" />
+                              {peca.localizacao}
+                            </div>
                           </div>
                         </div>
+                        <div className="text-right">
+                          <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="py-10 text-center opacity-20">
+                      <Box className="h-10 w-10 mx-auto mb-2" />
+                      <p className="text-[10px] font-bold uppercase">Nenhuma peça registrada</p>
                     </div>
-                  ))}
+                  )}
                 </div>
              </CardContent>
            </Card>
@@ -891,11 +937,27 @@ function GestaoOSPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Users className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
-                <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
-              </div>
+              {loadingTerceiros ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : terceiros.length > 0 ? (
+                <div className="space-y-4">
+                  {terceiros.map((t: any, i: number) => (
+                    <div key={t.id || i} className="flex items-center justify-between p-4 rounded-xl border border-border">
+                       <p className="text-sm font-bold uppercase">{t.descricao}</p>
+                       <p className="text-sm font-black text-primary">R$ {Number(t.valor).toLocaleString('pt-BR')}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Users className="h-12 w-12 mb-4 opacity-20" />
+                  <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
+                  <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -912,18 +974,26 @@ function GestaoOSPage() {
               <div className="grid gap-6 md:grid-cols-3 mb-6">
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
-                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
+                  <p className="text-lg font-black text-foreground">
+                    R$ {custos.filter((c: any) => c.tipo === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
-                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
+                  <p className="text-lg font-black text-foreground">
+                    R$ {custos.filter((c: any) => c.tipo === 'material').reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
                   <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
-                  <p className="text-lg font-black text-primary">R$ 0,00</p>
+                  <p className="text-lg font-black text-primary">
+                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                  </p>
                 </div>
               </div>
-              <Button variant="outline" className="w-full border-dashed border-2 font-bold uppercase text-[10px] tracking-widest">Lançar Novo Custo</Button>
+              <Button variant="outline" className="w-full border-dashed border-2 font-bold uppercase text-[10px] tracking-widest">
+                {loadingCustos ? "Carregando..." : "Lançar Novo Custo"}
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
