@@ -1,15 +1,5 @@
 import { useState, useEffect } from "react";
 // Admin temp: admin.temp@alternativa.com / admin123
-// Tem como resetar o chat?
-// 
-// Passo a Passo da Integração:
-// 
-// 1. Configuração do Cliente:
-// 
-// Certifique-se de que o client do Supabase (createClient) está configurado corretamente utilizando as variáveis de ambiente (ex: https://mpwnrcxyyeqftrejwmmx.supabase.co e eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wd25yY3h5eWVxZnRyZWp3bW14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NDQ5NzIsImV4cCI6MjEwMjMyMDk3Mn0._sokfiP0yjRomA6f4hDTOgBAUgKaNkst8OPdPockh9Y).
-
-
-
 
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
