@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 
 const loginSchema = z.object({
-  email: z.string().email("Insira um e-mail válido."),
+  email: z.string().min(1, "Insira seu e-mail."),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
 });
 
@@ -66,10 +66,11 @@ function LoginPage() {
 
   async function onSubmit(values: LoginForm) {
     setIsLoading(true);
+    const sanitizedEmail = values.email.trim().toLowerCase();
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: values.email,
+        email: sanitizedEmail,
         password: values.password,
       });
 
@@ -81,24 +82,39 @@ function LoginPage() {
         });
         return;
       }
+
+      // US1 - Autenticação: Mapeamento de Sessão
+      const { data: usuario, error: profileError } = await supabase
+        .from('usuarios')
+        .select('cargo, nome')
+        .eq('user_id', data.session.user.id)
+        .single();
+
+      if (profileError) {
+        console.warn("Erro ao buscar perfil do usuário:", profileError);
+      }
+
+      toast.success("Login realizado", {
+        description: `Bem-vindo de volta, ${usuario?.nome || 'Colaborador'}.`,
+      });
+
+      await router.navigate({ to: "/dashboard", replace: true });
     } catch (error: any) {
       console.error("Login error:", error);
+      
+      // Alerta visual Industrial Premium
       toast.error("Falha no login", {
         description: error.message === "Invalid login credentials"
           ? "Usuário ou senha incorretos."
           : "Erro ao processar o login. Tente novamente.",
+        style: {
+          backgroundColor: '#0f172a',
+          color: '#ef4444',
+          border: '1px solid #FFD700',
+        }
       });
       setIsLoading(false);
-      return;
     }
-
-    setIsLoading(false);
-
-    toast.success("Login realizado", {
-      description: "Bem-vindo de volta à Alternativa Hidráulica.",
-    });
-
-    await router.navigate({ to: "/dashboard", replace: true });
   }
 
   return (
