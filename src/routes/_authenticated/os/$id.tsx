@@ -116,19 +116,18 @@ function GestaoOSPage() {
 
       // 2. Se não existir, buscar o tipo de equipamento da OS para carregar do template
       if (os?.descricao) {
-        // Tentamos extrair o tipo da descrição ou usamos um fallback
-        // Em um cenário real, haveria um campo 'tipo_equipamento' na tabela 'ordens_servico'
+        // Buscamos os templates para encontrar o correspondente ao equipamento
         const { data: templates } = await (supabase as any)
           .from('checklist_templates')
           .select('*');
         
-        // Tenta encontrar um template que bata com a descrição
+        // Em um cenário real, haveria um campo 'tipo_equipamento' na tabela 'ordens_servico'
+        // que estaria vinculado a public.tipos_equipamentos. Aqui tentamos cruzar via descrição.
         const template = templates?.find((t: any) => 
           os.descricao?.toLowerCase().includes(t.tipo_equipamento.toLowerCase())
         );
 
         if (template && template.itens) {
-          // Criar itens iniciais (não salvos ainda, apenas para exibição/preenchimento)
           return (template.itens as any[]).map((item: any, idx: number) => ({
             id: `temp-${idx}`,
             item: item.label,
