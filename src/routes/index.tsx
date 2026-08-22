@@ -126,7 +126,20 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        O arquivo index.tsx ficou muito longo. Extraia as seções do código para componentes menores e organizados dentro da pasta src/components/ e mantenha o index.tsx limpo apenas importando-os.
+        `PÁGINA: Configurações`
+
+        `FUNCIONALIDADE PRINCIPAL: Gerenciamento de Usuários`
+
+        `SEÇÃO: Adicionar Novo Usuário`
+        `COMPONENTE: Formulário`
+        `CAMPOS DO FORMULÁRIO:`
+        `1. INPUT TEXTO: "Nome Completo" (placeholder: "Digite o nome completo do usuário")`
+        `2. INPUT EMAIL: "Email" (placeholder: "exemplo@dominio.com")`
+        `3. INPUT PASSWORD: "Senha" (placeholder: "Crie uma senha segura")`
+        `4. INPUT PASSWORD: "Confirmar Senha" (placeholder: "Repita a senha")`
+        `5. SELECT: "Nível de Acesso"`
+            `OPÇÕES: "Operador", "Diretor", "Gestor" "Adm/Fin"`
+        `BOTÃO: "Adicionar Usuário" (quando clicado, valida os campos, cria o usuário na base de dados com a senha criptografada e o nível de acesso selecionado. Exibe mensagem de sucesso ou erro.)`
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
