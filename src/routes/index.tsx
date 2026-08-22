@@ -86,8 +86,8 @@ function LoginPage() {
       // US1 - Autenticação: Mapeamento de Sessão
       const { data: usuario, error: profileError } = await supabase
         .from('usuarios')
-        .select('perfil, nome')
-        .eq('id', data.session.user.id)
+        .select('cargo, nome')
+        .eq('user_id', data.session.user.id)
         .single();
 
       if (profileError) {
