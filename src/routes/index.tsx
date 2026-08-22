@@ -126,7 +126,7 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        NÃO ADICIONE TEXTOS!! FAÇA ALTERAÇÕES REAIS NO APLICATIVO
+        Aplicar redirecionamento automático por perfil RBAC (Diretor, Financeiro, Gestor, Operador) após o login.
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
