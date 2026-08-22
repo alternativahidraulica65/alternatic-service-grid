@@ -126,7 +126,9 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Performance de Listagens: Utilizar virtualização (@tanstack/react-virtual) nas tabelas de Ordens de Serviço e Clientes para suportar milhares de registros sem perda de fluidez.
+        Implementar a tela de Login conectada ao Supabase para autenticar com e-mail e senha.
+
+        Implementar a recuperação de senha para que eu possa redefinir minha senha pelo e-mail.
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
