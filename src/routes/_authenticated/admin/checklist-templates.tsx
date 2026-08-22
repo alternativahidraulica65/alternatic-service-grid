@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
-export const Route = createFileRoute("/_authenticated/admin/checklist-templates" as any)({
+export const Route = createFileRoute("/_authenticated/admin/checklist-templates")({
   component: ChecklistTemplatesPage,
 });
 

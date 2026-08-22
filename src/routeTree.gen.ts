@@ -19,6 +19,7 @@ import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedAdminAuditoriaRouteImport } from './routes/_authenticated/admin/auditoria'
+import { Route as AuthenticatedAdminChecklistTemplatesRouteImport } from './routes/_authenticated/admin/checklist-templates'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedAdminVendedoresRouteImport } from './routes/_authenticated/admin/vendedores'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
@@ -85,6 +86,12 @@ const AuthenticatedAdminAuditoriaRoute =
   AuthenticatedAdminAuditoriaRouteImport.update({
     id: '/admin/auditoria',
     path: '/admin/auditoria',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminChecklistTemplatesRoute =
+  AuthenticatedAdminChecklistTemplatesRouteImport.update({
+    id: '/admin/checklist-templates',
+    path: '/admin/checklist-templates',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminUsuariosRoute =
@@ -191,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
+  '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
   '/clientes/$id': typeof AuthenticatedClientesIdRoute
@@ -218,6 +226,7 @@ export interface FileRoutesByTo {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
+  '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
   '/clientes/$id': typeof AuthenticatedClientesIdRoute
@@ -247,6 +256,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
+  '/_authenticated/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
   '/_authenticated/clientes/$id': typeof AuthenticatedClientesIdRoute
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/relatorios'
     | '/admin/auditoria'
+    | '/admin/checklist-templates'
     | '/admin/usuarios'
     | '/admin/vendedores'
     | '/clientes/$id'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/relatorios'
     | '/admin/auditoria'
+    | '/admin/checklist-templates'
     | '/admin/usuarios'
     | '/admin/vendedores'
     | '/clientes/$id'
@@ -331,6 +343,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamento'
     | '/_authenticated/relatorios'
     | '/_authenticated/admin/auditoria'
+    | '/_authenticated/admin/checklist-templates'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/vendedores'
     | '/_authenticated/clientes/$id'
@@ -424,6 +437,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/auditoria'
       fullPath: '/admin/auditoria'
       preLoaderRoute: typeof AuthenticatedAdminAuditoriaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/checklist-templates': {
+      id: '/_authenticated/admin/checklist-templates'
+      path: '/admin/checklist-templates'
+      fullPath: '/admin/checklist-templates'
+      preLoaderRoute: typeof AuthenticatedAdminChecklistTemplatesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/usuarios': {
@@ -599,6 +619,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedAdminAuditoriaRoute: typeof AuthenticatedAdminAuditoriaRoute
+  AuthenticatedAdminChecklistTemplatesRoute: typeof AuthenticatedAdminChecklistTemplatesRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminVendedoresRoute: typeof AuthenticatedAdminVendedoresRoute
   AuthenticatedClientesIdRoute: typeof AuthenticatedClientesIdRoute
@@ -619,6 +640,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedAdminAuditoriaRoute: AuthenticatedAdminAuditoriaRoute,
+  AuthenticatedAdminChecklistTemplatesRoute:
+    AuthenticatedAdminChecklistTemplatesRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminVendedoresRoute: AuthenticatedAdminVendedoresRoute,
   AuthenticatedClientesIdRoute: AuthenticatedClientesIdRoute,
