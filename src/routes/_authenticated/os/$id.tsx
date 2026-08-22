@@ -937,11 +937,27 @@ function GestaoOSPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Users className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
-                <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
-              </div>
+              {loadingTerceiros ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : terceiros.length > 0 ? (
+                <div className="space-y-4">
+                  {terceiros.map((t: any, i: number) => (
+                    <div key={t.id || i} className="flex items-center justify-between p-4 rounded-xl border border-border">
+                       <p className="text-sm font-bold uppercase">{t.descricao}</p>
+                       <p className="text-sm font-black text-primary">R$ {Number(t.valor).toLocaleString('pt-BR')}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Users className="h-12 w-12 mb-4 opacity-20" />
+                  <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
+                  <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
