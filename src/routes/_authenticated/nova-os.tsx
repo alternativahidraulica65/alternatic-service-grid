@@ -119,20 +119,16 @@ function NovaOSPage() {
     }
   });
 
-  const { data: torneiroFila } = useSuspenseQuery({
-    queryKey: ['torneiro_fila'],
+  const { data: tiposEquipamentos } = useQuery({
+    queryKey: ['tipos_equipamentos'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ordens_servico')
-        .select('*')
-        .eq('status', 'em_andamento')
-        .ilike('descricao', '%torneiro%'); // Simplificação para o dashboard
+      const { data, error } = await supabase.from('tipos_equipamentos').select('*').order('nome');
       if (error) throw error;
       return data;
     }
   });
 
-  const { data: templates } = useSuspenseQuery({
+  const { data: templates } = useQuery({
     queryKey: ['checklist_templates'],
     queryFn: async () => {
       const { data, error } = await (supabase as any).from('checklist_templates').select('*');
