@@ -126,9 +126,7 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Implementar a tela de Login conectada ao Supabase para autenticar com e-mail e senha.
-
-        Implementar a recuperação de senha para que eu possa redefinir minha senha pelo e-mail.
+        Na tela de configurações, me deixe adicionar um novo usuário, crie um modal que os dados conectem diretamente ao supabase, vou criar o usuário e testa-lo logo em sequência. Devo poder definir o nível de acesso obviamente.
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
