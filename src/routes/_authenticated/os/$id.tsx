@@ -974,18 +974,26 @@ function GestaoOSPage() {
               <div className="grid gap-6 md:grid-cols-3 mb-6">
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
-                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
+                  <p className="text-lg font-black text-foreground">
+                    R$ {custos.filter((c: any) => c.tipo === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
-                  <p className="text-lg font-black text-foreground">R$ 0,00</p>
+                  <p className="text-lg font-black text-foreground">
+                    R$ {custos.filter((c: any) => c.tipo === 'material').reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
                   <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
-                  <p className="text-lg font-black text-primary">R$ 0,00</p>
+                  <p className="text-lg font-black text-primary">
+                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                  </p>
                 </div>
               </div>
-              <Button variant="outline" className="w-full border-dashed border-2 font-bold uppercase text-[10px] tracking-widest">Lançar Novo Custo</Button>
+              <Button variant="outline" className="w-full border-dashed border-2 font-bold uppercase text-[10px] tracking-widest">
+                {loadingCustos ? "Carregando..." : "Lançar Novo Custo"}
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
