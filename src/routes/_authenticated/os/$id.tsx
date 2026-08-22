@@ -892,25 +892,37 @@ function GestaoOSPage() {
              </CardHeader>
              <CardContent className="pt-6">
                 <div className="space-y-4">
-                  {pecas.map((peca: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border">
-                          <Box className="h-5 w-5 text-slate-400" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
-                          <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                            <MapPin className="h-3 w-3 text-primary" />
-                            {peca.localizacao}
+                  {loadingPecas ? (
+                    <div className="space-y-4">
+                      <Skeleton className="h-16 w-full" />
+                      <Skeleton className="h-16 w-full" />
+                    </div>
+                  ) : pecas.length > 0 ? (
+                    pecas.map((peca: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border">
+                            <Box className="h-5 w-5 text-slate-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
+                              <MapPin className="h-3 w-3 text-primary" />
+                              {peca.localizacao}
+                            </div>
                           </div>
                         </div>
+                        <div className="text-right">
+                          <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="py-10 text-center opacity-20">
+                      <Box className="h-10 w-10 mx-auto mb-2" />
+                      <p className="text-[10px] font-bold uppercase">Nenhuma peça registrada</p>
                     </div>
-                  ))}
+                  )}
                 </div>
              </CardContent>
            </Card>
