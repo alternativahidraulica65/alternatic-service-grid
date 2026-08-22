@@ -97,6 +97,41 @@ export type Database = {
           },
         ]
       }
+      checklist_templates: {
+        Row: {
+          criado_em: string
+          criado_por: string | null
+          id: string
+          itens: Json
+          nome: string
+          tipo_equipamento_id: string | null
+        }
+        Insert: {
+          criado_em?: string
+          criado_por?: string | null
+          id?: string
+          itens?: Json
+          nome: string
+          tipo_equipamento_id?: string | null
+        }
+        Update: {
+          criado_em?: string
+          criado_por?: string | null
+          id?: string
+          itens?: Json
+          nome?: string
+          tipo_equipamento_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_templates_tipo_equipamento_id_fkey"
+            columns: ["tipo_equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_equipamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cliente_contatos: {
         Row: {
           cargo: string | null
@@ -792,28 +827,37 @@ export type Database = {
           componente: string
           criado_em: string | null
           criado_por: string | null
+          data_verificacao: string | null
           estado: string | null
+          foto_url: string | null
           id: string
           observacao_tecnica: string | null
           os_id: string
+          responsavel_id: string | null
         }
         Insert: {
           componente: string
           criado_em?: string | null
           criado_por?: string | null
+          data_verificacao?: string | null
           estado?: string | null
+          foto_url?: string | null
           id?: string
           observacao_tecnica?: string | null
           os_id: string
+          responsavel_id?: string | null
         }
         Update: {
           componente?: string
           criado_em?: string | null
           criado_por?: string | null
+          data_verificacao?: string | null
           estado?: string | null
+          foto_url?: string | null
           id?: string
           observacao_tecnica?: string | null
           os_id?: string
+          responsavel_id?: string | null
         }
         Relationships: [
           {

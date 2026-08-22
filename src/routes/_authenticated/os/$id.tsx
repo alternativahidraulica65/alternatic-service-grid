@@ -100,9 +100,9 @@ function GestaoOSPage() {
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
     queryKey: ['os_checklist', id],
     queryFn: async () => {
-      // 1. Tentar buscar checklist já vinculado à OS
+      // 1. Tentar buscar checklist já vinculado à OS na nova estrutura
       const { data: existing, error } = await supabase
-        .from('os_checklist' as any)
+        .from('os_checklist_tecnico' as any)
         .select('*')
         .eq('os_id', id);
       
@@ -111,31 +111,38 @@ function GestaoOSPage() {
       }
 
       if (existing && existing.length > 0) {
-        return existing;
+        return existing.map((item: any) => ({
+          id: item.id,
+          item: item.componente,
+          status: item.estado || 'Pendente',
+          observacao: item.observacao_tecnica || '',
+          foto_url: item.foto_url || null,
+          data_verificacao: item.data_verificacao,
+          responsavel_id: item.responsavel_id
+        }));
       }
 
-      // 2. Se não existir, buscar o tipo de equipamento da OS para carregar do template
-      if (os?.descricao) {
-        // Buscamos os templates para encontrar o correspondente ao equipamento
-        const { data: templates } = await (supabase as any)
-          .from('checklist_templates')
-          .select('*');
-        
-        // Em um cenário real, haveria um campo 'tipo_equipamento' na tabela 'ordens_servico'
-        // que estaria vinculado a public.tipos_equipamentos. Aqui tentamos cruzar via descrição.
-        const template = templates?.find((t: any) => 
-          os.descricao?.toLowerCase().includes(t.tipo_equipamento.toLowerCase())
-        );
+      // 2. Se não existir, buscar o template baseado no tipo de equipamento da OS
+      // Nota: Em uma implementação ideal, a OS teria um campo tipo_equipamento_id direto
+      // Aqui usamos a lógica de busca por nome/descrição conforme planejado
+      const { data: templates } = await (supabase as any)
+        .from('checklist_templates')
+        .select('*, tipos_equipamentos(*)');
+      
+      const osDesc = os?.descricao?.toLowerCase() || "";
+      const template = templates?.find((t: any) => 
+        osDesc.includes(t.tipos_equipamentos?.nome?.toLowerCase()) || 
+        osDesc.includes(t.nome.toLowerCase())
+      );
 
-        if (template && template.itens) {
-          return (template.itens as any[]).map((item: any, idx: number) => ({
-            id: `temp-${idx}`,
-            item: item.label,
-            status: 'Pendente',
-            observacao: '',
-            foto_url: null
-          }));
-        }
+      if (template && template.itens) {
+        return (template.itens as any[]).map((item: any, idx: number) => ({
+          id: `temp-${idx}`,
+          item: item.label,
+          status: 'Pendente',
+          observacao: '',
+          foto_url: null
+        }));
       }
 
       return [];
@@ -147,26 +154,36 @@ function GestaoOSPage() {
 
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
       // Se for um item temporário, precisamos primeiro garantir que ele exista no banco
       if (itemId.startsWith('temp-')) {
         const item: any = checklistData.find((i: any) => i.id === itemId);
         if (!item) return;
         
         const { error } = await supabase
-          .from('os_checklist' as any)
+          .from('os_checklist_tecnico' as any)
           .insert({
             os_id: id,
-            item: item.item,
-            status: updates.status || item.status,
-            observacao: updates.observacao || item.observacao,
-            foto_url: updates.foto_url || item.foto_url
+            componente: item.item,
+            estado: updates.status || item.status,
+            observacao_tecnica: updates.observacao || item.observacao,
+            foto_url: updates.foto_url || item.foto_url,
+            responsavel_id: user?.id,
+            data_verificacao: new Date().toISOString()
           });
         
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from('os_checklist' as any)
-          .update(updates)
+          .from('os_checklist_tecnico' as any)
+          .update({
+            estado: updates.status,
+            observacao_tecnica: updates.observacao,
+            foto_url: updates.foto_url,
+            responsavel_id: user?.id,
+            data_verificacao: new Date().toISOString()
+          })
           .eq('id', itemId);
         if (error) throw error;
       }
@@ -602,8 +619,9 @@ function GestaoOSPage() {
                      <tr className="bg-slate-50 border-b border-border">
                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Item</th>
                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
-                       <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 w-1/3">Observação</th>
-                       <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Foto</th>
+                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 w-1/4">Observação</th>
+                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Data/Resp.</th>
+                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Foto</th>
                      </tr>
                    </thead>
                    <tbody className="divide-y divide-border">
@@ -647,30 +665,42 @@ function GestaoOSPage() {
                                onBlur={(e) => handleUpdateChecklistItem(item.id, { observacao: e.target.value })}
                              />
                            </td>
-                           <td className="px-4 py-4">
-                             <div className="flex items-center justify-center gap-2">
-                               <div className="relative group">
-                                 {item.foto_url && (
-                                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                                     <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
-                                   </div>
-                                 )}
-                                 <Button 
-                                   variant={item.foto_url ? "default" : "outline"} 
-                                   size="sm" 
-                                   className={`h-9 gap-2 px-3 border-slate-200 ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
-                                   onClick={() => handleChecklistPhoto(item.id)}
-                                 >
-                                   <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
-                                   <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
-                                 </Button>
-                               </div>
-                               {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
-                                 <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
-                               )}
-                             </div>
-                           </td>
-                         </tr>
+                            <td className="px-4 py-4 text-center">
+                              {item.data_verificacao && (
+                                <div className="space-y-0.5">
+                                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">
+                                    {new Date(item.data_verificacao).toLocaleDateString()}
+                                  </p>
+                                  <Badge variant="outline" className="text-[7px] font-black uppercase py-0 h-3 border-slate-100 text-slate-400">
+                                    Técnico
+                                  </Badge>
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="flex items-center justify-center gap-2">
+                                <div className="relative group">
+                                  {item.foto_url && (
+                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
+                                      <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
+                                    </div>
+                                  )}
+                                  <Button 
+                                    variant={item.foto_url ? "default" : "outline"} 
+                                    size="sm" 
+                                    className={`h-9 gap-2 px-3 border-slate-200 ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
+                                    onClick={() => handleChecklistPhoto(item.id)}
+                                  >
+                                    <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
+                                    <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
+                                  </Button>
+                                </div>
+                                {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
+                                  <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
                        ))
                      )}
                    </tbody>
