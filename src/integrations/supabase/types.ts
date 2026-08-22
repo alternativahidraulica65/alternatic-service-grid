@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      alertas: {
+        Row: {
+          ativo: boolean
+          canais_notificacao: string[]
+          condicao_disparo: Json
+          criado_por: string | null
+          data_criacao: string
+          destinatarios: string[]
+          id: string
+          mensagem: string
+          tempo_expiracao: string | null
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          ativo?: boolean
+          canais_notificacao: string[]
+          condicao_disparo: Json
+          criado_por?: string | null
+          data_criacao?: string
+          destinatarios: string[]
+          id?: string
+          mensagem: string
+          tempo_expiracao?: string | null
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          ativo?: boolean
+          canais_notificacao?: string[]
+          condicao_disparo?: Json
+          criado_por?: string | null
+          data_criacao?: string
+          destinatarios?: string[]
+          id?: string
+          mensagem?: string
+          tempo_expiracao?: string | null
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
       auditoria_financeira: {
         Row: {
           acao: string
@@ -448,6 +490,53 @@ export type Database = {
           },
         ]
       }
+      logs_sistema: {
+        Row: {
+          acao: string
+          criado_em: string
+          dados_anteriores: Json | null
+          dados_novos: Json | null
+          entidade: string
+          id: string
+          os_numero: string | null
+          registro_id: string | null
+          usuario_id: string | null
+          usuario_nome: string | null
+        }
+        Insert: {
+          acao: string
+          criado_em?: string
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          entidade: string
+          id?: string
+          os_numero?: string | null
+          registro_id?: string | null
+          usuario_id?: string | null
+          usuario_nome?: string | null
+        }
+        Update: {
+          acao?: string
+          criado_em?: string
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          entidade?: string
+          id?: string
+          os_numero?: string | null
+          registro_id?: string | null
+          usuario_id?: string | null
+          usuario_nome?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_sistema_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       materiais: {
         Row: {
           criado_em: string | null
@@ -471,6 +560,97 @@ export type Database = {
           preco_base_kg?: number
         }
         Relationships: []
+      }
+      notificacoes: {
+        Row: {
+          alerta_id: string | null
+          canal_utilizado: string
+          data_envio: string
+          id: string
+          mensagem_enviada: string
+          metadados: Json | null
+          status_envio: string
+          titulo_enviado: string | null
+          usuario_id: string
+        }
+        Insert: {
+          alerta_id?: string | null
+          canal_utilizado: string
+          data_envio?: string
+          id?: string
+          mensagem_enviada: string
+          metadados?: Json | null
+          status_envio?: string
+          titulo_enviado?: string | null
+          usuario_id: string
+        }
+        Update: {
+          alerta_id?: string | null
+          canal_utilizado?: string
+          data_envio?: string
+          id?: string
+          mensagem_enviada?: string
+          metadados?: Json | null
+          status_envio?: string
+          titulo_enviado?: string | null
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_alerta_id_fkey"
+            columns: ["alerta_id"]
+            isOneToOne: false
+            referencedRelation: "alertas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orcamento_revisoes: {
+        Row: {
+          criado_em: string
+          criado_por: string | null
+          fotos_selecionadas: string[]
+          id: string
+          numero_orcamento: string | null
+          numero_revisao: number
+          orcamento_id: string
+          parametros: Json | null
+          pdf_storage_path: string
+          valor_total: number
+        }
+        Insert: {
+          criado_em?: string
+          criado_por?: string | null
+          fotos_selecionadas?: string[]
+          id?: string
+          numero_orcamento?: string | null
+          numero_revisao?: number
+          orcamento_id: string
+          parametros?: Json | null
+          pdf_storage_path: string
+          valor_total?: number
+        }
+        Update: {
+          criado_em?: string
+          criado_por?: string | null
+          fotos_selecionadas?: string[]
+          id?: string
+          numero_orcamento?: string | null
+          numero_revisao?: number
+          orcamento_id?: string
+          parametros?: Json | null
+          pdf_storage_path?: string
+          valor_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamento_revisoes_orcamento_id_fkey"
+            columns: ["orcamento_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orcamentos: {
         Row: {
@@ -647,6 +827,8 @@ export type Database = {
       }
       os_fotos_anexos: {
         Row: {
+          bucket: string | null
+          categoria: string | null
           criado_em: string | null
           criado_por: string | null
           foto_url: string
@@ -654,9 +836,12 @@ export type Database = {
           legenda: string | null
           os_id: string
           peca_id: string | null
+          storage_path: string | null
           tipo: string | null
         }
         Insert: {
+          bucket?: string | null
+          categoria?: string | null
           criado_em?: string | null
           criado_por?: string | null
           foto_url: string
@@ -664,9 +849,12 @@ export type Database = {
           legenda?: string | null
           os_id: string
           peca_id?: string | null
+          storage_path?: string | null
           tipo?: string | null
         }
         Update: {
+          bucket?: string | null
+          categoria?: string | null
           criado_em?: string | null
           criado_por?: string | null
           foto_url?: string
@@ -674,6 +862,7 @@ export type Database = {
           legenda?: string | null
           os_id?: string
           peca_id?: string | null
+          storage_path?: string | null
           tipo?: string | null
         }
         Relationships: [
@@ -968,10 +1157,97 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      fotos_anexos: {
+        Row: {
+          bucket: string | null
+          categoria: string | null
+          criado_em: string | null
+          criado_por: string | null
+          foto_url: string | null
+          id: string | null
+          legenda: string | null
+          os_id: string | null
+          peca_id: string | null
+          storage_path: string | null
+          tipo: string | null
+        }
+        Insert: {
+          bucket?: string | null
+          categoria?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url?: string | null
+          id?: string | null
+          legenda?: string | null
+          os_id?: string | null
+          peca_id?: string | null
+          storage_path?: string | null
+          tipo?: string | null
+        }
+        Update: {
+          bucket?: string | null
+          categoria?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url?: string | null
+          id?: string | null
+          legenda?: string | null
+          os_id?: string | null
+          peca_id?: string | null
+          storage_path?: string | null
+          tipo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_fotos_anexos_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_fotos_anexos_peca_id_fkey"
+            columns: ["peca_id"]
+            isOneToOne: false
+            referencedRelation: "os_guarda_pecas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      dev_get_storage_stats: {
+        Args: never
+        Returns: {
+          nome_bucket: string
+          quantidade_arquivos: number
+          total_bytes: number
+        }[]
+      }
+      get_distribuicao_status_os: {
+        Args: never
+        Returns: {
+          color: string
+          name: string
+          value: number
+        }[]
+      }
       get_email_by_username: { Args: { p_username: string }; Returns: string }
+      get_faturamento_mensal: {
+        Args: never
+        Returns: {
+          mes: string
+          valor: number
+        }[]
+      }
+      get_produtividade_tecnicos: {
+        Args: never
+        Returns: {
+          media: number
+          os: number
+          tecnico: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
