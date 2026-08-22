@@ -99,7 +99,7 @@ function DashboardFinanceiro() {
         .reduce((acc, curr) => acc + Number(curr.valor), 0);
       
       const inadimplencia = (lancamentos || [])
-        .filter(l => l.tipo === 'entrada' && l.status === 'atrasado')
+        .filter((l: any) => l.tipo === 'entrada' && l.status === 'atrasado')
         .reduce((acc, curr) => acc + Number(curr.valor), 0);
 
       const recebimentos = (lancamentos || [])
