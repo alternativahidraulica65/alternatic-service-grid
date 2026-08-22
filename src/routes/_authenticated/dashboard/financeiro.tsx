@@ -233,10 +233,38 @@ function DashboardFinanceiro() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
-        <FinanceKPICard title="Orçamentos" value="24" subtext="vs mês anterior" icon={FileText} trend="up" trendValue="+15%" />
-        <FinanceKPICard title="Aprovações" value="18" subtext="SLA de 75%" icon={CheckCircle2} trend="up" trendValue="+5%" />
-        <FinanceKPICard title="Faturamento" value="R$ 840k" subtext="Meta mensal" icon={TrendingUp} trend="down" trendValue="-2%" />
-        <FinanceKPICard title="Inadimplência" value="R$ 12k" subtext="Risco monitorado" icon={AlertTriangle} trend="up" trendValue="+0.5%" />
+        <FinanceKPICard 
+          title="Orçamentos" 
+          value={loadingStats ? "..." : String(dashboardData?.orcamentosCount || 0)} 
+          subtext="Total cadastrado" 
+          icon={FileText} 
+          trend="up" 
+          trendValue="+0%" 
+        />
+        <FinanceKPICard 
+          title="Aprovações" 
+          value={loadingStats ? "..." : String(dashboardData?.aprovasCount || 0)} 
+          subtext="OS aprovadas" 
+          icon={CheckCircle2} 
+          trend="up" 
+          trendValue="+0%" 
+        />
+        <FinanceKPICard 
+          title="Faturamento" 
+          value={loadingStats ? "..." : `R$ ${(dashboardData?.faturamento || 0).toLocaleString('pt-BR')}`} 
+          subtext="Meta mensal" 
+          icon={TrendingUp} 
+          trend="up" 
+          trendValue="+0%" 
+        />
+        <FinanceKPICard 
+          title="Inadimplência" 
+          value={loadingStats ? "..." : `R$ ${(dashboardData?.inadimplencia || 0).toLocaleString('pt-BR')}`} 
+          subtext="Risco monitorado" 
+          icon={AlertTriangle} 
+          trend="down" 
+          trendValue="-0%" 
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 print:hidden">
@@ -245,41 +273,49 @@ function DashboardFinanceiro() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base font-bold">Fluxo de Recebimentos</CardTitle>
-                <CardDescription>Principais entradas previstas para esta semana.</CardDescription>
+                <CardDescription>Principais entradas previstas para este mês.</CardDescription>
               </div>
               <Button variant="ghost" size="sm" className="text-primary text-xs font-bold uppercase tracking-wider">Ver Todos</Button>
             </div>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-4">
-              {[
-                { cliente: "Indústria Metalúrgica SA", valor: "R$ 45.000,00", data: "18/08", status: "Confirmado" },
-                { cliente: "Agrícola Vale Verde", valor: "R$ 22.400,00", data: "20/08", status: "Pendente" },
-                { cliente: "Transportes Rodoviários", valor: "R$ 15.800,00", data: "21/08", status: "Confirmado" },
-                { cliente: "Mineradora Serra Azul", valor: "R$ 68.900,00", data: "22/08", status: "Atrasado" },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Receipt className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-foreground">{item.cliente}</p>
-                      <p className="text-xs text-muted-foreground font-medium">Data prevista: {item.data}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-black text-foreground">{item.valor}</p>
-                    <Badge variant="secondary" className={`text-[10px] uppercase font-bold ${
-                      item.status === 'Confirmado' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                      item.status === 'Atrasado' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 
-                      'bg-primary/10 text-primary border-primary/20'
-                    }`}>
-                      {item.status}
-                    </Badge>
-                  </div>
+              {loadingStats ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
                 </div>
-              ))}
+              ) : dashboardData?.recebimentos && dashboardData.recebimentos.length > 0 ? (
+                dashboardData.recebimentos.map((item: any, i: number) => (
+                  <div key={item.id || i} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Receipt className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-foreground">{item.descricao || "Lançamento sem descrição"}</p>
+                        <p className="text-xs text-muted-foreground font-medium">Data: {new Date(item.data_competencia).toLocaleDateString('pt-BR')}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-black text-foreground">R$ {Number(item.valor).toLocaleString('pt-BR')}</p>
+                      <Badge variant="secondary" className={`text-[10px] uppercase font-bold ${
+                        (item as any).status === 'confirmado' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
+                        (item as any).status === 'atrasado' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 
+                        'bg-primary/10 text-primary border-primary/20'
+                      }`}>
+                        {(item as any).status || 'pendente'}
+                      </Badge>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-10 text-center opacity-20">
+                  <Receipt className="h-10 w-10 mx-auto mb-2" />
+                  <p className="text-[10px] font-bold uppercase">Nenhum recebimento previsto</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
