@@ -126,7 +126,7 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Me responda qual a tabela que esta conectada para apresentar os dados na tela clientes?
+        Eu entrei diretamente no supabase, e não encontrei a única empresa que temos cadastrada que é "PRIO". Confirme para mim se os dados do supabase é da org: alternativahidraulica65's Org?
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
