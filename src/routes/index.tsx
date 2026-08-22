@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 // Admin temp: admin.temp@alternativa.com / admin123
+// Verify that the login page authenticates with Supabase and redirects to the correct start screen after login.
+// 
+// Add clear loading and error states to the login form, including inline validation for empty email or password.
+
 
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
