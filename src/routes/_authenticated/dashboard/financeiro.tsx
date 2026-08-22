@@ -81,6 +81,42 @@ function DashboardFinanceiro() {
   const filterStartDate = new Date(parseInt(selectedYear), parseInt(selectedMonth), 1);
   const filterEndDate = endOfMonth(filterStartDate);
 
+  const { data: dashboardData, isLoading: loadingStats } = useQuery({
+    queryKey: ['finance-dashboard-stats', filterStartDate.toISOString()],
+    queryFn: async () => {
+      const [
+        { count: orcamentos },
+        { data: lancamentos },
+        { count: aprovas }
+      ] = await Promise.all([
+        supabase.from('orcamentos' as any).select('*', { count: 'exact', head: true }),
+        supabase.from('lancamentos_financeiros').select('*').gte('data_competencia', filterStartDate.toISOString().split('T')[0]).lte('data_competencia', filterEndDate.toISOString().split('T')[0]),
+        supabase.from('ordens_servico').select('*', { count: 'exact', head: true }).eq('status', 'aprovada')
+      ]);
+
+      const faturamento = (lancamentos || [])
+        .filter(l => l.tipo === 'entrada')
+        .reduce((acc, curr) => acc + Number(curr.valor), 0);
+      
+      const inadimplencia = (lancamentos || [])
+        .filter(l => l.tipo === 'entrada' && l.status === 'atrasado')
+        .reduce((acc, curr) => acc + Number(curr.valor), 0);
+
+      const recebimentos = (lancamentos || [])
+        .filter(l => l.tipo === 'entrada')
+        .sort((a, b) => new Date(a.data_competencia).getTime() - new Date(b.data_competencia).getTime())
+        .slice(0, 5);
+
+      return {
+        orcamentosCount: orcamentos || 0,
+        faturamento,
+        inadimplencia,
+        aprovasCount: aprovas || 0,
+        recebimentos
+      };
+    }
+  });
+
   const { data: supplierData, isLoading } = useQuery({
     queryKey: ['supplier-costs', filterStartDate.toISOString()],
     queryFn: async () => {
