@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, 
   Camera, 
@@ -8,6 +8,7 @@ import {
   Box, 
   Settings, 
   Wrench, 
+
   ClipboardCheck, 
   UserCheck,
   Save,
@@ -119,7 +120,16 @@ function NovaOSPage() {
     }
   });
 
-  const { data: torneiroFila } = useSuspenseQuery({
+  const { data: tiposEquipamentos } = useQuery({
+    queryKey: ['tipos_equipamentos'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('tipos_equipamentos').select('*').order('nome');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: torneiroFila } = useQuery({
     queryKey: ['torneiro_fila'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -132,7 +142,7 @@ function NovaOSPage() {
     }
   });
 
-  const { data: templates } = useSuspenseQuery({
+  const { data: templates } = useQuery({
     queryKey: ['checklist_templates'],
     queryFn: async () => {
       const { data, error } = await (supabase as any).from('checklist_templates').select('*');
@@ -293,9 +303,9 @@ function NovaOSPage() {
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {templates?.map((t: any) => (
-                      <SelectItem key={t.id} value={t.tipo_equipamento}>
-                        {t.tipo_equipamento}
+                    {tiposEquipamentos?.map((t: any) => (
+                      <SelectItem key={t.id} value={t.nome}>
+                        {t.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
