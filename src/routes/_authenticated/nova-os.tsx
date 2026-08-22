@@ -129,6 +129,19 @@ function NovaOSPage() {
     }
   });
 
+  const { data: torneiroFila } = useQuery({
+    queryKey: ['torneiro_fila'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ordens_servico')
+        .select('*')
+        .eq('status', 'em_andamento')
+        .ilike('descricao', '%torneiro%'); // Simplificação para o dashboard
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const { data: templates } = useQuery({
     queryKey: ['checklist_templates'],
     queryFn: async () => {
