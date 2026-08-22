@@ -303,9 +303,9 @@ function NovaOSPage() {
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {templates?.map((t: any) => (
-                      <SelectItem key={t.id} value={t.tipo_equipamento}>
-                        {t.tipo_equipamento}
+                    {tiposEquipamentos?.map((t: any) => (
+                      <SelectItem key={t.id} value={t.nome}>
+                        {t.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
