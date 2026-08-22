@@ -677,29 +677,30 @@ function GestaoOSPage() {
                                 </div>
                               )}
                             </td>
-                             <div className="flex items-center justify-center gap-2">
-                               <div className="relative group">
-                                 {item.foto_url && (
-                                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                                     <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
-                                   </div>
-                                 )}
-                                 <Button 
-                                   variant={item.foto_url ? "default" : "outline"} 
-                                   size="sm" 
-                                   className={`h-9 gap-2 px-3 border-slate-200 ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
-                                   onClick={() => handleChecklistPhoto(item.id)}
-                                 >
-                                   <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
-                                   <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
-                                 </Button>
-                               </div>
-                               {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
-                                 <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
-                               )}
-                             </div>
-                           </td>
-                         </tr>
+                            <td className="px-4 py-4">
+                              <div className="flex items-center justify-center gap-2">
+                                <div className="relative group">
+                                  {item.foto_url && (
+                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
+                                      <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
+                                    </div>
+                                  )}
+                                  <Button 
+                                    variant={item.foto_url ? "default" : "outline"} 
+                                    size="sm" 
+                                    className={`h-9 gap-2 px-3 border-slate-200 ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
+                                    onClick={() => handleChecklistPhoto(item.id)}
+                                  >
+                                    <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
+                                    <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
+                                  </Button>
+                                </div>
+                                {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
+                                  <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
                        ))
                      )}
                    </tbody>
