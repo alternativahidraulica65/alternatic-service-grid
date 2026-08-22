@@ -126,7 +126,7 @@ function LoginPage() {
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hidden">
-        Eu entrei diretamente no supabase, e não encontrei a única empresa que temos cadastrada que é "PRIO". Confirme para mim se os dados do supabase é da org: alternativahidraulica65's Org?
+        Performance de Listagens: Utilizar virtualização (@tanstack/react-virtual) nas tabelas de Ordens de Serviço e Clientes para suportar milhares de registros sem perda de fluidez.
       </div>
       {/* Background industrial com overlay robusto */}
       <div 
