@@ -147,14 +147,11 @@ function ClientesPage() {
     }
   });
 
-  const filteredClientes = (clientes || []).filter((c: any) => {
-    const search = searchTerm.toLowerCase();
-    return (
-      (c.nome?.toLowerCase() || "").includes(search) ||
-      (c.cnpj || "").includes(searchTerm) ||
-      (c.endereco?.toLowerCase() || "").includes(search)
-    );
-  });
+  const filteredClientes = clientes.filter((c: any) => 
+    c.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.cnpj?.includes(searchTerm) ||
+    c.endereco?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const stats = {
     total: clientes.length,
@@ -193,7 +190,7 @@ function ClientesPage() {
     <div className="space-y-8 p-6 md:p-10 pb-20">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: '/dashboard' })} className="text-muted-foreground hover:text-primary">
+          <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -374,18 +371,14 @@ function ClientesPage() {
             </TableHeader>
             <TableBody>
               {filteredClientes.map((cliente: any) => (
-                <TableRow 
-                  key={cliente.id} 
-                  className="group border-b border-border/50 hover:bg-slate-50 transition-colors cursor-pointer"
-                  onClick={() => router.navigate({ to: "/clientes/$id", params: { id: cliente.id } })}
-                >
+                <TableRow key={cliente.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border group-hover:border-primary/50 transition-colors">
                         <Building2 className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">{cliente.nome}</p>
+                        <p className="text-sm font-bold text-foreground uppercase tracking-tight">{cliente.nome}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <Badge variant="secondary" className="text-[8px] font-bold h-4">Contrato Ativo</Badge>
                         </div>

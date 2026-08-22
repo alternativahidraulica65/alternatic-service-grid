@@ -17,9 +17,7 @@ import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated/nova-os'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
-import { Route as AuthenticatedAdminAlertasRouteImport } from './routes/_authenticated/admin/alertas'
 import { Route as AuthenticatedAdminAuditoriaRouteImport } from './routes/_authenticated/admin/auditoria'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedAdminVendedoresRouteImport } from './routes/_authenticated/admin/vendedores'
@@ -30,11 +28,9 @@ import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_
 import { Route as AuthenticatedDashboardGestorRouteImport } from './routes/_authenticated/dashboard/gestor'
 import { Route as AuthenticatedDashboardOperadorRouteImport } from './routes/_authenticated/dashboard/operador'
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
-import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes/index'
 import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 import { Route as AuthenticatedOrdensServicoNovaRouteImport } from './routes/_authenticated/ordens-servico/nova'
-import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated/os/index'
 import { Route as AuthenticatedOsIdRouteImport } from './routes/_authenticated/os/$id'
 import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
 import { Route as AuthenticatedFinanceiroFornecedoresIndexRouteImport } from './routes/_authenticated/financeiro/fornecedores/index'
@@ -80,22 +76,11 @@ const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
   path: '/orcamento',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   id: '/relatorios',
   path: '/relatorios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAdminAlertasRoute =
-  AuthenticatedAdminAlertasRouteImport.update({
-    id: '/admin/alertas',
-    path: '/admin/alertas',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAdminAuditoriaRoute =
   AuthenticatedAdminAuditoriaRouteImport.update({
     id: '/admin/auditoria',
@@ -155,12 +140,6 @@ const AuthenticatedEngenhariaMateriaisRoute =
     path: '/engenharia/materiais',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedNotificacoesIndexRoute =
-  AuthenticatedNotificacoesIndexRouteImport.update({
-    id: '/notificacoes/',
-    path: '/notificacoes/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedOrcamentoPdfRoute =
   AuthenticatedOrcamentoPdfRouteImport.update({
     id: '/pdf',
@@ -179,11 +158,6 @@ const AuthenticatedOrdensServicoNovaRoute =
     path: '/ordens-servico/nova',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedOsIndexRoute = AuthenticatedOsIndexRouteImport.update({
-  id: '/os/',
-  path: '/os/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedOsIdRoute = AuthenticatedOsIdRouteImport.update({
   id: '/os/$id',
   path: '/os/$id',
@@ -215,9 +189,7 @@ export interface FileRoutesByFullPath {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
-  '/profile': typeof AuthenticatedProfileRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
-  '/admin/alertas': typeof AuthenticatedAdminAlertasRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -233,8 +205,6 @@ export interface FileRoutesByFullPath {
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
-  '/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
-  '/os/': typeof AuthenticatedOsIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
@@ -246,9 +216,7 @@ export interface FileRoutesByTo {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
-  '/profile': typeof AuthenticatedProfileRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
-  '/admin/alertas': typeof AuthenticatedAdminAlertasRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -264,8 +232,6 @@ export interface FileRoutesByTo {
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
-  '/notificacoes': typeof AuthenticatedNotificacoesIndexRoute
-  '/os': typeof AuthenticatedOsIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/financeiro/fornecedores': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
@@ -279,9 +245,7 @@ export interface FileRoutesById {
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/nova-os': typeof AuthenticatedNovaOsRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
-  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
-  '/_authenticated/admin/alertas': typeof AuthenticatedAdminAlertasRoute
   '/_authenticated/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -297,8 +261,6 @@ export interface FileRoutesById {
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
-  '/_authenticated/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
-  '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
   '/_authenticated/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/_authenticated/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
@@ -312,9 +274,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/nova-os'
     | '/orcamento'
-    | '/profile'
     | '/relatorios'
-    | '/admin/alertas'
     | '/admin/auditoria'
     | '/admin/usuarios'
     | '/admin/vendedores'
@@ -330,8 +290,6 @@ export interface FileRouteTypes {
     | '/os/$id'
     | '/os/nova'
     | '/clientes/'
-    | '/notificacoes/'
-    | '/os/'
     | '/os/$id/orcamento'
     | '/financeiro/fornecedores/'
   fileRoutesByTo: FileRoutesByTo
@@ -343,9 +301,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/nova-os'
     | '/orcamento'
-    | '/profile'
     | '/relatorios'
-    | '/admin/alertas'
     | '/admin/auditoria'
     | '/admin/usuarios'
     | '/admin/vendedores'
@@ -361,8 +317,6 @@ export interface FileRouteTypes {
     | '/os/$id'
     | '/os/nova'
     | '/clientes'
-    | '/notificacoes'
-    | '/os'
     | '/os/$id/orcamento'
     | '/financeiro/fornecedores'
   id:
@@ -375,9 +329,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kanban'
     | '/_authenticated/nova-os'
     | '/_authenticated/orcamento'
-    | '/_authenticated/profile'
     | '/_authenticated/relatorios'
-    | '/_authenticated/admin/alertas'
     | '/_authenticated/admin/auditoria'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/vendedores'
@@ -393,8 +345,6 @@ export interface FileRouteTypes {
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
     | '/_authenticated/clientes/'
-    | '/_authenticated/notificacoes/'
-    | '/_authenticated/os/'
     | '/_authenticated/os/$id/orcamento'
     | '/_authenticated/financeiro/fornecedores/'
   fileRoutesById: FileRoutesById
@@ -462,25 +412,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrcamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/relatorios': {
       id: '/_authenticated/relatorios'
       path: '/relatorios'
       fullPath: '/relatorios'
       preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/alertas': {
-      id: '/_authenticated/admin/alertas'
-      path: '/admin/alertas'
-      fullPath: '/admin/alertas'
-      preLoaderRoute: typeof AuthenticatedAdminAlertasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/auditoria': {
@@ -553,13 +489,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEngenhariaMateriaisRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/notificacoes/': {
-      id: '/_authenticated/notificacoes/'
-      path: '/notificacoes'
-      fullPath: '/notificacoes/'
-      preLoaderRoute: typeof AuthenticatedNotificacoesIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/orcamento/pdf': {
       id: '/_authenticated/orcamento/pdf'
       path: '/pdf'
@@ -579,13 +508,6 @@ declare module '@tanstack/react-router' {
       path: '/ordens-servico/nova'
       fullPath: '/ordens-servico/nova'
       preLoaderRoute: typeof AuthenticatedOrdensServicoNovaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/os/': {
-      id: '/_authenticated/os/'
-      path: '/os'
-      fullPath: '/os/'
-      preLoaderRoute: typeof AuthenticatedOsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/os/$id': {
@@ -675,9 +597,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedNovaOsRoute: typeof AuthenticatedNovaOsRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
-  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
-  AuthenticatedAdminAlertasRoute: typeof AuthenticatedAdminAlertasRoute
   AuthenticatedAdminAuditoriaRoute: typeof AuthenticatedAdminAuditoriaRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminVendedoresRoute: typeof AuthenticatedAdminVendedoresRoute
@@ -687,8 +607,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRouteWithChildren
   AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
-  AuthenticatedNotificacoesIndexRoute: typeof AuthenticatedNotificacoesIndexRoute
-  AuthenticatedOsIndexRoute: typeof AuthenticatedOsIndexRoute
   AuthenticatedFinanceiroFornecedoresIndexRoute: typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
 
@@ -699,9 +617,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedNovaOsRoute: AuthenticatedNovaOsRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
-  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
-  AuthenticatedAdminAlertasRoute: AuthenticatedAdminAlertasRoute,
   AuthenticatedAdminAuditoriaRoute: AuthenticatedAdminAuditoriaRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminVendedoresRoute: AuthenticatedAdminVendedoresRoute,
@@ -711,8 +627,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOsIdRoute: AuthenticatedOsIdRouteWithChildren,
   AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
-  AuthenticatedNotificacoesIndexRoute: AuthenticatedNotificacoesIndexRoute,
-  AuthenticatedOsIndexRoute: AuthenticatedOsIndexRoute,
   AuthenticatedFinanceiroFornecedoresIndexRoute:
     AuthenticatedFinanceiroFornecedoresIndexRoute,
 }

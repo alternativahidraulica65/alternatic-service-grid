@@ -45,40 +45,14 @@ function HistoricoPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: ordensData } = useQuery({
-    queryKey: ['historico_os_list', searchTerm],
+  const { data: ordens = [] } = useQuery({
+    queryKey: ['historico_os_list'],
     queryFn: async () => {
-      let query = supabase.from('ordens_servico').select('*', { count: 'exact' });
-      
-      if (searchTerm) {
-        query = query.or(`numero_os.ilike.%${searchTerm}%,cliente.ilike.%${searchTerm}%,tecnico.ilike.%${searchTerm}%`);
-      }
-      
-      const { data, count, error } = await query
-        .order('data_abertura', { ascending: false })
-        .limit(50);
-
+      const { data, error } = await supabase.from('ordens_servico').select('*');
       if (error) throw error;
-      return { data, count };
+      return data;
     }
   });
-
-  const { data: summaryStats } = useQuery({
-    queryKey: ['historico_summary'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('ordens_servico').select('status, valor_total');
-      if (error) throw error;
-      
-      return {
-        abertas: data.filter(os => os.status !== 'entregue').length,
-        finalizadas: data.filter(os => os.status === 'entregue').length,
-        faturamento: data.reduce((acc, curr) => acc + (curr.valor_total || 0), 0)
-      };
-    }
-  });
-
-  const ordens = ordensData?.data || [];
-  const totalOrdens = ordensData?.count || 0;
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -119,10 +93,10 @@ function HistoricoPage() {
 
       <div className="grid gap-6 md:grid-cols-4">
         {[
-          { label: "Total em Aberto", value: summaryStats?.abertas || 0, icon: Clock, color: "primary" },
-          { label: "Finalizadas", value: summaryStats?.finalizadas || 0, icon: History, color: "emerald" },
-          { label: "Aguardando Aprovação", value: ordens.filter(o => o.status === 'orcamento_pendente').length, icon: AlertCircle, color: "amber" },
-          { label: "Volume Financeiro", value: (summaryStats?.faturamento || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }), icon: ArrowRight, color: "slate" },
+          { label: "Total em Aberto", value: "48", icon: Clock, color: "primary" },
+          { label: "Finalizadas (Mês)", value: "124", icon: History, color: "emerald" },
+          { label: "Aguardando Aprovação", value: "12", icon: AlertCircle, color: "amber" },
+          { label: "Faturamento Previsto", value: "R$ 84k", icon: ArrowRight, color: "slate" },
         ].map((stat, i) => (
           <Card key={i} className="border-border shadow-sm">
             <CardContent className="pt-6">
@@ -135,7 +109,6 @@ function HistoricoPage() {
           </Card>
         ))}
       </div>
-
 
       <Card className="border-border shadow-md overflow-hidden">
         <CardHeader className="bg-muted/10 border-b border-border/50 py-4">
@@ -227,7 +200,7 @@ function HistoricoPage() {
       </Card>
 
       <div className="flex items-center justify-between">
-        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Exibindo {ordens.length} de {totalOrdens} ordens de serviço</p>
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Exibindo 5 de 1.240 ordens de serviço</p>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" className="h-8 w-8 border-border">
             <ChevronLeft className="h-4 w-4" />

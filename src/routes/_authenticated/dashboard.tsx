@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet, useRouter, Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
 import { 
   LogOut, 
   Droplets, 
@@ -22,10 +21,7 @@ import {
   Package,
   Receipt,
   Truck,
-  History as HistoryIcon,
-  UserCircle,
-  Pin,
-  PinOff
+  History as HistoryIcon
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -41,7 +37,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardLayout,
@@ -54,23 +49,6 @@ function DashboardLayout() {
   
   const [activeView, setActiveView] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isPinned, setIsPinned] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('sidebar_pinned');
-      // Default to true (pinned) if not set
-      return saved !== null ? JSON.parse(saved) : true;
-    }
-    return true;
-  });
-  const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('sidebar_pinned', JSON.stringify(isPinned));
-    }
-  }, [isPinned]);
-
-  const isExpanded = isPinned || isHovered;
   
   useEffect(() => {
     if (isDiretor && !activeView) {
@@ -103,21 +81,17 @@ function DashboardLayout() {
 
   const menuItems = [
     { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
-    { label: "Notificações", icon: Bell, to: "/notificacoes", roles: ["diretor", "administrativo_financeiro", "gestor", "operador", "terceirizado"] },
     { label: "Clientes", icon: Users, to: "/clientes", roles: ["diretor", "administrativo_financeiro", "gestor"] },
-    { label: "Ordens de Serviço", icon: ClipboardList, to: "/os", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
-    { label: "Kanban", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
     { label: "Nova OS / Triagem", icon: Wrench, to: "/os/nova", roles: ["diretor", "gestor", "operador"] },
-
+    { label: "Histórico Global", icon: Search, to: "/historico", roles: ["diretor", "administrativo_financeiro", "gestor"] },
+    { label: "Kanban", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
     { label: "Materiais", icon: Factory, to: "/engenharia/materiais", roles: ["diretor", "gestor"] },
     { label: "Fornecedores", icon: Truck, to: "/financeiro/fornecedores", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Vendedores", icon: Users, to: "/admin/vendedores", roles: ["diretor", "gestor"] },
     { label: "Usuários", icon: Users, to: "/admin/usuarios", roles: ["diretor"] },
     { label: "Relatórios", icon: FileText, to: "/relatorios", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor"] },
-    { label: "Alertas (Admin)", icon: ShieldCheck, to: "/admin/alertas", roles: ["diretor"] },
     { label: "Auditoria", icon: HistoryIcon, to: "/admin/auditoria", roles: ["diretor"] },
-    { label: "Meu Perfil", icon: UserCircle, to: "/dashboard/profile", roles: ["diretor", "administrativo_financeiro", "gestor", "operador", "terceirizado"] },
   ];
 
   const filteredMenu = menuItems.filter(item => 
@@ -160,41 +134,15 @@ function DashboardLayout() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       {/* Sidebar Desktop */}
-      <aside 
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={cn(
-          "hidden md:flex flex-col bg-slate-900 text-white border-r border-white/5 shadow-2xl transition-all duration-300 ease-in-out z-40",
-          isPinned ? "sticky top-0 h-screen w-64" : (isHovered ? "fixed top-0 left-0 w-64 h-full" : "sticky top-0 h-screen w-20")
-        )}
-      >
-        <div className={cn(
-          "p-6 border-b border-white/5 flex items-center justify-between transition-all duration-300",
-          !isExpanded && "px-4"
-        )}>
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="h-10 w-10 shrink-0 rounded-xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(255,215,0,0.2)]">
-              <Droplets className="h-6 w-6 text-primary-foreground" />
-            </div>
-            {isExpanded && (
-              <div className="animate-in fade-in slide-in-from-left-2 duration-300">
-                <h1 className="font-display text-xs font-black uppercase tracking-widest text-white leading-none">Alternativa</h1>
-                <p className="text-[10px] font-bold text-primary uppercase tracking-tighter">Hidráulica</p>
-              </div>
-            )}
+      <aside className="hidden md:flex w-64 flex-col bg-slate-900 text-white sticky top-0 h-screen border-r border-white/5 shadow-2xl">
+        <div className="p-6 border-b border-white/5 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(255,215,0,0.2)]">
+            <Droplets className="h-6 w-6 text-primary-foreground" />
           </div>
-          
-          {isHovered && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsPinned(!isPinned)}
-              className="h-6 w-6 text-slate-400 hover:text-white hover:bg-white/10 shrink-0"
-              title={isPinned ? "Desafixar menu" : "Fixar menu"}
-            >
-              {isPinned ? <PinOff className="h-3 w-3" /> : <Pin className="h-3 w-3" />}
-            </Button>
-          )}
+          <div>
+            <h1 className="font-display text-xs font-black uppercase tracking-widest text-white leading-none">Alternativa</h1>
+            <p className="text-[10px] font-bold text-primary uppercase tracking-tighter">Hidráulica</p>
+          </div>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
@@ -204,58 +152,38 @@ function DashboardLayout() {
               to={item.to as any}
               activeProps={{ className: "bg-primary text-primary-foreground shadow-lg shadow-primary/10" }}
               inactiveProps={{ className: "text-slate-400 hover:text-white hover:bg-white/5" }}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all overflow-hidden",
-                !isExpanded && "justify-center px-0"
-              )}
-              title={!isExpanded ? item.label : ""}
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all"
             >
-              <item.icon className="h-4 w-4 shrink-0" />
-              {isExpanded && (
-                <span className="truncate animate-in fade-in slide-in-from-left-2 duration-300">
-                  {item.label}
-                </span>
-              )}
+              <item.icon className="h-4 w-4" />
+              {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className={cn(
-          "p-4 border-t border-white/5 bg-slate-950/30 transition-all duration-300",
-          !isExpanded && "p-2"
-        )}>
-          <div className={cn(
-            "flex items-center gap-3 mb-4",
-            isExpanded ? "px-2" : "justify-center px-0"
-          )}>
-            <div className="h-8 w-8 shrink-0 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10 uppercase">
+        <div className="p-4 border-t border-white/5 bg-slate-950/30">
+          <div className="flex items-center gap-3 px-2 mb-4">
+            <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10 uppercase">
               {profile?.nome?.substring(0, 2) || "AD"}
             </div>
-            {isExpanded && (
-              <div className="min-w-0 animate-in fade-in slide-in-from-left-2 duration-300">
-                <p className="text-[10px] font-bold truncate text-white uppercase">{profile?.nome || "Admin"}</p>
-                <p className="text-[9px] text-slate-500 truncate uppercase font-medium">{activeView || "Usuário"}</p>
-              </div>
-            )}
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold truncate text-white uppercase">{profile?.nome || "Admin"}</p>
+              <p className="text-[9px] text-slate-500 truncate uppercase font-medium">{activeView || "Usuário"}</p>
+            </div>
           </div>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={handleSignOut}
-            className={cn(
-              "w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 overflow-hidden",
-              !isExpanded && "justify-center p-0"
-            )}
-            title={!isExpanded ? "Sair" : ""}
+            className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10 text-[10px] font-bold uppercase tracking-widest"
           >
-            <LogOut className="mr-3 h-4 w-4 shrink-0" />
-            {isExpanded && <span className="animate-in fade-in slide-in-from-left-2 duration-300">Sair do Sistema</span>}
+            <LogOut className="mr-3 h-4 w-4" />
+            Sair do Sistema
           </Button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className={cn("flex-1 flex flex-col min-w-0", !isPinned && "md:ml-20")}>
+      <div className="flex-1 flex flex-col">
         {/* Top Header */}
         <header className="h-16 bg-white border-b border-border sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 shadow-sm">
           <div className="flex items-center gap-4">
@@ -308,7 +236,10 @@ function DashboardLayout() {
 
           <div className="flex items-center gap-4">
             <ViewSwitcher />
-            <NotificationBell />
+            <Button variant="ghost" size="icon" className="relative text-slate-400 hover:text-primary transition-colors">
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+            </Button>
             <div className="h-8 w-1px bg-border hidden sm:block" />
             <div className="hidden sm:flex items-center gap-3 ml-2">
               <div className="text-right">

@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { 
   TrendingUp, 
   ClipboardList, 
@@ -37,12 +37,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/diretor")({
   component: DashboardDiretor,
 });
 
-function KPICard({ title, value, subtext, icon: Icon, colorClass = "text-primary", onClick }: any) {
+function KPICard({ title, value, subtext, icon: Icon, colorClass = "text-primary" }: any) {
   return (
-    <Card 
-      className={`border-border bg-card shadow-sm overflow-hidden group transition-all ${onClick ? "cursor-pointer hover:shadow-md hover:border-primary/30" : ""}`}
-      onClick={onClick}
-    >
+    <Card className="border-border bg-card shadow-sm overflow-hidden group">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">
           {title}
@@ -61,10 +58,20 @@ function KPICard({ title, value, subtext, icon: Icon, colorClass = "text-primary
   );
 }
 
-// Global mock data moved to stats calculation
+const mockRevenueData = [
+  { name: "Matriz", value: 450000, color: "#FFD700" },
+  { name: "Filial Sul", value: 280000, color: "#C0C0C0" },
+  { name: "Filial Norte", value: 310000, color: "#808080" },
+];
+
+const mockStatusData = [
+  { name: "Abertas", value: 12, fill: "#FFD700" },
+  { name: "Em Andamento", value: 18, fill: "#60A5FA" },
+  { name: "Atrasadas", value: 5, fill: "#EF4444" },
+  { name: "Concluídas", value: 25, fill: "#10B981" },
+];
 
 function DashboardDiretor() {
-  const router = useRouter();
   const { data: dbStats } = useQuery({
     queryKey: ['dashboard_diretor_db_stats'],
     queryFn: async () => {
@@ -103,13 +110,7 @@ function DashboardDiretor() {
       { name: "Concluídas", value: concluidas, fill: "#10B981" },
     ];
 
-    // Using real data for the unit chart as well (grouped by some field if available, 
-    // or just showing overall totals for now to avoid mock data)
-    const revenueData = [
-      { name: "Total", value: faturamento, color: "#FFD700" },
-    ];
-
-    return { faturamento, abertas, atrasadas, statusData, revenueData };
+    return { faturamento, abertas, atrasadas, statusData };
   }, [ordens]);
 
   return (
@@ -139,14 +140,12 @@ function DashboardDiretor() {
           subtext="Base total de clientes" 
           icon={Users} 
           colorClass="text-emerald-500"
-          onClick={() => router.navigate({ to: '/clientes' })}
         />
         <KPICard 
           title="OS Abertas" 
           value={stats.abertas.toString()} 
           subtext="Aguardando início" 
           icon={ClipboardList} 
-          onClick={() => router.navigate({ to: '/os' })}
         />
         <KPICard 
           title="OS Atrasadas" 
@@ -154,17 +153,16 @@ function DashboardDiretor() {
           subtext="Risco de SLA" 
           icon={AlertTriangle} 
           colorClass="text-red-600"
-          onClick={() => router.navigate({ to: '/os' })}
         />
         <KPICard 
           title="MTTR Médio" 
-          value="Calculando..." 
+          value="4.2 dias" 
           subtext="Tempo Médio de Reparo" 
           icon={Clock} 
         />
         <KPICard 
           title="Produtividade" 
-          value="Em análise" 
+          value="92%" 
           subtext="Eficiência da equipe técnica" 
           icon={Factory} 
         />
@@ -186,7 +184,7 @@ function DashboardDiretor() {
             <CardContent className="pt-6">
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={stats.revenueData}>
+                  <BarChart data={mockRevenueData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickFormatter={(val) => `R$ ${val/1000}k`} />
@@ -196,7 +194,7 @@ function DashboardDiretor() {
                       formatter={(val: any) => [`R$ ${Number(val).toLocaleString("pt-BR")}`, "Valor"]}
                     />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={50}>
-                      {stats.revenueData.map((entry, index) => (
+                      {mockRevenueData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Bar>

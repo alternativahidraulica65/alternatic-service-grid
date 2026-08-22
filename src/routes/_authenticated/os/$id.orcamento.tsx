@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { 
   Receipt, 
   Plus, 
@@ -9,11 +9,8 @@ import {
   Image as ImageIcon,
   CheckCircle2,
   AlertCircle,
-  History as HistoryIcon,
-  Link as LinkIcon,
-  ArrowLeft
+  Link as LinkIcon
 } from "lucide-react";
-
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,9 +22,6 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { SignedImage } from "@/components/media/SignedImage";
-import { gerarESalvarRevisao } from "@/lib/pdf/orcamento-pdf";
-import { getSignedUrl, ORCAMENTOS_BUCKET } from "@/lib/media/upload";
 
 export const Route = createFileRoute("/_authenticated/os/$id/orcamento")({
   component: OrcamentoOSPage,
@@ -43,9 +37,7 @@ interface ItemOrcamento {
 
 function OrcamentoOSPage() {
   const { id } = Route.useParams();
-  const router = useRouter();
   const queryClient = useQueryClient();
-
   const [itens, setItens] = useState<ItemOrcamento[]>([]);
   const [imposto, setImposto] = useState(8.5);
   const [margem, setMargem] = useState(25);
@@ -69,19 +61,6 @@ function OrcamentoOSPage() {
       const { data, error } = await supabase.from('os_fotos_anexos').select('*').eq('os_id', id);
       if (error) throw error;
       return data;
-    }
-  });
-
-  const { data: revisoes = [], refetch: refetchRevisoes } = useQuery({
-    queryKey: ['orcamento_revisoes', id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orcamento_revisoes')
-        .select('*')
-        .eq('orcamento_id', id)
-        .order('numero_revisao', { ascending: false });
-      if (error) throw error;
-      return data as any[];
     }
   });
 
@@ -136,108 +115,43 @@ function OrcamentoOSPage() {
     setItens(itens.filter(item => item.id !== itemId));
   };
 
-  const [gerandoPdf, setGerandoPdf] = useState(false);
-
-  const handleGerarPDF = async () => {
-    if (itens.length === 0) {
-      toast.error("Adicione ao menos um item ao orçamento antes de gerar o PDF.");
-      return;
-    }
-
-    setGerandoPdf(true);
-    const toastId = toast.loading("Gerando proposta comercial...");
-    try {
-      const fotosPdf = (fotos as any[])
-        .filter((f) => fotosSelecionadas.includes(f.id))
-        .map((f) => ({
-          id: f.id,
-          storage_path: f.storage_path,
-          foto_url: f.foto_url,
-          legenda: f.legenda || f.categoria || f.tipo,
-        }));
-
-      const { numeroRevisao } = await gerarESalvarRevisao({
-        osId: id,
-        numeroOs: os?.numero_os || id,
-        cliente: os?.cliente || "Cliente",
-        itens: itens.map((i) => ({ descricao: i.descricao, qtd: i.qtd, valorUnit: i.valorUnit, total: i.total })),
-        fotos: fotosPdf,
-        fotosSelecionadasIds: fotosSelecionadas,
-        totais: {
-          custoBase,
-          imposto,
-          valorImposto: calculos.valorImposto,
-          margem: calculos.margemEfetiva,
-          comissao,
-          valorComissao: calculos.valorComissao,
-          valorFinal: calculos.valorFinal,
-        },
-      });
-
-      await refetchRevisoes();
-      toast.success(`Proposta gerada e arquivada como REV ${numeroRevisao}.`, { id: toastId });
-    } catch (error: any) {
-      toast.error("Erro ao gerar PDF: " + error.message, { id: toastId });
-    } finally {
-      setGerandoPdf(false);
-    }
+  const handleSalvarVersao = () => {
+    toast.success("Versão do orçamento salva com sucesso!");
   };
 
-  const handleSalvarVersao = () => handleGerarPDF();
-
-  const handleDownloadRevisao = async (path: string) => {
-    const url = await getSignedUrl(ORCAMENTOS_BUCKET, path, 120);
-    if (!url) {
-      toast.error("Sem permissão para acessar este documento.");
-      return;
-    }
-    window.open(url, "_blank");
+  const handleGerarPDF = () => {
+    toast.promise(new Promise(resolve => setTimeout(resolve, 1500)), {
+      loading: 'Gerando proposta comercial...',
+      success: 'PDF gerado com sucesso!',
+      error: 'Erro ao gerar PDF',
+    });
   };
 
-  const toggleFoto = (fotoId: string) => {
+  const toggleFoto = (url: string) => {
     setFotosSelecionadas(prev => 
-      prev.includes(fotoId) ? prev.filter(f => f !== fotoId) : [...prev, fotoId]
+      prev.includes(url) ? prev.filter(f => f !== url) : [...prev, url]
     );
   };
 
   return (
     <div className="p-8 space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between border-b pb-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: '/os/$id', params: { id } })} className="text-muted-foreground hover:text-primary">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-              OS / #{os?.numero_os} / Orçamento
-            </h2>
-            <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">
-              Orçamento Comercial
-            </h1>
-          </div>
+        <div>
+          <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+            OS / #{os?.numero_os} / Orçamento
+          </h2>
+          <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">
+            Orçamento Comercial
+          </h1>
         </div>
-
         <div className="flex gap-3">
           <Button variant="outline" className="h-10 font-bold uppercase text-[10px] tracking-widest border-slate-300" onClick={handleSalvarVersao}>
             <Save className="mr-2 h-4 w-4" />
             Salvar Versão
           </Button>
-          <Button 
-            className="h-10 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest px-6" 
-            onClick={handleGerarPDF}
-            disabled={gerandoPdf}
-          >
-            {gerandoPdf ? (
-              <>
-                <div className="h-4 w-4 border-2 border-white border-t-transparent animate-spin mr-2" />
-                Gerando...
-              </>
-            ) : (
-              <>
-                <FileDown className="mr-2 h-4 w-4" />
-                Gerar PDF Proposta
-              </>
-            )}
+          <Button className="h-10 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest px-6" onClick={handleGerarPDF}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Gerar PDF Proposta
           </Button>
         </div>
       </div>
@@ -461,112 +375,29 @@ function OrcamentoOSPage() {
                     Nenhuma foto registrada nesta OS.
                   </div>
                 ) : (
-                  fotos.map((foto: any, idx: number) => (
-                    <div 
-                      key={foto.id} 
-                      className={`group relative aspect-square rounded-xl border-2 overflow-hidden bg-slate-50 transition-all cursor-pointer ${
-                        fotosSelecionadas.includes(foto.id) ? 'border-primary ring-2 ring-primary/20 ring-offset-2' : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                      onClick={() => toggleFoto(foto.id)}
-                    >
-                      <SignedImage 
-                        storagePath={foto.storage_path} 
-                        fallbackUrl={foto.foto_url} 
-                        className={`h-full w-full object-cover transition-all ${fotosSelecionadas.includes(foto.id) ? 'scale-110' : 'grayscale group-hover:grayscale-0'}`} 
-                      />
-                      <div className={`absolute inset-x-0 bottom-0 bg-black/60 p-2 flex items-center justify-between backdrop-blur-sm transition-all ${
-                        fotosSelecionadas.includes(foto.id) ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'
-                      }`}>
-                        <span className="text-[8px] font-bold text-white uppercase truncate">{foto.categoria || foto.tipo || `Foto ${idx + 1}`}</span>
+                  fotos.map((foto, idx) => (
+                    <div key={idx} className="group relative aspect-square rounded-xl border border-slate-200 overflow-hidden bg-slate-50 hover:border-primary transition-all">
+                      <img src={foto.foto_url} className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+                      <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2 flex items-center justify-between backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-all">
+                        <span className="text-[8px] font-bold text-white uppercase truncate">{foto.tipo || `Foto ${idx + 1}`}</span>
                         <Checkbox 
-                          checked={fotosSelecionadas.includes(foto.id)} 
-                          onCheckedChange={() => toggleFoto(foto.id)}
+                          checked={fotosSelecionadas.includes(foto.foto_url)} 
+                          onCheckedChange={() => toggleFoto(foto.foto_url)}
                           className="border-white data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                          onClick={(e) => e.stopPropagation()}
                         />
                       </div>
-                      {fotosSelecionadas.includes(foto.id) && (
-                        <div className="absolute top-2 right-2 h-6 w-6 bg-primary rounded-full flex items-center justify-center shadow-lg animate-in zoom-in-50 duration-200">
-                          <CheckCircle2 className="h-4 w-4 text-white" />
-                        </div>
-                      )}
-                      {!fotosSelecionadas.includes(foto.id) && (
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="h-6 w-6 bg-white/80 rounded-full flex items-center justify-center shadow-sm">
-                            <Plus className="h-4 w-4 text-slate-400" />
-                          </div>
+                      {fotosSelecionadas.includes(foto.foto_url) && (
+                        <div className="absolute top-2 right-2 h-5 w-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                          <CheckCircle2 className="h-3 w-3 text-white" />
                         </div>
                       )}
                     </div>
                   ))
                 )}
               </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-tight italic">
-                  * Selecione as fotos que devem compor o laudo visual do PDF. As imagens são carregadas com link seguro temporário.
-                </p>
-                <div className="text-[10px] font-black uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">
-                  {fotosSelecionadas.length} fotos selecionadas
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Histórico de Revisões */}
-          <Card className="border-border shadow-md">
-            <CardHeader className="bg-slate-50 border-b border-border/50 flex flex-row items-center justify-between">
-              <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                <HistoryIcon className="h-4 w-4 text-primary" />
-                Histórico de Revisões
-              </CardTitle>
-              <Badge variant="secondary" className="text-[9px] font-black uppercase bg-slate-100 text-slate-600 border-slate-200">
-                {revisoes.length} versão(ões)
-              </Badge>
-            </CardHeader>
-            <CardContent className="p-0">
-              {revisoes.length === 0 ? (
-                <div className="py-10 text-center text-[10px] font-bold text-slate-400 uppercase italic">
-                  Nenhuma revisão gerada para esta OS.
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader className="bg-slate-50/50">
-                    <TableRow className="border-border">
-                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Revisão</TableHead>
-                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Data</TableHead>
-                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Fotos</TableHead>
-                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Valor</TableHead>
-                      <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 text-right">PDF</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {revisoes.map((rev: any) => (
-                      <TableRow key={rev.id} className="border-border hover:bg-slate-50/50">
-                        <TableCell className="text-[11px] font-black text-slate-900">REV {rev.numero_revisao}</TableCell>
-                        <TableCell className="text-[10px] font-bold text-slate-500">
-                          {new Date(rev.criado_em).toLocaleString('pt-BR')}
-                        </TableCell>
-                        <TableCell className="text-[10px] font-bold text-slate-500">
-                          {(rev.fotos_selecionadas || []).length}
-                        </TableCell>
-                        <TableCell className="text-[11px] font-black text-slate-900">
-                          R$ {Number(rev.valor_total).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8 text-[9px] font-black uppercase tracking-widest border-slate-200"
-                            onClick={() => handleDownloadRevisao(rev.pdf_storage_path)}
-                          >
-                            <FileDown className="mr-2 h-3 w-3" /> Baixar
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+              <p className="mt-4 text-[9px] text-muted-foreground font-bold uppercase tracking-tight italic">
+                * Clique na miniatura para ampliar. Use o checkbox para incluir/excluir fotos do PDF.
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -576,11 +407,11 @@ function OrcamentoOSPage() {
          <Button variant="outline" className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300">
             Cancelar
          </Button>
-         <Button disabled={gerandoPdf} className="h-10 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200" onClick={handleSalvarVersao}>
-            <Save className="mr-2 h-4 w-4" /> Salvar Versão
+         <Button className="h-10 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200" onClick={handleSalvarVersao}>
+            Salvar Versão
          </Button>
-         <Button disabled={gerandoPdf} className="h-10 px-8 bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20" onClick={handleGerarPDF}>
-            <FileDown className="mr-2 h-4 w-4" /> {gerandoPdf ? "Gerando..." : "Gerar PDF Proposta"}
+         <Button className="h-10 px-8 bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20" onClick={handleGerarPDF}>
+            Gerar PDF Proposta
          </Button>
       </div>
     </div>

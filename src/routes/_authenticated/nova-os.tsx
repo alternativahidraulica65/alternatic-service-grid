@@ -21,7 +21,6 @@ import {
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
-import { uploadOsPhoto, formatBytes } from "@/lib/media/upload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -109,7 +108,6 @@ function NovaOSPage() {
   const [pecas, setPecas] = useState<Peca[]>([]);
   const [checklist, setChecklist] = useState<{label: string, checked: boolean}[]>([]);
   const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<Record<number, number>>({});
 
   // Queries
   const { data: companies } = useSuspenseQuery({
@@ -202,29 +200,21 @@ function NovaOSPage() {
 
       if (osError) throw osError;
 
-      // 2. Upload comprimido das fotos (Cláusula Pétrea #01) e registro das peças
-      let pIndex = 0;
+      // 2. Upload de fotos e salvar peças
       for (const peca of pecas) {
-        let fotoUrl: string | null = null;
+        let fotoUrl = null;
         if (peca.file) {
-          try {
-            const currentPIndex = pIndex;
-            const result = await uploadOsPhoto({
-              osId: os.id,
-              categoria: "triagem",
-              file: peca.file,
-              legenda: peca.nome,
-              onProgress: (progress) => {
-                setUploadProgress(prev => ({ ...prev, [currentPIndex]: progress }));
-              }
-            });
-            fotoUrl = result.signedUrl;
-            toast.success(`Foto comprimida: ${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)}`);
-          } catch (uploadError: any) {
-            toast.error(`Falha no upload da foto de ${peca.nome}: ${uploadError.message}`);
+          const fileExt = peca.file.name.split('.').pop();
+          const fileName = `${os.id}/${Math.random()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage
+            .from('os-assets')
+            .upload(fileName, peca.file);
+          
+          if (!uploadError) {
+            const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
+            fotoUrl = urlData.publicUrl;
           }
         }
-        pIndex++;
 
         await supabase.from('pecas_os').insert({
           os_id: os.id,
@@ -420,15 +410,6 @@ function NovaOSPage() {
                             </div>
                           )}
                         </div>
-                        {uploadProgress[index] !== undefined && uploadProgress[index] < 100 && (
-                          <div className="mt-2 space-y-1">
-                            <div className="flex justify-between text-[8px] font-black uppercase text-slate-500">
-                              <span>Enviando...</span>
-                              <span>{uploadProgress[index]}%</span>
-                            </div>
-                            <Progress value={uploadProgress[index]} className="h-1 bg-slate-100" />
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}

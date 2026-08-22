@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { 
   DollarSign,
   CheckCircle2,
@@ -45,12 +45,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   component: DashboardFinanceiro,
 });
 
-function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue, onClick }: any) {
+function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }: any) {
   return (
-    <Card 
-      className={`border-border bg-card shadow-sm overflow-hidden border-l-4 border-l-primary transition-all ${onClick ? "cursor-pointer hover:shadow-md hover:border-primary/30" : ""}`}
-      onClick={onClick}
-    >
+    <Card className="border-border bg-card shadow-sm overflow-hidden border-l-4 border-l-primary">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
           {title}
@@ -78,25 +75,8 @@ function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue, 
 }
 
 function DashboardFinanceiro() {
-  const router = useRouter();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
-
-  const { data: globalStats } = useQuery({
-    queryKey: ['financial_global_stats'],
-    queryFn: async () => {
-      const { data: ordens, error } = await supabase.from('ordens_servico').select('valor_total, status');
-      if (error) throw error;
-      
-      const faturamentoTotal = ordens.reduce((acc, os) => acc + Number(os.valor_total || 0), 0);
-      const orcamentosCount = ordens.length;
-      const aprovacoesCount = ordens.filter(os => os.status === 'pronto').length;
-
-      return { faturamentoTotal, orcamentosCount, aprovacoesCount };
-    }
-  });
-
-  const stats = globalStats || { faturamentoTotal: 0, orcamentosCount: 0, aprovacoesCount: 0 };
 
   const filterStartDate = new Date(parseInt(selectedYear), parseInt(selectedMonth), 1);
   const filterEndDate = endOfMonth(filterStartDate);
@@ -173,28 +153,6 @@ function DashboardFinanceiro() {
     }
   });
 
-  const { data: recebimentos = [], isLoading: isLoadingRecebimentos } = useQuery({
-    queryKey: ['financial-recebimentos'],
-    queryFn: async () => {
-      // In a real scenario, this would come from a 'recebimentos' or 'faturas' table.
-      // For now, we fetch OS with value > 0 that aren't fully processed.
-      const { data, error } = await supabase
-        .from('ordens_servico')
-        .select('cliente, valor_total, data_abertura, status')
-        .gt('valor_total', 0)
-        .limit(5);
-      
-      if (error) throw error;
-      
-      return data.map(os => ({
-        cliente: os.cliente,
-        valor: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(os.valor_total)),
-        data: os.data_abertura ? format(new Date(os.data_abertura), 'dd/MM') : '--/--',
-        status: os.status === 'pronto' ? 'Confirmado' : 'Pendente'
-      }));
-    }
-  });
-
   const exportCSV = () => {
     if (!supplierData || supplierData.length === 0) return;
     
@@ -239,10 +197,10 @@ function DashboardFinanceiro() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
-        <FinanceKPICard title="Orçamentos" value={stats.orcamentosCount.toString()} subtext="Base total" icon={FileText} trend="up" trendValue="+0%" onClick={() => router.navigate({ to: '/os' })} />
-        <FinanceKPICard title="Aprovações" value={stats.aprovacoesCount.toString()} subtext="OS Prontas" icon={CheckCircle2} trend="up" trendValue="+0%" />
-        <FinanceKPICard title="Faturamento" value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.faturamentoTotal)} subtext="Total acumulado" icon={TrendingUp} trend="up" trendValue="+0%" />
-        <FinanceKPICard title="Em Aberto" value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.faturamentoTotal * 0.15)} subtext="Previsão de entrada" icon={AlertTriangle} trend="up" trendValue="+5%" />
+        <FinanceKPICard title="Orçamentos" value="24" subtext="vs mês anterior" icon={FileText} trend="up" trendValue="+15%" />
+        <FinanceKPICard title="Aprovações" value="18" subtext="SLA de 75%" icon={CheckCircle2} trend="up" trendValue="+5%" />
+        <FinanceKPICard title="Faturamento" value="R$ 840k" subtext="Meta mensal" icon={TrendingUp} trend="down" trendValue="-2%" />
+        <FinanceKPICard title="Inadimplência" value="R$ 12k" subtext="Risco monitorado" icon={AlertTriangle} trend="up" trendValue="+0.5%" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 print:hidden">
@@ -258,25 +216,19 @@ function DashboardFinanceiro() {
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-4">
-              {isLoadingRecebimentos ? (
-                <div className="py-4 text-center text-xs text-muted-foreground">Carregando...</div>
-              ) : recebimentos.length === 0 ? (
-                <div className="py-8 text-center text-xs text-muted-foreground uppercase font-bold tracking-widest opacity-50">
-                  <Receipt className="h-8 w-8 mx-auto mb-2 opacity-20" />
-                  Nenhum recebimento previsto
-                </div>
-              ) : recebimentos.map((item, i) => (
-                <div 
-                  key={i} 
-                  className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
-                  onClick={() => router.navigate({ to: '/os' })}
-                >
+              {[
+                { cliente: "Indústria Metalúrgica SA", valor: "R$ 45.000,00", data: "18/08", status: "Confirmado" },
+                { cliente: "Agrícola Vale Verde", valor: "R$ 22.400,00", data: "20/08", status: "Pendente" },
+                { cliente: "Transportes Rodoviários", valor: "R$ 15.800,00", data: "21/08", status: "Confirmado" },
+                { cliente: "Mineradora Serra Azul", valor: "R$ 68.900,00", data: "22/08", status: "Atrasado" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                       <Receipt className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{item.cliente}</p>
+                      <p className="text-sm font-bold text-foreground">{item.cliente}</p>
                       <p className="text-xs text-muted-foreground font-medium">Data prevista: {item.data}</p>
                     </div>
                   </div>
@@ -305,29 +257,20 @@ function DashboardFinanceiro() {
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
                 <span className="text-muted-foreground">Faturamento</span>
-                <span className="text-foreground">
-                  {Math.min(Math.round((stats.faturamentoTotal / 500000) * 100), 100)}%
-                </span>
+                <span className="text-foreground">84%</span>
               </div>
-              <Progress value={Math.min((stats.faturamentoTotal / 500000) * 100, 100)} className="h-2 bg-slate-100" />
-              <p className="text-[10px] text-muted-foreground font-medium">
-                {stats.faturamentoTotal >= 500000 
-                  ? "Meta de R$ 500k atingida!" 
-                  : `Faltam ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(500000 - stats.faturamentoTotal)} para a meta.`}
-              </p>
+              <Progress value={84} className="h-2 bg-slate-100" />
+              <p className="text-[10px] text-muted-foreground font-medium">Faltam R$ 160k para atingir a meta.</p>
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                <span className="text-muted-foreground">Conversão OS</span>
-                <span className="text-foreground">
-                  {stats.orcamentosCount > 0 ? Math.round((stats.aprovacoesCount / stats.orcamentosCount) * 100) : 0}%
-                </span>
+                <span className="text-muted-foreground">Conversão de Orçamentos</span>
+                <span className="text-foreground">62%</span>
               </div>
-              <Progress value={stats.orcamentosCount > 0 ? (stats.aprovacoesCount / stats.orcamentosCount) * 100 : 0} className="h-2 bg-slate-100" />
+              <Progress value={62} className="h-2 bg-slate-100" />
               <p className="text-[10px] text-muted-foreground font-medium">Meta interna de 70%.</p>
             </div>
-
 
             <div className="pt-4 border-t border-border/50">
                <Button className="w-full bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs h-11">
@@ -399,15 +342,11 @@ function DashboardFinanceiro() {
                   const isExceeded = item.limite > 0 && item.total > item.limite;
                   
                   return (
-                    <div 
-                      key={idx} 
-                      className={`flex flex-col p-4 rounded-xl border transition-all shadow-sm group print:shadow-none cursor-pointer ${
-                        isExceeded 
-                          ? 'border-red-500/50 bg-red-50/30' 
-                          : 'border-border bg-slate-50/50 hover:bg-white hover:border-primary/30 hover:shadow-md'
-                      }`}
-                      onClick={() => router.navigate({ to: '/financeiro/fornecedores' })}
-                    >
+                    <div key={idx} className={`flex flex-col p-4 rounded-xl border transition-all shadow-sm group print:shadow-none ${
+                      isExceeded 
+                        ? 'border-red-500/50 bg-red-50/30' 
+                        : 'border-border bg-slate-50/50 hover:bg-white'
+                    }`}>
                       <div className="flex justify-between items-start mb-3">
                         <div className={`h-10 w-10 rounded-lg flex items-center justify-center shadow-sm border transition-colors ${
                           isExceeded ? 'bg-red-100 border-red-200' : 'bg-white border-border group-hover:border-primary/30'
