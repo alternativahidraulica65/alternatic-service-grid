@@ -278,8 +278,8 @@ function GestaoOSPage() {
         .eq('id', id);
 
       if (!error) {
-        // Registrar log usando a função RPC que criamos
-        await supabase.rpc('log_evento', {
+        // Registrar log usando a função RPC que criamos (usando cast para evitar erro de tipo)
+        await (supabase.rpc as any)('log_evento', {
           p_os_id: id,
           p_acao: 'CHECKLIST_FINALIZADO',
           p_descricao: 'Checklist técnico finalizado e OS enviada para vistoria'
