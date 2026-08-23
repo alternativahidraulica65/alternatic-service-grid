@@ -123,7 +123,7 @@ function NovaOSPage() {
   const { data: tiposEquipamento } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
+      const { data, error } = await (supabase as any).from('tipos_equipamento').select('*').order('nome');
       if (error) throw error;
       return data;
     }
