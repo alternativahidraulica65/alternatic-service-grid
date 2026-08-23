@@ -751,6 +751,7 @@ export type Database = {
           prioridade: string | null
           status: string
           tecnico_id: string | null
+          tipo_equipamento_id: string | null
           updated_at: string | null
           valor_total: number | null
         }
@@ -773,6 +774,7 @@ export type Database = {
           prioridade?: string | null
           status?: string
           tecnico_id?: string | null
+          tipo_equipamento_id?: string | null
           updated_at?: string | null
           valor_total?: number | null
         }
@@ -795,6 +797,7 @@ export type Database = {
           prioridade?: string | null
           status?: string
           tecnico_id?: string | null
+          tipo_equipamento_id?: string | null
           updated_at?: string | null
           valor_total?: number | null
         }
@@ -818,6 +821,13 @@ export type Database = {
             columns: ["tecnico_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_servico_tipo_equipamento_id_fkey"
+            columns: ["tipo_equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_equipamento"
             referencedColumns: ["id"]
           },
         ]
