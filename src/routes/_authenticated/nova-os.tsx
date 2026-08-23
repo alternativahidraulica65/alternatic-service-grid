@@ -212,8 +212,13 @@ function NovaOSPage() {
         descricao: `Triagem de ${selectedTipo?.nome || "Equipamento"}`,
         empresa_id: companies?.[0]?.id || null,
         tipo_equipamento_id: tipoEquipamento,
-        tecnico_id: profile?.id || null
+        tecnico_id: profile?.user_id || null // Correção: Usando user_id para FK com auth.users se a tabela usuários for assim, ou o id da tabela usuários se a FK for nela.
       };
+
+      // Se o log de erro diz "logs_sistema_usuario_id_fkey", pode ser que a trigger log_evento 
+      // ou outra trigger esteja tentando inserir o perfil.id em vez do auth.uid().
+      // Vamos garantir que técnico_id seja o auth.uid()
+      insertData.tecnico_id = (await supabase.auth.getUser()).data.user?.id;
 
       const { data: os, error: osError } = await supabase
         .from('ordens_servico')
@@ -228,11 +233,12 @@ function NovaOSPage() {
 
       // 2. Salvar Checklist Inicial
       if (checklist.length > 0) {
+        const currentUserId = (await supabase.auth.getUser()).data.user?.id;
         const checklistInserts = checklist.map(item => ({
           os_id: os.id,
           componente: item.label,
           estado: item.checked ? 'Conforme' : 'Pendente',
-          responsavel_id: profile?.id || null,
+          responsavel_id: currentUserId,
           data_verificacao: new Date().toISOString()
         }));
 
@@ -259,12 +265,13 @@ function NovaOSPage() {
           }
         }
 
+        const currentUserId = (await supabase.auth.getUser()).data.user?.id;
         await supabase.from('pecas_os').insert({
           os_id: os.id,
           nome: peca.nome,
           localizacao: peca.localizacao,
           foto_url: fotoUrl,
-          criado_por: profile?.id || null
+          criado_por: currentUserId
         });
       }
 
