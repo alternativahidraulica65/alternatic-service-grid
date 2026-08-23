@@ -1,23 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { 
-  ArrowLeft, 
-  Settings, 
-  Box, 
-  Wrench, 
-  ClipboardCheck, 
-  UserCheck, 
-  Factory,
-  Camera,
-  Plus,
-  Trash2,
-  Save,
-  Search,
-  User,
-  AlertCircle,
-  Loader2
-} from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
