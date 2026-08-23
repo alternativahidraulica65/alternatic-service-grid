@@ -203,13 +203,13 @@ function NovaOSPage() {
     try {
       // 1. Criar OS
       const numeroOS = `OS-${Math.floor(1000 + Math.random() * 9000)}`;
-      const tipoEquipamentoNome = tiposEquipamento?.find((t: any) => t.id === tipoEquipamento)?.nome || "";
+      const selectedTipo = tiposEquipamento?.find((t: any) => t.id === tipoEquipamento);
       
       const insertData: any = {
         cliente,
         numero_os: numeroOS,
         status: 'aberta',
-        descricao: `Triagem de ${tipoEquipamentoNome}`,
+        descricao: `Triagem de ${selectedTipo?.nome || "Equipamento"}`,
         empresa_id: companies?.[0]?.id || null,
         tipo_equipamento_id: tipoEquipamento,
         tecnico_id: profile?.id || null
@@ -226,12 +226,29 @@ function NovaOSPage() {
         throw osError;
       }
 
-      // 2. Upload de fotos e salvar peças
+      // 2. Salvar Checklist Inicial
+      if (checklist.length > 0) {
+        const checklistInserts = checklist.map(item => ({
+          os_id: os.id,
+          componente: item.label,
+          estado: item.checked ? 'Conforme' : 'Pendente',
+          responsavel_id: profile?.id || null,
+          data_verificacao: new Date().toISOString()
+        }));
+
+        const { error: checklistError } = await supabase
+          .from('os_checklist_tecnico')
+          .insert(checklistInserts);
+        
+        if (checklistError) console.error("Checklist Save Error:", checklistError);
+      }
+
+      // 3. Upload de fotos e salvar peças
       for (const peca of pecas) {
         let fotoUrl = null;
         if (peca.file) {
           const fileExt = peca.file.name.split('.').pop();
-          const fileName = `${os.id}/${Math.random()}.${fileExt}`;
+          const fileName = `${os.id}/pecas/${Math.random()}.${fileExt}`;
           const { error: uploadError } = await supabase.storage
             .from('os-assets')
             .upload(fileName, peca.file);
