@@ -84,15 +84,12 @@ function DashboardLayout() {
     { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
     { label: "Clientes", icon: Users, to: "/clientes", roles: ["diretor", "administrativo_financeiro", "gestor"] },
     { label: "Nova OS / Triagem", icon: Wrench, to: "/os/nova", roles: ["diretor", "gestor", "operador"] },
-    { label: "Histórico Global", icon: Search, to: "/historico", roles: ["diretor", "administrativo_financeiro", "gestor"] },
-    { label: "Kanban", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
+    { label: "Produção (Kanban)", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
     { label: "Materiais", icon: Factory, to: "/engenharia/materiais", roles: ["diretor", "gestor"] },
     { label: "Fornecedores", icon: Truck, to: "/financeiro/fornecedores", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Vendedores", icon: Users, to: "/admin/vendedores", roles: ["diretor", "gestor"] },
     { label: "Usuários", icon: Users, to: "/admin/usuarios", roles: ["diretor"] },
-    { label: "Relatórios", icon: FileText, to: "/relatorios", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Checklists", icon: ClipboardCheck, to: "/admin/checklist-templates", roles: ["diretor", "gestor"] },
-    { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor"] },
     { label: "Auditoria", icon: HistoryIcon, to: "/admin/auditoria", roles: ["diretor"] },
   ];
 
@@ -245,8 +242,8 @@ function DashboardLayout() {
             <div className="h-8 w-1px bg-border hidden sm:block" />
             <div className="hidden sm:flex items-center gap-3 ml-2">
               <div className="text-right">
-                <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.nome || "Admin"}</p>
-                <p className="text-[9px] font-bold text-primary uppercase tracking-tighter mt-1">{profile?.cargo || "Acesso"}</p>
+                <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.nome || profile?.email?.split('@')[0] || "Admin"}</p>
+                <p className="text-[9px] font-bold text-primary uppercase tracking-tighter mt-1">{profile?.cargo || roles?.[0] || "Acesso"}</p>
               </div>
             </div>
           </div>

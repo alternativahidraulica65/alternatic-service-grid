@@ -38,16 +38,33 @@ function KanbanPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   
-  const { data: ordens = [] } = useQuery({
+  const { data: ordens = [], refetch } = useQuery({
     queryKey: ['kanban_os'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ordens_servico')
-        .select('*');
+        .select('*')
+        .order('data_abertura', { ascending: false });
       if (error) throw error;
       return data;
     }
   });
+
+  const handleUpdateStatus = async (id: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ status: newStatus })
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast.success("Status atualizado com sucesso");
+      refetch();
+    } catch (error: any) {
+      toast.error("Erro ao atualizar status: " + error.message);
+    }
+  };
 
   const columns = [
     { id: "aberta", label: "Triagem", icon: ClipboardCheck, color: "slate" },
@@ -116,11 +133,35 @@ function KanbanPage() {
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-primary group-hover:scale-110 transition-transform">{card.numero_os}</span>
-                        <Badge className={`text-[8px] font-black uppercase tracking-widest ${
-                          card.prioridade === 'Alta' ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-500 border-none'
-                        }`}>
-                          {card.prioridade}
-                        </Badge>
+                        <div className="flex items-center gap-1">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                              <Button variant="ghost" size="icon" className="h-6 w-6">
+                                <MoreHorizontal className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
+                              <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-primary">Mover para</DropdownMenuLabel>
+                              {columns.map(col => (
+                                <DropdownMenuItem 
+                                  key={col.id} 
+                                  className="text-[9px] font-bold uppercase tracking-widest hover:bg-white/10"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleUpdateStatus(card.id, col.id);
+                                  }}
+                                >
+                                  {col.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          <Badge className={`text-[8px] font-black uppercase tracking-widest ${
+                            card.prioridade === 'Alta' ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-500 border-none'
+                          }`}>
+                            {card.prioridade}
+                          </Badge>
+                        </div>
                       </div>
                       
                       <div>
