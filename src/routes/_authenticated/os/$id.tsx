@@ -63,6 +63,7 @@ function GestaoOSPage() {
   const { id } = Route.useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { profile } = Route.useRouteContext();
   const { podeVerValoresFinanceiros } = useUserRole();
 
   const { data: os, isLoading } = useQuery({
@@ -191,7 +192,7 @@ function GestaoOSPage() {
 
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!profile?.id) throw new Error("Perfil não carregado");
       
       // Se for um item temporário, precisamos primeiro garantir que ele exista no banco
       if (itemId.startsWith('temp-')) {
@@ -206,7 +207,7 @@ function GestaoOSPage() {
             estado: updates.status || item.status,
             observacao_tecnica: updates.observacao || item.observacao,
             foto_url: updates.foto_url || item.foto_url,
-            responsavel_id: user?.id,
+            responsavel_id: profile.id,
             data_verificacao: new Date().toISOString()
           });
         
@@ -218,7 +219,7 @@ function GestaoOSPage() {
             estado: updates.status,
             observacao_tecnica: updates.observacao,
             foto_url: updates.foto_url,
-            responsavel_id: user?.id,
+            responsavel_id: profile.id,
             data_verificacao: new Date().toISOString()
           })
           .eq('id', itemId);
@@ -275,6 +276,15 @@ function GestaoOSPage() {
         .from('ordens_servico')
         .update({ status: 'vistoria' })
         .eq('id', id);
+
+      if (!error) {
+        // Registrar log usando a função RPC que criamos
+        await supabase.rpc('log_evento', {
+          p_os_id: id,
+          p_acao: 'CHECKLIST_FINALIZADO',
+          p_descricao: 'Checklist técnico finalizado e OS enviada para vistoria'
+        });
+      }
       if (error) throw error;
       
       toast.success("Checklist finalizado", {
