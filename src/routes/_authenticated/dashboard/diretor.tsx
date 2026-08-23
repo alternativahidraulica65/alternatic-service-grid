@@ -127,7 +127,7 @@ function DashboardDiretor() {
         </div>
       </div>
 
-      {/* KPIs Financeiros Detalhados (Dinamizados) */}
+      {/* KPIs Operacionais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard 
           title="Total de Clientes" 
@@ -155,13 +155,27 @@ function DashboardDiretor() {
           subtext="Tempo Médio de Reparo" 
           icon={Clock} 
         />
-        <KPICard 
-          title="Produtividade" 
-          value="92%" 
-          subtext="Eficiência da equipe técnica" 
-          icon={Factory} 
-        />
       </div>
+
+      {/* KPIs Financeiros (Dinamizados) */}
+      {podeVerValoresFinanceiros && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <KPICard 
+            title="Faturamento Total" 
+            value={`R$ ${stats.faturamento.toLocaleString('pt-BR')}`} 
+            subtext="Receita bruta total" 
+            icon={DollarSign} 
+            colorClass="text-emerald-500"
+          />
+          <KPICard 
+            title="Produtividade" 
+            value="92%" 
+            subtext="Eficiência da equipe técnica" 
+            icon={Factory} 
+          />
+        </div>
+      )}
+
 
       <ClientOnly>
         <div className="grid gap-6 lg:grid-cols-2">
