@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { format, startOfMonth, endOfMonth, subMonths, eachMonthOfInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -76,8 +77,19 @@ function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }
 }
 
 function DashboardFinanceiro() {
+  const { podeVerValoresFinanceiros } = useUserRole();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+
+  if (!podeVerValoresFinanceiros) {
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-bold text-red-600 uppercase">Acesso Negado</h2>
+        <p className="text-slate-500 mt-2">Você não tem permissão para acessar o dashboard financeiro.</p>
+      </div>
+    );
+  }
+
 
   const filterStartDate = new Date(parseInt(selectedYear), parseInt(selectedMonth), 1);
   const filterEndDate = endOfMonth(filterStartDate);
