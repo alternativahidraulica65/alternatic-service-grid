@@ -270,7 +270,7 @@ function NovaOSPage() {
             <Button variant="ghost" size="icon" onClick={() => router.history.back()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="font-display text-lg font-bold text-slate-900">Nova OS / Triagem</h1>
+            <h1 className="font-display text-lg font-bold text-slate-900">Nova Ordem de Serviço / Triagem</h1>
           </div>
           <div className="flex items-center gap-2">
             <ViewSwitcher />
@@ -298,7 +298,7 @@ function NovaOSPage() {
                 <Settings className="h-4 w-4" />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Etapa 01</span>
               </div>
-              <CardTitle className="text-xl text-slate-900 font-display">Identificação do Equipamento</CardTitle>
+              <CardTitle className="text-xl text-slate-900 font-display">Nova Ordem de Serviço</CardTitle>
               <CardDescription>Selecione o cliente e as especificações técnicas básicas.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2">
