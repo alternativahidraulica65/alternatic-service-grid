@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +39,7 @@ interface ItemOrcamento {
 function OrcamentoOSPage() {
   const { id } = Route.useParams();
   const queryClient = useQueryClient();
+  const { podeVerValoresFinanceiros } = useUserRole();
   const [itens, setItens] = useState<ItemOrcamento[]>([]);
   const [imposto, setImposto] = useState(8.5);
   const [margem, setMargem] = useState(25);
@@ -45,6 +47,16 @@ function OrcamentoOSPage() {
   const [valorFinalManual, setValorFinalManual] = useState<number | null>(null);
   const [fotosSelecionadas, setFotosSelecionadas] = useState<string[]>([]);
   const [osRelacionadas, setOsRelacionadas] = useState<string[]>([id]);
+
+  if (!podeVerValoresFinanceiros) {
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-xl font-bold text-red-600 uppercase">Acesso Negado</h1>
+        <p className="text-slate-500 mt-2">Você não tem permissão para visualizar orçamentos financeiros.</p>
+      </div>
+    );
+  }
+
 
   const { data: os } = useQuery({
     queryKey: ['os_detail', id],
