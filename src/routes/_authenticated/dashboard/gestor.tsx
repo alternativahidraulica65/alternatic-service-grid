@@ -52,7 +52,8 @@ function DashboardGestor() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ordens_servico')
-        .select('*');
+        .select('*')
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
     }
