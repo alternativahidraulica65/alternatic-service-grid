@@ -157,16 +157,14 @@ function GestaoOSPage() {
       }
 
       // 2. Se não existir, buscar o template baseado no tipo de equipamento da OS
-      // Nota: Em uma implementação ideal, a OS teria um campo tipo_equipamento_id direto
-      // Aqui usamos a lógica de busca por nome/descrição conforme planejado
       const { data: templates } = await (supabase as any)
         .from('checklist_templates')
         .select('*, tipos_equipamentos(*)');
       
-      const osDesc = os?.descricao?.toLowerCase() || "";
+      const osTipo = os?.descricao?.split('Triagem de ')[1]?.trim();
       const template = templates?.find((t: any) => 
-        osDesc.includes(t.tipos_equipamentos?.nome?.toLowerCase()) || 
-        osDesc.includes(t.nome.toLowerCase())
+        t.tipos_equipamentos?.nome === osTipo || 
+        t.nome === osTipo
       );
 
       if (template && template.itens) {
