@@ -43,7 +43,7 @@ function ChecklistTemplatesPage() {
   const { data: tipos = [] } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('tipos_equipamento').select('*').order('nome');
+      const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
       if (error) throw error;
       return data;
     }
@@ -53,7 +53,7 @@ function ChecklistTemplatesPage() {
     queryKey: ['checklist_templates'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('checklist_templates' as any)
+        .from('checklist_templates')
         .select('*, tipos_equipamento(nome)');
       if (error) throw error;
       return data;
@@ -79,7 +79,7 @@ function ChecklistTemplatesPage() {
     setSaving(true);
     try {
       const { error } = await supabase
-        .from('checklist_templates' as any)
+        .from('checklist_templates')
         .insert({
           tipo_equipamento_id: selectedTipo,
           nome: templateName,

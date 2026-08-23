@@ -123,7 +123,7 @@ function NovaOSPage() {
   const { data: tiposEquipamento } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('tipos_equipamento').select('*').order('nome');
+      const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
       if (error) throw error;
       return data;
     }
@@ -145,7 +145,7 @@ function NovaOSPage() {
   const { data: templates } = useQuery({
     queryKey: ['checklist_templates'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('checklist_templates').select('*');
+      const { data, error } = await supabase.from('checklist_templates').select('*');
       if (error) throw error;
       return data as any[];
     }
@@ -153,7 +153,7 @@ function NovaOSPage() {
 
   useEffect(() => {
     if (tipoEquipamento && templates) {
-      const template = templates.find((t: any) => t.tipo_equipamento === tipoEquipamento);
+      const template = templates.find((t: any) => t.tipo_equipamento_id === tipoEquipamento);
       if (template && template.itens) {
         setChecklist((template.itens as any[]).map((item: any) => ({ label: item.label, checked: false })));
       } else {
@@ -196,13 +196,15 @@ function NovaOSPage() {
     try {
       // 1. Criar OS
       const numeroOS = `OS-${Math.floor(1000 + Math.random() * 9000)}`;
+      const tipoEquipamentoNome = tiposEquipamento?.find((t: any) => t.id === tipoEquipamento)?.nome || "";
+      
       const { data: os, error: osError } = await supabase
         .from('ordens_servico')
         .insert({
           cliente,
           numero_os: numeroOS,
           status: 'aberta',
-          descricao: `Triagem de ${tipoEquipamento}`,
+          descricao: `Triagem de ${tipoEquipamentoNome}`,
           empresa_id: companies?.[0]?.id || null
         })
         .select()
@@ -304,7 +306,7 @@ function NovaOSPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {tiposEquipamento?.map((t: any) => (
-                      <SelectItem key={t.id} value={t.nome}>
+                      <SelectItem key={t.id} value={t.id}>
                         {t.nome}
                       </SelectItem>
                     ))}
