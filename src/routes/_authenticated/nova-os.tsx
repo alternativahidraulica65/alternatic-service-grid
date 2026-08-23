@@ -125,6 +125,8 @@ function NovaOSPage() {
     queryFn: async () => {
       console.log('Buscando tipos de equipamento...');
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
+      console.log('Dados crus do Supabase (tipos_equipamento):', data);
+      console.log('Erro do Supabase (tipos_equipamento):', error);
       if (error) {
         console.error('Erro ao buscar equipamentos:', error);
         throw error;
