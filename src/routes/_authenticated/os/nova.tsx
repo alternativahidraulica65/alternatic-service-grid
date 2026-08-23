@@ -12,10 +12,7 @@ import {
   Plus,
   Trash2,
   Save,
-  Search,
-  User,
-  AlertCircle,
-  Loader2
+  AlertCircle
 } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -30,7 +27,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -103,9 +99,6 @@ function NovaOSPage() {
       if (osError) throw osError;
 
       if (pecas.length > 0) {
-        const { data: userData } = await supabase.auth.getUser();
-        const currentUserId = userData.user?.id || null;
-        
         const { error: pecasError } = await supabase
           .from('pecas_os')
           .insert(pecas.map(p => ({

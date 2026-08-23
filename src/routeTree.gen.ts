@@ -15,7 +15,6 @@ import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authen
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authenticated/historico'
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
-import { Route as AuthenticatedNovaOsRouteImport } from './routes/_authenticated/nova-os'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedAdminAuditoriaRouteImport } from './routes/_authenticated/admin/auditoria'
@@ -64,11 +63,6 @@ const AuthenticatedHistoricoRoute = AuthenticatedHistoricoRouteImport.update({
 const AuthenticatedKanbanRoute = AuthenticatedKanbanRouteImport.update({
   id: '/kanban',
   path: '/kanban',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedNovaOsRoute = AuthenticatedNovaOsRouteImport.update({
-  id: '/nova-os',
-  path: '/nova-os',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
@@ -187,7 +181,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
-  '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
@@ -214,7 +207,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
-  '/nova-os': typeof AuthenticatedNovaOsRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
@@ -243,7 +235,6 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
-  '/_authenticated/nova-os': typeof AuthenticatedNovaOsRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
@@ -272,7 +263,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/historico'
     | '/kanban'
-    | '/nova-os'
     | '/orcamento'
     | '/relatorios'
     | '/admin/auditoria'
@@ -299,7 +289,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/historico'
     | '/kanban'
-    | '/nova-os'
     | '/orcamento'
     | '/relatorios'
     | '/admin/auditoria'
@@ -327,7 +316,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/historico'
     | '/_authenticated/kanban'
-    | '/_authenticated/nova-os'
     | '/_authenticated/orcamento'
     | '/_authenticated/relatorios'
     | '/_authenticated/admin/auditoria'
@@ -396,13 +384,6 @@ declare module '@tanstack/react-router' {
       path: '/kanban'
       fullPath: '/kanban'
       preLoaderRoute: typeof AuthenticatedKanbanRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/nova-os': {
-      id: '/_authenticated/nova-os'
-      path: '/nova-os'
-      fullPath: '/nova-os'
-      preLoaderRoute: typeof AuthenticatedNovaOsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/orcamento': {
@@ -595,7 +576,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
   AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
-  AuthenticatedNovaOsRoute: typeof AuthenticatedNovaOsRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedAdminAuditoriaRoute: typeof AuthenticatedAdminAuditoriaRoute
@@ -615,7 +595,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
   AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
-  AuthenticatedNovaOsRoute: AuthenticatedNovaOsRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedAdminAuditoriaRoute: AuthenticatedAdminAuditoriaRoute,
