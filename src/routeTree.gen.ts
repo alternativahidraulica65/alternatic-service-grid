@@ -31,7 +31,6 @@ import { Route as AuthenticatedDashboardOperadorRouteImport } from './routes/_au
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
 import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
-import { Route as AuthenticatedOrdensServicoNovaRouteImport } from './routes/_authenticated/ordens-servico/nova'
 import { Route as AuthenticatedOsIdRouteImport } from './routes/_authenticated/os/$id'
 import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
 import { Route as AuthenticatedFinanceiroFornecedoresIndexRouteImport } from './routes/_authenticated/financeiro/fornecedores/index'
@@ -159,12 +158,6 @@ const AuthenticatedOrcamentoPrecificacaoRoute =
     path: '/precificacao',
     getParentRoute: () => AuthenticatedOrcamentoRoute,
   } as any)
-const AuthenticatedOrdensServicoNovaRoute =
-  AuthenticatedOrdensServicoNovaRouteImport.update({
-    id: '/ordens-servico/nova',
-    path: '/ordens-servico/nova',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedOsIdRoute = AuthenticatedOsIdRouteImport.update({
   id: '/os/$id',
   path: '/os/$id',
@@ -209,7 +202,6 @@ export interface FileRoutesByFullPath {
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
-  '/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
@@ -237,7 +229,6 @@ export interface FileRoutesByTo {
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
-  '/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
@@ -267,7 +258,6 @@ export interface FileRoutesById {
   '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
-  '/_authenticated/ordens-servico/nova': typeof AuthenticatedOrdensServicoNovaRoute
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
@@ -297,7 +287,6 @@ export interface FileRouteTypes {
     | '/engenharia/materiais'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
-    | '/ordens-servico/nova'
     | '/os/$id'
     | '/os/nova'
     | '/clientes/'
@@ -325,7 +314,6 @@ export interface FileRouteTypes {
     | '/engenharia/materiais'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
-    | '/ordens-servico/nova'
     | '/os/$id'
     | '/os/nova'
     | '/clientes'
@@ -354,7 +342,6 @@ export interface FileRouteTypes {
     | '/_authenticated/engenharia/materiais'
     | '/_authenticated/orcamento/pdf'
     | '/_authenticated/orcamento/precificacao'
-    | '/_authenticated/ordens-servico/nova'
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
     | '/_authenticated/clientes/'
@@ -523,13 +510,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrcamentoPrecificacaoRouteImport
       parentRoute: typeof AuthenticatedOrcamentoRoute
     }
-    '/_authenticated/ordens-servico/nova': {
-      id: '/_authenticated/ordens-servico/nova'
-      path: '/ordens-servico/nova'
-      fullPath: '/ordens-servico/nova'
-      preLoaderRoute: typeof AuthenticatedOrdensServicoNovaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/os/$id': {
       id: '/_authenticated/os/$id'
       path: '/os/$id'
@@ -624,7 +604,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminVendedoresRoute: typeof AuthenticatedAdminVendedoresRoute
   AuthenticatedClientesIdRoute: typeof AuthenticatedClientesIdRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
-  AuthenticatedOrdensServicoNovaRoute: typeof AuthenticatedOrdensServicoNovaRoute
   AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRouteWithChildren
   AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
@@ -646,7 +625,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminVendedoresRoute: AuthenticatedAdminVendedoresRoute,
   AuthenticatedClientesIdRoute: AuthenticatedClientesIdRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
-  AuthenticatedOrdensServicoNovaRoute: AuthenticatedOrdensServicoNovaRoute,
   AuthenticatedOsIdRoute: AuthenticatedOsIdRouteWithChildren,
   AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
