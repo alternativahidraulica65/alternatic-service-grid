@@ -1315,6 +1315,7 @@ export type Database = {
           valor: number
         }[]
       }
+      get_my_profile_id: { Args: never; Returns: string }
       get_produtividade_tecnicos: {
         Args: never
         Returns: {
@@ -1329,6 +1330,16 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_evento: {
+        Args: {
+          p_acao: string
+          p_dados_antigos?: Json
+          p_dados_novos?: Json
+          p_descricao: string
+          p_os_id: string
+        }
+        Returns: string
       }
     }
     Enums: {
