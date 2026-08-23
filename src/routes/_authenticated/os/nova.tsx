@@ -1,6 +1,20 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { 
+  ArrowLeft, 
+  Settings, 
+  Box, 
+  Wrench, 
+  ClipboardCheck, 
+  UserCheck, 
+  Factory,
+  Camera,
+  Plus,
+  Trash2,
+  Save,
+  AlertCircle
+} from "lucide-react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +27,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -86,9 +99,6 @@ function NovaOSPage() {
       if (osError) throw osError;
 
       if (pecas.length > 0) {
-        const { data: userData } = await supabase.auth.getUser();
-        const currentUserId = userData.user?.id || null;
-        
         const { error: pecasError } = await supabase
           .from('pecas_os')
           .insert(pecas.map(p => ({
