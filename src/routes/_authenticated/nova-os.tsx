@@ -259,7 +259,7 @@ function NovaOSPage() {
           }
         }
 
-        await supabase.from('os_guarda_pecas').insert({
+        await supabase.from('pecas_os').insert({
           os_id: os.id,
           nome: peca.nome,
           localizacao: peca.localizacao,
