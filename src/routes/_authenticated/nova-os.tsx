@@ -120,18 +120,11 @@ function NovaOSPage() {
     }
   });
 
-  const { data: tiposEquipamento = [] } = useQuery({
+  const { data: tiposEquipamento = [], isLoading: loadingTipos } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
-      console.log('Buscando tipos de equipamento...');
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
-      console.log('Dados crus do Supabase (tipos_equipamento):', data);
-      console.log('Erro do Supabase (tipos_equipamento):', error);
-      if (error) {
-        console.error('Erro ao buscar equipamentos:', error);
-        throw error;
-      }
-      console.log('Equipamentos encontrados:', data);
+      if (error) throw error;
       return data;
     }
   });
@@ -205,6 +198,9 @@ function NovaOSPage() {
       const numeroOS = `OS-${Math.floor(1000 + Math.random() * 9000)}`;
       const selectedTipo = tiposEquipamento?.find((t: any) => t.id === tipoEquipamento);
       
+      const { data: userData } = await supabase.auth.getUser();
+      const currentUserId = userData.user?.id || null;
+
       const insertData: any = {
         cliente,
         numero_os: numeroOS,
@@ -212,7 +208,7 @@ function NovaOSPage() {
         descricao: `Triagem de ${selectedTipo?.nome || "Equipamento"}`,
         empresa_id: companies?.[0]?.id || null,
         tipo_equipamento_id: tipoEquipamento,
-        tecnico_id: profile?.id || null
+        tecnico_id: currentUserId
       };
 
       const { data: os, error: osError } = await supabase
@@ -228,11 +224,13 @@ function NovaOSPage() {
 
       // 2. Salvar Checklist Inicial
       if (checklist.length > 0) {
+        const { data: userData } = await supabase.auth.getUser();
+        const currentUserId = userData.user?.id || null;
         const checklistInserts = checklist.map(item => ({
           os_id: os.id,
           componente: item.label,
           estado: item.checked ? 'Conforme' : 'Pendente',
-          responsavel_id: profile?.id || null,
+          responsavel_id: currentUserId,
           data_verificacao: new Date().toISOString()
         }));
 
@@ -259,12 +257,14 @@ function NovaOSPage() {
           }
         }
 
+        const { data: userData } = await supabase.auth.getUser();
+        const currentUserId = userData.user?.id || null;
         await supabase.from('pecas_os').insert({
           os_id: os.id,
           nome: peca.nome,
           localizacao: peca.localizacao,
           foto_url: fotoUrl,
-          criado_por: profile?.id || null
+          criado_por: currentUserId
         });
       }
 
