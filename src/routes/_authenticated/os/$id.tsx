@@ -87,7 +87,7 @@ function GestaoOSPage() {
     queryKey: ['os_pecas', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('os_guarda_pecas')
+        .from('pecas_os')
         .select('*')
         .eq('os_id', id);
       if (error) throw error;
