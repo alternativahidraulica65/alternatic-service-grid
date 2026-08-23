@@ -43,7 +43,7 @@ function NovaOSPage() {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<string>("");
-  const [tipoEquipamento, setTipoEquipamento] = useState<string>("cilindro");
+  const [tipoEquipamento, setTipoEquipamento] = useState<string>("");
   const [prioridade, setPrioridade] = useState<string>("Média");
   const [descricao, setDescricao] = useState<string>("");
   const [relatorioCliente, setRelatorioCliente] = useState<string>("");
@@ -52,6 +52,15 @@ function NovaOSPage() {
     queryKey: ['clientes_lookup'],
     queryFn: async () => {
       const { data, error } = await supabase.from('clientes').select('id, nome');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: tiposEquipamento = [] } = useQuery({
+    queryKey: ['tipos_equipamento'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
       if (error) throw error;
       return data;
     }
@@ -72,7 +81,9 @@ function NovaOSPage() {
     setLoading(true);
     try {
       const proximoNum = `OS-${Math.floor(1000 + Math.random() * 9000)}`;
-      
+      const { data: userData } = await supabase.auth.getUser();
+      const currentUserId = userData.user?.id || null;
+
       const { data: os, error: osError } = await supabase
         .from('ordens_servico')
         .insert({
@@ -82,7 +93,9 @@ function NovaOSPage() {
           descricao: descricao,
           prioridade: prioridade,
           status: 'aberta',
-          data_abertura: new Date().toISOString()
+          data_abertura: new Date().toISOString(),
+          tipo_equipamento_id: tipoEquipamento,
+          tecnico_id: currentUserId
         })
         .select()
         .single();
@@ -90,12 +103,16 @@ function NovaOSPage() {
       if (osError) throw osError;
 
       if (pecas.length > 0) {
+        const { data: userData } = await supabase.auth.getUser();
+        const currentUserId = userData.user?.id || null;
+        
         const { error: pecasError } = await supabase
-          .from('os_guarda_pecas')
+          .from('pecas_os')
           .insert(pecas.map(p => ({
             os_id: os.id,
-            descricao: p.nome || "Peça não identificada",
-            localizacao: p.local || "Não informado"
+            nome: p.nome || "Peça não identificada",
+            localizacao: p.local || "Não informado",
+            criado_por: currentUserId
           })));
         
         if (pecasError) throw pecasError;
@@ -163,13 +180,12 @@ function NovaOSPage() {
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tipo de Equipamento</Label>
                 <Select value={tipoEquipamento} onValueChange={setTipoEquipamento}>
                   <SelectTrigger className="h-11 border-border">
-                    <SelectValue />
+                    <SelectValue placeholder="Selecione o tipo..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cilindro">Cilindro Hidráulico</SelectItem>
-                    <SelectItem value="bomba">Bomba Hidráulica</SelectItem>
-                    <SelectItem value="motor">Motor Hidráulico</SelectItem>
-                    <SelectItem value="comando">Comando Hidráulico</SelectItem>
+                    {tiposEquipamento?.map((t: any) => (
+                      <SelectItem key={t.id} value={t.id}>{t.nome}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

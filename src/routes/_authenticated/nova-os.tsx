@@ -120,18 +120,11 @@ function NovaOSPage() {
     }
   });
 
-  const { data: tiposEquipamento = [] } = useQuery({
+  const { data: tiposEquipamento = [], isLoading: loadingTipos } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
-      console.log('Buscando tipos de equipamento...');
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
-      console.log('Dados crus do Supabase (tipos_equipamento):', data);
-      console.log('Erro do Supabase (tipos_equipamento):', error);
-      if (error) {
-        console.error('Erro ao buscar equipamentos:', error);
-        throw error;
-      }
-      console.log('Equipamentos encontrados:', data);
+      if (error) throw error;
       return data;
     }
   });
