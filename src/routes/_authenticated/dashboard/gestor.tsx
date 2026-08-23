@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,6 +46,7 @@ function KanbanCard({ os }: any) {
 }
 
 function DashboardGestor() {
+  const { podeVerValoresFinanceiros } = useUserRole();
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
     queryFn: async () => {

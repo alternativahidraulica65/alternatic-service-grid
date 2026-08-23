@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -62,6 +63,7 @@ function GestaoOSPage() {
   const { id } = Route.useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { podeVerValoresFinanceiros } = useUserRole();
 
   const { data: os, isLoading } = useQuery({
     queryKey: ['os_detail', id],
@@ -1003,25 +1005,35 @@ function GestaoOSPage() {
                 <Receipt className="h-5 w-5 text-primary" />
                 Orçamento Comercial
               </CardTitle>
-              <Button 
-                className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
-                onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
-              >
-                Abrir Módulo de Orçamento
-              </Button>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Receipt className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Utilize o módulo avançado para gerenciar custos, margens e gerar a proposta PDF.</p>
+              {podeVerValoresFinanceiros && (
                 <Button 
-                  variant="outline" 
-                  className="mt-6 border-primary text-primary font-black uppercase text-[10px] tracking-widest px-8"
+                  className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
                   onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
                 >
-                  Configurar Orçamento
+                  Abrir Módulo de Orçamento
                 </Button>
+              )}
+
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground text-center px-4">
+                <Receipt className="h-12 w-12 mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest max-w-md">
+                  {podeVerValoresFinanceiros 
+                    ? "Utilize o módulo avançado para gerenciar custos, margens e gerar a proposta PDF."
+                    : "Você não tem permissão para visualizar ou editar valores financeiros."}
+                </p>
+                {podeVerValoresFinanceiros && (
+                  <Button 
+                    variant="outline" 
+                    className="mt-6 border-primary text-primary font-black uppercase text-[10px] tracking-widest px-8"
+                    onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+                  >
+                    Configurar Orçamento
+                  </Button>
+                )}
               </div>
+
             </CardContent>
           </Card>
         </TabsContent>
@@ -1073,7 +1085,16 @@ function GestaoOSPage() {
         </TabsContent>
 
         <TabsContent value="faturamento">
-          <Card className="border-border shadow-md">
+          {!podeVerValoresFinanceiros ? (
+            <Card className="border-border shadow-md">
+              <CardContent className="py-12 text-center">
+                <ShieldCheck className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Acesso restrito a dados financeiros.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-border shadow-md">
+
             <CardHeader className="bg-muted/10 border-b border-border/50">
               <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
                 <Receipt className="h-5 w-5 text-primary" />
@@ -1086,7 +1107,8 @@ function GestaoOSPage() {
                 <p className="text-xs font-bold uppercase tracking-widest">Faturamento ainda não processado.</p>
               </div>
             </CardContent>
-          </Card>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="entrega">

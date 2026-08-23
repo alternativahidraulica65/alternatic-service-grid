@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClientOnly } from "@/components/ClientOnly";
 import { useQuery } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
 
@@ -61,6 +62,7 @@ function KPICard({ title, value, subtext, icon: Icon, colorClass = "text-primary
 // Dados mockados removidos. KPIs agora conectados ao banco de dados.
 
 function DashboardDiretor() {
+  const { podeVerValoresFinanceiros } = useUserRole();
   const { data: dbStats } = useQuery({
     queryKey: ['dashboard_diretor_db_stats'],
     queryFn: async () => {
@@ -125,7 +127,7 @@ function DashboardDiretor() {
         </div>
       </div>
 
-      {/* KPIs Financeiros Detalhados (Dinamizados) */}
+      {/* KPIs Operacionais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard 
           title="Total de Clientes" 
@@ -153,18 +155,34 @@ function DashboardDiretor() {
           subtext="Tempo Médio de Reparo" 
           icon={Clock} 
         />
-        <KPICard 
-          title="Produtividade" 
-          value="92%" 
-          subtext="Eficiência da equipe técnica" 
-          icon={Factory} 
-        />
       </div>
+
+      {/* KPIs Financeiros (Dinamizados) */}
+      {podeVerValoresFinanceiros && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <KPICard 
+            title="Faturamento Total" 
+            value={`R$ ${stats.faturamento.toLocaleString('pt-BR')}`} 
+            subtext="Receita bruta total" 
+            icon={DollarSign} 
+            colorClass="text-emerald-500"
+          />
+          <KPICard 
+            title="Produtividade" 
+            value="92%" 
+            subtext="Eficiência da equipe técnica" 
+            icon={Factory} 
+          />
+        </div>
+      )}
+
 
       <ClientOnly>
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Gráfico de Faturamento */}
-          <Card className="border-border shadow-md">
+          {podeVerValoresFinanceiros ? (
+            <Card className="border-border shadow-md">
+
             <CardHeader className="border-b border-border/50 bg-muted/20">
               <div className="flex items-center justify-between">
                 <div>
@@ -195,7 +213,19 @@ function DashboardDiretor() {
                 </ResponsiveContainer>
               </div>
             </CardContent>
-          </Card>
+            </Card>
+          ) : (
+            <Card className="border-border shadow-md">
+              <CardHeader className="border-b border-border/50 bg-muted/20">
+                <CardTitle className="text-base font-bold text-muted-foreground">Faturamento</CardTitle>
+              </CardHeader>
+              <CardContent className="py-20 text-center">
+                <DollarSign className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Acesso restrito a dados financeiros.</p>
+              </CardContent>
+            </Card>
+          )}
+
 
           {/* Gráfico de Status de OS */}
           <Card className="border-border shadow-md">
