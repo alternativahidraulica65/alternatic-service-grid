@@ -127,7 +127,7 @@ export type Database = {
             foreignKeyName: "checklist_templates_tipo_equipamento_id_fkey"
             columns: ["tipo_equipamento_id"]
             isOneToOne: false
-            referencedRelation: "tipos_equipamentos"
+            referencedRelation: "tipos_equipamento"
             referencedColumns: ["id"]
           },
         ]
@@ -1073,7 +1073,7 @@ export type Database = {
         }
         Relationships: []
       }
-      tipos_equipamentos: {
+      tipos_equipamento: {
         Row: {
           criado_em: string | null
           descricao: string | null
