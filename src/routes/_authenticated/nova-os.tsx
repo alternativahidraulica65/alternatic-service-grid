@@ -120,13 +120,19 @@ function NovaOSPage() {
     }
   });
 
-  const { data: tiposEquipamento } = useQuery({
+  const { data: tiposEquipamento, isLoading: loadingTipos } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
+      console.log("Fetching tipos_equipamento...");
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching tipos_equipamento:", error);
+        throw error;
+      }
+      console.log("Tipos fetched:", data);
       return data;
-    }
+    },
+    staleTime: 0, // Force fresh fetch
   });
 
   const { data: torneiroFila } = useQuery({
@@ -198,19 +204,26 @@ function NovaOSPage() {
       const numeroOS = `OS-${Math.floor(1000 + Math.random() * 9000)}`;
       const tipoEquipamentoNome = tiposEquipamento?.find((t: any) => t.id === tipoEquipamento)?.nome || "";
       
+      const insertData: any = {
+        cliente,
+        numero_os: numeroOS,
+        status: 'aberta',
+        descricao: `Triagem de ${tipoEquipamentoNome}`,
+        empresa_id: companies?.[0]?.id || null,
+        tipo_equipamento_id: tipoEquipamento,
+        tecnico_id: user.id
+      };
+
       const { data: os, error: osError } = await supabase
         .from('ordens_servico')
-        .insert({
-          cliente,
-          numero_os: numeroOS,
-          status: 'aberta',
-          descricao: `Triagem de ${tipoEquipamentoNome}`,
-          empresa_id: companies?.[0]?.id || null
-        })
+        .insert(insertData)
         .select()
         .single();
 
-      if (osError) throw osError;
+      if (osError) {
+        console.error("OS Insert Error:", osError);
+        throw osError;
+      }
 
       // 2. Upload de fotos e salvar peças
       for (const peca of pecas) {
