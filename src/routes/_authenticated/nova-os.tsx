@@ -204,17 +204,19 @@ function NovaOSPage() {
       const numeroOS = `OS-${Math.floor(1000 + Math.random() * 9000)}`;
       const tipoEquipamentoNome = tiposEquipamento?.find((t: any) => t.id === tipoEquipamento)?.nome || "";
       
+      const insertData: any = {
+        cliente,
+        numero_os: numeroOS,
+        status: 'aberta',
+        descricao: `Triagem de ${tipoEquipamentoNome}`,
+        empresa_id: companies?.[0]?.id || null,
+        tipo_equipamento_id: tipoEquipamento,
+        tecnico_id: user.id
+      };
+
       const { data: os, error: osError } = await supabase
         .from('ordens_servico')
-        .insert({
-          cliente,
-          numero_os: numeroOS,
-          status: 'aberta',
-          descricao: `Triagem de ${tipoEquipamentoNome}`,
-          empresa_id: companies?.[0]?.id || null,
-          tipo_equipamento_id: tipoEquipamento, // Salva o ID do tipo
-          tecnico_id: user.id // Associa o criador como técnico inicial se for operador
-        })
+        .insert(insertData)
         .select()
         .single();
 
