@@ -50,11 +50,17 @@ function DashboardGestor() {
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
     queryFn: async () => {
+      console.log('Carregando OS para dashboard gestor...');
       const { data, error } = await supabase
         .from('ordens_servico')
         .select('*')
         .order('created_at', { ascending: false });
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Erro no dashboard gestor:', error);
+        throw error;
+      }
+      console.log('OS carregadas:', data?.length);
       return data;
     }
   });
