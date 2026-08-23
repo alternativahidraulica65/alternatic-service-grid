@@ -163,11 +163,13 @@ function GestaoOSPage() {
         .from('checklist_templates')
         .select('*, tipos_equipamento(*)');
       
-      const osTipo = os?.descricao?.split('Triagem de ')[1]?.trim();
+      const osTipoId = os?.tipo_equipamento_id;
+      const osDescricao = os?.descricao || "";
+      
       const template = templates?.find((t: any) => 
-        t.tipos_equipamento?.nome === osTipo || 
-        t.nome === osTipo ||
-        t.tipo_equipamento_id === osTipo // Caso o ID esteja na descrição
+        t.tipo_equipamento_id === osTipoId || 
+        (osDescricao.includes(t.tipos_equipamento?.nome) && t.tipos_equipamento?.nome) ||
+        (osDescricao.includes(t.nome) && t.nome)
       );
 
       if (template && template.itens) {

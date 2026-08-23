@@ -159,7 +159,9 @@ function NovaOSPage() {
 
   useEffect(() => {
     if (tipoEquipamento && templates) {
+      console.log("Looking for template for tipoEquipamento:", tipoEquipamento);
       const template = templates.find((t: any) => t.tipo_equipamento_id === tipoEquipamento);
+      console.log("Found template:", template);
       if (template && template.itens) {
         setChecklist((template.itens as any[]).map((item: any) => ({ label: item.label, checked: false })));
       } else {
