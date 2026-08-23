@@ -65,7 +65,7 @@ type Peca = {
 function NovaOSPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, isAdmin, roles } = Route.useRouteContext();
+  const { user, profile, isAdmin, roles } = Route.useRouteContext();
 
   // RBAC Override for Admins
   const [activeView, setActiveView] = useState<string | null>(null);
@@ -205,7 +205,7 @@ function NovaOSPage() {
         descricao: `Triagem de ${tipoEquipamentoNome}`,
         empresa_id: companies?.[0]?.id || null,
         tipo_equipamento_id: tipoEquipamento,
-        tecnico_id: user.id
+        tecnico_id: profile?.id || null
       };
 
       const { data: os, error: osError } = await supabase
@@ -240,7 +240,7 @@ function NovaOSPage() {
           nome: peca.nome,
           localizacao: peca.localizacao,
           foto_url: fotoUrl,
-          criado_por: user.id
+          criado_por: profile?.id || null
         });
       }
 

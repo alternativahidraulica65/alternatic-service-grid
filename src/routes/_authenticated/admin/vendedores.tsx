@@ -114,7 +114,11 @@ function VendedoresPage() {
           )
         `)
         .order("nome");
-      if (error) throw error;
+      
+      if (error) {
+        console.error("Vendedores fetch error:", error);
+        return [];
+      }
       return (data as any) as Vendedor[];
     },
   });
