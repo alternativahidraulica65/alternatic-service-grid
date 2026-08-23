@@ -1085,18 +1085,21 @@ export type Database = {
       }
       tipos_equipamento: {
         Row: {
+          categoria_principal: string | null
           criado_em: string | null
           descricao: string | null
           id: string
           nome: string
         }
         Insert: {
+          categoria_principal?: string | null
           criado_em?: string | null
           descricao?: string | null
           id?: string
           nome: string
         }
         Update: {
+          categoria_principal?: string | null
           criado_em?: string | null
           descricao?: string | null
           id?: string
