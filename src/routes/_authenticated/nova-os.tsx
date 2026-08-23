@@ -120,19 +120,13 @@ function NovaOSPage() {
     }
   });
 
-  const { data: tiposEquipamento, isLoading: loadingTipos } = useQuery({
+  const { data: tiposEquipamento } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
-      console.log("Fetching tipos_equipamento...");
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
-      if (error) {
-        console.error("Error fetching tipos_equipamento:", error);
-        throw error;
-      }
-      console.log("Tipos fetched:", data);
+      if (error) throw error;
       return data;
-    },
-    staleTime: 0, // Force fresh fetch
+    }
   });
 
   const { data: torneiroFila } = useQuery({
