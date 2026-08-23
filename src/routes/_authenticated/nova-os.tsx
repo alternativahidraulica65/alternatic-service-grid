@@ -120,10 +120,10 @@ function NovaOSPage() {
     }
   });
 
-  const { data: tiposEquipamentos } = useQuery({
-    queryKey: ['tipos_equipamentos'],
+  const { data: tiposEquipamento } = useQuery({
+    queryKey: ['tipos_equipamento'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('tipos_equipamentos').select('*').order('nome');
+      const { data, error } = await (supabase as any).from('tipos_equipamento').select('*').order('nome');
       if (error) throw error;
       return data;
     }
@@ -303,7 +303,7 @@ function NovaOSPage() {
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {tiposEquipamentos?.map((t: any) => (
+                    {tiposEquipamento?.map((t: any) => (
                       <SelectItem key={t.id} value={t.nome}>
                         {t.nome}
                       </SelectItem>
