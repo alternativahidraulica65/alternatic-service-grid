@@ -111,7 +111,7 @@ function NovaOSPage() {
   const [loading, setLoading] = useState(false);
 
   // Queries
-  const { data: companies } = useSuspenseQuery({
+  const { data: companies = [] } = useQuery({
     queryKey: ['empresas_emissoras'],
     queryFn: async () => {
       const { data, error } = await supabase.from('empresas_emissoras').select('*');
@@ -120,11 +120,16 @@ function NovaOSPage() {
     }
   });
 
-  const { data: tiposEquipamento } = useQuery({
+  const { data: tiposEquipamento = [] } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
+      console.log('Buscando tipos de equipamento...');
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao buscar equipamentos:', error);
+        throw error;
+      }
+      console.log('Equipamentos encontrados:', data);
       return data;
     }
   });
