@@ -120,13 +120,19 @@ function NovaOSPage() {
     }
   });
 
-  const { data: tiposEquipamento } = useQuery({
+  const { data: tiposEquipamento, isLoading: loadingTipos } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
+      console.log("Fetching tipos_equipamento...");
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching tipos_equipamento:", error);
+        throw error;
+      }
+      console.log("Tipos fetched:", data);
       return data;
-    }
+    },
+    staleTime: 0, // Force fresh fetch
   });
 
   const { data: torneiroFila } = useQuery({
@@ -205,12 +211,17 @@ function NovaOSPage() {
           numero_os: numeroOS,
           status: 'aberta',
           descricao: `Triagem de ${tipoEquipamentoNome}`,
-          empresa_id: companies?.[0]?.id || null
+          empresa_id: companies?.[0]?.id || null,
+          tipo_equipamento_id: tipoEquipamento, // Salva o ID do tipo
+          tecnico_id: user.id // Associa o criador como técnico inicial se for operador
         })
         .select()
         .single();
 
-      if (osError) throw osError;
+      if (osError) {
+        console.error("OS Insert Error:", osError);
+        throw osError;
+      }
 
       // 2. Upload de fotos e salvar peças
       for (const peca of pecas) {
