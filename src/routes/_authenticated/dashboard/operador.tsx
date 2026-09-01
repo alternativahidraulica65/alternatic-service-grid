@@ -51,10 +51,10 @@ function OSItem({ os, onClick }: any) {
         </div>
         <Button 
           size="sm" 
-          className="bg-slate-900 text-white hover:bg-slate-800 font-bold uppercase text-[10px] tracking-widest h-9"
+          className="bg-green-700 text-white hover:bg-green-800 font-bold uppercase text-[10px] tracking-widest h-9"
           onClick={() => onClick(os.id)}
         >
-          <PlayCircle className="mr-2 h-4 w-4 text-primary" />
+          <PlayCircle className="mr-2 h-4 w-4 text-white" />
           Acessar OS
         </Button>
       </div>
