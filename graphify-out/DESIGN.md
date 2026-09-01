@@ -1,0 +1,197 @@
+# Design system
+
+Generated: 2026-09-01T23:17:13.801390+00:00
+
+## Tokens
+- --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
+- --radius-md: calc(var(--radius) - 2px) (src/styles.css)
+- --radius-lg: var(--radius) (src/styles.css)
+- --radius-xl: calc(var(--radius) + 4px) (src/styles.css)
+- --radius-2xl: calc(var(--radius) + 8px) (src/styles.css)
+- --radius-3xl: calc(var(--radius) + 12px) (src/styles.css)
+- --radius-4xl: calc(var(--radius) + 16px) (src/styles.css)
+- --color-background: var(--background) (src/styles.css)
+- --color-foreground: var(--foreground) (src/styles.css)
+- --color-card: var(--card) (src/styles.css)
+- --color-card-foreground: var(--card-foreground) (src/styles.css)
+- --color-popover: var(--popover) (src/styles.css)
+- --color-popover-foreground: var(--popover-foreground) (src/styles.css)
+- --color-primary: var(--primary) (src/styles.css)
+- --color-primary-foreground: var(--primary-foreground) (src/styles.css)
+- --color-secondary: var(--secondary) (src/styles.css)
+- --color-secondary-foreground: var(--secondary-foreground) (src/styles.css)
+- --color-muted: var(--muted) (src/styles.css)
+- --color-muted-foreground: var(--muted-foreground) (src/styles.css)
+- --color-accent: var(--accent) (src/styles.css)
+- --color-accent-foreground: var(--accent-foreground) (src/styles.css)
+- --color-destructive: var(--destructive) (src/styles.css)
+- --color-destructive-foreground: var(--destructive-foreground) (src/styles.css)
+- --color-border: var(--border) (src/styles.css)
+- --color-input: var(--input) (src/styles.css)
+- --color-ring: var(--ring) (src/styles.css)
+- --color-ring-offset-background: var(--background) (src/styles.css)
+- --color-industrial: var(--industrial) (src/styles.css)
+- --color-industrial-foreground: var(--industrial-foreground) (src/styles.css)
+- --color-industrial-dark: var(--industrial-dark) (src/styles.css)
+- --color-industrial-light: var(--industrial-light) (src/styles.css)
+- --color-metal: var(--metal) (src/styles.css)
+- --color-metal-light: var(--metal-light) (src/styles.css)
+- --color-metal-dark: var(--metal-dark) (src/styles.css)
+- --color-slate: var(--slate) (src/styles.css)
+- --color-slate-light: var(--slate-light) (src/styles.css)
+- --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif (src/styles.css)
+- --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif (src/styles.css)
+- --radius: 0.625rem (src/styles.css)
+- --background: oklch(0.99 0 0) (src/styles.css)
+- --foreground: oklch(0.25 0.02 270) (src/styles.css)
+- --card: oklch(1 0 0) (src/styles.css)
+- --card-foreground: oklch(0.25 0.02 270) (src/styles.css)
+- --popover: oklch(1 0 0) (src/styles.css)
+- --popover-foreground: oklch(0.25 0.02 270) (src/styles.css)
+- --primary: oklch(0.74 0.16 85) (src/styles.css)
+- --primary-foreground: oklch(0.2 0.03 85) (src/styles.css)
+- --industrial: oklch(0.74 0.16 85) (src/styles.css)
+- --industrial-foreground: oklch(0.2 0.03 85) (src/styles.css)
+- --industrial-dark: oklch(0.62 0.16 85) (src/styles.css)
+- --industrial-light: oklch(0.85 0.12 85) (src/styles.css)
+- --secondary: oklch(0.92 0.01 260) (src/styles.css)
+- --secondary-foreground: oklch(0.35 0.03 260) (src/styles.css)
+- --metal: oklch(0.55 0.02 260) (src/styles.css)
+- --metal-light: oklch(0.75 0.02 260) (src/styles.css)
+- --metal-dark: oklch(0.35 0.02 260) (src/styles.css)
+- --slate: oklch(0.45 0.03 260) (src/styles.css)
+- --slate-light: oklch(0.65 0.03 260) (src/styles.css)
+- --muted: oklch(0.96 0.01 260) (src/styles.css)
+- --muted-foreground: oklch(0.55 0.03 260) (src/styles.css)
+- --accent: oklch(0.94 0.02 85) (src/styles.css)
+- --accent-foreground: oklch(0.25 0.02 85) (src/styles.css)
+- --destructive: oklch(0.55 0.22 25) (src/styles.css)
+- --destructive-foreground: oklch(0.98 0.01 0) (src/styles.css)
+- --border: oklch(0.88 0.01 260) (src/styles.css)
+- --input: oklch(0.92 0.01 260) (src/styles.css)
+- --ring: oklch(0.74 0.16 85) (src/styles.css)
+- --background: oklch(0.18 0.02 270) (src/styles.css)
+- --foreground: oklch(0.95 0.01 270) (src/styles.css)
+- --card: oklch(0.22 0.02 270) (src/styles.css)
+- --card-foreground: oklch(0.95 0.01 270) (src/styles.css)
+- --popover: oklch(0.22 0.02 270) (src/styles.css)
+- --popover-foreground: oklch(0.95 0.01 270) (src/styles.css)
+- --primary: oklch(0.74 0.16 85) (src/styles.css)
+- --primary-foreground: oklch(0.15 0.03 85) (src/styles.css)
+- --industrial: oklch(0.74 0.16 85) (src/styles.css)
+- --industrial-foreground: oklch(0.15 0.03 85) (src/styles.css)
+- --industrial-dark: oklch(0.62 0.16 85) (src/styles.css)
+- --industrial-light: oklch(0.85 0.12 85) (src/styles.css)
+- --secondary: oklch(0.3 0.02 260) (src/styles.css)
+- --secondary-foreground: oklch(0.92 0.01 260) (src/styles.css)
+- --metal: oklch(0.65 0.02 260) (src/styles.css)
+- --metal-light: oklch(0.8 0.02 260) (src/styles.css)
+- --metal-dark: oklch(0.45 0.02 260) (src/styles.css)
+- --slate: oklch(0.55 0.03 260) (src/styles.css)
+- --slate-light: oklch(0.75 0.03 260) (src/styles.css)
+- --muted: oklch(0.28 0.02 270) (src/styles.css)
+- --muted-foreground: oklch(0.7 0.02 270) (src/styles.css)
+- --accent: oklch(0.3 0.03 85) (src/styles.css)
+- --accent-foreground: oklch(0.95 0.01 85) (src/styles.css)
+- --destructive: oklch(0.65 0.22 25) (src/styles.css)
+- --destructive-foreground: oklch(0.98 0.01 0) (src/styles.css)
+- --border: oklch(1 0 0 / 12%) (src/styles.css)
+- --input: oklch(1 0 0 / 15%) (src/styles.css)
+- --ring: oklch(0.74 0.16 85) (src/styles.css)
+
+## UI components
+- accordion
+- alert
+- alert-dialog
+- aspect-ratio
+- avatar
+- badge
+- breadcrumb
+- button
+- calendar
+- card
+- carousel
+- chart
+- checkbox
+- collapsible
+- command
+- context-menu
+- dialog
+- drawer
+- dropdown-menu
+- form
+- hover-card
+- input
+- input-otp
+- label
+- menubar
+- navigation-menu
+- pagination
+- popover
+- progress
+- radio-group
+- resizable
+- scroll-area
+- select
+- separator
+- sheet
+- sidebar
+- skeleton
+- slider
+- sonner
+- switch
+- table
+- tabs
+- textarea
+- toggle
+- toggle-group
+- tooltip
+
+## Project components
+- src/components/ClientOnly.tsx
+- src/components/ui/accordion.tsx
+- src/components/ui/alert-dialog.tsx
+- src/components/ui/alert.tsx
+- src/components/ui/aspect-ratio.tsx
+- src/components/ui/avatar.tsx
+- src/components/ui/badge.tsx
+- src/components/ui/breadcrumb.tsx
+- src/components/ui/button.tsx
+- src/components/ui/calendar.tsx
+- src/components/ui/card.tsx
+- src/components/ui/carousel.tsx
+- src/components/ui/chart.tsx
+- src/components/ui/checkbox.tsx
+- src/components/ui/collapsible.tsx
+- src/components/ui/command.tsx
+- src/components/ui/context-menu.tsx
+- src/components/ui/dialog.tsx
+- src/components/ui/drawer.tsx
+- src/components/ui/dropdown-menu.tsx
+- src/components/ui/form.tsx
+- src/components/ui/hover-card.tsx
+- src/components/ui/input-otp.tsx
+- src/components/ui/input.tsx
+- src/components/ui/label.tsx
+- src/components/ui/menubar.tsx
+- src/components/ui/navigation-menu.tsx
+- src/components/ui/pagination.tsx
+- src/components/ui/popover.tsx
+- src/components/ui/progress.tsx
+- src/components/ui/radio-group.tsx
+- src/components/ui/resizable.tsx
+- src/components/ui/scroll-area.tsx
+- src/components/ui/select.tsx
+- src/components/ui/separator.tsx
+- src/components/ui/sheet.tsx
+- src/components/ui/sidebar.tsx
+- src/components/ui/skeleton.tsx
+- src/components/ui/slider.tsx
+- src/components/ui/sonner.tsx
+- src/components/ui/switch.tsx
+- src/components/ui/table.tsx
+- src/components/ui/tabs.tsx
+- src/components/ui/textarea.tsx
+- src/components/ui/toggle-group.tsx
+- src/components/ui/toggle.tsx
+- src/components/ui/tooltip.tsx
