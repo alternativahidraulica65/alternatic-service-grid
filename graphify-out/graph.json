@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T23:17:13.801390+00:00",
+  "generated_at": "2026-09-02T18:52:05.082203+00:00",
   "files": [
     {
       "path": "eslint.config.js",
@@ -48,6 +48,10 @@
     {
       "path": "src/server.ts",
       "bytes": 2048
+    },
+    {
+      "path": ".lovasiri/sync.json",
+      "bytes": 80
     },
     {
       "path": ".lovable/project.json",
@@ -199,7 +203,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
-      "bytes": 8601
+      "bytes": 11328
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -1922,6 +1926,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/operador.tsx",
       "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/operador.tsx",
+      "target": "react"
     },
     {
       "source": "src/routes/_authenticated/dashboard/operador.tsx",
