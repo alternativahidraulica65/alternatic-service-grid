@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 // Admin temp: admin.temp@alternativa.com / admin123
 
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -42,7 +42,6 @@ export const Route = createFileRoute("/")({
 });
 
 function LoginPage() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -50,11 +49,11 @@ function LoginPage() {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        router.navigate({ to: "/dashboard", replace: true });
+        window.location.replace("/dashboard");
       }
     };
     checkUser();
-  }, [router]);
+  }, []);
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -80,10 +79,10 @@ function LoginPage() {
         toast.error("Sessão não iniciada", {
           description: "Verifique seu e-mail antes de continuar.",
         });
+        setIsLoading(false);
         return;
       }
 
-      // Correção: colunas 'id' e 'perfil' (no schema original)
       const { data: usuario, error: profileError } = await supabase
         .from('usuarios')
         .select('perfil, nome')
@@ -98,7 +97,8 @@ function LoginPage() {
         description: `Bem-vindo de volta, ${usuario?.nome || 'Colaborador'}.`,
       });
 
-      await router.navigate({ to: "/dashboard", replace: true });
+      // Redirecionamento forçado para garantir carregamento e navegação adequados
+      window.location.replace("/dashboard");
     } catch (error: any) {
       console.error("Login error:", error);
       
@@ -204,7 +204,7 @@ function LoginPage() {
                           });
                         }}
                       >
-                        Esqueceu?
+                        Esqueceu a senha?
                       </a>
                     </div>
                     <FormControl>
