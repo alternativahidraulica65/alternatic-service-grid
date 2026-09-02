@@ -29,15 +29,17 @@ function KanbanCard({ os }: any) {
   return (
     <div className="p-3 rounded-lg bg-white border border-border hover:border-primary/50 transition-all shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">{os.numero_os}</span>
-        <span className="text-[10px] text-muted-foreground">{os.data_abertura ? new Date(os.data_abertura).toLocaleDateString() : 'N/A'}</span>
+        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">{os.id}</span>
+        <span className="text-[10px] text-muted-foreground">{os.data_entrada ? new Date(os.data_entrada).toLocaleDateString() : 'N/A'}</span>
       </div>
-      <p className="text-xs font-medium text-foreground mb-3 uppercase">{os.descricao || "Sem descrição"}</p>
+      <p className="text-xs font-medium text-foreground mb-3 uppercase">{os.observacao || "Sem descrição"}</p>
       <div className="flex items-center justify-between">
-        <Badge variant="secondary" className="text-[9px] uppercase tracking-tighter">{os.cliente || "S/ Cliente"}</Badge>
+        <Badge variant="secondary" className="text-[9px] uppercase tracking-tighter">
+          {os.cliente_id ? `Cliente ${os.cliente_id.substring(0,4)}` : "S/ Cliente"}
+        </Badge>
         <div className="flex -space-x-1.5">
            <div className="h-5 w-5 rounded-full bg-slate-200 border border-white flex items-center justify-center text-[8px] font-bold">
-             {os.tecnico_id ? "T" : "?"}
+             {os.operador_atribuido ? "T" : "?"}
            </div>
         </div>
       </div>
@@ -51,29 +53,30 @@ function DashboardGestor() {
     queryKey: ['dashboard_gestor_os'],
     queryFn: async () => {
       console.log('Carregando OS para dashboard gestor...');
+      // Ajustado: campo 'data_entrada' em vez de 'created_at'
       const { data, error } = await supabase
         .from('ordens_servico')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('data_entrada', { ascending: false });
       
       if (error) {
         console.error('Erro no dashboard gestor:', error);
         throw error;
       }
-      console.log('OS carregadas:', data?.length);
-      return data;
+      return data || [];
     }
   });
 
   const { data: counters } = useQuery({
     queryKey: ['dashboard_gestor_counters'],
     queryFn: async () => {
+      // Ajustado: 'perfil' em vez de 'cargo', 'materias_primas' em vez de 'materiais'
       const [
         { count: operadores },
         { count: materiais }
       ] = await Promise.all([
-        supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('cargo', 'operador'),
-        supabase.from('materiais').select('*', { count: 'exact', head: true })
+        supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('perfil', 'operador'),
+        supabase.from('materias_primas').select('*', { count: 'exact', head: true })
       ]);
       return { operadores: operadores || 0, materiais: materiais || 0 };
     }
@@ -111,7 +114,6 @@ function DashboardGestor() {
         <p className="text-sm text-muted-foreground font-medium">Controle de fluxo operacional e gargalos da oficina.</p>
       </div>
 
-      {/* KPIs Operacionais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <Card className="col-span-2 lg:col-span-1 bg-primary text-primary-foreground border-none shadow-lg">
           <CardHeader className="p-4">
@@ -159,7 +161,6 @@ function DashboardGestor() {
         </Card>
       </div>
 
-      {/* Kanban de Status */}
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6 overflow-x-auto pb-4">
         {stats.columns.map((column) => {
           const items = ordens.filter(o => o.status === column.status);
@@ -189,7 +190,6 @@ function DashboardGestor() {
         })}
       </div>
 
-      {/* Lista de Tarefas / Pendências */}
       <Card className="border-border shadow-md">
         <CardHeader className="bg-muted/10 border-b border-border/50">
            <CardTitle className="text-base font-bold">Alertas Operacionais</CardTitle>

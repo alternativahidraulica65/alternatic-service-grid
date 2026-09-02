@@ -50,7 +50,7 @@ function PrecificacaoPage() {
         .select('*')
         .in('status', ['aberta', 'orcamento_pendente']);
       if (error) throw error;
-      return data;
+      return data || [];
     }
   });
 
@@ -58,25 +58,24 @@ function PrecificacaoPage() {
     queryKey: ['custos_os_selecionada', selectedOSId],
     queryFn: async () => {
       if (!selectedOSId) return [];
+      // Ajustado: Tabela é 'os_custos'
       const { data, error } = await supabase
-        .from('custos_os')
+        .from('os_custos')
         .select('*')
         .eq('os_id', selectedOSId);
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 
-  const selectedOS = orders?.find(o => o.id === selectedOSId);
-  const custoTotal = custos?.reduce((acc, curr) => acc + (Number(curr.custo_interno) || 0), 0) || 0;
-
+  const selectedOS = orders?.find(o => o.id.toString() === selectedOSId);
   
-  // Preço Venda = Custo / (1 - Margem/100)
+  // Ajustado: 'valor_total_custo' em vez de 'custo_interno'
+  const custoTotal = custos?.reduce((acc, curr) => acc + (Number(curr.valor_total_custo) || 0), 0) || 0;
+
   const precoVenda = custoTotal / (1 - margem / 100);
   const lucroBruto = precoVenda - custoTotal;
   
-  // Comissão 50/50: Metade do lucro bruto
-  // Padrão: 5% do valor de venda (exemplo)
   const comissao = regraComissao === "divisao_50_50" ? lucroBruto * 0.5 : precoVenda * 0.05;
 
   const handleAprovar = async () => {
@@ -87,8 +86,8 @@ function PrecificacaoPage() {
         .from('ordens_servico')
         .update({ 
           status: 'orcamento_pendente',
-          valor_total: precoVenda,
-          margem_lucro: margem
+          valor_final: precoVenda,
+          margem_lucro_aplicada: margem
         })
         .eq('id', selectedOSId);
 
@@ -140,8 +139,8 @@ function PrecificacaoPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {orders?.map(os => (
-                    <SelectItem key={os.id} value={os.id}>
-                      {os.numero_os} - {os.cliente}
+                    <SelectItem key={os.id} value={os.id.toString()}>
+                      {os.id} - Cliente {os.cliente_id?.substring(0,4)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -163,7 +162,7 @@ function PrecificacaoPage() {
                         <p className="text-[10px] text-slate-500 uppercase">{item.categoria}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-mono text-slate-900">R$ {(Number(item.custo_interno) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                        <p className="font-mono text-slate-900">R$ {(Number(item.valor_total_custo) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                       </div>
 
                     </div>

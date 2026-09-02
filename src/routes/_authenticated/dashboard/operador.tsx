@@ -39,7 +39,7 @@ function OSItem({ os, onClick }: any) {
         </div>
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-black text-primary uppercase tracking-widest">{os.numero_os}</span>
+            <span className="text-xs font-black text-primary uppercase tracking-widest">{os.id}</span>
             <Badge variant="outline" className={`text-[9px] uppercase font-bold ${statusColors[os.status] || ''}`}>
               {os.status}
             </Badge>
@@ -49,8 +49,8 @@ function OSItem({ os, onClick }: any) {
               </Badge>
             )}
           </div>
-          <p className="text-sm font-bold text-foreground">{os.cliente}</p>
-          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">{os.descricao}</p>
+          <p className="text-sm font-bold text-foreground">Cliente {os.cliente_id?.substring(0,4) || ""}</p>
+          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">{os.observacao}</p>
         </div>
       </div>
       <div className="flex items-center gap-3">
@@ -118,14 +118,15 @@ function DashboardOperador() {
       const { data: profile } = await supabase.from('usuarios').select('id').eq('email', user.email).single();
       if (!profile) return [];
 
+      // Ajustado: campo 'operador_atribuido'
       const { data, error } = await supabase
         .from('ordens_servico')
         .select('*')
-        .eq('tecnico_id', profile.id)
+        .eq('operador_atribuido', profile.id)
         .in('status', ['aberta', 'vistoria', 'orcamento_pendente', 'usinagem', 'montagem']);
       
       if (error) throw error;
-      return data;
+      return data || [];
     }
   });
 
@@ -164,7 +165,6 @@ function DashboardOperador() {
         <p className="text-sm text-muted-foreground font-medium">Ordens de serviço atribuídas a você.</p>
       </div>
 
-      {/* KPIs Rápidos com Filtro Integrado */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <OperadorKPICard 
           title="Minha Fila" 
@@ -201,7 +201,6 @@ function DashboardOperador() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Lista Principal de OS Filtrada */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -226,7 +225,6 @@ function DashboardOperador() {
           </div>
         </div>
 
-        {/* Módulo Lateral: Próximos Passos / Guias */}
         <div className="space-y-6">
           <Card className="border-border shadow-md bg-slate-900 text-white">
             <CardHeader className="border-b border-white/5 pb-4">

@@ -1,37 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './types';
-import { brokeredPreviewStorage } from './previewAuthStorage';
+import { createClient } from "@supabase/supabase-js";
 
-function isNewSupabaseApiKey(value: string): boolean {
-  return value.startsWith('sb_publishable_') || value.startsWith('sb_secret_');
-}
-
-function createSupabaseFetch(supabaseKey: string): typeof fetch {
-  return (input, init) => {
-    const headers = new Headers(
-      typeof Request !== 'undefined' && input instanceof Request ? input.headers : undefined,
-    );
-    if (init?.headers) {
-      new Headers(init.headers).forEach((value, key) => headers.set(key, value));
-    }
-    if (isNewSupabaseApiKey(supabaseKey) && headers.get('Authorization') === `Bearer ${supabaseKey}`) {
-      headers.delete('Authorization');
-    }
-    headers.set('apikey', supabaseKey);
-    return fetch(input, { ...init, headers });
-  };
-}
-
-const SUPABASE_URL = import.meta.env['VITE_SUPABASE_URL']!;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env['VITE_SUPABASE_ANON_KEY']!;
-
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  global: {
-    fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
+const supabaseUrl = "https://mpwnrcxyyeqftrejwmmx.supabase.co";
+const supabasePublishableKey = "sb_publishable_H3jMZYabk8lKGsmmBGo-fg_DbkPUkGD";
+const memory = new Map<string, string>();
+const resilientStorage = {
+  getItem(key: string) {
+    try { return window.localStorage.getItem(key); } catch { return memory.get(key) ?? null; }
   },
+  setItem(key: string, value: string) {
+    try { window.localStorage.setItem(key, value); } catch { memory.set(key, value); }
+  },
+  removeItem(key: string) {
+    try { window.localStorage.removeItem(key); } catch { memory.delete(key); }
+  },
+};
+
+export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {
-    storage: brokeredPreviewStorage(),
+    storage: resilientStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+    detectSessionInUrl: true,
+  },
 });

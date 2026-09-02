@@ -83,11 +83,11 @@ function LoginPage() {
         return;
       }
 
-      // US1 - Autenticação: Mapeamento de Sessão
+      // Correção: colunas 'id' e 'perfil' (no schema original)
       const { data: usuario, error: profileError } = await supabase
         .from('usuarios')
-        .select('cargo, nome')
-        .eq('user_id', data.session.user.id)
+        .select('perfil, nome')
+        .eq('id', data.session.user.id)
         .single();
 
       if (profileError) {
@@ -102,7 +102,6 @@ function LoginPage() {
     } catch (error: any) {
       console.error("Login error:", error);
       
-      // Alerta visual Industrial Premium
       toast.error("Falha no login", {
         description: error.message === "Invalid login credentials"
           ? "Usuário ou senha incorretos."
@@ -119,7 +118,6 @@ function LoginPage() {
 
   return (
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Background industrial com overlay robusto */}
       <div 
         className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
         style={{ 
@@ -131,7 +129,6 @@ function LoginPage() {
       </div>
 
       <div className="w-full max-w-md">
-        {/* Brand header */}
         <div className="mb-8 text-center">
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary shadow-[0_0_30px_rgba(255,215,0,0.3)] ring-1 ring-white/20">
             <Droplets className="h-10 w-10 text-primary-foreground" strokeWidth={2.5} />
@@ -148,7 +145,6 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* Login card */}
         <div className="group relative rounded-2xl border border-white/10 bg-slate-900/60 p-8 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:border-primary/20">
           <div className="absolute -inset-[1px] -z-10 rounded-2xl bg-gradient-to-b from-white/10 to-transparent opacity-50" />
           

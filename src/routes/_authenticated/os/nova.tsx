@@ -14,7 +14,7 @@ import {
   ChevronLeft,
   Check
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,9 +43,11 @@ function NovaOSPage() {
 
   const [selectedCliente, setSelectedCliente] = useState<string>("");
   const [tipoEquipamento, setTipoEquipamento] = useState<string>("");
-  const [prioridade, setPrioridade] = useState<string>("MÃ©dia");
+  const [prioridade, setPrioridade] = useState<string>("Média");
   const [descricao, setDescricao] = useState<string>("");
   const [relatorioCliente, setRelatorioCliente] = useState<string>("");
+  const [fotos, setFotos] = useState<(File | null)[]>([null, null]);
+  const [pecas, setPecas] = useState<{id: number, nome: string, local: string}[]>([]);
   
   const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_lookup'],
@@ -56,6 +58,30 @@ function NovaOSPage() {
     }
   });
 
+  const { data: clienteDetails } = useQuery({
+    queryKey: ['cliente_detalhes', selectedCliente],
+    queryFn: async () => {
+      if (!selectedCliente) return null;
+      const { data, error } = await supabase.from('clientes').select('id, nome, ultimo_numero_orcamento').eq('id', selectedCliente).single();
+      if (error) {
+        console.warn("Erro ao buscar detalhes do cliente", error);
+        return null;
+      }
+      return data as any;
+    },
+    enabled: !!selectedCliente
+  });
+
+  useEffect(() => {
+    if (clienteDetails) {
+      const ultimo = clienteDetails.ultimo_numero_orcamento || 0;
+      const proximo = ultimo + 1;
+      setRelatorioCliente(`REL-${new Date().getFullYear()}-${proximo.toString().padStart(3, '0')}`);
+    } else {
+      setRelatorioCliente("");
+    }
+  }, [clienteDetails]);
+
   const { data: tiposEquipamento = [] } = useQuery({
     queryKey: ['tipos_equipamento'],
     queryFn: async () => {
@@ -64,8 +90,6 @@ function NovaOSPage() {
       return data;
     }
   });
-
-  const [pecas, setPecas] = useState<{id: number, nome: string, local: string}[]>([]);
 
   const handleAddPeca = () => {
     setPecas([...pecas, { id: Date.now(), nome: "", local: "" }]);
@@ -84,7 +108,11 @@ function NovaOSPage() {
     }
     if (currentStep === 1) {
       if (!descricao.trim()) {
-        toast.error("Preencha a descriÃ§Ã£o do defeito para prosseguir.");
+        toast.error("Preencha a descrição do defeito para prosseguir.");
+        return;
+      }
+      if (fotos.filter(f => f !== null).length < 2) {
+        toast.error("Adicione as 2 fotos do equipamento (obrigatório).");
         return;
       }
     }
@@ -97,7 +125,7 @@ function NovaOSPage() {
 
   const handleSave = async () => {
     if (!selectedCliente || !descricao) {
-      toast.error("Preencha cliente e descriÃ§Ã£o.");
+      toast.error("Preencha cliente e descrição.");
       return;
     }
 
@@ -125,20 +153,49 @@ function NovaOSPage() {
 
       if (osError) throw osError;
 
+      // Upload das fotos
+      const uploadedFotos = [];
+      for (let i = 0; i < fotos.length; i++) {
+        const file = fotos[i];
+        if (file) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${os.id}/triagem/foto-${i}-${Date.now()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage.from('os-assets').upload(fileName, file);
+          if (!uploadError) {
+            const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
+            uploadedFotos.push({
+              os_id: os.id,
+              foto_url: urlData.publicUrl,
+              tipo: 'triagem'
+            });
+          }
+        }
+      }
+      
+      if (uploadedFotos.length > 0) {
+        await supabase.from('os_fotos_anexos').insert(uploadedFotos);
+      }
+
       if (pecas.length > 0) {
         const { error: pecasError } = await supabase
           .from('pecas_os')
           .insert(pecas.map(p => ({
             os_id: os.id,
-            nome: p.nome || "PeÃ§a nÃ£o identificada",
-            localizacao: p.local || "NÃ£o informado",
+            nome: p.nome || "Peça não identificada",
+            localizacao: p.local || "Não informado",
             criado_por: currentUserId
           })));
         
         if (pecasError) throw pecasError;
       }
+      
+      // Atualizar o número de orçamento do cliente (incrementar)
+      if (clienteDetails) {
+        const novoNumero = (clienteDetails.ultimo_numero_orcamento || 0) + 1;
+        await supabase.from('clientes').update({ ultimo_numero_orcamento: novoNumero }).eq('id', selectedCliente);
+      }
 
-      toast.success("Ordem de ServiÃ§o aberta!", {
+      toast.success("Ordem de Serviço aberta!", {
         description: `${proximoNum} gerada com sucesso.`
       });
       
@@ -152,10 +209,10 @@ function NovaOSPage() {
   };
 
   const stepsConfig = [
-    { label: 'Dados BÃ¡sicos', icon: Settings },
+    { label: 'Dados Básicos', icon: Settings },
     { label: 'Defeito Reportado', icon: ClipboardCheck },
-    { label: 'PeÃ§as e Rastreio', icon: Box },
-    { label: 'RevisÃ£o', icon: Save },
+    { label: 'Peças e Rastreio', icon: Box },
+    { label: 'Revisão', icon: Save },
   ];
 
   return (
@@ -166,15 +223,12 @@ function NovaOSPage() {
         </Button>
         <div>
           <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">ABERTURA DE <span className="text-primary">OS / TRIAGEM</span></h2>
-          <p className="text-sm text-muted-foreground font-medium">Crie uma nova Ordem de ServiÃ§o passo a passo.</p>
+          <p className="text-sm text-muted-foreground font-medium">Crie uma nova Ordem de Serviço passo a passo.</p>
         </div>
       </div>
 
-      {/* Stepper visual */}
       <div className="relative mb-12 px-4 md:px-12">
-        {/* Fundo da linha */}
         <div className="absolute top-5 left-12 right-12 h-1 bg-slate-200 -z-10 rounded-full" />
-        {/* Linha preenchida */}
         <div 
           className="absolute top-5 left-12 h-1 bg-primary -z-10 transition-all duration-500 rounded-full" 
           style={{ width: `calc(${currentStep * 33.33}% - 2rem)` }}
@@ -204,7 +258,6 @@ function NovaOSPage() {
         </div>
       </div>
 
-      {/* Step Content */}
       <div className="min-h-[400px]">
         {currentStep === 0 && (
           <Card className="border-border shadow-md border-t-4 border-t-primary animate-in fade-in zoom-in-95 duration-300">
@@ -230,12 +283,13 @@ function NovaOSPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">RelatÃ³rio Cliente (Opcional)</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Relatório Cliente (Automático)</Label>
                 <Input 
-                  placeholder="Ex: REL-2024-001" 
-                  className="h-11 border-border" 
+                  placeholder="Selecione um cliente..." 
+                  className="h-11 border-border bg-slate-100 cursor-not-allowed font-mono text-slate-600" 
                   value={relatorioCliente}
-                  onChange={(e) => setRelatorioCliente(e.target.value)}
+                  readOnly
+                  disabled
                 />
               </div>
               <div className="space-y-2">
@@ -259,7 +313,7 @@ function NovaOSPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Baixa">Baixa</SelectItem>
-                    <SelectItem value="MÃ©dia">MÃ©dia</SelectItem>
+                    <SelectItem value="Média">Média</SelectItem>
                     <SelectItem value="Alta">Alta (Urgente)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -269,26 +323,74 @@ function NovaOSPage() {
         )}
 
         {currentStep === 1 && (
-          <Card className="border-border shadow-md border-t-4 border-t-primary animate-in fade-in zoom-in-95 duration-300">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <ClipboardCheck className="h-5 w-5 text-primary" />
-                DescriÃ§Ã£o do Defeito
-              </CardTitle>
-              <CardDescription className="text-xs font-medium">Informe os detalhes reportados sobre o problema.</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Relato do Problema *</Label>
-                <Textarea 
-                  placeholder="Descreva detalhadamente os problemas relatados pelo cliente e as condiÃ§Ãµes de operaÃ§Ã£o, se aplicÃ¡vel..." 
-                  className="min-h-[200px] border-border text-sm"
-                  value={descricao}
-                  onChange={(e) => setDescricao(e.target.value)}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
+            <Card className="border-border shadow-md border-t-4 border-t-primary">
+              <CardHeader className="bg-muted/10 border-b border-border/50">
+                <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                  <ClipboardCheck className="h-5 w-5 text-primary" />
+                  Descrição do Defeito
+                </CardTitle>
+                <CardDescription className="text-xs font-medium">Informe os detalhes reportados sobre o problema.</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Relato do Problema *</Label>
+                  <Textarea 
+                    placeholder="Descreva detalhadamente os problemas relatados pelo cliente e as condições de operação, se aplicável..." 
+                    className="min-h-[160px] border-border text-sm"
+                    value={descricao}
+                    onChange={(e) => setDescricao(e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border shadow-md border-t-4 border-t-primary">
+              <CardHeader className="bg-muted/10 border-b border-border/50">
+                <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                  <Camera className="h-5 w-5 text-primary" />
+                  Fotos do Equipamento
+                </CardTitle>
+                <CardDescription className="text-xs font-medium text-amber-600 font-bold">São necessárias no mínimo 2 fotos para criar a OS.</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {[0, 1].map((index) => (
+                    <div key={index} className="flex flex-col gap-2">
+                      {fotos[index] ? (
+                        <div className="relative aspect-square rounded-xl border border-border overflow-hidden group shadow-sm">
+                          <img src={URL.createObjectURL(fotos[index]!)} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button variant="destructive" size="icon" onClick={() => {
+                              const newFotos = [...fotos];
+                              newFotos[index] = null;
+                              setFotos(newFotos);
+                            }}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <label className="relative aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors flex flex-col items-center justify-center cursor-pointer bg-slate-50">
+                          <Camera className="h-8 w-8 text-slate-400 mb-2" />
+                          <span className="text-[10px] font-bold uppercase text-slate-500 text-center px-2">
+                            {index === 0 ? "Foto Frontal / Geral" : "Foto Detalhe / Plaqueta"}
+                          </span>
+                          <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              const newFotos = [...fotos];
+                              newFotos[index] = e.target.files[0];
+                              setFotos(newFotos);
+                            }
+                          }} />
+                        </label>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {currentStep === 2 && (
@@ -297,9 +399,9 @@ function NovaOSPage() {
               <CardContent className="pt-6 flex gap-3">
                 <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
                 <div className="space-y-1">
-                  <p className="text-xs font-bold text-slate-900 uppercase">AtenÃ§Ã£o ao Rastreamento</p>
+                  <p className="text-xs font-bold text-slate-900 uppercase">Atenção ao Rastreamento</p>
                   <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
-                    Registre todos os componentes, manuais ou partes pequenas que foram recebidas junto com o equipamento para garantir controle do acervo fÃ­sico.
+                    Registre todos os componentes, manuais ou partes pequenas que foram recebidas junto com o equipamento para garantir controle do acervo físico.
                   </p>
                 </div>
               </CardContent>
@@ -310,20 +412,20 @@ function NovaOSPage() {
                 <div>
                   <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
                     <Box className="h-5 w-5 text-primary" />
-                    Guarda de PeÃ§as
+                    Guarda de Peças
                   </CardTitle>
                 </div>
                 <Button variant="outline" size="sm" onClick={handleAddPeca} className="h-9 border-primary text-primary hover:bg-primary/5 font-bold text-[10px] uppercase">
                   <Plus className="mr-2 h-4 w-4" />
-                  Adicionar PeÃ§a
+                  Adicionar Peça
                 </Button>
               </CardHeader>
               <CardContent className="pt-6">
                 {pecas.length === 0 ? (
                   <div className="py-12 flex flex-col items-center justify-center text-muted-foreground bg-slate-50 border-2 border-dashed border-border rounded-xl">
                     <Box className="h-10 w-10 mb-2 opacity-20" />
-                    <p className="text-xs font-bold uppercase tracking-widest opacity-40">Nenhuma peÃ§a registrada ainda</p>
-                    <Button variant="link" onClick={handleAddPeca} className="text-xs text-primary font-bold mt-2">Clique aqui para comeÃ§ar</Button>
+                    <p className="text-xs font-bold uppercase tracking-widest opacity-40">Nenhuma peça registrada ainda</p>
+                    <Button variant="link" onClick={handleAddPeca} className="text-xs text-primary font-bold mt-2">Clique aqui para começar</Button>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -333,7 +435,7 @@ function NovaOSPage() {
                           <Camera className="h-5 w-5" />
                         </div>
                         <Input 
-                          placeholder="Ex: Cabo de forÃ§a, Placa controladora..." 
+                          placeholder="Ex: Cabo de força, Placa controladora..." 
                           className="h-11 text-xs font-bold border-border bg-white flex-1" 
                           value={peca.nome}
                           onChange={(e) => setPecas(pecas.map(p => p.id === peca.id ? { ...p, nome: e.target.value } : p))}
@@ -361,7 +463,7 @@ function NovaOSPage() {
             <CardHeader className="bg-slate-900 text-white border-b border-white/10">
               <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
                 <Save className="h-5 w-5 text-primary" />
-                RevisÃ£o Final e CriaÃ§Ã£o
+                Revisão Final e Criação
               </CardTitle>
               <CardDescription className="text-slate-400 text-xs font-medium">Verifique os dados informados antes de confirmar a abertura.</CardDescription>
             </CardHeader>
@@ -370,40 +472,46 @@ function NovaOSPage() {
                 <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-5 rounded-xl border border-slate-100">
                   <div>
                     <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Cliente</span>
-                    <span className="font-bold text-slate-900 text-base">{clientes.find(c => c.id === selectedCliente)?.nome || "NÃ£o selecionado"}</span>
+                    <span className="font-bold text-slate-900 text-base">{clientes.find(c => c.id === selectedCliente)?.nome || "Não selecionado"}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Tipo de Equipamento</span>
-                    <span className="font-bold text-slate-900 text-base">{tiposEquipamento?.find(t => t.id === tipoEquipamento)?.nome || "NÃ£o selecionado"}</span>
+                    <span className="font-bold text-slate-900 text-base">{tiposEquipamento?.find(t => t.id === tipoEquipamento)?.nome || "Não selecionado"}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Prioridade</span>
                     <span className={`font-bold text-base ${prioridade === 'Alta' ? 'text-red-600' : 'text-slate-900'}`}>{prioridade}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">RelatÃ³rio Vinculado</span>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Relatório Vinculado</span>
                     <span className="font-bold text-slate-900 text-base">{relatorioCliente || "Nenhum"}</span>
                   </div>
                   <div className="col-span-2 mt-2 pt-4 border-t border-slate-200">
                     <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-2">Defeito Reportado</span>
-                    <p className="text-slate-700 italic bg-white p-3 rounded border border-slate-200">{descricao || "NÃ£o informado"}</p>
+                    <p className="text-slate-700 italic bg-white p-3 rounded border border-slate-200">{descricao || "Não informado"}</p>
+                  </div>
+                  <div className="col-span-2 mt-2 pt-4 border-t border-slate-200 flex gap-4">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-2 w-full">Fotos Anexadas</span>
+                    {fotos.map((f, i) => f && (
+                       <img key={i} src={URL.createObjectURL(f)} className="h-16 w-16 object-cover rounded shadow-sm border border-border" />
+                    ))}
                   </div>
                 </div>
                 
                 <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                  <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-3">PeÃ§as em Rastreabilidade ({pecas.length})</span>
+                  <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-3">Peças em Rastreabilidade ({pecas.length})</span>
                   {pecas.length > 0 ? (
                     <ul className="space-y-2">
                       {pecas.map(p => (
                         <li key={p.id} className="flex items-center gap-2 text-sm text-slate-700 bg-white p-2 rounded border border-slate-200">
                           <Box className="h-4 w-4 text-slate-400" /> 
                           <span className="font-bold flex-1">{p.nome || 'Item sem nome'}</span>
-                          <span className="text-[10px] font-black uppercase text-muted-foreground bg-slate-100 px-2 py-1 rounded">{p.local || 'Local NÃ£o Informado'}</span>
+                          <span className="text-[10px] font-black uppercase text-muted-foreground bg-slate-100 px-2 py-1 rounded">{p.local || 'Local Não Informado'}</span>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <span className="text-xs font-medium text-slate-500 italic block py-2">Nenhuma peÃ§a registrada para guarda.</span>
+                    <span className="text-xs font-medium text-slate-500 italic block py-2">Nenhuma peça registrada para guarda.</span>
                   )}
                 </div>
               </div>
@@ -412,7 +520,6 @@ function NovaOSPage() {
         )}
       </div>
 
-      {/* Bottom Navigation */}
       <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
         <Button 
           variant="outline" 
@@ -428,7 +535,7 @@ function NovaOSPage() {
             onClick={handleNext}
             className="bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold uppercase tracking-widest h-12 px-8 shadow-lg"
           >
-            PrÃ³ximo Passo <ChevronRight className="ml-2 h-4 w-4" />
+            Próximo Passo <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         ) : (
           <Button 
