@@ -4,15 +4,15 @@ import {
   ArrowLeft, 
   Settings, 
   Box, 
-  Wrench, 
   ClipboardCheck, 
-  UserCheck, 
-  Factory,
   Camera,
   Plus,
   Trash2,
   Save,
-  AlertCircle
+  AlertCircle,
+  ChevronRight,
+  ChevronLeft,
+  Check
 } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -37,10 +37,13 @@ export const Route = createFileRoute("/_authenticated/os/nova")({
 function NovaOSPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  
   const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+
   const [selectedCliente, setSelectedCliente] = useState<string>("");
   const [tipoEquipamento, setTipoEquipamento] = useState<string>("");
-  const [prioridade, setPrioridade] = useState<string>("Média");
+  const [prioridade, setPrioridade] = useState<string>("MÃ©dia");
   const [descricao, setDescricao] = useState<string>("");
   const [relatorioCliente, setRelatorioCliente] = useState<string>("");
   
@@ -68,9 +71,33 @@ function NovaOSPage() {
     setPecas([...pecas, { id: Date.now(), nome: "", local: "" }]);
   };
 
+  const handleRemovePeca = (id: number) => {
+    setPecas(pecas.filter(p => p.id !== id));
+  };
+
+  const handleNext = () => {
+    if (currentStep === 0) {
+      if (!selectedCliente) {
+        toast.error("Selecione um cliente para prosseguir.");
+        return;
+      }
+    }
+    if (currentStep === 1) {
+      if (!descricao.trim()) {
+        toast.error("Preencha a descriÃ§Ã£o do defeito para prosseguir.");
+        return;
+      }
+    }
+    if (currentStep < 3) setCurrentStep(curr => curr + 1);
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 0) setCurrentStep(curr => curr - 1);
+  };
+
   const handleSave = async () => {
     if (!selectedCliente || !descricao) {
-      toast.error("Preencha cliente e descrição.");
+      toast.error("Preencha cliente e descriÃ§Ã£o.");
       return;
     }
 
@@ -103,15 +130,15 @@ function NovaOSPage() {
           .from('pecas_os')
           .insert(pecas.map(p => ({
             os_id: os.id,
-            nome: p.nome || "Peça não identificada",
-            localizacao: p.local || "Não informado",
+            nome: p.nome || "PeÃ§a nÃ£o identificada",
+            localizacao: p.local || "NÃ£o informado",
             criado_por: currentUserId
           })));
         
         if (pecasError) throw pecasError;
       }
 
-      toast.success("Ordem de Serviço aberta!", {
+      toast.success("Ordem de ServiÃ§o aberta!", {
         description: `${proximoNum} gerada com sucesso.`
       });
       
@@ -124,31 +151,73 @@ function NovaOSPage() {
     }
   };
 
+  const stepsConfig = [
+    { label: 'Dados BÃ¡sicos', icon: Settings },
+    { label: 'Defeito Reportado', icon: ClipboardCheck },
+    { label: 'PeÃ§as e Rastreio', icon: Box },
+    { label: 'RevisÃ£o', icon: Save },
+  ];
+
   return (
-    <div className="space-y-8 p-6 md:p-10 pb-20">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary">
+    <div className="space-y-8 p-6 md:p-10 pb-20 max-w-5xl mx-auto">
+      <div className="flex items-center gap-4 mb-8">
+        <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary shrink-0">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
           <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">ABERTURA DE <span className="text-primary">OS / TRIAGEM</span></h2>
-          <p className="text-sm text-muted-foreground font-medium">Entrada de equipamento e registro inicial de componentes.</p>
+          <p className="text-sm text-muted-foreground font-medium">Crie uma nova Ordem de ServiÃ§o passo a passo.</p>
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-12">
-        {/* Coluna Principal: Formulário */}
-        <div className="lg:col-span-8 space-y-6">
-          <Card className="border-border shadow-md overflow-hidden border-t-4 border-t-primary">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <div className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-primary" />
-                <CardTitle className="text-base font-bold uppercase tracking-widest">Dados do Equipamento</CardTitle>
+      {/* Stepper visual */}
+      <div className="relative mb-12 px-4 md:px-12">
+        {/* Fundo da linha */}
+        <div className="absolute top-5 left-12 right-12 h-1 bg-slate-200 -z-10 rounded-full" />
+        {/* Linha preenchida */}
+        <div 
+          className="absolute top-5 left-12 h-1 bg-primary -z-10 transition-all duration-500 rounded-full" 
+          style={{ width: `calc(${currentStep * 33.33}% - 2rem)` }}
+        />
+        
+        <div className="flex justify-between relative z-10">
+          {stepsConfig.map((step, idx) => {
+            const isActive = idx === currentStep;
+            const isCompleted = idx < currentStep;
+            return (
+              <div key={idx} className="flex flex-col items-center gap-2">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300 ${
+                  isActive ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_15px_rgba(255,215,0,0.3)]' : 
+                  isCompleted ? 'border-primary bg-primary/20 text-primary' : 
+                  'border-slate-200 bg-white text-slate-300'
+                }`}>
+                  {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
+                </div>
+                <span className={`text-[10px] font-black uppercase tracking-widest ${
+                  isActive || isCompleted ? 'text-slate-900' : 'text-slate-400'
+                }`}>
+                  {step.label}
+                </span>
               </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Step Content */}
+      <div className="min-h-[400px]">
+        {currentStep === 0 && (
+          <Card className="border-border shadow-md border-t-4 border-t-primary animate-in fade-in zoom-in-95 duration-300">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Settings className="h-5 w-5 text-primary" />
+                Dados do Cliente e Equipamento
+              </CardTitle>
+              <CardDescription className="text-xs font-medium">Vincule a OS ao cliente correto e identifique o tipo de equipamento.</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente *</Label>
                 <Select value={selectedCliente} onValueChange={setSelectedCliente}>
                   <SelectTrigger className="h-11 border-border">
                     <SelectValue placeholder="Selecione o cliente..." />
@@ -161,7 +230,7 @@ function NovaOSPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Relatório Cliente (Opcional)</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">RelatÃ³rio Cliente (Opcional)</Label>
                 <Input 
                   placeholder="Ex: REL-2024-001" 
                   className="h-11 border-border" 
@@ -190,129 +259,186 @@ function NovaOSPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Baixa">Baixa</SelectItem>
-                    <SelectItem value="Média">Média</SelectItem>
+                    <SelectItem value="MÃ©dia">MÃ©dia</SelectItem>
                     <SelectItem value="Alta">Alta (Urgente)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="md:col-span-2 space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Descrição do Defeito</Label>
+            </CardContent>
+          </Card>
+        )}
+
+        {currentStep === 1 && (
+          <Card className="border-border shadow-md border-t-4 border-t-primary animate-in fade-in zoom-in-95 duration-300">
+            <CardHeader className="bg-muted/10 border-b border-border/50">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <ClipboardCheck className="h-5 w-5 text-primary" />
+                DescriÃ§Ã£o do Defeito
+              </CardTitle>
+              <CardDescription className="text-xs font-medium">Informe os detalhes reportados sobre o problema.</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Relato do Problema *</Label>
                 <Textarea 
-                  placeholder="Descreva os problemas relatados pelo cliente..." 
-                  className="min-h-[100px] border-border" 
+                  placeholder="Descreva detalhadamente os problemas relatados pelo cliente e as condiÃ§Ãµes de operaÃ§Ã£o, se aplicÃ¡vel..." 
+                  className="min-h-[200px] border-border text-sm"
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
                 />
               </div>
             </CardContent>
           </Card>
+        )}
 
-          {/* Módulo de Peças Retiradas */}
-          <Card className="border-border shadow-md overflow-hidden">
-            <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Box className="h-5 w-5 text-primary" />
-                <CardTitle className="text-base font-bold uppercase tracking-widest">Guarda de Peças / Rastreabilidade</CardTitle>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleAddPeca} className="h-9 border-primary text-primary hover:bg-primary/5 font-bold text-[10px] uppercase">
-                <Plus className="mr-2 h-4 w-4" />
-                Adicionar Peça
-              </Button>
+        {currentStep === 2 && (
+          <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
+            <Card className="border-border shadow-md border-l-4 border-l-amber-500">
+              <CardContent className="pt-6 flex gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-slate-900 uppercase">AtenÃ§Ã£o ao Rastreamento</p>
+                  <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                    Registre todos os componentes, manuais ou partes pequenas que foram recebidas junto com o equipamento para garantir controle do acervo fÃ­sico.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border shadow-md overflow-hidden">
+              <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                    <Box className="h-5 w-5 text-primary" />
+                    Guarda de PeÃ§as
+                  </CardTitle>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleAddPeca} className="h-9 border-primary text-primary hover:bg-primary/5 font-bold text-[10px] uppercase">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Adicionar PeÃ§a
+                </Button>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {pecas.length === 0 ? (
+                  <div className="py-12 flex flex-col items-center justify-center text-muted-foreground bg-slate-50 border-2 border-dashed border-border rounded-xl">
+                    <Box className="h-10 w-10 mb-2 opacity-20" />
+                    <p className="text-xs font-bold uppercase tracking-widest opacity-40">Nenhuma peÃ§a registrada ainda</p>
+                    <Button variant="link" onClick={handleAddPeca} className="text-xs text-primary font-bold mt-2">Clique aqui para comeÃ§ar</Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {pecas.map((peca) => (
+                      <div key={peca.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-slate-50/50 group">
+                        <div className="h-10 w-10 rounded bg-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors cursor-pointer">
+                          <Camera className="h-5 w-5" />
+                        </div>
+                        <Input 
+                          placeholder="Ex: Cabo de forÃ§a, Placa controladora..." 
+                          className="h-11 text-xs font-bold border-border bg-white flex-1" 
+                          value={peca.nome}
+                          onChange={(e) => setPecas(pecas.map(p => p.id === peca.id ? { ...p, nome: e.target.value } : p))}
+                        />
+                        <Input 
+                          placeholder="Gaveta / Local" 
+                          className="h-11 text-xs font-bold border-border bg-white w-40" 
+                          value={peca.local}
+                          onChange={(e) => setPecas(pecas.map(p => p.id === peca.id ? { ...p, local: e.target.value } : p))}
+                        />
+                        <Button variant="ghost" size="icon" className="h-11 w-11 text-red-400 hover:text-red-500 hover:bg-red-50 shrink-0" onClick={() => handleRemovePeca(peca.id)}>
+                          <Trash2 className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {currentStep === 3 && (
+          <Card className="border-border shadow-md border-t-4 border-t-primary animate-in fade-in zoom-in-95 duration-300">
+            <CardHeader className="bg-slate-900 text-white border-b border-white/10">
+              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+                <Save className="h-5 w-5 text-primary" />
+                RevisÃ£o Final e CriaÃ§Ã£o
+              </CardTitle>
+              <CardDescription className="text-slate-400 text-xs font-medium">Verifique os dados informados antes de confirmar a abertura.</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              {pecas.length === 0 ? (
-                <div className="py-12 flex flex-col items-center justify-center text-muted-foreground bg-slate-50 border-2 border-dashed border-border rounded-xl">
-                  <Box className="h-10 w-10 mb-2 opacity-20" />
-                  <p className="text-xs font-bold uppercase tracking-widest opacity-40">Nenhuma peça registrada</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {pecas.map((peca) => (
-                    <div key={peca.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-slate-50/50 group">
-                      <div className="h-10 w-10 rounded bg-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors cursor-pointer">
-                        <Camera className="h-5 w-5" />
-                      </div>
-                      <Input 
-                        placeholder="Nome da Peça" 
-                        className="h-9 text-xs font-bold border-border bg-white" 
-                        value={peca.nome}
-                        onChange={(e) => setPecas(pecas.map(p => p.id === peca.id ? { ...p, nome: e.target.value } : p))}
-                      />
-                      <Input 
-                        placeholder="Gaveta / Local" 
-                        className="h-9 text-xs font-bold border-border bg-white" 
-                        value={peca.local}
-                        onChange={(e) => setPecas(pecas.map(p => p.id === peca.id ? { ...p, local: e.target.value } : p))}
-                      />
-                      <Button variant="ghost" size="icon" className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-50" onClick={() => setPecas(pecas.filter(p => p.id !== peca.id))}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Coluna Lateral: Resumo e Status */}
-        <div className="lg:col-span-4 space-y-6">
-          <Card className="border-border shadow-md bg-slate-900 text-white overflow-hidden">
-            <CardHeader className="bg-slate-800/50 border-b border-white/5">
-              <CardTitle className="text-base font-bold uppercase tracking-widest">Resumo Operacional</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-6">
-              <div className="space-y-4">
-                {[
-                  { label: "Triagem", icon: ClipboardCheck, status: "current" },
-                  { label: "Laudo Técnico", icon: Wrench, status: "pending" },
-                  { label: "Orçamento", icon: Factory, status: "pending" },
-                  { label: "Aprovação", icon: UserCheck, status: "pending" },
-                ].map((step, i) => (
-                  <div key={i} className="flex items-center gap-4 relative">
-                    {i < 3 && <div className="absolute left-[17px] top-8 w-[2px] h-5 bg-slate-700" />}
-                    <div className={`h-9 w-9 rounded-full border-2 flex items-center justify-center ${
-                      step.status === 'current' ? 'border-primary bg-primary/20 text-primary shadow-[0_0_10px_rgba(255,215,0,0.3)]' : 'border-slate-700 bg-slate-800 text-slate-500'
-                    }`}>
-                      <step.icon className="h-4 w-4" />
-                    </div>
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${step.status === 'current' ? 'text-white' : 'text-slate-500'}`}>
-                      {step.label}
-                    </span>
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-5 rounded-xl border border-slate-100">
+                  <div>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Cliente</span>
+                    <span className="font-bold text-slate-900 text-base">{clientes.find(c => c.id === selectedCliente)?.nome || "NÃ£o selecionado"}</span>
                   </div>
-                ))}
-              </div>
-
-              <div className="pt-6 border-t border-white/5 space-y-4">
-                <div className="p-4 rounded-xl bg-primary text-primary-foreground">
-                  <p className="text-[10px] font-black uppercase tracking-widest mb-1">Status Automático</p>
-                  <p className="text-xl font-black">AGUARDANDO TRIAGEM</p>
+                  <div>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Tipo de Equipamento</span>
+                    <span className="font-bold text-slate-900 text-base">{tiposEquipamento?.find(t => t.id === tipoEquipamento)?.nome || "NÃ£o selecionado"}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Prioridade</span>
+                    <span className={`font-bold text-base ${prioridade === 'Alta' ? 'text-red-600' : 'text-slate-900'}`}>{prioridade}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">RelatÃ³rio Vinculado</span>
+                    <span className="font-bold text-slate-900 text-base">{relatorioCliente || "Nenhum"}</span>
+                  </div>
+                  <div className="col-span-2 mt-2 pt-4 border-t border-slate-200">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-2">Defeito Reportado</span>
+                    <p className="text-slate-700 italic bg-white p-3 rounded border border-slate-200">{descricao || "NÃ£o informado"}</p>
+                  </div>
                 </div>
                 
-                <Button 
-                  disabled={loading}
-                  onClick={handleSave}
-                  className="w-full h-12 bg-white text-slate-900 hover:bg-primary hover:text-primary-foreground font-black uppercase tracking-widest transition-all"
-                >
-                  {loading ? "Processando..." : "Finalizar Abertura"}
-                  <Save className="ml-2 h-4 w-4" />
-                </Button>
+                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                  <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-3">PeÃ§as em Rastreabilidade ({pecas.length})</span>
+                  {pecas.length > 0 ? (
+                    <ul className="space-y-2">
+                      {pecas.map(p => (
+                        <li key={p.id} className="flex items-center gap-2 text-sm text-slate-700 bg-white p-2 rounded border border-slate-200">
+                          <Box className="h-4 w-4 text-slate-400" /> 
+                          <span className="font-bold flex-1">{p.nome || 'Item sem nome'}</span>
+                          <span className="text-[10px] font-black uppercase text-muted-foreground bg-slate-100 px-2 py-1 rounded">{p.local || 'Local NÃ£o Informado'}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-xs font-medium text-slate-500 italic block py-2">Nenhuma peÃ§a registrada para guarda.</span>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
+        )}
+      </div>
 
-          <Card className="border-border shadow-md border-l-4 border-l-amber-500">
-            <CardContent className="pt-6 flex gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-slate-900 uppercase">Atenção ao Rastreamento</p>
-                <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
-                  Todos os componentes pequenos devem ser etiquetados e guardados em gavetas identificadas no sistema.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Bottom Navigation */}
+      <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
+        <Button 
+          variant="outline" 
+          onClick={handlePrev}
+          disabled={currentStep === 0 || loading}
+          className="border-border text-xs font-bold uppercase tracking-widest h-12 px-6"
+        >
+          <ChevronLeft className="mr-2 h-4 w-4" /> Voltar
+        </Button>
+        
+        {currentStep < 3 ? (
+          <Button 
+            onClick={handleNext}
+            className="bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold uppercase tracking-widest h-12 px-8 shadow-lg"
+          >
+            PrÃ³ximo Passo <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        ) : (
+          <Button 
+            onClick={handleSave}
+            disabled={loading}
+            className="bg-primary text-primary-foreground hover:brightness-110 text-xs font-black uppercase tracking-widest h-12 px-10 shadow-lg shadow-primary/30"
+          >
+            {loading ? "Processando..." : "Finalizar Abertura"} {!loading && <Save className="ml-2 h-4 w-4" />}
+          </Button>
+        )}
       </div>
     </div>
   );
