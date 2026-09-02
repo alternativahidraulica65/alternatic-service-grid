@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 import { 
   Wrench, 
   Clock, 
@@ -21,11 +22,14 @@ export const Route = createFileRoute("/_authenticated/dashboard/operador")({
 
 function OSItem({ os, onClick }: any) {
   const statusColors: any = {
-    'aberta': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    'em_andamento': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+    'aberta': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+    'vistoria': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    'em_andamento': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
     'atrasada': 'bg-red-500/10 text-red-500 border-red-500/20',
     'pronto': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
   };
+
+  const isVencida = os.prazo_acordado && new Date(os.prazo_acordado) < new Date();
 
   return (
     <div className="group flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all">
@@ -39,6 +43,11 @@ function OSItem({ os, onClick }: any) {
             <Badge variant="outline" className={`text-[9px] uppercase font-bold ${statusColors[os.status] || ''}`}>
               {os.status}
             </Badge>
+            {isVencida && (
+              <Badge variant="outline" className="text-[9px] uppercase font-bold bg-red-500/10 text-red-500 border-red-500/20">
+                Atrasada
+              </Badge>
+            )}
           </div>
           <p className="text-sm font-bold text-foreground">{os.cliente}</p>
           <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">{os.descricao}</p>
@@ -47,7 +56,9 @@ function OSItem({ os, onClick }: any) {
       <div className="flex items-center gap-3">
         <div className="hidden sm:flex flex-col items-end mr-4">
           <span className="text-[10px] font-bold text-muted-foreground uppercase">Prazo</span>
-          <span className={`text-xs font-black ${os.status === 'atrasada' ? 'text-red-500' : 'text-foreground'}`}>{os.prazo}</span>
+          <span className={`text-xs font-black ${isVencida ? 'text-red-500' : 'text-foreground'}`}>
+            {os.prazo_acordado ? new Date(os.prazo_acordado).toLocaleDateString() : 'N/A'}
+          </span>
         </div>
         <Button 
           size="sm" 
@@ -62,24 +73,31 @@ function OSItem({ os, onClick }: any) {
   );
 }
 
-function OperadorKPICard({ title, value, icon: Icon, color = "primary" }: any) {
-  const colors: any = {
-    primary: "text-primary",
-    red: "text-red-500",
-    amber: "text-amber-500",
-    emerald: "text-emerald-500",
+function OperadorKPICard({ title, value, icon: Icon, color = "primary", isActive, onClick }: any) {
+  const styles: any = {
+    primary: "bg-blue-600 text-white hover:bg-blue-700",
+    red: "bg-red-600 text-white hover:bg-red-700",
+    amber: "bg-amber-500 text-white hover:bg-amber-600",
+    emerald: "bg-emerald-600 text-white hover:bg-emerald-700",
   };
 
+  const activeStyle = isActive 
+    ? "ring-4 ring-offset-2 ring-primary scale-105 z-10" 
+    : "opacity-90 hover:opacity-100 hover:scale-[1.02]";
+
   return (
-    <Card className="border-border bg-card shadow-sm border-b-2 border-b-transparent hover:border-b-primary transition-all">
+    <Card 
+      className={`cursor-pointer transition-all duration-300 border-none shadow-md ${styles[color]} ${activeStyle}`}
+      onClick={onClick}
+    >
       <CardContent className="pt-6">
         <div className="flex items-center justify-between mb-2">
-          <div className={`p-2 rounded-lg bg-slate-50`}>
-            <Icon className={`h-4 w-4 ${colors[color]}`} />
+          <div className="p-2 rounded-lg bg-white/20">
+            <Icon className="h-5 w-5 text-white" />
           </div>
-          <span className="text-2xl font-black text-foreground">{value}</span>
+          <span className="text-3xl font-black">{value}</span>
         </div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{title}</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-white/90">{title}</p>
       </CardContent>
     </Card>
   );
@@ -87,6 +105,7 @@ function OperadorKPICard({ title, value, icon: Icon, color = "primary" }: any) {
 
 function DashboardOperador() {
   const router = useRouter();
+  const [activeFilter, setActiveFilter] = useState<string>('todas');
 
   const { data: myOrders = [] } = useQuery({
     queryKey: ['operador_minha_bancada'],
@@ -114,6 +133,30 @@ function DashboardOperador() {
     router.navigate({ to: `/os/${id}` as any });
   };
 
+  const isAtrasada = (o: any) => o.status === 'atrasada' || (o.prazo_acordado && new Date(o.prazo_acordado) < new Date());
+
+  const atrasadasCount = myOrders.filter(isAtrasada).length.toString().padStart(2, '0');
+  const triagemCount = myOrders.filter((o: any) => o.status === 'aberta').length.toString().padStart(2, '0');
+  const vistoriaCount = myOrders.filter((o: any) => o.status === 'vistoria').length.toString().padStart(2, '0');
+
+  let filteredOrders = myOrders;
+  if (activeFilter === 'atrasadas') {
+    filteredOrders = myOrders.filter(isAtrasada);
+  } else if (activeFilter === 'em_triagem') {
+    filteredOrders = myOrders.filter((o: any) => o.status === 'aberta');
+  } else if (activeFilter === 'em_vistoria') {
+    filteredOrders = myOrders.filter((o: any) => o.status === 'vistoria');
+  }
+
+  const getFilterLabel = () => {
+    switch(activeFilter) {
+      case 'atrasadas': return 'Atrasadas';
+      case 'em_triagem': return 'Em Triagem';
+      case 'em_vistoria': return 'Em Vistoria';
+      default: return 'Ativas';
+    }
+  };
+
   return (
     <div className="space-y-8 p-6 md:p-10 pb-10">
       <div className="flex flex-col gap-2">
@@ -121,29 +164,65 @@ function DashboardOperador() {
         <p className="text-sm text-muted-foreground font-medium">Ordens de serviço atribuídas a você.</p>
       </div>
 
-      {/* KPIs Rápidos */}
+      {/* KPIs Rápidos com Filtro Integrado */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <OperadorKPICard title="Minha Fila" value={myOrders.length.toString().padStart(2, '0')} icon={ClipboardList} color="primary" />
-        <OperadorKPICard title="Alta Prioridade" value={myOrders.filter(o => o.prioridade === 'alta').length.toString().padStart(2, '0')} icon={AlertTriangle} color="red" />
-        <OperadorKPICard title="Em Triagem" value={myOrders.filter(o => o.status === 'aberta').length.toString().padStart(2, '0')} icon={CheckCircle2} color="amber" />
-        <OperadorKPICard title="Em Vistoria" value={myOrders.filter(o => o.status === 'vistoria').length.toString().padStart(2, '0')} icon={Clock} color="red" />
+        <OperadorKPICard 
+          title="Minha Fila" 
+          value={myOrders.length.toString().padStart(2, '0')} 
+          icon={ClipboardList} 
+          color="primary" 
+          isActive={activeFilter === 'todas'}
+          onClick={() => setActiveFilter('todas')}
+        />
+        <OperadorKPICard 
+          title="Atrasadas" 
+          value={atrasadasCount} 
+          icon={AlertTriangle} 
+          color="red" 
+          isActive={activeFilter === 'atrasadas'}
+          onClick={() => setActiveFilter('atrasadas')}
+        />
+        <OperadorKPICard 
+          title="Em Triagem" 
+          value={triagemCount} 
+          icon={CheckCircle2} 
+          color="amber" 
+          isActive={activeFilter === 'em_triagem'}
+          onClick={() => setActiveFilter('em_triagem')}
+        />
+        <OperadorKPICard 
+          title="Em Vistoria" 
+          value={vistoriaCount} 
+          icon={Clock} 
+          color="emerald" 
+          isActive={activeFilter === 'em_vistoria'}
+          onClick={() => setActiveFilter('em_vistoria')}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Lista Principal de OS */}
+        {/* Lista Principal de OS Filtrada */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
               <ClipboardList className="h-4 w-4 text-primary" />
-              Tarefas Ativas
+              Tarefas {getFilterLabel()}
             </h3>
-            <Badge variant="secondary" className="bg-slate-900 text-white font-mono">{myOrders.length}</Badge>
+            <Badge variant="secondary" className="bg-slate-900 text-white font-mono">
+              {filteredOrders.length}
+            </Badge>
           </div>
           
           <div className="space-y-3">
-            {myOrders.map(os => (
-              <OSItem key={os.id} os={os} onClick={handleAccessOS} />
-            ))}
+            {filteredOrders.length === 0 ? (
+              <div className="text-center py-10 text-muted-foreground text-xs font-bold uppercase tracking-widest border-2 border-dashed border-border rounded-xl bg-slate-50">
+                Nenhuma OS encontrada neste filtro
+              </div>
+            ) : (
+              filteredOrders.map((os: any) => (
+                <OSItem key={os.id} os={os} onClick={handleAccessOS} />
+              ))
+            )}
           </div>
         </div>
 
