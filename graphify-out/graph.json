@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T00:12:01.221424+00:00",
+  "generated_at": "2026-09-02T19:46:35.367413+00:00",
   "files": [
     {
       "path": "components.json",
@@ -331,11 +331,11 @@
     },
     {
       "path": "src/routes/__root.tsx",
-      "bytes": 4931
+      "bytes": 4962
     },
     {
       "path": "src/routes/index.tsx",
-      "bytes": 10886
+      "bytes": 11015
     },
     {
       "path": "src/routes/README.md",
@@ -407,7 +407,7 @@
     },
     {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "bytes": 11189
+      "bytes": 11150
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
@@ -415,11 +415,11 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
-      "bytes": 11260
+      "bytes": 11328
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 9748
+      "bytes": 9677
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -455,7 +455,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 26336
+      "bytes": 20878
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
@@ -471,7 +471,7 @@
     },
     {
       "path": "src/integrations/supabase/client.ts",
-      "bytes": 852
+      "bytes": 1295
     },
     {
       "path": "src/integrations/supabase/client.server.ts",
@@ -2142,6 +2142,14 @@
     {
       "source": "src/integrations/supabase/client.ts",
       "target": "@supabase/supabase-js"
+    },
+    {
+      "source": "src/integrations/supabase/client.ts",
+      "target": "./types"
+    },
+    {
+      "source": "src/integrations/supabase/client.ts",
+      "target": "./previewAuthStorage"
     },
     {
       "source": "src/integrations/supabase/client.server.ts",
