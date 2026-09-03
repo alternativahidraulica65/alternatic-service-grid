@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 // Admin temp: admin.temp@alternativa.com / admin123
+// DB tokens null error resolvido via SQL.
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
