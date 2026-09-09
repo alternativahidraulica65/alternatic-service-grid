@@ -250,45 +250,45 @@ function GestaoOSPage() {
   }, [os, steps]);
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
-    queryKey: ['os_checklist', id, os?.tipo_equipamento_id],
+    queryKey: ['os_checklist', osId, os?.tipo_equipamento_id],
     queryFn: async () => {
-      const osTipoId = os?.tipo_equipamento_id;
+      const osTipoId = os?.tipo_equipamento_id ?? null;
 
-      // 1. Itens do template vinculados ao tipo de equipamento da OS
-      let itensTemplate: string[] = [];
+      // 1. Modelos oficiais (checklist_templates) do tipo de equipamento da OS
+      let itensTemplate: { componente: string; descricao: string }[] = [];
       if (osTipoId) {
         const { data: templates, error: tplError } = await supabase
           .from('checklist_templates')
-          .select('id, nome, itens, tipo_equipamento_id')
-          .eq('tipo_equipamento_id', osTipoId);
-        if (tplError) console.warn("Template fetch error:", tplError.message);
-        itensTemplate = (templates ?? []).flatMap((t: any) =>
-          ((t.itens as any[]) ?? []).map((i: any) => (typeof i === 'string' ? i : i.label)).filter(Boolean),
-        );
-        itensTemplate = Array.from(new Set(itensTemplate));
+          .select('id, componente_peca, descricao_avaliacao, tipo_equipamento_id, ordem_exibicao')
+          .eq('tipo_equipamento_id', osTipoId)
+          .order('ordem_exibicao', { ascending: true });
+        if (tplError) throw tplError;
+        itensTemplate = (templates ?? []).map((t: any) => ({
+          componente: t.componente_peca,
+          descricao: t.descricao_avaliacao ?? '',
+        }));
       }
 
-      // 2. Itens já registrados na OS, com join no tipo de equipamento
+      // 2. Execução já registrada (os_checklist_tecnico) — os_id é INTEGER
       let checklistQuery = supabase
         .from('os_checklist_tecnico' as any)
-        .select('*, tipos_equipamento(nome, categoria)')
-        .eq('os_id', id);
+        .select('*, tipos_equipamento(nome, categoria_principal)')
+        .eq('os_id', osId as number);
 
       if (osTipoId) {
         checklistQuery = checklistQuery.eq('tipo_equipamento_id', osTipoId);
       }
 
       const { data: existing, error } = await checklistQuery;
-      if (error) console.warn("Checklist fetch error:", error);
+      if (error) throw error;
 
       const registrados = (existing ?? []).map((item: any) => ({
         id: item.id,
-        item: item.componente,
-        status: item.estado || 'Pendente',
+        item: item.item_peca,
+        descricao: '',
+        status: item.estado_atual || 'Pendente',
         observacao: item.observacao_tecnica || '',
-        foto_url: item.foto_url || null,
-        data_verificacao: item.data_verificacao,
-        responsavel_id: item.responsavel_id,
+        foto_url: null,
         tipo_equipamento_id: item.tipo_equipamento_id,
         tipo_equipamento: item.tipos_equipamento,
       }));
@@ -297,18 +297,27 @@ function GestaoOSPage() {
 
       // 3. Mesclar: template define a lista; registros preenchem o que já foi verificado
       const mapa = new Map(registrados.map((r: any) => [String(r.item).toLowerCase(), r]));
-      const merged = itensTemplate.map((label, idx) => {
-        const existente = mapa.get(String(label).toLowerCase());
+      const merged = itensTemplate.map((tpl, idx) => {
+        const chave = String(tpl.componente).toLowerCase();
+        const existente = mapa.get(chave);
         if (existente) {
-          mapa.delete(String(label).toLowerCase());
-          return existente;
+          mapa.delete(chave);
+          return { ...existente, descricao: tpl.descricao };
         }
-        return { id: `temp-${idx}`, item: label, status: 'Pendente', observacao: '', foto_url: null, tipo_equipamento_id: osTipoId };
+        return {
+          id: `temp-${idx}`,
+          item: tpl.componente,
+          descricao: tpl.descricao,
+          status: 'Pendente',
+          observacao: '',
+          foto_url: null,
+          tipo_equipamento_id: osTipoId,
+        };
       });
 
       return [...merged, ...Array.from(mapa.values())];
     },
-    enabled: !!os
+    enabled: !!os && osId !== null
   });
 
 
@@ -316,36 +325,27 @@ function GestaoOSPage() {
 
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
-      if (!profile?.id) throw new Error("Perfil não carregado");
-      
-      // Se for um item temporário, precisamos primeiro garantir que ele exista no banco
       if (itemId.startsWith('temp-')) {
         const item: any = checklistData.find((i: any) => i.id === itemId);
         if (!item) return;
-        
+
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
           .insert({
-            os_id: id,
-            componente: item.item,
-            estado: updates.status || item.status,
-            observacao_tecnica: updates.observacao || item.observacao,
-            foto_url: updates.foto_url || item.foto_url,
-            responsavel_id: profile.id,
-            data_verificacao: new Date().toISOString(),
-            tipo_equipamento_id: item.tipo_equipamento_id || os?.tipo_equipamento_id || null
+            os_id: osId as number,
+            item_peca: item.item,
+            estado_atual: updates.status || item.status,
+            observacao_tecnica: updates.observacao ?? item.observacao ?? null,
+            tipo_equipamento_id: item.tipo_equipamento_id || os?.tipo_equipamento_id || null,
           });
-        
+
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
           .update({
-            estado: updates.status,
+            estado_atual: updates.status,
             observacao_tecnica: updates.observacao,
-            foto_url: updates.foto_url,
-            responsavel_id: profile.id,
-            data_verificacao: new Date().toISOString()
           })
           .eq('id', itemId);
         if (error) throw error;
