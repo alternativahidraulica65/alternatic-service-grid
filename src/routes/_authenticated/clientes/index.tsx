@@ -396,9 +396,20 @@ function ClientesPage() {
                         <Building2 className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-foreground uppercase tracking-tight">{cliente.nome}</p>
+                        <p className="text-sm font-bold text-foreground uppercase tracking-tight flex items-center gap-1.5">
+                          {cliente.status_cadastro === 'pendente' && (
+                            <AlertTriangle className="h-4 w-4 text-amber-500" aria-label="Cadastro pendente de aprovação" />
+                          )}
+                          {cliente.nome}
+                        </p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <Badge variant="secondary" className="text-[8px] font-bold h-4">Contrato Ativo</Badge>
+                          {cliente.status_cadastro === 'pendente' ? (
+                            <Badge className="bg-amber-500 text-white text-[8px] font-black h-4 uppercase">Pré-cadastro pendente</Badge>
+                          ) : cliente.status_cadastro === 'reprovado' ? (
+                            <Badge className="bg-red-500 text-white text-[8px] font-black h-4 uppercase">Reprovado</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-[8px] font-bold h-4">Contrato Ativo</Badge>
+                          )}
                         </div>
                       </div>
                     </div>
