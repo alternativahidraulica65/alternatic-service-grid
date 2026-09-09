@@ -225,6 +225,45 @@ function GestaoOSPage() {
     { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending', sla: '-' },
   ];
 
+  const SLA_PRIORIDADE: Record<string, { label: string; descricao: string }> = {
+    Baixa: { label: "Baixa", descricao: "Orçamento em até 3 dias úteis" },
+    "Média": { label: "Média", descricao: "Orçamento em até 1 dia útil" },
+    Alta: { label: "Urgente", descricao: "Orçamento no mesmo dia" },
+    Urgente: { label: "Urgente", descricao: "Orçamento no mesmo dia" },
+  };
+
+  const formatarDuracao = (ms: number) => {
+    const totalMin = Math.max(0, Math.floor(ms / 60000));
+    const dias = Math.floor(totalMin / 1440);
+    const horas = Math.floor((totalMin % 1440) / 60);
+    const min = totalMin % 60;
+    if (dias > 0) return `${dias}d ${horas}h`;
+    if (horas > 0) return `${horas}h ${min}m`;
+    return `${min}m`;
+  };
+
+  const sla = useMemo(() => {
+    if (!os) return null;
+    const agora = Date.now();
+    const abertura = os.data_abertura ? new Date(os.data_abertura).getTime() : (os.criado_em ? new Date(os.criado_em).getTime() : null);
+    const prazoOrc = (os as any).prazo_orcamento ? new Date((os as any).prazo_orcamento) : null;
+    const orcamentoFeito = !['aberta', 'triagem', 'vistoria'].includes(os.status || '');
+    const concluidos = steps.filter(s => s.status === 'completed').length;
+    const progresso = Math.round((concluidos / steps.length) * 100);
+    const restanteMs = prazoOrc ? prazoOrc.getTime() - agora : null;
+
+    return {
+      progresso,
+      tempoAberto: abertura ? formatarDuracao(agora - abertura) : "N/A",
+      prioridade: SLA_PRIORIDADE[os.prioridade || "Média"] || SLA_PRIORIDADE["Média"],
+      prazoOrc,
+      orcamentoFeito,
+      emAtraso: !!(prazoOrc && !orcamentoFeito && restanteMs !== null && restanteMs < 0),
+      restante: restanteMs !== null ? formatarDuracao(Math.abs(restanteMs)) : null,
+      previsao: os.data_previsao_conclusao ? new Date(os.data_previsao_conclusao) : null,
+    };
+  }, [os, steps]);
+
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
     queryKey: ['os_checklist', id, os?.tipo_equipamento_id],
     queryFn: async () => {
