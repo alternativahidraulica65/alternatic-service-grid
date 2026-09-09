@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T14:25:28.254650+00:00",
+  "generated_at": "2026-09-09T14:56:07.953282+00:00",
   "files": [
     {
       "path": "components.json",
@@ -39,7 +39,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 26847
+      "bytes": 27609
     },
     {
       "path": "src/start.ts",
@@ -479,7 +479,7 @@
     },
     {
       "path": "src/integrations/supabase/client.ts",
-      "bytes": 852
+      "bytes": 951
     },
     {
       "path": "src/integrations/supabase/client.server.ts",
@@ -499,7 +499,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 43676
+      "bytes": 43801
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -726,6 +726,10 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/route"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/reset-password"
     },
     {
       "source": "src/routeTree.gen.ts",
