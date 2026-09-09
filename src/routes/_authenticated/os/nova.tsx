@@ -620,6 +620,65 @@ function NovaOSPage() {
           </Button>
         )}
       </div>
+
+      <Dialog open={preOpen} onOpenChange={setPreOpen}>
+        <DialogContent className="sm:max-w-[480px] bg-white">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">
+              PRÉ-CADASTRO DE <span className="text-primary">EMPRESA</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs font-medium">
+              O cadastro será enviado ao financeiro para conclusão e aprovação. A OS pode seguir normalmente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social / Nome *</Label>
+              <Input className="h-11 border-border" value={preForm.nome} onChange={(e) => setPreForm({ ...preForm, nome: e.target.value })} />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
+              <Input className="h-11 border-border font-mono" placeholder="00.000.000/0000-00" value={preForm.cnpj} onChange={(e) => setPreForm({ ...preForm, cnpj: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</Label>
+                <Input className="h-11 border-border" value={preForm.telefone} onChange={(e) => setPreForm({ ...preForm, telefone: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
+                <Input className="h-11 border-border" value={preForm.email} onChange={(e) => setPreForm({ ...preForm, email: e.target.value })} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreOpen(false)} className="h-11 text-[10px] font-bold uppercase tracking-widest">Cancelar</Button>
+            <Button onClick={handlePreCadastro} disabled={preLoading || !preForm.nome.trim()} className="h-11 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-8">
+              {preLoading ? "Enviando..." : "Enviar Pré-Cadastro"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display uppercase tracking-tight">Cancelar abertura da OS?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Todos os dados preenchidos serão descartados e você voltará ao dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-[10px] font-bold uppercase tracking-widest">Continuar preenchendo</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => router.navigate({ to: "/dashboard" })}
+              className="bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest"
+            >
+              Sim, cancelar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
