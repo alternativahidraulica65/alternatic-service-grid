@@ -306,7 +306,8 @@ function GestaoOSPage() {
             observacao_tecnica: updates.observacao || item.observacao,
             foto_url: updates.foto_url || item.foto_url,
             responsavel_id: profile.id,
-            data_verificacao: new Date().toISOString()
+            data_verificacao: new Date().toISOString(),
+            tipo_equipamento_id: item.tipo_equipamento_id || os?.tipo_equipamento_id || null
           });
         
         if (error) throw error;
