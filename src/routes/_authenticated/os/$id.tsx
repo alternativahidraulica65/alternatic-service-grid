@@ -76,27 +76,24 @@ export const Route = createFileRoute("/_authenticated/os/$id")({
 
 function GestaoOSPage() {
   const { id } = Route.useParams();
+  const osId = toOsId(id);
   const router = useRouter();
   const queryClient = useQueryClient();
   const { profile } = Route.useRouteContext();
   const { podeVerValoresFinanceiros } = useUserRole();
 
   const { data: os, isLoading } = useQuery({
-    queryKey: ['os_detail', id],
+    queryKey: ['os_detail', osId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ordens_servico')
-        .select(`
-          *,
-          clientes (*),
-          tecnico:usuarios!ordens_servico_tecnico_id_fkey (*),
-          tipo_equipamento:tipos_equipamento!ordens_servico_tipo_equipamento_id_fkey (*)
-        `)
-        .eq('id', id)
+        .select('*, clientes (*), tipos_equipamento (*)')
+        .eq('id', osId as number)
         .single();
       if (error) throw error;
-      return data;
-    }
+      return data as any;
+    },
+    enabled: osId !== null,
   });
 
   const { data: tiposEquipamento = [] } = useQuery({
@@ -104,7 +101,7 @@ function GestaoOSPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tipos_equipamento')
-        .select('id, nome, categoria_principal')
+        .select('*')
         .order('nome');
       if (error) throw error;
       return data ?? [];
@@ -112,29 +109,31 @@ function GestaoOSPage() {
   });
 
   const { data: pecas = [], isLoading: loadingPecas } = useQuery({
-    queryKey: ['os_pecas', id],
+    queryKey: ['os_pecas', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('pecas_os')
+        .from('os_pecas_rastreio' as any)
         .select('*')
-        .eq('os_id', id);
+        .eq('os_id', osId as number);
       if (error) throw error;
-      return data;
-    }
+      return data ?? [];
+    },
+    enabled: osId !== null,
   });
 
   const { data: logsOs = [], isLoading: loadingLogs } = useQuery({
-    queryKey: ['os_logs', id],
+    queryKey: ['os_historico', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('logs_sistema')
-        .select('id, acao, entidade, usuario_nome, criado_em, dados_anteriores, dados_novos')
-        .eq('registro_id', id)
-        .order('criado_em', { ascending: false })
+        .from('historico_status_os' as any)
+        .select('*')
+        .eq('os_id', osId as number)
+        .order('data_alteracao', { ascending: false })
         .limit(50);
       if (error) throw error;
       return data ?? [];
-    }
+    },
+    enabled: osId !== null,
   });
 
   const [logsDialogOpen, setLogsDialogOpen] = useState(false);
@@ -149,28 +148,25 @@ function GestaoOSPage() {
       }
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ tipo_equipamento_id: tipoId, updated_at: new Date().toISOString() })
-        .eq('id', id);
+        .update({ tipo_equipamento_id: tipoId } as any)
+        .eq('id', osId as number);
       if (error) throw error;
 
       const nomeAnterior = tiposEquipamento.find((t: any) => t.id === anteriorId)?.nome ?? 'Não informado';
       const nomeNovo = tiposEquipamento.find((t: any) => t.id === tipoId)?.nome ?? tipoId;
 
-      const { error: logError } = await supabase.from('logs_sistema').insert({
-        usuario_id: profile?.id ?? null,
-        usuario_nome: profile?.nome ?? null,
-        acao: 'Atualização',
-        entidade: 'ordens_servico',
-        registro_id: id,
-        os_numero: os?.numero_os ?? null,
-        dados_anteriores: { tipo_equipamento: nomeAnterior },
-        dados_novos: { tipo_equipamento: nomeNovo },
+      const { error: logError } = await supabase.from('historico_status_os' as any).insert({
+        os_id: osId as number,
+        status_anterior: os?.status ?? null,
+        status_novo: os?.status ?? null,
+        observacao: `Tipo de equipamento alterado de "${nomeAnterior}" para "${nomeNovo}"`,
+        alterado_por: profile?.id ?? null,
       });
-      if (logError) console.warn('Falha ao registrar log:', logError.message);
+      if (logError) console.warn('Falha ao registrar histórico:', logError.message);
 
-      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
-      queryClient.invalidateQueries({ queryKey: ['os_checklist', id] });
-      queryClient.invalidateQueries({ queryKey: ['os_logs', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_checklist', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
       setEditandoTipo(false);
       toast.success("Tipo de equipamento atualizado");
     } catch (error: any) {
@@ -178,36 +174,31 @@ function GestaoOSPage() {
     }
   };
 
-
-
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
-    queryKey: ['os_terceiros', id],
+    queryKey: ['os_terceiros', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('os_servicos_terceiros' as any)
+        .from('os_custos' as any)
         .select('*')
-        .eq('os_id', id);
-      if (error) {
-        console.warn("Table os_servicos_terceiros not found, returning empty.");
-        return [];
-      }
-      return data;
-    }
+        .eq('os_id', osId as number)
+        .eq('categoria', 'terceiros');
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
   });
 
   const { data: custos = [], isLoading: loadingCustos } = useQuery({
-    queryKey: ['os_custos', id],
+    queryKey: ['os_custos', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('os_custos_financeiros' as any)
+        .from('os_custos' as any)
         .select('*')
-        .eq('os_id', id);
-      if (error) {
-        console.warn("Table os_custos_financeiros not found, returning empty.");
-        return [];
-      }
-      return data;
-    }
+        .eq('os_id', osId as number);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
   });
 
   const steps = [
