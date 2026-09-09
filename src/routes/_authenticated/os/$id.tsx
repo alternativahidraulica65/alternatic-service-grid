@@ -602,6 +602,25 @@ function GestaoOSPage() {
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade</p>
                       <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
                     </div>
+                    <div className="col-span-2">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Tipo de Equipamento</p>
+                      <Select
+                        value={os.tipo_equipamento_id || ""}
+                        onValueChange={handleTipoEquipamentoChange}
+                      >
+                        <SelectTrigger className="w-full md:w-80 h-9 text-xs font-bold uppercase border-slate-200 bg-white">
+                          <SelectValue placeholder="Selecione o tipo de equipamento" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {tiposEquipamento.map((tipo: any) => (
+                            <SelectItem key={tipo.id} value={tipo.id} className="text-xs font-bold uppercase">
+                              {tipo.nome}
+                              {tipo.categoria_principal ? ` — ${tipo.categoria_principal}` : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
                       <p className="text-muted-foreground font-medium italic">{os.observacoes || "Nenhuma observação."}</p>
