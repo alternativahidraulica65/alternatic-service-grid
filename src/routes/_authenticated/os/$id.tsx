@@ -768,23 +768,48 @@ function GestaoOSPage() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>Processo Geral</span>
-                    <span>15%</span>
+                    <span>{sla?.progresso ?? 0}%</span>
                   </div>
-                  <Progress value={15} className="h-2 bg-slate-100" />
+                  <Progress value={sla?.progresso ?? 0} className="h-2 bg-slate-100" />
                 </div>
+
+                <div className={`p-3 rounded-lg border ${sla?.emAtraso ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${sla?.emAtraso ? 'text-red-600' : 'text-amber-700'}`}>
+                      Prioridade {sla?.prioridade.label}
+                    </span>
+                    {sla?.emAtraso && <AlertTriangle className="h-4 w-4 text-red-500" />}
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    {sla?.prioridade.descricao}
+                  </p>
+                  {sla?.prazoOrc && (
+                    <p className={`text-xs font-black uppercase mt-2 ${sla.emAtraso ? 'text-red-600' : 'text-foreground'}`}>
+                      {sla.orcamentoFeito
+                        ? `Orçamento entregue • prazo era ${sla.prazoOrc.toLocaleDateString('pt-BR')}`
+                        : sla.emAtraso
+                          ? `Atrasado há ${sla.restante}`
+                          : `Faltam ${sla.restante} (até ${sla.prazoOrc.toLocaleDateString('pt-BR')})`}
+                    </p>
+                  )}
+                </div>
+
                 <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-border">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-primary" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Tempo em Aberto</span>
                   </div>
-                  <span className="text-xs font-black text-foreground uppercase">4h 20m</span>
+                  <span className="text-xs font-black text-foreground uppercase">{sla?.tempoAberto ?? "N/A"}</span>
                 </div>
+
                 <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-100">
                   <div className="flex items-center gap-2">
                     <CalendarIcon className="h-4 w-4 text-emerald-500" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Previsão</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Previsão de Conclusão</span>
                   </div>
-                  <span className="text-xs font-black text-emerald-700 uppercase">{os.data_previsao_conclusao ? new Date(os.data_previsao_conclusao).toLocaleDateString() : "N/A"}</span>
+                  <span className="text-xs font-black text-emerald-700 uppercase">
+                    {sla?.previsao ? sla.previsao.toLocaleDateString('pt-BR') : "Não definida"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
