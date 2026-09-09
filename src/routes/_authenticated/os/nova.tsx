@@ -376,11 +376,14 @@ function NovaOSPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Baixa">Baixa</SelectItem>
-                    <SelectItem value="Média">Média</SelectItem>
-                    <SelectItem value="Alta">Alta (Urgente)</SelectItem>
+                    <SelectItem value="Baixa">Baixa (3 dias úteis)</SelectItem>
+                    <SelectItem value="Média">Média (1 dia útil)</SelectItem>
+                    <SelectItem value="Urgente">Urgente (no mesmo dia)</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  {prazoInfo[prioridade] || prazoInfo["Média"]}
+                </p>
               </div>
             </CardContent>
           </Card>
