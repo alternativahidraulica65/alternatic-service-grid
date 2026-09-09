@@ -578,7 +578,7 @@ function GestaoOSPage() {
               <Badge className="bg-amber-500 text-white font-black uppercase text-[9px] tracking-widest">{os.status}</Badge>
             </div>
             <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-2">
-              Cliente: <span className="text-foreground">{os.cliente}</span>
+              Cliente: <span className="text-foreground">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span>
               <span className="h-1 w-1 rounded-full bg-border" />
               Técnico: <span className="text-foreground">{os.tecnico?.nome || "Não atribuído"}</span>
             </p>
@@ -917,7 +917,7 @@ function GestaoOSPage() {
                  </div>
                  <div className="text-right">
                    <p className="text-[10px] font-bold text-muted-foreground uppercase">Equipamento: <span className="text-slate-900">{os.descricao || "N/A"}</span></p>
-                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Cliente: <span className="text-slate-900">{os.cliente}</span></p>
+                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Cliente: <span className="text-slate-900">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span></p>
                  </div>
                </div>
              </CardHeader>
@@ -1049,7 +1049,7 @@ function GestaoOSPage() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                    OS #{os.numero_os ?? os.id} · Cliente: {os.cliente}
+                    OS #{os.numero_os ?? os.id} · Cliente: {os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}
                   </div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-slate-900">
                     Laudo Técnico
