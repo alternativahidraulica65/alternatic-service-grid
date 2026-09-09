@@ -91,12 +91,25 @@ function GestaoOSPage() {
         .select(`
           *,
           clientes (*),
-          tecnico:usuarios!ordens_servico_tecnico_id_fkey (*)
+          tecnico:usuarios!ordens_servico_tecnico_id_fkey (*),
+          tipo_equipamento:tipos_equipamento!ordens_servico_tipo_equipamento_id_fkey (*)
         `)
         .eq('id', id)
         .single();
       if (error) throw error;
       return data;
+    }
+  });
+
+  const { data: tiposEquipamento = [] } = useQuery({
+    queryKey: ['tipos_equipamento'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tipos_equipamento')
+        .select('id, nome, categoria_principal')
+        .order('nome');
+      if (error) throw error;
+      return data ?? [];
     }
   });
 
@@ -127,6 +140,21 @@ function GestaoOSPage() {
   });
 
   const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+
+  const handleTipoEquipamentoChange = async (tipoId: string) => {
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ tipo_equipamento_id: tipoId, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_checklist', id] });
+      toast.success("Tipo de equipamento atualizado");
+    } catch (error: any) {
+      toast.error("Erro ao atualizar tipo: " + error.message);
+    }
+  };
 
 
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
@@ -574,6 +602,25 @@ function GestaoOSPage() {
                     <div>
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade</p>
                       <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Tipo de Equipamento</p>
+                      <Select
+                        value={os.tipo_equipamento_id || ""}
+                        onValueChange={handleTipoEquipamentoChange}
+                      >
+                        <SelectTrigger className="w-full md:w-80 h-9 text-xs font-bold uppercase border-slate-200 bg-white">
+                          <SelectValue placeholder="Selecione o tipo de equipamento" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {tiposEquipamento.map((tipo: any) => (
+                            <SelectItem key={tipo.id} value={tipo.id} className="text-xs font-bold uppercase">
+                              {tipo.nome}
+                              {tipo.categoria_principal ? ` — ${tipo.categoria_principal}` : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
