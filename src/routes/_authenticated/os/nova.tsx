@@ -69,15 +69,65 @@ function NovaOSPage() {
   const [relatorioCliente, setRelatorioCliente] = useState<string>("");
   const [fotos, setFotos] = useState<File[]>([]);
   const [pecas, setPecas] = useState<{id: number, nome: string, local: string}[]>([]);
-  
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [preOpen, setPreOpen] = useState(false);
+  const [preLoading, setPreLoading] = useState(false);
+  const [preForm, setPreForm] = useState({ nome: "", cnpj: "", telefone: "", email: "" });
+
   const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_lookup'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('clientes').select('id, nome');
+      const { data, error } = await supabase.from('clientes').select('id, nome, status_cadastro');
       if (error) throw error;
-      return data;
+      return data as any[];
     }
   });
+
+  const clienteSelecionado = clientes.find((c: any) => c.id === selectedCliente);
+  const clientePendente = clienteSelecionado?.status_cadastro === 'pendente';
+
+  const prazoInfo: Record<string, string> = {
+    Baixa: "Orçamento em até 3 dias úteis",
+    "Média": "Orçamento em até 1 dia útil",
+    Urgente: "Orçamento no mesmo dia",
+  };
+
+  const handlePreCadastro = async () => {
+    if (!preForm.nome.trim()) {
+      toast.error("Informe o nome da empresa.");
+      return;
+    }
+    setPreLoading(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from('clientes')
+        .insert({
+          nome: preForm.nome,
+          cnpj: preForm.cnpj,
+          telefone: preForm.telefone,
+          email: preForm.email,
+          status_cadastro: 'pendente',
+          solicitado_por: userData.user?.id ?? null,
+        } as any)
+        .select('id, nome, status_cadastro')
+        .single();
+      if (error) throw error;
+
+      await queryClient.invalidateQueries({ queryKey: ['clientes_lookup'] });
+      await queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+      setSelectedCliente((data as any).id);
+      setPreOpen(false);
+      setPreForm({ nome: "", cnpj: "", telefone: "", email: "" });
+      toast.success("Pré-cadastro enviado ao financeiro", {
+        description: "A OS pode seguir normalmente enquanto o cadastro é aprovado.",
+      });
+    } catch (e: any) {
+      toast.error("Erro no pré-cadastro: " + e.message);
+    } finally {
+      setPreLoading(false);
+    }
+  };
 
   const { data: clienteDetails } = useQuery({
     queryKey: ['cliente_detalhes', selectedCliente],
