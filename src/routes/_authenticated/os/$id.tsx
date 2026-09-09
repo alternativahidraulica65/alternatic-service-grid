@@ -95,6 +95,21 @@ function GestaoOSPage() {
     }
   });
 
+  const { data: logsOs = [], isLoading: loadingLogs } = useQuery({
+    queryKey: ['os_logs', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('logs_sistema')
+        .select('id, acao, entidade, usuario_nome, criado_em, dados_anteriores, dados_novos')
+        .eq('registro_id', id)
+        .order('criado_em', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data ?? [];
+    }
+  });
+
+
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
     queryKey: ['os_terceiros', id],
     queryFn: async () => {
