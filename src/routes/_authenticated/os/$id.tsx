@@ -24,7 +24,9 @@ import {
   Activity,
   ClipboardCheck,
   Image as ImageIcon,
-  Check
+  Check,
+  Pencil
+
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -140,21 +142,46 @@ function GestaoOSPage() {
   });
 
   const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+  const [editandoTipo, setEditandoTipo] = useState(false);
 
   const handleTipoEquipamentoChange = async (tipoId: string) => {
     try {
+      const anteriorId = os?.tipo_equipamento_id ?? null;
+      if (anteriorId === tipoId) {
+        setEditandoTipo(false);
+        return;
+      }
       const { error } = await supabase
         .from('ordens_servico')
         .update({ tipo_equipamento_id: tipoId, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
+
+      const nomeAnterior = tiposEquipamento.find((t: any) => t.id === anteriorId)?.nome ?? 'Não informado';
+      const nomeNovo = tiposEquipamento.find((t: any) => t.id === tipoId)?.nome ?? tipoId;
+
+      const { error: logError } = await supabase.from('logs_sistema').insert({
+        usuario_id: profile?.id ?? null,
+        usuario_nome: profile?.nome ?? null,
+        acao: 'Atualização',
+        entidade: 'ordens_servico',
+        registro_id: id,
+        os_numero: os?.numero_os ?? null,
+        dados_anteriores: { tipo_equipamento: nomeAnterior },
+        dados_novos: { tipo_equipamento: nomeNovo },
+      });
+      if (logError) console.warn('Falha ao registrar log:', logError.message);
+
       queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
       queryClient.invalidateQueries({ queryKey: ['os_checklist', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_logs', id] });
+      setEditandoTipo(false);
       toast.success("Tipo de equipamento atualizado");
     } catch (error: any) {
       toast.error("Erro ao atualizar tipo: " + error.message);
     }
   };
+
 
 
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
@@ -197,58 +224,59 @@ function GestaoOSPage() {
   ];
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
-    queryKey: ['os_checklist', id],
+    queryKey: ['os_checklist', id, os?.tipo_equipamento_id],
     queryFn: async () => {
-      // 1. Tentar buscar checklist já vinculado à OS na nova estrutura
+      const osTipoId = os?.tipo_equipamento_id;
+
+      // 1. Itens do template vinculados ao tipo de equipamento da OS
+      let itensTemplate: string[] = [];
+      if (osTipoId) {
+        const { data: templates, error: tplError } = await supabase
+          .from('checklist_templates')
+          .select('id, nome, itens, tipo_equipamento_id')
+          .eq('tipo_equipamento_id', osTipoId);
+        if (tplError) console.warn("Template fetch error:", tplError.message);
+        itensTemplate = (templates ?? []).flatMap((t: any) =>
+          ((t.itens as any[]) ?? []).map((i: any) => (typeof i === 'string' ? i : i.label)).filter(Boolean),
+        );
+        itensTemplate = Array.from(new Set(itensTemplate));
+      }
+
+      // 2. Itens já registrados na OS
       const { data: existing, error } = await supabase
         .from('os_checklist_tecnico' as any)
         .select('*')
         .eq('os_id', id);
-      
-      if (error) {
-        console.warn("Checklist fetch error:", error);
-      }
+      if (error) console.warn("Checklist fetch error:", error);
 
-      if (existing && existing.length > 0) {
-        return existing.map((item: any) => ({
-          id: item.id,
-          item: item.componente,
-          status: item.estado || 'Pendente',
-          observacao: item.observacao_tecnica || '',
-          foto_url: item.foto_url || null,
-          data_verificacao: item.data_verificacao,
-          responsavel_id: item.responsavel_id
-        }));
-      }
+      const registrados = (existing ?? []).map((item: any) => ({
+        id: item.id,
+        item: item.componente,
+        status: item.estado || 'Pendente',
+        observacao: item.observacao_tecnica || '',
+        foto_url: item.foto_url || null,
+        data_verificacao: item.data_verificacao,
+        responsavel_id: item.responsavel_id,
+      }));
 
-      // 2. Se não existir, buscar o template baseado no tipo de equipamento da OS
-      const { data: templates } = await supabase
-        .from('checklist_templates')
-        .select('*, tipos_equipamento(*)');
-      
-      const osTipoId = os?.tipo_equipamento_id;
-      const osDescricao = os?.descricao || "";
-      
-      const template = templates?.find((t: any) => 
-        t.tipo_equipamento_id === osTipoId || 
-        (osDescricao.includes(t.tipos_equipamento?.nome) && t.tipos_equipamento?.nome) ||
-        (osDescricao.includes(t.nome) && t.nome)
-      );
+      if (itensTemplate.length === 0) return registrados;
 
-      if (template && template.itens) {
-        return (template.itens as any[]).map((item: any, idx: number) => ({
-          id: `temp-${idx}`,
-          item: item.label,
-          status: 'Pendente',
-          observacao: '',
-          foto_url: null
-        }));
-      }
+      // 3. Mesclar: template define a lista; registros preenchem o que já foi verificado
+      const mapa = new Map(registrados.map((r: any) => [String(r.item).toLowerCase(), r]));
+      const merged = itensTemplate.map((label, idx) => {
+        const existente = mapa.get(String(label).toLowerCase());
+        if (existente) {
+          mapa.delete(String(label).toLowerCase());
+          return existente;
+        }
+        return { id: `temp-${idx}`, item: label, status: 'Pendente', observacao: '', foto_url: null };
+      });
 
-      return [];
+      return [...merged, ...Array.from(mapa.values())];
     },
     enabled: !!os
   });
+
 
   const [savingChecklist, setSavingChecklist] = useState(false);
 
@@ -604,12 +632,24 @@ function GestaoOSPage() {
                       <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
                     </div>
                     <div className="col-span-2">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Tipo de Equipamento</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Tipo de Equipamento</p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-slate-400 hover:text-primary"
+                          onClick={() => setEditandoTipo((v) => !v)}
+                          title={editandoTipo ? "Cancelar edição" : "Editar tipo de equipamento"}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                       <Select
                         value={os.tipo_equipamento_id || ""}
                         onValueChange={handleTipoEquipamentoChange}
+                        disabled={!editandoTipo}
                       >
-                        <SelectTrigger className="w-full md:w-80 h-9 text-xs font-bold uppercase border-slate-200 bg-white">
+                        <SelectTrigger className="w-full md:w-80 h-9 text-xs font-bold uppercase border-slate-200 bg-white disabled:opacity-100 disabled:cursor-default">
                           <SelectValue placeholder="Selecione o tipo de equipamento" />
                         </SelectTrigger>
                         <SelectContent>
@@ -621,6 +661,7 @@ function GestaoOSPage() {
                           ))}
                         </SelectContent>
                       </Select>
+
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
