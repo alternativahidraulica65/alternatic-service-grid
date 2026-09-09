@@ -741,7 +741,7 @@ function GestaoOSPage() {
                         </Button>
                       </div>
                       <Select
-                        value={os.tipo_equipamento_id || ""}
+                        value={os.equipamento_id || ""}
                         onValueChange={handleTipoEquipamentoChange}
                         disabled={!editandoTipo}
                       >
