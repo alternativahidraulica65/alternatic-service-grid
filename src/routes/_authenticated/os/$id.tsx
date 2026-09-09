@@ -357,6 +357,7 @@ function GestaoOSPage() {
   };
 
   const handleChecklistPhoto = async (itemId: string) => {
+    const item: any = checklistData.find((i: any) => i.id === itemId);
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -366,15 +367,21 @@ function GestaoOSPage() {
 
       try {
         const fileExt = file.name.split('.').pop();
-        const fileName = `${id}/checklist/${itemId}-${Math.random()}.${fileExt}`;
+        const fileName = `${osId}/checklist/${itemId}-${Math.random()}.${fileExt}`;
         const { error: uploadError } = await supabase.storage
           .from('os-assets')
           .upload(fileName, file);
-        
+
         if (uploadError) throw uploadError;
 
         const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
-        await handleUpdateChecklistItem(itemId, { foto_url: urlData.publicUrl });
+        const { error: anexoError } = await supabase.from('fotos_anexos' as any).insert({
+          os_id: osId as number,
+          url_arquivo: urlData.publicUrl,
+          categoria: `checklist:${item?.item ?? itemId}`,
+        });
+        if (anexoError) throw anexoError;
+        queryClient.invalidateQueries({ queryKey: ['os_fotos_checklist', osId] });
         toast.success("Foto anexada com sucesso");
       } catch (error: any) {
         toast.error("Erro no upload: " + error.message);
@@ -383,9 +390,28 @@ function GestaoOSPage() {
     input.click();
   };
 
+  const { data: fotosChecklist = [] } = useQuery({
+    queryKey: ['os_fotos_checklist', osId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fotos_anexos' as any)
+        .select('*')
+        .eq('os_id', osId as number)
+        .like('categoria', 'checklist:%');
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
+  });
+
+  const fotoDoItem = (item: any) =>
+    (fotosChecklist as any[]).find(
+      (f: any) => String(f.categoria).toLowerCase() === `checklist:${String(item?.item ?? '').toLowerCase()}`,
+    )?.url_arquivo ?? null;
+
   const handleFinalizarChecklist = async () => {
     const itemsPendingPhoto = checklistData.filter((item: any) => 
-      (item.status === 'Danificado' || item.status === 'Substituir') && !item.foto_url
+      (item.status === 'Danificado' || item.status === 'Substituir') && !fotoDoItem(item)
     );
 
     if (itemsPendingPhoto.length > 0) {
@@ -397,25 +423,27 @@ function GestaoOSPage() {
 
     setSavingChecklist(true);
     try {
+      const statusAnterior = os?.status ?? null;
       const { error } = await supabase
         .from('ordens_servico')
         .update({ status: 'vistoria' })
-        .eq('id', id);
+        .eq('id', osId as number);
 
-      if (!error) {
-        // Registrar log usando a função RPC que criamos (usando cast para evitar erro de tipo)
-        await (supabase.rpc as any)('log_evento', {
-          p_os_id: id,
-          p_acao: 'CHECKLIST_FINALIZADO',
-          p_descricao: 'Checklist técnico finalizado e OS enviada para vistoria'
-        });
-      }
       if (error) throw error;
-      
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: osId as number,
+        status_anterior: statusAnterior,
+        status_novo: 'vistoria',
+        observacao: 'Checklist técnico finalizado e OS enviada para vistoria',
+        alterado_por: profile?.id ?? null,
+      });
+
       toast.success("Checklist finalizado", {
         description: "OS avançada para Vistoria Técnica."
       });
-      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
     } catch (error: any) {
       toast.error("Erro ao finalizar: " + error.message);
     } finally {
