@@ -61,18 +61,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 function descreverLog(log: any): string {
-  const anterior = log.dados_anteriores ?? {};
-  const novo = log.dados_novos ?? {};
-  if (anterior?.status && novo?.status && anterior.status !== novo.status) {
-    return `Status alterado de "${anterior.status}" para "${novo.status}"`;
+  if (log.status_anterior && log.status_novo && log.status_anterior !== log.status_novo) {
+    return `Status alterado de "${log.status_anterior}" para "${log.status_novo}"`;
   }
-  if (log.acao === 'Criação') return 'Ordem de serviço criada';
-  if (log.acao === 'Exclusão') return 'Ordem de serviço excluída';
-  const campos = Object.keys(novo).filter(
-    (k) => !['updated_at', 'criado_em'].includes(k) && JSON.stringify(novo[k]) !== JSON.stringify(anterior?.[k]),
-  );
-  if (campos.length > 0) return `Atualizou: ${campos.slice(0, 4).join(', ')}`;
-  return log.acao || 'Alteração registrada';
+  if (log.observacao) return String(log.observacao);
+  if (log.status_novo) return `Status: ${log.status_novo}`;
+  return 'Alteração registrada';
 }
 
 
