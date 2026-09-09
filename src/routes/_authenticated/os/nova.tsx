@@ -11,8 +11,8 @@ import {
   Save,
   AlertCircle,
   ChevronRight,
-  ChevronLeft,
-  Check
+  ChevronLeft
+
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -128,6 +128,11 @@ function NovaOSPage() {
       toast.error("Preencha cliente e descrição.");
       return;
     }
+    if (fotos.length < 2) {
+      toast.error("Adicione pelo menos 2 fotos do equipamento.");
+      return;
+    }
+
 
     setLoading(true);
     try {
@@ -208,12 +213,8 @@ function NovaOSPage() {
     }
   };
 
-  const stepsConfig = [
-    { label: 'Dados Básicos', icon: Settings },
-    { label: 'Defeito Reportado', icon: ClipboardCheck },
-    { label: 'Peças e Rastreio', icon: Box },
-    { label: 'Revisão', icon: Save },
-  ];
+
+
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20 max-w-5xl mx-auto">
@@ -227,36 +228,8 @@ function NovaOSPage() {
         </div>
       </div>
 
-      <div className="relative mb-12 px-4 md:px-12">
-        <div className="absolute top-5 left-12 right-12 h-1 bg-slate-200 -z-10 rounded-full" />
-        <div 
-          className="absolute top-5 left-12 h-1 bg-primary -z-10 transition-all duration-500 rounded-full" 
-          style={{ width: `calc(${currentStep * 33.33}% - 2rem)` }}
-        />
-        
-        <div className="flex justify-between relative z-10">
-          {stepsConfig.map((step, idx) => {
-            const isActive = idx === currentStep;
-            const isCompleted = idx < currentStep;
-            return (
-              <div key={idx} className="flex flex-col items-center gap-2">
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300 ${
-                  isActive ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_15px_rgba(255,215,0,0.3)]' : 
-                  isCompleted ? 'border-primary bg-primary/20 text-primary' : 
-                  'border-slate-200 bg-white text-slate-300'
-                }`}>
-                  {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
-                </div>
-                <span className={`text-[10px] font-black uppercase tracking-widest ${
-                  isActive || isCompleted ? 'text-slate-900' : 'text-slate-400'
-                }`}>
-                  {step.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+
+
 
       <div className="min-h-[400px]">
         {currentStep === 0 && (
@@ -529,7 +502,7 @@ function NovaOSPage() {
             onClick={handleNext}
             className="bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold uppercase tracking-widest h-12 px-8 shadow-lg"
           >
-            Próximo Passo <ChevronRight className="ml-2 h-4 w-4" />
+            Criar OS <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         ) : (
           <Button 
