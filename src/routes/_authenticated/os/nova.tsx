@@ -213,12 +213,8 @@ function NovaOSPage() {
     }
   };
 
-  const stepsConfig = [
-    { label: 'Dados Básicos', icon: Settings },
-    { label: 'Defeito Reportado', icon: ClipboardCheck },
-    { label: 'Peças e Rastreio', icon: Box },
-    { label: 'Revisão', icon: Save },
-  ];
+
+
 
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20 max-w-5xl mx-auto">
