@@ -637,8 +637,25 @@ function GestaoOSPage() {
                       <p className="font-bold text-foreground uppercase">{os.descricao || "Não informada"}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade</p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Prioridade / Prazo do Orçamento</p>
                       <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
+                      {(os as any).prazo_orcamento && (
+                        (() => {
+                          const prazo = new Date((os as any).prazo_orcamento);
+                          const emAtraso = prazo.getTime() < Date.now() && os.status === 'aberta';
+                          return (
+                            <p className={`text-[11px] font-bold uppercase tracking-widest mt-1 ${emAtraso ? 'text-red-600' : 'text-muted-foreground'}`}>
+                              {emAtraso ? 'Em atraso desde ' : 'Orçar até '}
+                              {prazo.toLocaleDateString('pt-BR')}
+                            </p>
+                          );
+                        })()
+                      )}
+                      {(os as any).clientes?.status_cadastro === 'pendente' && (
+                        <p className="mt-2 inline-flex items-center gap-1 rounded bg-amber-50 border border-amber-200 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700">
+                          <AlertTriangle className="h-3.5 w-3.5" /> Cliente aguardando aprovação
+                        </p>
+                      )}
                     </div>
                     <div className="col-span-2">
                       <div className="flex items-center gap-2 mb-1">
