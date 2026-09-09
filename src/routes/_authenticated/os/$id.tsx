@@ -141,6 +141,20 @@ function GestaoOSPage() {
 
   const [logsDialogOpen, setLogsDialogOpen] = useState(false);
 
+  const handleTipoEquipamentoChange = async (tipoId: string) => {
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ tipo_equipamento_id: tipoId, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+      toast.success("Tipo de equipamento atualizado");
+    } catch (error: any) {
+      toast.error("Erro ao atualizar tipo: " + error.message);
+    }
+  };
+
 
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
     queryKey: ['os_terceiros', id],
