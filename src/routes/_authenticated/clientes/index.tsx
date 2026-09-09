@@ -133,6 +133,24 @@ function ClientesPage() {
     }
   });
 
+  const aprovacaoMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: 'aprovado' | 'reprovado' }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      const { error } = await supabase.from('clientes').update({
+        status_cadastro: status,
+        aprovado_por: userData.user?.id ?? null,
+        aprovado_em: new Date().toISOString(),
+      } as any).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      toast.success(vars.status === 'aprovado' ? "Cadastro aprovado!" : "Cadastro reprovado.");
+      queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+      queryClient.invalidateQueries({ queryKey: ['clientes_lookup'] });
+    },
+    onError: (error: any) => toast.error("Erro ao atualizar aprovação: " + error.message),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('clientes').delete().eq('id', id);
