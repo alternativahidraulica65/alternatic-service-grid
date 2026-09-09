@@ -8,7 +8,7 @@ import {
   CheckCircle2,
   PlayCircle,
   FileSearch,
-  Camera
+  Plus
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -111,24 +111,26 @@ function DashboardOperador() {
     queryKey: ['operador_minha_bancada'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
       if (!user?.email) return [];
 
-      const { data: profile } = await supabase.from('usuarios').select('id').eq('email', user.email).single();
-      if (!profile) return [];
+      const { data: profile } = await supabase.from('usuarios').select('id').eq('user_id', user.id).maybeSingle();
+      const profileId = profile?.id;
 
-      // Ajustado: campo 'operador_atribuido'
+      const filtros = [`operador_atribuido.eq.${user.id}`];
+      if (profileId) filtros.push(`tecnico_id.eq.${profileId}`);
+
       const { data, error } = await supabase
         .from('ordens_servico')
         .select('*')
-        .eq('operador_atribuido', profile.id)
-        .in('status', ['aberta', 'vistoria', 'orcamento_pendente', 'usinagem', 'montagem']);
-      
+        .or(filtros.join(','))
+        .in('status', ['aberta', 'triagem', 'vistoria', 'orcamento_pendente', 'usinagem', 'montagem'])
+        .order('criado_em', { ascending: false });
+
       if (error) throw error;
       return data || [];
     }
   });
+
 
   const handleAccessOS = (id: string) => {
     router.navigate({ to: `/os/${id}` as any });
@@ -242,9 +244,12 @@ function DashboardOperador() {
                 <p className="text-xs font-bold text-primary uppercase tracking-widest">Peças e Organização</p>
                 <p className="text-[10px] text-white/60 leading-relaxed font-medium">Ao desmontar, registre a localização exata da peça na prateleira para evitar perdas.</p>
               </div>
-              <Button className="w-full bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] h-11">
-                <Camera className="mr-2 h-4 w-4" />
-                Novo Registro Fotográfico
+              <Button
+                className="w-full bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] h-11"
+                onClick={() => router.navigate({ to: "/os/nova" })}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Criar OS Rapidamente
               </Button>
             </CardContent>
           </Card>
