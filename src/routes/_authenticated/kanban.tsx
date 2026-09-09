@@ -159,7 +159,7 @@ function KanbanPage() {
                             </DropdownMenuContent>
                           </DropdownMenu>
                           <Badge className={`text-[8px] font-black uppercase tracking-widest ${
-                            card.prioridade === 'Alta' ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-500 border-none'
+                            ['Alta','Urgente'].includes(card.prioridade) ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-500 border-none'
                           }`}>
                             {card.prioridade}
                           </Badge>
