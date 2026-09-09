@@ -255,7 +255,7 @@ function GestaoOSPage() {
     return {
       progresso,
       tempoAberto: abertura ? formatarDuracao(agora - abertura) : "N/A",
-      prioridade: SLA_PRIORIDADE[os.prioridade || "Média"] || SLA_PRIORIDADE["Média"],
+      prioridade: SLA_PRIORIDADE[os.prioridade || "Média"] ?? SLA_PRIORIDADE["Média"]!,
       prazoOrc,
       orcamentoFeito,
       emAtraso: !!(prazoOrc && !orcamentoFeito && restanteMs !== null && restanteMs < 0),
