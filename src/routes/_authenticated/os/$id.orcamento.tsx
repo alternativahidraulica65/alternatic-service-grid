@@ -150,7 +150,7 @@ function OrcamentoOSPage() {
       <div className="flex items-center justify-between border-b pb-6">
         <div>
           <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-            OS / #{os?.numero_os} / Orçamento
+            OS / #{os?.id} / Orçamento
           </h2>
           <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">
             Orçamento Comercial
@@ -278,7 +278,7 @@ function OrcamentoOSPage() {
               <div className="flex flex-wrap gap-2">
                 {osRelacionadas.map(osId => (
                   <Badge key={osId} variant="secondary" className="px-3 py-1 bg-slate-100 text-slate-700 font-bold uppercase text-[10px] gap-2 border-slate-200">
-                    OS #{os?.numero_os}
+                    OS #{os?.id}
                     <button className="hover:text-red-500"><Trash2 className="h-3 w-3" /></button>
                   </Badge>
                 ))}
@@ -374,7 +374,7 @@ function OrcamentoOSPage() {
                 <Checkbox 
                   checked={fotosSelecionadas.length === fotos.length && fotos.length > 0} 
                   onCheckedChange={(checked) => {
-                    if (checked) setFotosSelecionadas(fotos.map(f => f.foto_url));
+                    if (checked) setFotosSelecionadas(fotos.map(f => (f as any).url_arquivo));
                     else setFotosSelecionadas([]);
                   }}
                 />
@@ -389,16 +389,16 @@ function OrcamentoOSPage() {
                 ) : (
                   fotos.map((foto, idx) => (
                     <div key={idx} className="group relative aspect-square rounded-xl border border-slate-200 overflow-hidden bg-slate-50 hover:border-primary transition-all">
-                      <img src={foto.foto_url} className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+                      <img src={(foto as any).url_arquivo} className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all" />
                       <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2 flex items-center justify-between backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-all">
                         <span className="text-[8px] font-bold text-white uppercase truncate">{foto.tipo || `Foto ${idx + 1}`}</span>
                         <Checkbox 
-                          checked={fotosSelecionadas.includes(foto.foto_url)} 
-                          onCheckedChange={() => toggleFoto(foto.foto_url)}
+                          checked={fotosSelecionadas.includes((foto as any).url_arquivo)} 
+                          onCheckedChange={() => toggleFoto((foto as any).url_arquivo)}
                           className="border-white data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                         />
                       </div>
-                      {fotosSelecionadas.includes(foto.foto_url) && (
+                      {fotosSelecionadas.includes((foto as any).url_arquivo) && (
                         <div className="absolute top-2 right-2 h-5 w-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
                           <CheckCircle2 className="h-3 w-3 text-white" />
                         </div>

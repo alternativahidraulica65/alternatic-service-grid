@@ -193,7 +193,7 @@ function OrcamentoPage() {
                       </TableCell>
                       {showInternalCosts && (
                         <TableCell className="py-4 text-right font-medium text-slate-500">
-                          {(item.custo_interno || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          {Number(item.valor_total_custo || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </TableCell>
                       )}
                       <TableCell className="py-4 text-right">
@@ -202,7 +202,7 @@ function OrcamentoPage() {
                         </div>
                       </TableCell>
                       <TableCell className="py-4 text-right pr-6 font-black text-foreground">
-                        {(item.valor_venda || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        {(Number(item.valor_total_custo || 0) * 1.3).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -340,7 +340,7 @@ function OrcamentoPage() {
                 
                 <p className="text-[9px] text-center font-bold text-slate-600 uppercase tracking-widest">
                   Este orçamento será processado para: <br/>
-                  <span className="text-slate-400">{selectedOS?.cliente || "Nenhum cliente selecionado"}</span>
+                  <span className="text-slate-400">{selectedOS ? `OS #${(selectedOS as any).id}` : "Nenhuma OS selecionada"}</span>
                 </p>
               </div>
             </CardContent>
