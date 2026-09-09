@@ -58,21 +58,16 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toOsId } from "@/lib/os-id";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 function descreverLog(log: any): string {
-  const anterior = log.dados_anteriores ?? {};
-  const novo = log.dados_novos ?? {};
-  if (anterior?.status && novo?.status && anterior.status !== novo.status) {
-    return `Status alterado de "${anterior.status}" para "${novo.status}"`;
+  if (log.status_anterior && log.status_novo && log.status_anterior !== log.status_novo) {
+    return `Status alterado de "${log.status_anterior}" para "${log.status_novo}"`;
   }
-  if (log.acao === 'Criação') return 'Ordem de serviço criada';
-  if (log.acao === 'Exclusão') return 'Ordem de serviço excluída';
-  const campos = Object.keys(novo).filter(
-    (k) => !['updated_at', 'criado_em'].includes(k) && JSON.stringify(novo[k]) !== JSON.stringify(anterior?.[k]),
-  );
-  if (campos.length > 0) return `Atualizou: ${campos.slice(0, 4).join(', ')}`;
-  return log.acao || 'Alteração registrada';
+  if (log.observacao) return String(log.observacao);
+  if (log.status_novo) return `Status: ${log.status_novo}`;
+  return 'Alteração registrada';
 }
 
 
@@ -82,27 +77,24 @@ export const Route = createFileRoute("/_authenticated/os/$id")({
 
 function GestaoOSPage() {
   const { id } = Route.useParams();
+  const osId = toOsId(id);
   const router = useRouter();
   const queryClient = useQueryClient();
   const { profile } = Route.useRouteContext();
   const { podeVerValoresFinanceiros } = useUserRole();
 
   const { data: os, isLoading } = useQuery({
-    queryKey: ['os_detail', id],
+    queryKey: ['os_detail', osId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ordens_servico')
-        .select(`
-          *,
-          clientes (*),
-          tecnico:usuarios!ordens_servico_tecnico_id_fkey (*),
-          tipo_equipamento:tipos_equipamento!ordens_servico_tipo_equipamento_id_fkey (*)
-        `)
-        .eq('id', id)
+        .select('*, clientes (*), tipos_equipamento (*)')
+        .eq('id', osId as number)
         .single();
       if (error) throw error;
-      return data;
-    }
+      return data as any;
+    },
+    enabled: osId !== null,
   });
 
   const { data: tiposEquipamento = [] } = useQuery({
@@ -110,7 +102,7 @@ function GestaoOSPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tipos_equipamento')
-        .select('id, nome, categoria_principal')
+        .select('*')
         .order('nome');
       if (error) throw error;
       return data ?? [];
@@ -118,29 +110,31 @@ function GestaoOSPage() {
   });
 
   const { data: pecas = [], isLoading: loadingPecas } = useQuery({
-    queryKey: ['os_pecas', id],
+    queryKey: ['os_pecas', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('pecas_os')
+        .from('os_pecas_rastreio' as any)
         .select('*')
-        .eq('os_id', id);
+        .eq('os_id', osId as number);
       if (error) throw error;
-      return data;
-    }
+      return data ?? [];
+    },
+    enabled: osId !== null,
   });
 
   const { data: logsOs = [], isLoading: loadingLogs } = useQuery({
-    queryKey: ['os_logs', id],
+    queryKey: ['os_historico', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('logs_sistema')
-        .select('id, acao, entidade, usuario_nome, criado_em, dados_anteriores, dados_novos')
-        .eq('registro_id', id)
-        .order('criado_em', { ascending: false })
+        .from('historico_status_os' as any)
+        .select('*')
+        .eq('os_id', osId as number)
+        .order('data_alteracao', { ascending: false })
         .limit(50);
       if (error) throw error;
       return data ?? [];
-    }
+    },
+    enabled: osId !== null,
   });
 
   const [logsDialogOpen, setLogsDialogOpen] = useState(false);
@@ -148,35 +142,32 @@ function GestaoOSPage() {
 
   const handleTipoEquipamentoChange = async (tipoId: string) => {
     try {
-      const anteriorId = os?.tipo_equipamento_id ?? null;
+      const anteriorId = os?.equipamento_id ?? null;
       if (anteriorId === tipoId) {
         setEditandoTipo(false);
         return;
       }
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ tipo_equipamento_id: tipoId, updated_at: new Date().toISOString() })
-        .eq('id', id);
+        .update({ equipamento_id: tipoId } as any)
+        .eq('id', osId as number);
       if (error) throw error;
 
       const nomeAnterior = tiposEquipamento.find((t: any) => t.id === anteriorId)?.nome ?? 'Não informado';
       const nomeNovo = tiposEquipamento.find((t: any) => t.id === tipoId)?.nome ?? tipoId;
 
-      const { error: logError } = await supabase.from('logs_sistema').insert({
-        usuario_id: profile?.id ?? null,
-        usuario_nome: profile?.nome ?? null,
-        acao: 'Atualização',
-        entidade: 'ordens_servico',
-        registro_id: id,
-        os_numero: os?.numero_os ?? null,
-        dados_anteriores: { tipo_equipamento: nomeAnterior },
-        dados_novos: { tipo_equipamento: nomeNovo },
+      const { error: logError } = await supabase.from('historico_status_os' as any).insert({
+        os_id: osId as number,
+        status_anterior: os?.status ?? null,
+        status_novo: os?.status ?? null,
+        observacao: `Tipo de equipamento alterado de "${nomeAnterior}" para "${nomeNovo}"`,
+        alterado_por: profile?.id ?? null,
       });
-      if (logError) console.warn('Falha ao registrar log:', logError.message);
+      if (logError) console.warn('Falha ao registrar histórico:', logError.message);
 
-      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
-      queryClient.invalidateQueries({ queryKey: ['os_checklist', id] });
-      queryClient.invalidateQueries({ queryKey: ['os_logs', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_checklist', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
       setEditandoTipo(false);
       toast.success("Tipo de equipamento atualizado");
     } catch (error: any) {
@@ -184,36 +175,31 @@ function GestaoOSPage() {
     }
   };
 
-
-
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
-    queryKey: ['os_terceiros', id],
+    queryKey: ['os_terceiros', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('os_servicos_terceiros' as any)
+        .from('os_custos' as any)
         .select('*')
-        .eq('os_id', id);
-      if (error) {
-        console.warn("Table os_servicos_terceiros not found, returning empty.");
-        return [];
-      }
-      return data;
-    }
+        .eq('os_id', osId as number)
+        .eq('categoria', 'terceiros');
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
   });
 
   const { data: custos = [], isLoading: loadingCustos } = useQuery({
-    queryKey: ['os_custos', id],
+    queryKey: ['os_custos', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('os_custos_financeiros' as any)
+        .from('os_custos' as any)
         .select('*')
-        .eq('os_id', id);
-      if (error) {
-        console.warn("Table os_custos_financeiros not found, returning empty.");
-        return [];
-      }
-      return data;
-    }
+        .eq('os_id', osId as number);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
   });
 
   const steps = [
@@ -265,45 +251,45 @@ function GestaoOSPage() {
   }, [os, steps]);
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
-    queryKey: ['os_checklist', id, os?.tipo_equipamento_id],
+    queryKey: ['os_checklist', osId, os?.equipamento_id],
     queryFn: async () => {
-      const osTipoId = os?.tipo_equipamento_id;
+      const osTipoId = os?.equipamento_id ?? null;
 
-      // 1. Itens do template vinculados ao tipo de equipamento da OS
-      let itensTemplate: string[] = [];
+      // 1. Modelos oficiais (checklist_templates) do tipo de equipamento da OS
+      let itensTemplate: { componente: string; descricao: string }[] = [];
       if (osTipoId) {
         const { data: templates, error: tplError } = await supabase
           .from('checklist_templates')
-          .select('id, nome, itens, tipo_equipamento_id')
-          .eq('tipo_equipamento_id', osTipoId);
-        if (tplError) console.warn("Template fetch error:", tplError.message);
-        itensTemplate = (templates ?? []).flatMap((t: any) =>
-          ((t.itens as any[]) ?? []).map((i: any) => (typeof i === 'string' ? i : i.label)).filter(Boolean),
-        );
-        itensTemplate = Array.from(new Set(itensTemplate));
+          .select('id, componente_peca, descricao_avaliacao, tipo_equipamento_id, ordem_exibicao')
+          .eq('tipo_equipamento_id', osTipoId)
+          .order('ordem_exibicao', { ascending: true });
+        if (tplError) throw tplError;
+        itensTemplate = (templates ?? []).map((t: any) => ({
+          componente: t.componente_peca,
+          descricao: t.descricao_avaliacao ?? '',
+        }));
       }
 
-      // 2. Itens já registrados na OS, com join no tipo de equipamento
+      // 2. Execução já registrada (os_checklist_tecnico) — os_id é INTEGER
       let checklistQuery = supabase
         .from('os_checklist_tecnico' as any)
-        .select('*, tipos_equipamento(nome, categoria)')
-        .eq('os_id', id);
+        .select('*, tipos_equipamento(nome, categoria_principal)')
+        .eq('os_id', osId as number);
 
       if (osTipoId) {
         checklistQuery = checklistQuery.eq('tipo_equipamento_id', osTipoId);
       }
 
       const { data: existing, error } = await checklistQuery;
-      if (error) console.warn("Checklist fetch error:", error);
+      if (error) throw error;
 
       const registrados = (existing ?? []).map((item: any) => ({
         id: item.id,
-        item: item.componente,
-        status: item.estado || 'Pendente',
+        item: item.item_peca,
+        descricao: '',
+        status: item.estado_atual || 'Pendente',
         observacao: item.observacao_tecnica || '',
-        foto_url: item.foto_url || null,
-        data_verificacao: item.data_verificacao,
-        responsavel_id: item.responsavel_id,
+        foto_url: null,
         tipo_equipamento_id: item.tipo_equipamento_id,
         tipo_equipamento: item.tipos_equipamento,
       }));
@@ -312,18 +298,27 @@ function GestaoOSPage() {
 
       // 3. Mesclar: template define a lista; registros preenchem o que já foi verificado
       const mapa = new Map(registrados.map((r: any) => [String(r.item).toLowerCase(), r]));
-      const merged = itensTemplate.map((label, idx) => {
-        const existente = mapa.get(String(label).toLowerCase());
+      const merged = itensTemplate.map((tpl, idx) => {
+        const chave = String(tpl.componente).toLowerCase();
+        const existente = mapa.get(chave);
         if (existente) {
-          mapa.delete(String(label).toLowerCase());
-          return existente;
+          mapa.delete(chave);
+          return { ...existente, descricao: tpl.descricao };
         }
-        return { id: `temp-${idx}`, item: label, status: 'Pendente', observacao: '', foto_url: null, tipo_equipamento_id: osTipoId };
+        return {
+          id: `temp-${idx}`,
+          item: tpl.componente,
+          descricao: tpl.descricao,
+          status: 'Pendente',
+          observacao: '',
+          foto_url: null,
+          tipo_equipamento_id: osTipoId,
+        };
       });
 
       return [...merged, ...Array.from(mapa.values())];
     },
-    enabled: !!os
+    enabled: !!os && osId !== null
   });
 
 
@@ -331,36 +326,27 @@ function GestaoOSPage() {
 
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
-      if (!profile?.id) throw new Error("Perfil não carregado");
-      
-      // Se for um item temporário, precisamos primeiro garantir que ele exista no banco
       if (itemId.startsWith('temp-')) {
         const item: any = checklistData.find((i: any) => i.id === itemId);
         if (!item) return;
-        
+
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
           .insert({
-            os_id: id,
-            componente: item.item,
-            estado: updates.status || item.status,
-            observacao_tecnica: updates.observacao || item.observacao,
-            foto_url: updates.foto_url || item.foto_url,
-            responsavel_id: profile.id,
-            data_verificacao: new Date().toISOString(),
-            tipo_equipamento_id: item.tipo_equipamento_id || os?.tipo_equipamento_id || null
+            os_id: osId as number,
+            item_peca: item.item,
+            estado_atual: updates.status || item.status,
+            observacao_tecnica: updates.observacao ?? item.observacao ?? null,
+            tipo_equipamento_id: item.tipo_equipamento_id || os?.equipamento_id || null,
           });
-        
+
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
           .update({
-            estado: updates.status,
+            estado_atual: updates.status,
             observacao_tecnica: updates.observacao,
-            foto_url: updates.foto_url,
-            responsavel_id: profile.id,
-            data_verificacao: new Date().toISOString()
           })
           .eq('id', itemId);
         if (error) throw error;
@@ -372,6 +358,7 @@ function GestaoOSPage() {
   };
 
   const handleChecklistPhoto = async (itemId: string) => {
+    const item: any = checklistData.find((i: any) => i.id === itemId);
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -381,15 +368,21 @@ function GestaoOSPage() {
 
       try {
         const fileExt = file.name.split('.').pop();
-        const fileName = `${id}/checklist/${itemId}-${Math.random()}.${fileExt}`;
+        const fileName = `${osId}/checklist/${itemId}-${Math.random()}.${fileExt}`;
         const { error: uploadError } = await supabase.storage
           .from('os-assets')
           .upload(fileName, file);
-        
+
         if (uploadError) throw uploadError;
 
         const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
-        await handleUpdateChecklistItem(itemId, { foto_url: urlData.publicUrl });
+        const { error: anexoError } = await supabase.from('fotos_anexos' as any).insert({
+          os_id: osId as number,
+          url_arquivo: urlData.publicUrl,
+          categoria: `checklist:${item?.item ?? itemId}`,
+        });
+        if (anexoError) throw anexoError;
+        queryClient.invalidateQueries({ queryKey: ['os_fotos_checklist', osId] });
         toast.success("Foto anexada com sucesso");
       } catch (error: any) {
         toast.error("Erro no upload: " + error.message);
@@ -398,9 +391,28 @@ function GestaoOSPage() {
     input.click();
   };
 
+  const { data: fotosChecklist = [] } = useQuery({
+    queryKey: ['os_fotos_checklist', osId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fotos_anexos' as any)
+        .select('*')
+        .eq('os_id', osId as number)
+        .like('categoria', 'checklist:%');
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
+  });
+
+  const fotoDoItem = (item: any) =>
+    (fotosChecklist as any[]).find(
+      (f: any) => String(f.categoria).toLowerCase() === `checklist:${String(item?.item ?? '').toLowerCase()}`,
+    )?.url_arquivo ?? null;
+
   const handleFinalizarChecklist = async () => {
     const itemsPendingPhoto = checklistData.filter((item: any) => 
-      (item.status === 'Danificado' || item.status === 'Substituir') && !item.foto_url
+      (item.status === 'Danificado' || item.status === 'Substituir') && !fotoDoItem(item)
     );
 
     if (itemsPendingPhoto.length > 0) {
@@ -412,25 +424,27 @@ function GestaoOSPage() {
 
     setSavingChecklist(true);
     try {
+      const statusAnterior = os?.status ?? null;
       const { error } = await supabase
         .from('ordens_servico')
         .update({ status: 'vistoria' })
-        .eq('id', id);
+        .eq('id', osId as number);
 
-      if (!error) {
-        // Registrar log usando a função RPC que criamos (usando cast para evitar erro de tipo)
-        await (supabase.rpc as any)('log_evento', {
-          p_os_id: id,
-          p_acao: 'CHECKLIST_FINALIZADO',
-          p_descricao: 'Checklist técnico finalizado e OS enviada para vistoria'
-        });
-      }
       if (error) throw error;
-      
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: osId as number,
+        status_anterior: statusAnterior,
+        status_novo: 'vistoria',
+        observacao: 'Checklist técnico finalizado e OS enviada para vistoria',
+        alterado_por: profile?.id ?? null,
+      });
+
       toast.success("Checklist finalizado", {
         description: "OS avançada para Vistoria Técnica."
       });
-      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
     } catch (error: any) {
       toast.error("Erro ao finalizar: " + error.message);
     } finally {
@@ -449,32 +463,39 @@ function GestaoOSPage() {
 
   useEffect(() => {
     if (os) {
+      // O laudo é persistido na coluna oficial "observacao" (JSON).
+      let laudo: any = {};
+      try {
+        laudo = os.observacao ? JSON.parse(os.observacao) : {};
+      } catch {
+        laudo = { diagnostico: os.observacao ?? "" };
+      }
       setLaudoData({
-        diagnostico: os.laudo_diagnostico || "",
-        defeitos: os.laudo_defeitos || "",
-        servicos_necessarios: os.laudo_servicos_necessarios || ""
+        diagnostico: laudo.diagnostico || "",
+        defeitos: laudo.defeitos || "",
+        servicos_necessarios: laudo.servicos_necessarios || ""
       });
     }
   }, [os]);
 
   const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
-    queryKey: ['os_fotos_laudo', id],
+    queryKey: ['os_fotos_laudo', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('os_fotos_anexos')
+        .from('fotos_anexos' as any)
         .select('*')
-        .eq('os_id', id)
-        .in('tipo', ['laudo_interno', 'laudo_pecas']);
+        .eq('os_id', osId as number)
+        .in('categoria', ['laudo_interno', 'laudo_pecas']);
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
-    enabled: !!os
+    enabled: !!os && osId !== null
   });
 
   useEffect(() => {
     if (fotosLaudo) {
-      setFotosInternas(fotosLaudo.filter((f: any) => f.tipo === 'laudo_interno'));
-      setFotosPecas(fotosLaudo.filter((f: any) => f.tipo === 'laudo_pecas'));
+      setFotosInternas((fotosLaudo as any[]).filter((f: any) => f.categoria === 'laudo_interno'));
+      setFotosPecas((fotosLaudo as any[]).filter((f: any) => f.categoria === 'laudo_pecas'));
     }
   }, [fotosLaudo]);
 
@@ -490,7 +511,7 @@ function GestaoOSPage() {
       for (const file of files) {
         try {
           const fileExt = (file as File).name.split('.').pop();
-          const fileName = `${id}/laudo/${tipo}-${Math.random()}.${fileExt}`;
+          const fileName = `${osId}/laudo/${tipo}-${Math.random()}.${fileExt}`;
           const { error: uploadError } = await supabase.storage
             .from('os-assets')
             .upload(fileName, file as File);
@@ -499,10 +520,10 @@ function GestaoOSPage() {
 
           const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
           
-          await supabase.from('os_fotos_anexos').insert({
-            os_id: id,
-            foto_url: urlData.publicUrl,
-            tipo: tipo
+          await supabase.from('fotos_anexos' as any).insert({
+            os_id: osId as number,
+            url_arquivo: urlData.publicUrl,
+            categoria: tipo
           });
         } catch (error: any) {
           toast.error("Erro no upload: " + error.message);
@@ -524,22 +545,30 @@ function GestaoOSPage() {
 
     setFinalizingLaudo(true);
     try {
+      const statusAnterior = os?.status ?? null;
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ 
-          laudo_diagnostico: laudoData.diagnostico,
-          laudo_defeitos: laudoData.defeitos,
-          laudo_servicos_necessarios: laudoData.servicos_necessarios,
-          status: 'aguardando_gestor' // Altera status conforme solicitado
-        })
-        .eq('id', id);
-      
+        .update({
+          observacao: JSON.stringify(laudoData),
+          status: 'aguardando_gestor'
+        } as any)
+        .eq('id', osId as number);
+
       if (error) throw error;
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: osId as number,
+        status_anterior: statusAnterior,
+        status_novo: 'aguardando_gestor',
+        observacao: 'Laudo técnico finalizado',
+        alterado_por: profile?.id ?? null,
+      });
 
       toast.success("Laudo Técnico finalizado", {
         description: "OS alterada para 'Aguardando Gestor'."
       });
-      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
     } catch (error: any) {
       toast.error("Erro ao finalizar laudo: " + error.message);
     } finally {
@@ -560,11 +589,11 @@ function GestaoOSPage() {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="font-display text-2xl font-black text-foreground tracking-tight uppercase">ORDEM DE SERVIÇO <span className="text-primary">{os.numero_os}</span></h2>
+              <h2 className="font-display text-2xl font-black text-foreground tracking-tight uppercase">ORDEM DE SERVIÇO <span className="text-primary">{os.numero_os ?? os.id}</span></h2>
               <Badge className="bg-amber-500 text-white font-black uppercase text-[9px] tracking-widest">{os.status}</Badge>
             </div>
             <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-2">
-              Cliente: <span className="text-foreground">{os.cliente}</span>
+              Cliente: <span className="text-foreground">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span>
               <span className="h-1 w-1 rounded-full bg-border" />
               Técnico: <span className="text-foreground">{os.tecnico?.nome || "Não atribuído"}</span>
             </p>
@@ -712,7 +741,7 @@ function GestaoOSPage() {
                         </Button>
                       </div>
                       <Select
-                        value={os.tipo_equipamento_id || ""}
+                        value={os.equipamento_id || ""}
                         onValueChange={handleTipoEquipamentoChange}
                         disabled={!editandoTipo}
                       >
@@ -849,11 +878,11 @@ function GestaoOSPage() {
                         <Activity className="h-3 w-3 text-slate-400" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{log.usuario_nome || "Sistema"}</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{"Histórico"}</p>
                         <p className="text-xs font-bold text-foreground truncate">{descreverLog(log)}</p>
                       </div>
                       <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
-                        {new Date(log.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        {new Date(log.data_alteracao).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                   ))
@@ -874,11 +903,11 @@ function GestaoOSPage() {
                 ) : logsOs.map((log: any) => (
                   <div key={log.id} className="flex items-center gap-3 px-4 py-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{log.usuario_nome || "Sistema"}</p>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{"Histórico"}</p>
                       <p className="text-xs font-bold text-foreground">{descreverLog(log)}</p>
                     </div>
                     <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
-                      {new Date(log.criado_em).toLocaleString('pt-BR')}
+                      {new Date(log.data_alteracao).toLocaleString('pt-BR')}
                     </span>
                   </div>
                 ))}
@@ -894,7 +923,7 @@ function GestaoOSPage() {
                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                  <div>
                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                     Ordem de Serviço #{os.numero_os} / Checklist
+                     Ordem de Serviço #{os.numero_os ?? os.id} / Checklist
                    </div>
                    <CardTitle className="text-xl font-black uppercase tracking-tight text-slate-900 flex items-center gap-2">
                      <ClipboardCheck className="h-6 w-6 text-primary" />
@@ -903,7 +932,7 @@ function GestaoOSPage() {
                  </div>
                  <div className="text-right">
                    <p className="text-[10px] font-bold text-muted-foreground uppercase">Equipamento: <span className="text-slate-900">{os.descricao || "N/A"}</span></p>
-                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Cliente: <span className="text-slate-900">{os.cliente}</span></p>
+                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Cliente: <span className="text-slate-900">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span></p>
                  </div>
                </div>
              </CardHeader>
@@ -983,22 +1012,22 @@ function GestaoOSPage() {
                             <td className="px-4 py-4">
                               <div className="flex items-center justify-center gap-2">
                                 <div className="relative group">
-                                  {item.foto_url && (
+                                  {fotoDoItem(item) && (
                                     <div className="absolute -top-12 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                                      <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
+                                      <img src={fotoDoItem(item)} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
                                     </div>
                                   )}
                                   <Button 
-                                    variant={item.foto_url ? "default" : "outline"} 
+                                    variant={fotoDoItem(item) ? "default" : "outline"} 
                                     size="sm" 
-                                    className={`h-9 gap-2 px-3 border-slate-200 ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
+                                    className={`h-9 gap-2 px-3 border-slate-200 ${!fotoDoItem(item) && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
                                     onClick={() => handleChecklistPhoto(item.id)}
                                   >
-                                    <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
+                                    <Camera className={`h-4 w-4 ${fotoDoItem(item) ? 'text-primary-foreground' : 'text-slate-400'}`} />
+                                    <span className="text-[9px] font-black uppercase tracking-widest">{fotoDoItem(item) ? "Ver" : "Foto"}</span>
                                   </Button>
                                 </div>
-                                {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
+                                {!fotoDoItem(item) && (item.status === 'Danificado' || item.status === 'Substituir') && (
                                   <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
                                 )}
                               </div>
@@ -1035,7 +1064,7 @@ function GestaoOSPage() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                    OS #{os.numero_os} · Cliente: {os.cliente}
+                    OS #{os.numero_os ?? os.id} · Cliente: {os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}
                   </div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-slate-900">
                     Laudo Técnico
@@ -1094,7 +1123,7 @@ function GestaoOSPage() {
                           <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
                         ) : (
                           fotosInternas.map((foto, idx) => (
-                            <img key={idx} src={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Interna" />
+                            <img key={idx} src={foto.url_arquivo} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Interna" />
                           ))
                         )}
                       </div>
@@ -1113,7 +1142,7 @@ function GestaoOSPage() {
                           <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
                         ) : (
                           fotosPecas.map((foto, idx) => (
-                            <img key={idx} src={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Peça" />
+                            <img key={idx} src={foto.url_arquivo} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Peça" />
                           ))
                         )}
                       </div>
@@ -1175,10 +1204,10 @@ function GestaoOSPage() {
                             <Box className="h-5 w-5 text-slate-400" />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
+                            <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao ?? peca.item_peca ?? peca.observacao ?? 'Peça'}</p>
                             <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
                               <MapPin className="h-3 w-3 text-primary" />
-                              {peca.localizacao}
+                              {peca.localizacao_fisica ?? 'Sem localização'}
                             </div>
                           </div>
                         </div>
@@ -1244,19 +1273,19 @@ function GestaoOSPage() {
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
                   <p className="text-lg font-black text-foreground">
-                    R$ {custos.filter((c: any) => c.tipo === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                    R$ {custos.filter((c: any) => c.categoria === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
                   <p className="text-lg font-black text-foreground">
-                    R$ {custos.filter((c: any) => c.tipo === 'material').reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                    R$ {custos.filter((c: any) => c.categoria === 'material').reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
                   <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
                   <p className="text-lg font-black text-primary">
-                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
               </div>

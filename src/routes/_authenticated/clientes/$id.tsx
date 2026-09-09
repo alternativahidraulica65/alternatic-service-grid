@@ -59,39 +59,52 @@ function ClienteDetalhesPage() {
   });
 
   const { data: contatos = [] } = useQuery({
-    queryKey: ['cliente_contatos', id],
+    queryKey: ['contatos_cliente', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('cliente_contatos')
+        .from('contatos_cliente' as any)
         .select('*')
         .eq('cliente_id', id);
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
+  // Equipamentos do cliente: derivados das OS registradas (tabela oficial).
   const { data: equipamentos = [] } = useQuery({
     queryKey: ['cliente_equipamentos', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('cliente_equipamentos')
-        .select('*')
+        .from('ordens_servico')
+        .select('id, equipamento_id, data_entrada, tipos_equipamento (nome, categoria_principal)')
         .eq('cliente_id', id);
       if (error) throw error;
-      return data;
+      return (data ?? []).map((o: any) => ({
+        id: o.id,
+        nome: o.tipos_equipamento?.nome ?? 'Equipamento não informado',
+        tipo: o.tipos_equipamento?.categoria_principal ?? null,
+        ultima_manutencao: o.data_entrada,
+      }));
     }
   });
 
+  // Financeiro do cliente: custos das OS oficiais.
   const { data: financeiro = [] } = useQuery({
     queryKey: ['cliente_financeiro', id],
     queryFn: async () => {
+      const { data: oss, error: ossError } = await supabase
+        .from('ordens_servico')
+        .select('id')
+        .eq('cliente_id', id);
+      if (ossError) throw ossError;
+      const ids = (oss ?? []).map((o: any) => Number(o.id));
+      if (ids.length === 0) return [];
       const { data, error } = await supabase
-        .from('lancamentos_financeiros')
+        .from('os_custos' as any)
         .select('*')
-        .eq('cliente_id', id)
-        .order('data_competencia', { ascending: false });
+        .in('os_id', ids);
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -99,12 +112,12 @@ function ClienteDetalhesPage() {
     queryKey: ['cliente_orcamentos', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('orcamentos')
-        .select('*')
+        .from('ordens_servico')
+        .select('id, status, valor_final, data_entrada')
         .eq('cliente_id', id)
-        .order('data_emissao', { ascending: false });
+        .order('data_entrada', { ascending: false });
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -112,12 +125,12 @@ function ClienteDetalhesPage() {
     queryKey: ['cliente_historico', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('auditoria_financeira')
-        .select('*')
-        .eq('registro_id', id)
-        .order('criado_em', { ascending: false });
+        .from('historico_status_os' as any)
+        .select('*, ordens_servico!inner(cliente_id)')
+        .eq('ordens_servico.cliente_id', id)
+        .order('data_alteracao', { ascending: false });
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -130,9 +143,9 @@ function ClienteDetalhesPage() {
         .from('ordens_servico')
         .select('*')
         .eq('cliente_id', id)
-        .order('data_abertura', { ascending: false });
+        .order('data_entrada', { ascending: false });
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -160,7 +173,7 @@ function ClienteDetalhesPage() {
   const stats = {
     totalOS: ordens.length,
     osAbertas: ordens.filter(os => os.status !== 'Concluída' && os.status !== 'Cancelada').length,
-    totalValor: ordens.reduce((acc, os) => acc + (os.valor_total || 0), 0)
+    totalValor: ordens.reduce((acc, os) => acc + Number((os as any).valor_final || 0), 0)
   };
 
   return (
@@ -316,11 +329,11 @@ function ClienteDetalhesPage() {
                         </TableRow>
                      </TableHeader>
                      <TableBody>
-                        {equipamentos.map(e => (
+                        {equipamentos.map((e: any) => (
                            <TableRow key={e.id}>
                              <TableCell className="font-bold text-xs">{e.nome}</TableCell>
                              <TableCell className="text-xs">{e.tipo}</TableCell>
-                             <TableCell className="text-xs font-mono">{e.modelo}</TableCell>
+                             <TableCell className="text-xs font-mono">{e.tipo ?? '—'}</TableCell>
                            </TableRow>
                         ))}
                      </TableBody>
@@ -371,11 +384,11 @@ function ClienteDetalhesPage() {
                           </TableRow>
                        </TableHeader>
                        <TableBody>
-                          {orcamentos.map(o => (
+                          {orcamentos.map((o: any) => (
                              <TableRow key={o.id}>
-                                <TableCell className="pl-6 font-bold text-primary">{o.numero_orcamento}</TableCell>
-                                <TableCell className="text-xs">{o.data_emissao ? format(new Date(o.data_emissao), "dd/MM/yyyy") : "—"}</TableCell>
-                                <TableCell className="text-xs font-bold">{o.valor_total?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
+                                <TableCell className="pl-6 font-bold text-primary">{`#${o.id}`}</TableCell>
+                                <TableCell className="text-xs">{o.data_entrada ? format(new Date(o.data_entrada), "dd/MM/yyyy") : "—"}</TableCell>
+                                <TableCell className="text-xs font-bold">{Number(o.valor_final ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
                                 <TableCell><Badge variant="outline" className="text-[9px] uppercase">{o.status}</Badge></TableCell>
                              </TableRow>
                           ))}
@@ -402,14 +415,14 @@ function ClienteDetalhesPage() {
                           </TableRow>
                        </TableHeader>
                        <TableBody>
-                          {financeiro.map(f => (
+                          {financeiro.map((f: any) => (
                              <TableRow key={f.id}>
                                 <TableCell className="pl-6 text-xs font-bold uppercase">{f.descricao}</TableCell>
-                                <TableCell className="text-xs">{f.data_competencia ? format(new Date(f.data_competencia), "dd/MM/yyyy") : "—"}</TableCell>
-                                <TableCell className={`text-xs font-black ${f.tipo === 'receita' ? 'text-emerald-600' : 'text-red-600'}`}>
-                                   {f.valor?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                <TableCell className="text-xs">{f.criado_em ? format(new Date(f.criado_em), "dd/MM/yyyy") : "—"}</TableCell>
+                                <TableCell className={`text-xs font-black ${f.categoria === 'receita' ? 'text-emerald-600' : 'text-red-600'}`}>
+                                   {Number(f.valor_total_custo ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                 </TableCell>
-                                <TableCell><Badge className="text-[9px] uppercase">{f.tipo}</Badge></TableCell>
+                                <TableCell><Badge className="text-[9px] uppercase">{f.categoria ?? '—'}</Badge></TableCell>
                              </TableRow>
                           ))}
                        </TableBody>

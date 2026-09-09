@@ -45,7 +45,7 @@ function ChecklistTemplatesPage() {
     queryFn: async () => {
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -54,9 +54,10 @@ function ChecklistTemplatesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('checklist_templates')
-        .select('*, tipos_equipamento(nome)');
+        .select('id, componente_peca, descricao_avaliacao, tipo_equipamento_id, ordem_exibicao, tipos_equipamento(nome)')
+        .order('ordem_exibicao', { ascending: true });
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -71,24 +72,28 @@ function ChecklistTemplatesPage() {
   };
 
   const handleSave = async () => {
-    if (!selectedTipo || !templateName || itens.length === 0) {
-      toast.error("Preencha todos os campos e adicione pelo menos um item.");
+    if (!selectedTipo || itens.length === 0) {
+      toast.error("Selecione o tipo de equipamento e adicione pelo menos um componente.");
       return;
     }
 
     setSaving(true);
     try {
+      const existentes = (templates as any[]).filter((t: any) => t.tipo_equipamento_id === selectedTipo);
+      const baseOrdem = existentes.reduce((max: number, t: any) => Math.max(max, Number(t.ordem_exibicao ?? 0)), 0);
+
       const { error } = await supabase
         .from('checklist_templates')
-        .insert({
+        .insert(itens.map((item, idx) => ({
           tipo_equipamento_id: selectedTipo,
-          nome: templateName,
-          itens: itens
-        });
+          componente_peca: item.label,
+          descricao_avaliacao: templateName || null,
+          ordem_exibicao: baseOrdem + idx + 1,
+        })) as any);
 
       if (error) throw error;
 
-      toast.success("Template salvo com sucesso!");
+      toast.success("Itens de checklist salvos com sucesso!");
       setTemplateName("");
       setItens([]);
       setSelectedTipo("");
@@ -142,22 +147,22 @@ function ChecklistTemplatesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Nome do Template</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Descrição da Avaliação</Label>
               <Input 
                 value={templateName} 
                 onChange={(e) => setTemplateName(e.target.value)}
-                placeholder="Ex: Revisão Preventiva Hidráulica"
+                placeholder="Ex: Avaliar desgaste, folga e vazamentos"
                 className="border-slate-200 bg-white text-xs font-bold"
               />
             </div>
 
             <div className="pt-4 border-t border-border">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-2">Adicionar Itens</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-2">Adicionar Componentes/Peças</Label>
               <div className="flex gap-2">
                 <Input 
                   value={newItem} 
                   onChange={(e) => setNewItem(e.target.value)}
-                  placeholder="Nome do item..."
+                  placeholder="Ex: Kit de Vedações"
                   className="border-slate-200 bg-white text-xs font-bold"
                   onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
                 />
@@ -183,7 +188,7 @@ function ChecklistTemplatesPage() {
               onClick={handleSave}
               disabled={saving}
             >
-              {saving ? "Salvando..." : "Salvar Template"}
+              {saving ? "Salvando..." : "Salvar Itens"}
               <Save className="ml-2 h-4 w-4" />
             </Button>
           </CardContent>
@@ -191,28 +196,25 @@ function ChecklistTemplatesPage() {
 
         <div className="lg:col-span-2 space-y-6">
           <div className="grid sm:grid-cols-2 gap-4">
-            {templates.map((tpl: any) => (
+            {(templates as any[]).map((tpl: any) => (
               <Card key={tpl.id} className="border-border shadow-md hover:border-primary/50 transition-all group">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <Badge className="bg-primary/10 text-primary border-primary/20 text-[8px] font-black uppercase tracking-widest mb-2">
-                        {tpl.tipos_equipamentos?.nome || 'Geral'}
+                        {tpl.tipos_equipamento?.nome || 'Geral'}
                       </Badge>
-                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{tpl.nome}</h3>
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{tpl.componente_peca}</h3>
                     </div>
                     <Settings className="h-4 w-4 text-slate-300 group-hover:text-primary transition-colors" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                      {tpl.itens?.length || 0} Itens de Verificação
+                      Ordem {tpl.ordem_exibicao ?? '—'}
                     </p>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {tpl.itens?.slice(0, 3).map((it: any, i: number) => (
-                        <span key={i} className="text-[8px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-bold uppercase">{it.label}</span>
-                      ))}
-                      {tpl.itens?.length > 3 && <span className="text-[8px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-bold">+{tpl.itens.length - 3}</span>}
-                    </div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      {tpl.descricao_avaliacao || 'Sem descrição de avaliação'}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -223,7 +225,7 @@ function ChecklistTemplatesPage() {
             <div className="p-20 text-center space-y-4 rounded-2xl border-2 border-dashed border-slate-200">
               <ClipboardCheck className="h-12 w-12 text-slate-200 mx-auto" />
               <div className="space-y-1">
-                <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Nenhum template configurado</p>
+                <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Nenhum registro encontrado</p>
                 <p className="text-xs text-slate-400 font-medium">Comece criando um template para seus equipamentos à esquerda.</p>
               </div>
             </div>

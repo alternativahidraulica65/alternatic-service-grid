@@ -37,11 +37,11 @@ function EngenhariaMateriaisPage() {
   const [densidade, setDensidade] = useState<number>(7.85);
 
   const { data: materiais = [] } = useQuery({
-    queryKey: ['materiais_list'],
+    queryKey: ['materias_primas'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('materiais').select('*');
+      const { data, error } = await supabase.from('materias_primas' as any).select('*').order('nome');
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -111,10 +111,14 @@ function EngenhariaMateriaisPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {materiais.length > 0 ? materiais.map((m: any) => (
-                        <SelectItem key={m.id} value={m.densidade.toString()}>{m.nome} ({m.densidade})</SelectItem>
+                      {materiais.length > 0 ? (materiais as any[]).map((m: any) => (
+                        <SelectItem key={m.id} value={String(m.densidade ?? 7.85)}>
+                          {m.nome}{m.densidade ? ` (${m.densidade})` : ''}
+                        </SelectItem>
                       )) : (
-                        <SelectItem value="7.85">Aço Carbono / Cromo (7.85)</SelectItem>
+                        <div className="px-3 py-4 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                          Nenhum registro encontrado
+                        </div>
                       )}
                     </SelectContent>
                   </Select>

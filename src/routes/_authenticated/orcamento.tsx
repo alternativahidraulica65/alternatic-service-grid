@@ -64,18 +64,18 @@ function OrcamentoPage() {
     queryKey: ['orcamento_itens', selectedOSId],
     queryFn: async () => {
       if (!selectedOSId) return [];
-      const { data, error } = await supabase.from('custos_os').select('*').eq('os_id', selectedOSId);
+      const { data, error } = await supabase.from('os_custos' as any).select('*').eq('os_id', Number(selectedOSId));
       if (error) throw error;
       return data;
     },
     enabled: !!selectedOSId
   });
 
-  const selectedOS = ordens.find(o => o.id === selectedOSId);
+  const selectedOS = ordens.find((o: any) => String(o.id) === selectedOSId);
 
   const totais = useMemo(() => {
-    const custo = itens.reduce((acc: number, item: any) => acc + (item.custo_interno || 0), 0);
-    const venda = itens.reduce((acc: number, item: any) => acc + (item.valor_venda || 0), 0);
+    const custo = itens.reduce((acc: number, item: any) => acc + Number(item.valor_total_custo || 0), 0);
+    const venda = itens.reduce((acc: number, item: any) => acc + Number(item.valor_total_custo || 0) * 1.3, 0);
     const lucro = venda - custo;
     const margemGeral = venda > 0 ? (lucro / venda) * 100 : 0;
     
@@ -93,10 +93,10 @@ function OrcamentoPage() {
         .from('ordens_servico')
         .update({
           status: 'orcamento_pendente',
-          valor_total: totais.venda,
-          margem_lucro: totais.margemGeral
-        })
-        .eq('id', selectedOSId);
+          valor_final: totais.venda,
+          margem_lucro_aplicada: totais.margemGeral
+        } as any)
+        .eq('id', Number(selectedOSId));
 
       if (error) throw error;
 
@@ -126,8 +126,8 @@ function OrcamentoPage() {
                   <SelectValue placeholder="Selecione a OS..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {ordens.map(os => (
-                    <SelectItem key={os.id} value={os.id}>{os.numero_os} - {os.cliente}</SelectItem>
+                  {ordens.map((os: any) => (
+                    <SelectItem key={os.id} value={String(os.id)}>OS #{os.id}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -193,7 +193,7 @@ function OrcamentoPage() {
                       </TableCell>
                       {showInternalCosts && (
                         <TableCell className="py-4 text-right font-medium text-slate-500">
-                          {(item.custo_interno || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          {Number(item.valor_total_custo || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </TableCell>
                       )}
                       <TableCell className="py-4 text-right">
@@ -202,7 +202,7 @@ function OrcamentoPage() {
                         </div>
                       </TableCell>
                       <TableCell className="py-4 text-right pr-6 font-black text-foreground">
-                        {(item.valor_venda || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        {(Number(item.valor_total_custo || 0) * 1.3).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -340,7 +340,7 @@ function OrcamentoPage() {
                 
                 <p className="text-[9px] text-center font-bold text-slate-600 uppercase tracking-widest">
                   Este orçamento será processado para: <br/>
-                  <span className="text-slate-400">{selectedOS?.cliente || "Nenhum cliente selecionado"}</span>
+                  <span className="text-slate-400">{selectedOS ? `OS #${(selectedOS as any).id}` : "Nenhuma OS selecionada"}</span>
                 </p>
               </div>
             </CardContent>

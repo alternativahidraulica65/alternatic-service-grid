@@ -207,59 +207,64 @@ function NovaOSPage() {
 
     setLoading(true);
     try {
-      const proximoNum = `OS-${Math.floor(1000 + Math.random() * 9000)}`;
       const { data: userData } = await supabase.auth.getUser();
       const currentUserId = userData.user?.id || null;
 
       const { data: os, error: osError } = await supabase
         .from('ordens_servico')
         .insert({
-          numero_os: proximoNum,
           cliente_id: selectedCliente,
-          cliente: clientes.find(c => c.id === selectedCliente)?.nome || "Cliente Desconhecido",
-          descricao: descricao,
-          prioridade: prioridade,
+          equipamento_id: tipoEquipamento || null,
           status: 'aberta',
-          data_abertura: new Date().toISOString(),
-          tipo_equipamento_id: tipoEquipamento,
-          tecnico_id: currentUserId
-        })
+          data_entrada: new Date().toISOString(),
+          operador_atribuido: currentUserId,
+          observacao: JSON.stringify({ diagnostico: descricao, prioridade }),
+        } as any)
         .select()
         .single();
 
       if (osError) throw osError;
 
-      // Upload das fotos
-      const uploadedFotos = [];
+      const osId = Number((os as any).id);
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: osId,
+        status_anterior: null,
+        status_novo: 'aberta',
+        observacao: `Ordem de serviço aberta (prioridade ${prioridade})`,
+      });
+
+      // Upload das fotos de entrada
+      const uploadedFotos: any[] = [];
       for (let i = 0; i < fotos.length; i++) {
         const file = fotos[i];
         if (file) {
           const fileExt = file.name.split('.').pop();
-          const fileName = `${os.id}/triagem/foto-${i}-${Date.now()}.${fileExt}`;
+          const fileName = `${osId}/triagem/foto-${i}-${Date.now()}.${fileExt}`;
           const { error: uploadError } = await supabase.storage.from('os-assets').upload(fileName, file);
           if (!uploadError) {
             const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
             uploadedFotos.push({
-              os_id: os.id,
-              foto_url: urlData.publicUrl,
-              tipo: 'triagem'
+              os_id: osId,
+              url_arquivo: urlData.publicUrl,
+              categoria: 'triagem'
             });
           }
         }
       }
       
       if (uploadedFotos.length > 0) {
-        await supabase.from('os_fotos_anexos').insert(uploadedFotos);
+        await supabase.from('fotos_anexos' as any).insert(uploadedFotos);
       }
 
       if (pecas.length > 0) {
         const { error: pecasError } = await supabase
-          .from('pecas_os')
+          .from('os_pecas_rastreio' as any)
           .insert(pecas.map(p => ({
-            os_id: os.id,
-            nome: p.nome || "Peça não identificada",
-            localizacao: p.local || "Não informado",
-            criado_por: currentUserId
+            os_id: osId,
+            observacao: p.nome || "Peça não identificada",
+            localizacao_fisica: p.local || "Não informado",
+            status_peca: 'guardada'
           })));
         
         if (pecasError) throw pecasError;
@@ -268,11 +273,11 @@ function NovaOSPage() {
       // Atualizar o número de orçamento do cliente (incrementar)
       if (clienteDetails) {
         const novoNumero = (clienteDetails.ultimo_numero_orcamento || 0) + 1;
-        await supabase.from('clientes').update({ ultimo_numero_orcamento: novoNumero }).eq('id', selectedCliente);
+        await supabase.from('clientes').update({ ultimo_numero_orcamento: novoNumero } as any).eq('id', selectedCliente);
       }
 
       toast.success("Ordem de Serviço aberta!", {
-        description: `${proximoNum} gerada com sucesso.`
+        description: `OS #${osId} gerada com sucesso.`
       });
       
       queryClient.invalidateQueries({ queryKey: ['ordens_servico'] });
