@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T22:32:05.693009+00:00",
+  "generated_at": "2026-09-09T23:10:20.363354+00:00",
   "files": [
     {
       "path": "components.json",
@@ -370,6 +370,10 @@
       "bytes": 1739
     },
     {
+      "path": "src/lib/os-id.ts",
+      "bytes": 475
+    },
+    {
       "path": "src/lib/error-page.ts",
       "bytes": 1371
     },
@@ -403,7 +407,7 @@
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
-      "bytes": 16953
+      "bytes": 17082
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
@@ -419,7 +423,7 @@
     },
     {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "bytes": 11189
+      "bytes": 11228
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
@@ -439,11 +443,11 @@
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "bytes": 9611
+      "bytes": 9865
     },
     {
       "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "bytes": 9731
+      "bytes": 9933
     },
     {
       "path": "src/routes/_authenticated/admin/usuarios.tsx",
@@ -463,19 +467,19 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 21505
+      "bytes": 22365
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 31940
+      "bytes": 32103
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 71478
+      "bytes": 72634
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 20388
+      "bytes": 20446
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -2066,6 +2070,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
       "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.tsx",
+      "target": "@/lib/os-id"
     },
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
