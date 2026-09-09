@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T16:41:32.529102+00:00",
+  "generated_at": "2026-09-09T16:53:34.069805+00:00",
   "files": [
     {
       "path": "components.json",
@@ -242,6 +242,10 @@
       "bytes": 2531
     },
     {
+      "path": "supabase/migrations/20260909164854_d78f2b4b-4f16-47f2-8fa1-25a44e5d6d42.sql",
+      "bytes": 2812
+    },
+    {
       "path": "supabase/migrations/20260823203008_5687f433-2186-4a80-9f18-c053d9552adf.sql",
       "bytes": 427
     },
@@ -395,7 +399,7 @@
     },
     {
       "path": "src/routes/_authenticated/historico.tsx",
-      "bytes": 11402
+      "bytes": 11420
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
@@ -403,7 +407,7 @@
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
-      "bytes": 10181
+      "bytes": 10199
     },
     {
       "path": "src/routes/_authenticated/relatorios.tsx",
@@ -455,7 +459,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 24536
+      "bytes": 27180
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
@@ -463,11 +467,11 @@
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 24290
+      "bytes": 31940
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 66989
+      "bytes": 68174
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -499,7 +503,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 43801
+      "bytes": 44734
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -1974,6 +1978,14 @@
     {
       "source": "src/routes/_authenticated/os/nova.tsx",
       "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/alert-dialog"
     },
     {
       "source": "src/routes/_authenticated/os/nova.tsx",
