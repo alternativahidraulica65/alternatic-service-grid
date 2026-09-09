@@ -70,7 +70,7 @@ function OrcamentoOSPage() {
   const { data: fotos = [] } = useQuery({
     queryKey: ['os_fotos', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('os_fotos_anexos').select('*').eq('os_id', id);
+      const { data, error } = await supabase.from('fotos_anexos' as any).select('*').eq('os_id', Number(id));
       if (error) throw error;
       return data;
     }

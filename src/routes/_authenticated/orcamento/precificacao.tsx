@@ -60,9 +60,9 @@ function PrecificacaoPage() {
       if (!selectedOSId) return [];
       // Ajustado: Tabela é 'os_custos'
       const { data, error } = await supabase
-        .from('os_custos')
+        .from('os_custos' as any)
         .select('*')
-        .eq('os_id', selectedOSId);
+        .eq('os_id', Number(selectedOSId));
       if (error) throw error;
       return data || [];
     },
@@ -71,7 +71,7 @@ function PrecificacaoPage() {
   const selectedOS = orders?.find(o => o.id.toString() === selectedOSId);
   
   // Ajustado: 'valor_total_custo' em vez de 'custo_interno'
-  const custoTotal = custos?.reduce((acc, curr) => acc + (Number(curr.valor_total_custo) || 0), 0) || 0;
+  const custoTotal = custos?.reduce((acc, curr) => acc + (Number((curr as any).valor_total_custo) || 0), 0) || 0;
 
   const precoVenda = custoTotal / (1 - margem / 100);
   const lucroBruto = precoVenda - custoTotal;
@@ -88,8 +88,8 @@ function PrecificacaoPage() {
           status: 'orcamento_pendente',
           valor_final: precoVenda,
           margem_lucro_aplicada: margem
-        })
-        .eq('id', selectedOSId);
+        } as any)
+        .eq('id', Number(selectedOSId));
 
       if (error) throw error;
 
