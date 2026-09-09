@@ -140,21 +140,46 @@ function GestaoOSPage() {
   });
 
   const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+  const [editandoTipo, setEditandoTipo] = useState(false);
 
   const handleTipoEquipamentoChange = async (tipoId: string) => {
     try {
+      const anteriorId = os?.tipo_equipamento_id ?? null;
+      if (anteriorId === tipoId) {
+        setEditandoTipo(false);
+        return;
+      }
       const { error } = await supabase
         .from('ordens_servico')
         .update({ tipo_equipamento_id: tipoId, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
+
+      const nomeAnterior = tiposEquipamento.find((t: any) => t.id === anteriorId)?.nome ?? 'Não informado';
+      const nomeNovo = tiposEquipamento.find((t: any) => t.id === tipoId)?.nome ?? tipoId;
+
+      const { error: logError } = await supabase.from('logs_sistema').insert({
+        usuario_id: profile?.id ?? null,
+        usuario_nome: profile?.nome ?? null,
+        acao: 'Atualização',
+        entidade: 'ordens_servico',
+        registro_id: id,
+        os_numero: os?.numero_os ?? null,
+        dados_anteriores: { tipo_equipamento: nomeAnterior },
+        dados_novos: { tipo_equipamento: nomeNovo },
+      });
+      if (logError) console.warn('Falha ao registrar log:', logError.message);
+
       queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
       queryClient.invalidateQueries({ queryKey: ['os_checklist', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_logs', id] });
+      setEditandoTipo(false);
       toast.success("Tipo de equipamento atualizado");
     } catch (error: any) {
       toast.error("Erro ao atualizar tipo: " + error.message);
     }
   };
+
 
 
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
