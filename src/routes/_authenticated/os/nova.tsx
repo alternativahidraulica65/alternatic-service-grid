@@ -351,6 +351,32 @@ function NovaOSPage() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Quem trouxe o equipamento *</Label>
+                <Input
+                  placeholder="Nome de quem entregou o equipamento"
+                  className="h-11 border-border"
+                  value={entreguePor}
+                  onChange={(e) => setEntreguePor(e.target.value)}
+                  maxLength={120}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Operador Responsável (Opcional)</Label>
+                <Select value={operadorId} onValueChange={setOperadorId}>
+                  <SelectTrigger className="h-11 border-border">
+                    <SelectValue placeholder="Definir depois..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {operadores.map((o: any) => (
+                      <SelectItem key={o.user_id} value={o.user_id}>
+                        {o.nome}{o.cargo ? ` — ${o.cargo}` : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
             </CardContent>
           </Card>
         )}
