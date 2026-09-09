@@ -630,12 +630,24 @@ function GestaoOSPage() {
                       <p className="font-bold text-foreground uppercase">{os.prioridade}</p>
                     </div>
                     <div className="col-span-2">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Tipo de Equipamento</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Tipo de Equipamento</p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-slate-400 hover:text-primary"
+                          onClick={() => setEditandoTipo((v) => !v)}
+                          title={editandoTipo ? "Cancelar edição" : "Editar tipo de equipamento"}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                       <Select
                         value={os.tipo_equipamento_id || ""}
                         onValueChange={handleTipoEquipamentoChange}
+                        disabled={!editandoTipo}
                       >
-                        <SelectTrigger className="w-full md:w-80 h-9 text-xs font-bold uppercase border-slate-200 bg-white">
+                        <SelectTrigger className="w-full md:w-80 h-9 text-xs font-bold uppercase border-slate-200 bg-white disabled:opacity-100 disabled:cursor-default">
                           <SelectValue placeholder="Selecione o tipo de equipamento" />
                         </SelectTrigger>
                         <SelectContent>
@@ -647,6 +659,7 @@ function GestaoOSPage() {
                           ))}
                         </SelectContent>
                       </Select>
+
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
