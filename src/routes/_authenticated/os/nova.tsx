@@ -94,6 +94,20 @@ function NovaOSPage() {
     }
   });
 
+  const { data: operadores = [] } = useQuery({
+    queryKey: ['operadores_lookup'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('usuarios')
+        .select('user_id, nome, cargo')
+        .eq('ativo', true)
+        .order('nome');
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+
   const handleAddPeca = () => {
     setPecas([...pecas, { id: Date.now(), nome: "", local: "" }]);
   };
