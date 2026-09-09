@@ -545,6 +545,15 @@ function NovaOSPage() {
                     <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Relatório Vinculado</span>
                     <span className="font-bold text-slate-900 text-base">{relatorioCliente || "Nenhum"}</span>
                   </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Quem Trouxe</span>
+                    <span className="font-bold text-slate-900 text-base">{entreguePor || "Não informado"}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Operador Responsável</span>
+                    <span className="font-bold text-slate-900 text-base">{operadores.find((o: any) => o.user_id === operadorId)?.nome || "A definir"}</span>
+                  </div>
+
                   <div className="col-span-2 mt-2 pt-4 border-t border-slate-200">
                     <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-2">Defeito Reportado</span>
                     <p className="text-slate-700 italic bg-white p-3 rounded border border-slate-200">{descricao || "Não informado"}</p>
