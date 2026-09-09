@@ -142,14 +142,14 @@ function GestaoOSPage() {
 
   const handleTipoEquipamentoChange = async (tipoId: string) => {
     try {
-      const anteriorId = os?.tipo_equipamento_id ?? null;
+      const anteriorId = os?.equipamento_id ?? null;
       if (anteriorId === tipoId) {
         setEditandoTipo(false);
         return;
       }
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ tipo_equipamento_id: tipoId } as any)
+        .update({ equipamento_id: tipoId } as any)
         .eq('id', osId as number);
       if (error) throw error;
 
@@ -251,9 +251,9 @@ function GestaoOSPage() {
   }, [os, steps]);
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
-    queryKey: ['os_checklist', osId, os?.tipo_equipamento_id],
+    queryKey: ['os_checklist', osId, os?.equipamento_id],
     queryFn: async () => {
-      const osTipoId = os?.tipo_equipamento_id ?? null;
+      const osTipoId = os?.equipamento_id ?? null;
 
       // 1. Modelos oficiais (checklist_templates) do tipo de equipamento da OS
       let itensTemplate: { componente: string; descricao: string }[] = [];
@@ -337,7 +337,7 @@ function GestaoOSPage() {
             item_peca: item.item,
             estado_atual: updates.status || item.status,
             observacao_tecnica: updates.observacao ?? item.observacao ?? null,
-            tipo_equipamento_id: item.tipo_equipamento_id || os?.tipo_equipamento_id || null,
+            tipo_equipamento_id: item.tipo_equipamento_id || os?.equipamento_id || null,
           });
 
         if (error) throw error;
