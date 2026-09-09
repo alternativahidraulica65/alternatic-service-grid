@@ -44,10 +44,13 @@ function NovaOSPage() {
   const [selectedCliente, setSelectedCliente] = useState<string>("");
   const [tipoEquipamento, setTipoEquipamento] = useState<string>("");
   const [prioridade, setPrioridade] = useState<string>("Média");
+  const [entreguePor, setEntreguePor] = useState<string>("");
+  const [operadorId, setOperadorId] = useState<string>("");
   const [descricao, setDescricao] = useState<string>("");
   const [relatorioCliente, setRelatorioCliente] = useState<string>("");
   const [fotos, setFotos] = useState<(File | null)[]>([null, null]);
   const [pecas, setPecas] = useState<{id: number, nome: string, local: string}[]>([]);
+
   
   const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_lookup'],
