@@ -91,12 +91,25 @@ function GestaoOSPage() {
         .select(`
           *,
           clientes (*),
-          tecnico:usuarios!ordens_servico_tecnico_id_fkey (*)
+          tecnico:usuarios!ordens_servico_tecnico_id_fkey (*),
+          tipo_equipamento:tipos_equipamento!ordens_servico_tipo_equipamento_id_fkey (*)
         `)
         .eq('id', id)
         .single();
       if (error) throw error;
       return data;
+    }
+  });
+
+  const { data: tiposEquipamento = [] } = useQuery({
+    queryKey: ['tipos_equipamento'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tipos_equipamento')
+        .select('id, nome, categoria_principal')
+        .order('nome');
+      if (error) throw error;
+      return data ?? [];
     }
   });
 
