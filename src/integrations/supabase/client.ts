@@ -1,7 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://mpwnrcxyyeqftrejwmmx.supabase.co";
-const supabasePublishableKey = "sb_publishable_H3jMZYabk8lKGsmmBGo-fg_DbkPUkGD";
+const supabaseUrl =
+  import.meta.env["VITE_SUPABASE_URL"] ?? "https://omyaiprywidpxtbnntiq.supabase.co";
+const supabasePublishableKey =
+  import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ??
+  "sb_publishable_Sf8C1LT5YFBPo3DZASll6w_76oaBYKb";
+
 const memory = new Map<string, string>();
 const resilientStorage = {
   getItem(key: string) {
