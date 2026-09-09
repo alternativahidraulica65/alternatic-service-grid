@@ -443,6 +443,22 @@ function ClientesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
+                        {canWrite && cliente.status_cadastro === 'pendente' && (
+                          <>
+                            <DropdownMenuItem
+                              className="text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-500/20 text-emerald-400 cursor-pointer"
+                              onClick={() => aprovacaoMutation.mutate({ id: cliente.id, status: 'aprovado' })}
+                            >
+                              Aprovar Cadastro
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 text-red-400 cursor-pointer"
+                              onClick={() => aprovacaoMutation.mutate({ id: cliente.id, status: 'reprovado' })}
+                            >
+                              Reprovar Cadastro
+                            </DropdownMenuItem>
+                          </>
+                        )}
                         {canWrite && (
                           <DropdownMenuItem 
                             className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
