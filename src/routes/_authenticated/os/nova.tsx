@@ -10,8 +10,11 @@ import {
   Trash2,
   Save,
   AlertCircle,
+  AlertTriangle,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  UserPlus,
+  X
 
 } from "lucide-react";
 import { useState, useEffect } from "react";
