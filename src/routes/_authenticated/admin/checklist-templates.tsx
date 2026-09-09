@@ -45,7 +45,7 @@ function ChecklistTemplatesPage() {
     queryFn: async () => {
       const { data, error } = await supabase.from('tipos_equipamento').select('*').order('nome');
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -54,9 +54,10 @@ function ChecklistTemplatesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('checklist_templates')
-        .select('*, tipos_equipamento(nome)');
+        .select('id, componente_peca, descricao_avaliacao, tipo_equipamento_id, ordem_exibicao, tipos_equipamento(nome)')
+        .order('ordem_exibicao', { ascending: true });
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -71,24 +72,28 @@ function ChecklistTemplatesPage() {
   };
 
   const handleSave = async () => {
-    if (!selectedTipo || !templateName || itens.length === 0) {
-      toast.error("Preencha todos os campos e adicione pelo menos um item.");
+    if (!selectedTipo || itens.length === 0) {
+      toast.error("Selecione o tipo de equipamento e adicione pelo menos um componente.");
       return;
     }
 
     setSaving(true);
     try {
+      const existentes = (templates as any[]).filter((t: any) => t.tipo_equipamento_id === selectedTipo);
+      const baseOrdem = existentes.reduce((max: number, t: any) => Math.max(max, Number(t.ordem_exibicao ?? 0)), 0);
+
       const { error } = await supabase
         .from('checklist_templates')
-        .insert({
+        .insert(itens.map((item, idx) => ({
           tipo_equipamento_id: selectedTipo,
-          nome: templateName,
-          itens: itens
-        });
+          componente_peca: item.label,
+          descricao_avaliacao: templateName || null,
+          ordem_exibicao: baseOrdem + idx + 1,
+        })) as any);
 
       if (error) throw error;
 
-      toast.success("Template salvo com sucesso!");
+      toast.success("Itens de checklist salvos com sucesso!");
       setTemplateName("");
       setItens([]);
       setSelectedTipo("");
