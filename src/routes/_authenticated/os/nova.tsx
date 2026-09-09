@@ -150,6 +150,14 @@ function NovaOSPage() {
       toast.error("Preencha cliente e descrição.");
       return;
     }
+    if (!entreguePor.trim()) {
+      toast.error("Informe quem trouxe o equipamento.");
+      return;
+    }
+    if (fotos.filter(f => f !== null).length < 2) {
+      toast.error("As fotos de entrada do equipamento são obrigatórias.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -168,10 +176,13 @@ function NovaOSPage() {
           status: 'aberta',
           data_abertura: new Date().toISOString(),
           tipo_equipamento_id: tipoEquipamento,
+          entregue_por: entreguePor.trim(),
+          operador_atribuido: operadorId || null,
           tecnico_id: currentUserId
         })
         .select()
         .single();
+
 
       if (osError) throw osError;
 
