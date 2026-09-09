@@ -54,6 +54,23 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+function descreverLog(log: any): string {
+  const anterior = log.dados_anteriores ?? {};
+  const novo = log.dados_novos ?? {};
+  if (anterior?.status && novo?.status && anterior.status !== novo.status) {
+    return `Status alterado de "${anterior.status}" para "${novo.status}"`;
+  }
+  if (log.acao === 'Criação') return 'Ordem de serviço criada';
+  if (log.acao === 'Exclusão') return 'Ordem de serviço excluída';
+  const campos = Object.keys(novo).filter(
+    (k) => !['updated_at', 'criado_em'].includes(k) && JSON.stringify(novo[k]) !== JSON.stringify(anterior?.[k]),
+  );
+  if (campos.length > 0) return `Atualizou: ${campos.slice(0, 4).join(', ')}`;
+  return log.acao || 'Alteração registrada';
+}
+
 
 export const Route = createFileRoute("/_authenticated/os/$id")({
   component: GestaoOSPage,
@@ -94,6 +111,23 @@ function GestaoOSPage() {
       return data;
     }
   });
+
+  const { data: logsOs = [], isLoading: loadingLogs } = useQuery({
+    queryKey: ['os_logs', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('logs_sistema')
+        .select('id, acao, entidade, usuario_nome, criado_em, dados_anteriores, dados_novos')
+        .eq('registro_id', id)
+        .order('criado_em', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data ?? [];
+    }
+  });
+
+  const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+
 
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
     queryKey: ['os_terceiros', id],
@@ -603,33 +637,75 @@ function GestaoOSPage() {
           </div>
 
           <Card className="border-border shadow-md overflow-hidden mt-6">
-             <CardHeader className="bg-slate-900 text-white border-b border-white/5">
+             <CardHeader className="bg-slate-900 text-white border-b border-white/5 py-3 px-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <History className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base font-bold uppercase tracking-widest">Linha do Tempo (Logs)</CardTitle>
+                    <History className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-[11px] font-bold uppercase tracking-widest">Linha do Tempo (Logs)</CardTitle>
                   </div>
-                  <Button variant="ghost" className="text-[10px] font-bold uppercase text-primary">Ver Tudo</Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-[9px] font-bold uppercase text-primary hover:text-primary"
+                    onClick={() => setLogsDialogOpen(true)}
+                  >
+                    Ver Tudo
+                  </Button>
                 </div>
              </CardHeader>
-             <CardContent className="pt-6 px-0">
-                {[
-                  { user: "João Silva", action: "Iniciou a Vistoria Técnica", time: "Há 10 min", icon: Wrench },
-                  { user: "Sistema", action: `OS ${os.numero_os} Alterada para status '${os.status}'`, time: "Agora", icon: Settings },
-                ].map((log, i) => (
-                  <div key={i} className="flex items-center gap-4 px-6 py-4 border-b border-border/50 last:border-0 hover:bg-slate-50 transition-colors">
-                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center border border-border shrink-0">
-                      <log.icon className="h-4 w-4 text-slate-400" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">{log.user}</p>
-                      <p className="text-sm font-bold text-foreground">{log.action}</p>
-                    </div>
-                    <span className="text-[10px] font-medium text-muted-foreground uppercase">{log.time}</span>
+             <CardContent className="p-0">
+                {loadingLogs ? (
+                  <div className="px-4 py-6 text-center text-[9px] font-bold uppercase tracking-widest text-muted-foreground animate-pulse">
+                    Carregando alterações...
                   </div>
-                ))}
+                ) : logsOs.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Nenhuma alteração registrada.
+                  </div>
+                ) : (
+                  logsOs.slice(0, 5).map((log: any) => (
+                    <div key={log.id} className="flex items-center gap-3 px-4 py-2 border-b border-border/50 last:border-0 hover:bg-slate-50 transition-colors">
+                      <div className="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center border border-border shrink-0">
+                        <Activity className="h-3 w-3 text-slate-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{log.usuario_nome || "Sistema"}</p>
+                        <p className="text-xs font-bold text-foreground truncate">{descreverLog(log)}</p>
+                      </div>
+                      <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
+                        {new Date(log.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  ))
+                )}
              </CardContent>
           </Card>
+
+          <Dialog open={logsDialogOpen} onOpenChange={setLogsDialogOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-sm font-black uppercase tracking-widest">Linha do Tempo Completa</DialogTitle>
+              </DialogHeader>
+              <div className="max-h-[60vh] overflow-y-auto divide-y divide-border rounded-lg border border-border">
+                {logsOs.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Nenhuma alteração registrada.
+                  </div>
+                ) : logsOs.map((log: any) => (
+                  <div key={log.id} className="flex items-center gap-3 px-4 py-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{log.usuario_nome || "Sistema"}</p>
+                      <p className="text-xs font-bold text-foreground">{descreverLog(log)}</p>
+                    </div>
+                    <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
+                      {new Date(log.criado_em).toLocaleString('pt-BR')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+
         </TabsContent>
 
         <TabsContent value="checklist">
