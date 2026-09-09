@@ -17,7 +17,8 @@ import {
   ArrowLeft,
   Download,
   Check,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -131,6 +132,24 @@ function ClientesPage() {
     onError: (error: any) => {
       toast.error("Erro ao atualizar cliente: " + error.message);
     }
+  });
+
+  const aprovacaoMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: 'aprovado' | 'reprovado' }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      const { error } = await supabase.from('clientes').update({
+        status_cadastro: status,
+        aprovado_por: userData.user?.id ?? null,
+        aprovado_em: new Date().toISOString(),
+      } as any).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      toast.success(vars.status === 'aprovado' ? "Cadastro aprovado!" : "Cadastro reprovado.");
+      queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+      queryClient.invalidateQueries({ queryKey: ['clientes_lookup'] });
+    },
+    onError: (error: any) => toast.error("Erro ao atualizar aprovação: " + error.message),
   });
 
   const deleteMutation = useMutation({
@@ -378,9 +397,20 @@ function ClientesPage() {
                         <Building2 className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-foreground uppercase tracking-tight">{cliente.nome}</p>
+                        <p className="text-sm font-bold text-foreground uppercase tracking-tight flex items-center gap-1.5">
+                          {cliente.status_cadastro === 'pendente' && (
+                            <AlertTriangle className="h-4 w-4 text-amber-500" aria-label="Cadastro pendente de aprovação" />
+                          )}
+                          {cliente.nome}
+                        </p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <Badge variant="secondary" className="text-[8px] font-bold h-4">Contrato Ativo</Badge>
+                          {cliente.status_cadastro === 'pendente' ? (
+                            <Badge className="bg-amber-500 text-white text-[8px] font-black h-4 uppercase">Pré-cadastro pendente</Badge>
+                          ) : cliente.status_cadastro === 'reprovado' ? (
+                            <Badge className="bg-red-500 text-white text-[8px] font-black h-4 uppercase">Reprovado</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-[8px] font-bold h-4">Contrato Ativo</Badge>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -414,6 +444,22 @@ function ClientesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
+                        {canWrite && cliente.status_cadastro === 'pendente' && (
+                          <>
+                            <DropdownMenuItem
+                              className="text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-500/20 text-emerald-400 cursor-pointer"
+                              onClick={() => aprovacaoMutation.mutate({ id: cliente.id, status: 'aprovado' })}
+                            >
+                              Aprovar Cadastro
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 text-red-400 cursor-pointer"
+                              onClick={() => aprovacaoMutation.mutate({ id: cliente.id, status: 'reprovado' })}
+                            >
+                              Reprovar Cadastro
+                            </DropdownMenuItem>
+                          </>
+                        )}
                         {canWrite && (
                           <DropdownMenuItem 
                             className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"

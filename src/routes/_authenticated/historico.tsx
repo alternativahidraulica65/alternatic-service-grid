@@ -156,7 +156,7 @@ function HistoricoPage() {
                   <TableCell className="py-4">
                     <div>
                       <p className="text-sm font-bold text-foreground uppercase tracking-tight">{os.cliente}</p>
-                      <Badge variant="outline" className={`text-[8px] font-bold h-4 ${os.prioridade === 'Alta' ? 'text-red-500 border-red-200' : 'text-slate-400 border-slate-200'}`}>
+                      <Badge variant="outline" className={`text-[8px] font-bold h-4 ${['Alta','Urgente'].includes(os.prioridade) ? 'text-red-500 border-red-200' : 'text-slate-400 border-slate-200'}`}>
                         Prioridade {os.prioridade}
                       </Badge>
                     </div>

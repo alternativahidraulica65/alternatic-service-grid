@@ -10,8 +10,11 @@ import {
   Trash2,
   Save,
   AlertCircle,
+  AlertTriangle,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  UserPlus,
+  X
 
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -28,6 +31,24 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/os/nova")({
@@ -48,15 +69,65 @@ function NovaOSPage() {
   const [relatorioCliente, setRelatorioCliente] = useState<string>("");
   const [fotos, setFotos] = useState<File[]>([]);
   const [pecas, setPecas] = useState<{id: number, nome: string, local: string}[]>([]);
-  
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [preOpen, setPreOpen] = useState(false);
+  const [preLoading, setPreLoading] = useState(false);
+  const [preForm, setPreForm] = useState({ nome: "", cnpj: "", telefone: "", email: "" });
+
   const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_lookup'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('clientes').select('id, nome');
+      const { data, error } = await supabase.from('clientes').select('id, nome, status_cadastro');
       if (error) throw error;
-      return data;
+      return data as any[];
     }
   });
+
+  const clienteSelecionado = clientes.find((c: any) => c.id === selectedCliente);
+  const clientePendente = clienteSelecionado?.status_cadastro === 'pendente';
+
+  const prazoInfo: Record<string, string> = {
+    Baixa: "Orçamento em até 3 dias úteis",
+    "Média": "Orçamento em até 1 dia útil",
+    Urgente: "Orçamento no mesmo dia",
+  };
+
+  const handlePreCadastro = async () => {
+    if (!preForm.nome.trim()) {
+      toast.error("Informe o nome da empresa.");
+      return;
+    }
+    setPreLoading(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from('clientes')
+        .insert({
+          nome: preForm.nome,
+          cnpj: preForm.cnpj,
+          telefone: preForm.telefone,
+          email: preForm.email,
+          status_cadastro: 'pendente',
+          solicitado_por: userData.user?.id ?? null,
+        } as any)
+        .select('id, nome, status_cadastro')
+        .single();
+      if (error) throw error;
+
+      await queryClient.invalidateQueries({ queryKey: ['clientes_lookup'] });
+      await queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
+      setSelectedCliente((data as any).id);
+      setPreOpen(false);
+      setPreForm({ nome: "", cnpj: "", telefone: "", email: "" });
+      toast.success("Pré-cadastro enviado ao financeiro", {
+        description: "A OS pode seguir normalmente enquanto o cadastro é aprovado.",
+      });
+    } catch (e: any) {
+      toast.error("Erro no pré-cadastro: " + e.message);
+    } finally {
+      setPreLoading(false);
+    }
+  };
 
   const { data: clienteDetails } = useQuery({
     queryKey: ['cliente_detalhes', selectedCliente],
@@ -243,17 +314,37 @@ function NovaOSPage() {
             </CardHeader>
             <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente *</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente *</Label>
+                  <Button
+                    type="button"
+                    variant="link"
+                    onClick={() => setPreOpen(true)}
+                    className="h-auto p-0 text-[10px] font-black uppercase tracking-widest text-primary"
+                  >
+                    <UserPlus className="mr-1 h-3.5 w-3.5" /> Nova Empresa (Pré-Cadastro)
+                  </Button>
+                </div>
                 <Select value={selectedCliente} onValueChange={setSelectedCliente}>
                   <SelectTrigger className="h-11 border-border">
                     <SelectValue placeholder="Selecione o cliente..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {clientes.map(c => (
-                      <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                    {clientes.map((c: any) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        <span className="flex items-center gap-2">
+                          {c.status_cadastro === 'pendente' && <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
+                          {c.nome}
+                        </span>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {clientePendente && (
+                  <p className="flex items-center gap-1.5 rounded border border-amber-200 bg-amber-50 px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-700">
+                    <AlertTriangle className="h-3.5 w-3.5" /> Cadastro aguardando aprovação do financeiro
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Relatório Cliente (Automático)</Label>
@@ -285,11 +376,14 @@ function NovaOSPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Baixa">Baixa</SelectItem>
-                    <SelectItem value="Média">Média</SelectItem>
-                    <SelectItem value="Alta">Alta (Urgente)</SelectItem>
+                    <SelectItem value="Baixa">Baixa (3 dias úteis)</SelectItem>
+                    <SelectItem value="Média">Média (1 dia útil)</SelectItem>
+                    <SelectItem value="Urgente">Urgente (no mesmo dia)</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  {prazoInfo[prioridade] || prazoInfo["Média"]}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -488,14 +582,26 @@ function NovaOSPage() {
       </div>
 
       <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
-        <Button 
-          variant="outline" 
-          onClick={handlePrev}
-          disabled={currentStep === 0 || loading}
-          className="border-border text-xs font-bold uppercase tracking-widest h-12 px-6"
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" /> Voltar
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="destructive"
+            onClick={() => setCancelOpen(true)}
+            disabled={loading}
+            className="text-xs font-black uppercase tracking-widest h-12 px-6"
+          >
+            <X className="mr-2 h-4 w-4" /> Cancelar
+          </Button>
+          {currentStep > 0 && (
+            <Button
+              variant="ghost"
+              onClick={handlePrev}
+              disabled={loading}
+              className="text-xs font-bold uppercase tracking-widest h-12 px-4 text-muted-foreground"
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" /> Passo anterior
+            </Button>
+          )}
+        </div>
         
         {currentStep < 3 ? (
           <Button 
@@ -514,6 +620,65 @@ function NovaOSPage() {
           </Button>
         )}
       </div>
+
+      <Dialog open={preOpen} onOpenChange={setPreOpen}>
+        <DialogContent className="sm:max-w-[480px] bg-white">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">
+              PRÉ-CADASTRO DE <span className="text-primary">EMPRESA</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs font-medium">
+              O cadastro será enviado ao financeiro para conclusão e aprovação. A OS pode seguir normalmente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Razão Social / Nome *</Label>
+              <Input className="h-11 border-border" value={preForm.nome} onChange={(e) => setPreForm({ ...preForm, nome: e.target.value })} />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
+              <Input className="h-11 border-border font-mono" placeholder="00.000.000/0000-00" value={preForm.cnpj} onChange={(e) => setPreForm({ ...preForm, cnpj: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Telefone</Label>
+                <Input className="h-11 border-border" value={preForm.telefone} onChange={(e) => setPreForm({ ...preForm, telefone: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
+                <Input className="h-11 border-border" value={preForm.email} onChange={(e) => setPreForm({ ...preForm, email: e.target.value })} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreOpen(false)} className="h-11 text-[10px] font-bold uppercase tracking-widest">Cancelar</Button>
+            <Button onClick={handlePreCadastro} disabled={preLoading || !preForm.nome.trim()} className="h-11 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-8">
+              {preLoading ? "Enviando..." : "Enviar Pré-Cadastro"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display uppercase tracking-tight">Cancelar abertura da OS?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Todos os dados preenchidos serão descartados e você voltará ao dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-[10px] font-bold uppercase tracking-widest">Continuar preenchendo</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => router.navigate({ to: "/dashboard" })}
+              className="bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest"
+            >
+              Sim, cancelar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
