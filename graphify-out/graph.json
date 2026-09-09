@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T15:01:58.225281+00:00",
+  "generated_at": "2026-09-09T15:10:40.091653+00:00",
   "files": [
     {
       "path": "components.json",
@@ -467,7 +467,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 58747
+      "bytes": 62249
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -2054,6 +2054,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
       "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.tsx",
+      "target": "@/components/ui/dialog"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
