@@ -59,39 +59,52 @@ function ClienteDetalhesPage() {
   });
 
   const { data: contatos = [] } = useQuery({
-    queryKey: ['cliente_contatos', id],
+    queryKey: ['contatos_cliente', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('cliente_contatos')
+        .from('contatos_cliente' as any)
         .select('*')
         .eq('cliente_id', id);
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
+  // Equipamentos do cliente: derivados das OS registradas (tabela oficial).
   const { data: equipamentos = [] } = useQuery({
     queryKey: ['cliente_equipamentos', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('cliente_equipamentos')
-        .select('*')
+        .from('ordens_servico')
+        .select('id, equipamento_id, data_entrada, tipos_equipamento (nome, categoria_principal)')
         .eq('cliente_id', id);
       if (error) throw error;
-      return data;
+      return (data ?? []).map((o: any) => ({
+        id: o.id,
+        nome: o.tipos_equipamento?.nome ?? 'Equipamento não informado',
+        tipo: o.tipos_equipamento?.categoria_principal ?? null,
+        ultima_manutencao: o.data_entrada,
+      }));
     }
   });
 
+  // Financeiro do cliente: custos das OS oficiais.
   const { data: financeiro = [] } = useQuery({
     queryKey: ['cliente_financeiro', id],
     queryFn: async () => {
+      const { data: oss, error: ossError } = await supabase
+        .from('ordens_servico')
+        .select('id')
+        .eq('cliente_id', id);
+      if (ossError) throw ossError;
+      const ids = (oss ?? []).map((o: any) => Number(o.id));
+      if (ids.length === 0) return [];
       const { data, error } = await supabase
-        .from('lancamentos_financeiros')
+        .from('os_custos' as any)
         .select('*')
-        .eq('cliente_id', id)
-        .order('data_competencia', { ascending: false });
+        .in('os_id', ids);
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
@@ -99,12 +112,12 @@ function ClienteDetalhesPage() {
     queryKey: ['cliente_orcamentos', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('orcamentos')
-        .select('*')
+        .from('ordens_servico')
+        .select('id, status, valor_final, data_entrada')
         .eq('cliente_id', id)
-        .order('data_emissao', { ascending: false });
+        .order('data_entrada', { ascending: false });
       if (error) throw error;
-      return data;
+      return data ?? [];
     }
   });
 
