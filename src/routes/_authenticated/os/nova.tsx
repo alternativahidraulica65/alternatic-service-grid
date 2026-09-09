@@ -11,8 +11,8 @@ import {
   Save,
   AlertCircle,
   ChevronRight,
-  ChevronLeft,
-  Check
+  ChevronLeft
+
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
