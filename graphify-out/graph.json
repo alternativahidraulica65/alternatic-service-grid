@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T22:16:59.911580+00:00",
+  "generated_at": "2026-09-09T22:29:25.268578+00:00",
   "files": [
     {
       "path": "components.json",
@@ -483,7 +483,7 @@
     },
     {
       "path": "src/integrations/supabase/client.ts",
-      "bytes": 1082
+      "bytes": 918
     },
     {
       "path": "src/integrations/supabase/client.server.ts",
