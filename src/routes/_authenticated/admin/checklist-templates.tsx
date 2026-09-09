@@ -147,22 +147,22 @@ function ChecklistTemplatesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Nome do Template</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Descrição da Avaliação</Label>
               <Input 
                 value={templateName} 
                 onChange={(e) => setTemplateName(e.target.value)}
-                placeholder="Ex: Revisão Preventiva Hidráulica"
+                placeholder="Ex: Avaliar desgaste, folga e vazamentos"
                 className="border-slate-200 bg-white text-xs font-bold"
               />
             </div>
 
             <div className="pt-4 border-t border-border">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-2">Adicionar Itens</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-2">Adicionar Componentes/Peças</Label>
               <div className="flex gap-2">
                 <Input 
                   value={newItem} 
                   onChange={(e) => setNewItem(e.target.value)}
-                  placeholder="Nome do item..."
+                  placeholder="Ex: Kit de Vedações"
                   className="border-slate-200 bg-white text-xs font-bold"
                   onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
                 />
@@ -188,7 +188,7 @@ function ChecklistTemplatesPage() {
               onClick={handleSave}
               disabled={saving}
             >
-              {saving ? "Salvando..." : "Salvar Template"}
+              {saving ? "Salvando..." : "Salvar Itens"}
               <Save className="ml-2 h-4 w-4" />
             </Button>
           </CardContent>
@@ -225,7 +225,7 @@ function ChecklistTemplatesPage() {
             <div className="p-20 text-center space-y-4 rounded-2xl border-2 border-dashed border-slate-200">
               <ClipboardCheck className="h-12 w-12 text-slate-200 mx-auto" />
               <div className="space-y-1">
-                <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Nenhum template configurado</p>
+                <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Nenhum registro encontrado</p>
                 <p className="text-xs text-slate-400 font-medium">Comece criando um template para seus equipamentos à esquerda.</p>
               </div>
             </div>
