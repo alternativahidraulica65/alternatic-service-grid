@@ -149,6 +149,7 @@ function GestaoOSPage() {
         .eq('id', id);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_checklist', id] });
       toast.success("Tipo de equipamento atualizado");
     } catch (error: any) {
       toast.error("Erro ao atualizar tipo: " + error.message);
