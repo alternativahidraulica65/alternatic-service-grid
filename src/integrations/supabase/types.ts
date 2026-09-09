@@ -216,32 +216,47 @@ export type Database = {
       }
       clientes: {
         Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
           cnpj: string | null
           criado_em: string | null
           email: string | null
           endereco: string | null
           id: string
+          motivo_reprovacao: string | null
           nome: string
+          solicitado_por: string | null
+          status_cadastro: string
           telefone: string | null
           updated_at: string | null
         }
         Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
           cnpj?: string | null
           criado_em?: string | null
           email?: string | null
           endereco?: string | null
           id?: string
+          motivo_reprovacao?: string | null
           nome: string
+          solicitado_por?: string | null
+          status_cadastro?: string
           telefone?: string | null
           updated_at?: string | null
         }
         Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
           cnpj?: string | null
           criado_em?: string | null
           email?: string | null
           endereco?: string | null
           id?: string
+          motivo_reprovacao?: string | null
           nome?: string
+          solicitado_por?: string | null
+          status_cadastro?: string
           telefone?: string | null
           updated_at?: string | null
         }
@@ -749,6 +764,7 @@ export type Database = {
           numero_os: string
           observacoes: string | null
           operador_atribuido: string | null
+          prazo_orcamento: string | null
           prioridade: string | null
           status: string
           tecnico_id: string | null
@@ -773,6 +789,7 @@ export type Database = {
           numero_os: string
           observacoes?: string | null
           operador_atribuido?: string | null
+          prazo_orcamento?: string | null
           prioridade?: string | null
           status?: string
           tecnico_id?: string | null
@@ -797,6 +814,7 @@ export type Database = {
           numero_os?: string
           observacoes?: string | null
           operador_atribuido?: string | null
+          prazo_orcamento?: string | null
           prioridade?: string | null
           status?: string
           tecnico_id?: string | null
@@ -1297,6 +1315,14 @@ export type Database = {
       }
     }
     Functions: {
+      add_dias_uteis: {
+        Args: { p_base: string; p_dias: number }
+        Returns: string
+      }
+      calc_prazo_orcamento: {
+        Args: { p_base: string; p_prioridade: string }
+        Returns: string
+      }
       dev_get_storage_stats: {
         Args: never
         Returns: {
