@@ -196,28 +196,25 @@ function ChecklistTemplatesPage() {
 
         <div className="lg:col-span-2 space-y-6">
           <div className="grid sm:grid-cols-2 gap-4">
-            {templates.map((tpl: any) => (
+            {(templates as any[]).map((tpl: any) => (
               <Card key={tpl.id} className="border-border shadow-md hover:border-primary/50 transition-all group">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <Badge className="bg-primary/10 text-primary border-primary/20 text-[8px] font-black uppercase tracking-widest mb-2">
-                        {tpl.tipos_equipamentos?.nome || 'Geral'}
+                        {tpl.tipos_equipamento?.nome || 'Geral'}
                       </Badge>
-                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{tpl.nome}</h3>
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{tpl.componente_peca}</h3>
                     </div>
                     <Settings className="h-4 w-4 text-slate-300 group-hover:text-primary transition-colors" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                      {tpl.itens?.length || 0} Itens de Verificação
+                      Ordem {tpl.ordem_exibicao ?? '—'}
                     </p>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {tpl.itens?.slice(0, 3).map((it: any, i: number) => (
-                        <span key={i} className="text-[8px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-bold uppercase">{it.label}</span>
-                      ))}
-                      {tpl.itens?.length > 3 && <span className="text-[8px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-bold">+{tpl.itens.length - 3}</span>}
-                    </div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      {tpl.descricao_avaliacao || 'Sem descrição de avaliação'}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
