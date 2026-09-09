@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -47,6 +47,7 @@ export const Route = createFileRoute("/")({
 });
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -55,11 +56,29 @@ function LoginPage() {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        window.location.replace("/dashboard");
+        try {
+          await navigate({ to: "/dashboard" as any, replace: true });
+        } catch (e) {
+          window.location.replace("/dashboard");
+        }
       }
     };
     checkUser();
-  }, []);
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        try {
+          await navigate({ to: "/dashboard" as any, replace: true });
+        } catch (e) {
+          window.location.replace("/dashboard");
+        }
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -90,12 +109,17 @@ function LoginPage() {
         .from('usuarios')
         .select('nome')
         .eq('id', data.session.user.id)
-        .single();
+        .maybeSingle();
 
       toast.success("Login realizado", {
         description: `Bem-vindo de volta, ${usuario?.nome || 'Colaborador'}.`,
       });
-      window.location.replace("/dashboard");
+      
+      try {
+        await navigate({ to: "/dashboard" as any, replace: true });
+      } catch (e) {
+        window.location.replace("/dashboard");
+      }
     } catch (error: any) {
       toast.error("Falha no acesso", {
         description: error.message.includes("Invalid login") 
@@ -162,7 +186,6 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* FLUXO DE LOGIN */}
         {!isRegistering && (
           <div className="transition-all duration-500 opacity-100 translate-y-0">
             <div className="group relative rounded-2xl border border-white/10 bg-slate-900/60 p-8 shadow-2xl backdrop-blur-xl">
@@ -236,7 +259,6 @@ function LoginPage() {
               </Form>
             </div>
 
-            {/* CAMPO INFERIOR PARA CRIAÇÃO DE CONTA */}
             <div className="mt-6 rounded-xl border border-white/10 bg-slate-900/40 p-5 text-center backdrop-blur-md shadow-lg transition-all hover:bg-slate-900/60">
               <p className="text-sm text-slate-300">
                 Ainda não tem acesso ao sistema?{' '}
@@ -252,7 +274,6 @@ function LoginPage() {
           </div>
         )}
 
-        {/* FLUXO DE REGISTRO (CARD INFERIOR QUE SUBSTITUI O PRINCIPAL) */}
         {isRegistering && (
           <div className="transition-all duration-500 opacity-100 translate-y-0">
             <div className="group relative rounded-2xl border border-white/10 bg-slate-900/60 p-8 shadow-2xl backdrop-blur-xl">
