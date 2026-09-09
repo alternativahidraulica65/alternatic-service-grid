@@ -242,11 +242,17 @@ function GestaoOSPage() {
         itensTemplate = Array.from(new Set(itensTemplate));
       }
 
-      // 2. Itens já registrados na OS
-      const { data: existing, error } = await supabase
+      // 2. Itens já registrados na OS, com join no tipo de equipamento
+      let checklistQuery = supabase
         .from('os_checklist_tecnico' as any)
-        .select('*')
+        .select('*, tipos_equipamento(nome, categoria)')
         .eq('os_id', id);
+
+      if (osTipoId) {
+        checklistQuery = checklistQuery.eq('tipo_equipamento_id', osTipoId);
+      }
+
+      const { data: existing, error } = await checklistQuery;
       if (error) console.warn("Checklist fetch error:", error);
 
       const registrados = (existing ?? []).map((item: any) => ({
@@ -257,6 +263,8 @@ function GestaoOSPage() {
         foto_url: item.foto_url || null,
         data_verificacao: item.data_verificacao,
         responsavel_id: item.responsavel_id,
+        tipo_equipamento_id: item.tipo_equipamento_id,
+        tipo_equipamento: item.tipos_equipamento,
       }));
 
       if (itensTemplate.length === 0) return registrados;
@@ -269,7 +277,7 @@ function GestaoOSPage() {
           mapa.delete(String(label).toLowerCase());
           return existente;
         }
-        return { id: `temp-${idx}`, item: label, status: 'Pendente', observacao: '', foto_url: null };
+        return { id: `temp-${idx}`, item: label, status: 'Pendente', observacao: '', foto_url: null, tipo_equipamento_id: osTipoId };
       });
 
       return [...merged, ...Array.from(mapa.values())];
