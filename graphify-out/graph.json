@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T16:32:51.435559+00:00",
+  "generated_at": "2026-09-09T16:41:32.529102+00:00",
   "files": [
     {
       "path": "components.json",
@@ -423,7 +423,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
-      "bytes": 11260
+      "bytes": 11451
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
