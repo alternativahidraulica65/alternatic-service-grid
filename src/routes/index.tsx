@@ -121,10 +121,26 @@ function LoginPage() {
         window.location.replace("/dashboard");
       }
     } catch (error: any) {
+      const raw = `${error?.message ?? ""} ${error?.code ?? ""}`.toLowerCase();
+      let description = "Erro ao processar. Tente novamente.";
+
+      if (raw.includes("not confirmed") || raw.includes("email_not_confirmed")) {
+        description = "E-mail ainda não confirmado. Enviamos um novo link de confirmação.";
+        try {
+          await supabase.auth.resend({
+            type: "signup",
+            email: values.email.trim().toLowerCase(),
+            options: { emailRedirectTo: window.location.origin },
+          });
+        } catch {
+          description = "E-mail ainda não confirmado. Confirme pelo link enviado no cadastro.";
+        }
+      } else if (raw.includes("invalid login")) {
+        description = "Usuário ou senha incorretos.";
+      }
+
       toast.error("Falha no acesso", {
-        description: error.message.includes("Invalid login") 
-          ? "Usuário ou senha incorretos." 
-          : "Erro ao processar. Tente novamente.",
+        description,
         style: { backgroundColor: '#0f172a', color: '#ef4444', border: '1px solid #ef4444' }
       });
       setIsLoading(false);
