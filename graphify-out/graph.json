@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T22:29:25.268578+00:00",
+  "generated_at": "2026-09-09T22:32:05.693009+00:00",
   "files": [
     {
       "path": "components.json",
@@ -347,7 +347,7 @@
     },
     {
       "path": "src/routes/index.tsx",
-      "bytes": 18944
+      "bytes": 19582
     },
     {
       "path": "src/routes/README.md",
