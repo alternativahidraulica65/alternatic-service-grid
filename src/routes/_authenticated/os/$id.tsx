@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toOsId } from "@/lib/os-id";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 function descreverLog(log: any): string {
@@ -573,7 +574,7 @@ function GestaoOSPage() {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="font-display text-2xl font-black text-foreground tracking-tight uppercase">ORDEM DE SERVIÇO <span className="text-primary">{os.numero_os}</span></h2>
+              <h2 className="font-display text-2xl font-black text-foreground tracking-tight uppercase">ORDEM DE SERVIÇO <span className="text-primary">{os.numero_os ?? os.id}</span></h2>
               <Badge className="bg-amber-500 text-white font-black uppercase text-[9px] tracking-widest">{os.status}</Badge>
             </div>
             <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-2">
@@ -862,11 +863,11 @@ function GestaoOSPage() {
                         <Activity className="h-3 w-3 text-slate-400" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{log.usuario_nome || "Sistema"}</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{"Histórico"}</p>
                         <p className="text-xs font-bold text-foreground truncate">{descreverLog(log)}</p>
                       </div>
                       <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
-                        {new Date(log.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        {new Date(log.data_alteracao).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                   ))
@@ -887,11 +888,11 @@ function GestaoOSPage() {
                 ) : logsOs.map((log: any) => (
                   <div key={log.id} className="flex items-center gap-3 px-4 py-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{log.usuario_nome || "Sistema"}</p>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{"Histórico"}</p>
                       <p className="text-xs font-bold text-foreground">{descreverLog(log)}</p>
                     </div>
                     <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
-                      {new Date(log.criado_em).toLocaleString('pt-BR')}
+                      {new Date(log.data_alteracao).toLocaleString('pt-BR')}
                     </span>
                   </div>
                 ))}
@@ -907,7 +908,7 @@ function GestaoOSPage() {
                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                  <div>
                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                     Ordem de Serviço #{os.numero_os} / Checklist
+                     Ordem de Serviço #{os.numero_os ?? os.id} / Checklist
                    </div>
                    <CardTitle className="text-xl font-black uppercase tracking-tight text-slate-900 flex items-center gap-2">
                      <ClipboardCheck className="h-6 w-6 text-primary" />
@@ -996,22 +997,22 @@ function GestaoOSPage() {
                             <td className="px-4 py-4">
                               <div className="flex items-center justify-center gap-2">
                                 <div className="relative group">
-                                  {item.foto_url && (
+                                  {fotoDoItem(item) && (
                                     <div className="absolute -top-12 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                                      <img src={item.foto_url} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
+                                      <img src={fotoDoItem(item)} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
                                     </div>
                                   )}
                                   <Button 
-                                    variant={item.foto_url ? "default" : "outline"} 
+                                    variant={fotoDoItem(item) ? "default" : "outline"} 
                                     size="sm" 
-                                    className={`h-9 gap-2 px-3 border-slate-200 ${!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
+                                    className={`h-9 gap-2 px-3 border-slate-200 ${!fotoDoItem(item) && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
                                     onClick={() => handleChecklistPhoto(item.id)}
                                   >
-                                    <Camera className={`h-4 w-4 ${item.foto_url ? 'text-primary-foreground' : 'text-slate-400'}`} />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">{item.foto_url ? "Ver" : "Foto"}</span>
+                                    <Camera className={`h-4 w-4 ${fotoDoItem(item) ? 'text-primary-foreground' : 'text-slate-400'}`} />
+                                    <span className="text-[9px] font-black uppercase tracking-widest">{fotoDoItem(item) ? "Ver" : "Foto"}</span>
                                   </Button>
                                 </div>
-                                {!item.foto_url && (item.status === 'Danificado' || item.status === 'Substituir') && (
+                                {!fotoDoItem(item) && (item.status === 'Danificado' || item.status === 'Substituir') && (
                                   <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
                                 )}
                               </div>
@@ -1048,7 +1049,7 @@ function GestaoOSPage() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                    OS #{os.numero_os} · Cliente: {os.cliente}
+                    OS #{os.numero_os ?? os.id} · Cliente: {os.cliente}
                   </div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-slate-900">
                     Laudo Técnico
@@ -1107,7 +1108,7 @@ function GestaoOSPage() {
                           <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
                         ) : (
                           fotosInternas.map((foto, idx) => (
-                            <img key={idx} src={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Interna" />
+                            <img key={idx} src={foto.url_arquivo} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Interna" />
                           ))
                         )}
                       </div>
@@ -1126,7 +1127,7 @@ function GestaoOSPage() {
                           <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
                         ) : (
                           fotosPecas.map((foto, idx) => (
-                            <img key={idx} src={foto.foto_url} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Peça" />
+                            <img key={idx} src={foto.url_arquivo} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Peça" />
                           ))
                         )}
                       </div>
@@ -1188,10 +1189,10 @@ function GestaoOSPage() {
                             <Box className="h-5 w-5 text-slate-400" />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao}</p>
+                            <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao ?? peca.item_peca ?? peca.observacao ?? 'Peça'}</p>
                             <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
                               <MapPin className="h-3 w-3 text-primary" />
-                              {peca.localizacao}
+                              {peca.localizacao_fisica ?? 'Sem localização'}
                             </div>
                           </div>
                         </div>
@@ -1257,19 +1258,19 @@ function GestaoOSPage() {
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
                   <p className="text-lg font-black text-foreground">
-                    R$ {custos.filter((c: any) => c.tipo === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                    R$ {custos.filter((c: any) => c.categoria === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
                   <p className="text-lg font-black text-foreground">
-                    R$ {custos.filter((c: any) => c.tipo === 'material').reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                    R$ {custos.filter((c: any) => c.categoria === 'material').reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
                   <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
                   <p className="text-lg font-black text-primary">
-                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.valor), 0).toLocaleString('pt-BR')}
+                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
               </div>
