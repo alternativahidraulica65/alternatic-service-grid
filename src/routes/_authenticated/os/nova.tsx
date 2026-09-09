@@ -122,7 +122,12 @@ function NovaOSPage() {
         toast.error("Selecione um cliente para prosseguir.");
         return;
       }
+      if (!entreguePor.trim()) {
+        toast.error("Informe quem trouxe o equipamento.");
+        return;
+      }
     }
+
     if (currentStep === 1) {
       if (!descricao.trim()) {
         toast.error("Preencha a descrição do defeito para prosseguir.");
