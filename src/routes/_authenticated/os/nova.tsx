@@ -314,17 +314,37 @@ function NovaOSPage() {
             </CardHeader>
             <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente *</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cliente *</Label>
+                  <Button
+                    type="button"
+                    variant="link"
+                    onClick={() => setPreOpen(true)}
+                    className="h-auto p-0 text-[10px] font-black uppercase tracking-widest text-primary"
+                  >
+                    <UserPlus className="mr-1 h-3.5 w-3.5" /> Nova Empresa (Pré-Cadastro)
+                  </Button>
+                </div>
                 <Select value={selectedCliente} onValueChange={setSelectedCliente}>
                   <SelectTrigger className="h-11 border-border">
                     <SelectValue placeholder="Selecione o cliente..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {clientes.map(c => (
-                      <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                    {clientes.map((c: any) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        <span className="flex items-center gap-2">
+                          {c.status_cadastro === 'pendente' && <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
+                          {c.nome}
+                        </span>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {clientePendente && (
+                  <p className="flex items-center gap-1.5 rounded border border-amber-200 bg-amber-50 px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-700">
+                    <AlertTriangle className="h-3.5 w-3.5" /> Cadastro aguardando aprovação do financeiro
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Relatório Cliente (Automático)</Label>
