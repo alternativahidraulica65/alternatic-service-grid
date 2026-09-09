@@ -463,10 +463,17 @@ function GestaoOSPage() {
 
   useEffect(() => {
     if (os) {
+      // O laudo é persistido na coluna oficial "observacao" (JSON).
+      let laudo: any = {};
+      try {
+        laudo = os.observacao ? JSON.parse(os.observacao) : {};
+      } catch {
+        laudo = { diagnostico: os.observacao ?? "" };
+      }
       setLaudoData({
-        diagnostico: os.laudo_diagnostico || "",
-        defeitos: os.laudo_defeitos || "",
-        servicos_necessarios: os.laudo_servicos_necessarios || ""
+        diagnostico: laudo.diagnostico || "",
+        defeitos: laudo.defeitos || "",
+        servicos_necessarios: laudo.servicos_necessarios || ""
       });
     }
   }, [os]);
