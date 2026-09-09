@@ -471,23 +471,23 @@ function GestaoOSPage() {
   }, [os]);
 
   const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
-    queryKey: ['os_fotos_laudo', id],
+    queryKey: ['os_fotos_laudo', osId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('os_fotos_anexos')
+        .from('fotos_anexos' as any)
         .select('*')
-        .eq('os_id', id)
-        .in('tipo', ['laudo_interno', 'laudo_pecas']);
+        .eq('os_id', osId as number)
+        .in('categoria', ['laudo_interno', 'laudo_pecas']);
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
-    enabled: !!os
+    enabled: !!os && osId !== null
   });
 
   useEffect(() => {
     if (fotosLaudo) {
-      setFotosInternas(fotosLaudo.filter((f: any) => f.tipo === 'laudo_interno'));
-      setFotosPecas(fotosLaudo.filter((f: any) => f.tipo === 'laudo_pecas'));
+      setFotosInternas((fotosLaudo as any[]).filter((f: any) => f.categoria === 'laudo_interno'));
+      setFotosPecas((fotosLaudo as any[]).filter((f: any) => f.categoria === 'laudo_pecas'));
     }
   }, [fotosLaudo]);
 
@@ -503,7 +503,7 @@ function GestaoOSPage() {
       for (const file of files) {
         try {
           const fileExt = (file as File).name.split('.').pop();
-          const fileName = `${id}/laudo/${tipo}-${Math.random()}.${fileExt}`;
+          const fileName = `${osId}/laudo/${tipo}-${Math.random()}.${fileExt}`;
           const { error: uploadError } = await supabase.storage
             .from('os-assets')
             .upload(fileName, file as File);
@@ -512,10 +512,10 @@ function GestaoOSPage() {
 
           const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
           
-          await supabase.from('os_fotos_anexos').insert({
-            os_id: id,
-            foto_url: urlData.publicUrl,
-            tipo: tipo
+          await supabase.from('fotos_anexos' as any).insert({
+            os_id: osId as number,
+            url_arquivo: urlData.publicUrl,
+            categoria: tipo
           });
         } catch (error: any) {
           toast.error("Erro no upload: " + error.message);
