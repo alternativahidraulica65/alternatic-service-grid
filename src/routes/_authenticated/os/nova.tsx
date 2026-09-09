@@ -227,36 +227,8 @@ function NovaOSPage() {
         </div>
       </div>
 
-      <div className="relative mb-12 px-4 md:px-12">
-        <div className="absolute top-5 left-12 right-12 h-1 bg-slate-200 -z-10 rounded-full" />
-        <div 
-          className="absolute top-5 left-12 h-1 bg-primary -z-10 transition-all duration-500 rounded-full" 
-          style={{ width: `calc(${currentStep * 33.33}% - 2rem)` }}
-        />
-        
-        <div className="flex justify-between relative z-10">
-          {stepsConfig.map((step, idx) => {
-            const isActive = idx === currentStep;
-            const isCompleted = idx < currentStep;
-            return (
-              <div key={idx} className="flex flex-col items-center gap-2">
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300 ${
-                  isActive ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_15px_rgba(255,215,0,0.3)]' : 
-                  isCompleted ? 'border-primary bg-primary/20 text-primary' : 
-                  'border-slate-200 bg-white text-slate-300'
-                }`}>
-                  {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
-                </div>
-                <span className={`text-[10px] font-black uppercase tracking-widest ${
-                  isActive || isCompleted ? 'text-slate-900' : 'text-slate-400'
-                }`}>
-                  {step.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+
+
 
       <div className="min-h-[400px]">
         {currentStep === 0 && (
