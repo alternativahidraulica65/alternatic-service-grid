@@ -582,14 +582,26 @@ function NovaOSPage() {
       </div>
 
       <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
-        <Button 
-          variant="outline" 
-          onClick={handlePrev}
-          disabled={currentStep === 0 || loading}
-          className="border-border text-xs font-bold uppercase tracking-widest h-12 px-6"
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" /> Voltar
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="destructive"
+            onClick={() => setCancelOpen(true)}
+            disabled={loading}
+            className="text-xs font-black uppercase tracking-widest h-12 px-6"
+          >
+            <X className="mr-2 h-4 w-4" /> Cancelar
+          </Button>
+          {currentStep > 0 && (
+            <Button
+              variant="ghost"
+              onClick={handlePrev}
+              disabled={loading}
+              className="text-xs font-bold uppercase tracking-widest h-12 px-4 text-muted-foreground"
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" /> Passo anterior
+            </Button>
+          )}
+        </div>
         
         {currentStep < 3 ? (
           <Button 
