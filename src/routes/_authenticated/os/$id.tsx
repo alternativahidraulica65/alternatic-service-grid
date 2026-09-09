@@ -30,7 +30,7 @@ import {
 
 
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
@@ -224,6 +224,45 @@ function GestaoOSPage() {
     { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '48h' },
     { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending', sla: '-' },
   ];
+
+  const SLA_PRIORIDADE: Record<string, { label: string; descricao: string }> = {
+    Baixa: { label: "Baixa", descricao: "Orçamento em até 3 dias úteis" },
+    "Média": { label: "Média", descricao: "Orçamento em até 1 dia útil" },
+    Alta: { label: "Urgente", descricao: "Orçamento no mesmo dia" },
+    Urgente: { label: "Urgente", descricao: "Orçamento no mesmo dia" },
+  };
+
+  const formatarDuracao = (ms: number) => {
+    const totalMin = Math.max(0, Math.floor(ms / 60000));
+    const dias = Math.floor(totalMin / 1440);
+    const horas = Math.floor((totalMin % 1440) / 60);
+    const min = totalMin % 60;
+    if (dias > 0) return `${dias}d ${horas}h`;
+    if (horas > 0) return `${horas}h ${min}m`;
+    return `${min}m`;
+  };
+
+  const sla = useMemo(() => {
+    if (!os) return null;
+    const agora = Date.now();
+    const abertura = os.data_abertura ? new Date(os.data_abertura).getTime() : (os.criado_em ? new Date(os.criado_em).getTime() : null);
+    const prazoOrc = (os as any).prazo_orcamento ? new Date((os as any).prazo_orcamento) : null;
+    const orcamentoFeito = !['aberta', 'triagem', 'vistoria'].includes(os.status || '');
+    const concluidos = steps.filter(s => s.status === 'completed').length;
+    const progresso = Math.round((concluidos / steps.length) * 100);
+    const restanteMs = prazoOrc ? prazoOrc.getTime() - agora : null;
+
+    return {
+      progresso,
+      tempoAberto: abertura ? formatarDuracao(agora - abertura) : "N/A",
+      prioridade: SLA_PRIORIDADE[os.prioridade || "Média"] ?? SLA_PRIORIDADE["Média"]!,
+      prazoOrc,
+      orcamentoFeito,
+      emAtraso: !!(prazoOrc && !orcamentoFeito && restanteMs !== null && restanteMs < 0),
+      restante: restanteMs !== null ? formatarDuracao(Math.abs(restanteMs)) : null,
+      previsao: os.data_previsao_conclusao ? new Date(os.data_previsao_conclusao) : null,
+    };
+  }, [os, steps]);
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
     queryKey: ['os_checklist', id, os?.tipo_equipamento_id],
@@ -729,23 +768,48 @@ function GestaoOSPage() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>Processo Geral</span>
-                    <span>15%</span>
+                    <span>{sla?.progresso ?? 0}%</span>
                   </div>
-                  <Progress value={15} className="h-2 bg-slate-100" />
+                  <Progress value={sla?.progresso ?? 0} className="h-2 bg-slate-100" />
                 </div>
+
+                <div className={`p-3 rounded-lg border ${sla?.emAtraso ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${sla?.emAtraso ? 'text-red-600' : 'text-amber-700'}`}>
+                      Prioridade {sla?.prioridade.label}
+                    </span>
+                    {sla?.emAtraso && <AlertTriangle className="h-4 w-4 text-red-500" />}
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    {sla?.prioridade.descricao}
+                  </p>
+                  {sla?.prazoOrc && (
+                    <p className={`text-xs font-black uppercase mt-2 ${sla.emAtraso ? 'text-red-600' : 'text-foreground'}`}>
+                      {sla.orcamentoFeito
+                        ? `Orçamento entregue • prazo era ${sla.prazoOrc.toLocaleDateString('pt-BR')}`
+                        : sla.emAtraso
+                          ? `Atrasado há ${sla.restante}`
+                          : `Faltam ${sla.restante} (até ${sla.prazoOrc.toLocaleDateString('pt-BR')})`}
+                    </p>
+                  )}
+                </div>
+
                 <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-border">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-primary" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Tempo em Aberto</span>
                   </div>
-                  <span className="text-xs font-black text-foreground uppercase">4h 20m</span>
+                  <span className="text-xs font-black text-foreground uppercase">{sla?.tempoAberto ?? "N/A"}</span>
                 </div>
+
                 <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-100">
                   <div className="flex items-center gap-2">
                     <CalendarIcon className="h-4 w-4 text-emerald-500" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Previsão</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Previsão de Conclusão</span>
                   </div>
-                  <span className="text-xs font-black text-emerald-700 uppercase">{os.data_previsao_conclusao ? new Date(os.data_previsao_conclusao).toLocaleDateString() : "N/A"}</span>
+                  <span className="text-xs font-black text-emerald-700 uppercase">
+                    {sla?.previsao ? sla.previsao.toLocaleDateString('pt-BR') : "Não definida"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
