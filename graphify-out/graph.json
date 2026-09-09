@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T13:38:51.657162+00:00",
+  "generated_at": "2026-09-02T19:46:35.367413+00:00",
   "files": [
     {
       "path": "components.json",
@@ -39,7 +39,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 27609
+      "bytes": 26847
     },
     {
       "path": "src/start.ts",
@@ -222,10 +222,6 @@
       "bytes": 353
     },
     {
-      "path": "supabase/migrations/20260909133650_8f13c00a-4606-4fc7-8dcc-bce14397ac2f.sql",
-      "bytes": 77
-    },
-    {
       "path": "supabase/migrations/20260819232812_264f4c26-fba8-421a-b449-5e2b98e40db6.sql",
       "bytes": 666
     },
@@ -334,16 +330,12 @@
       "bytes": 722
     },
     {
-      "path": "src/routes/reset-password.tsx",
-      "bytes": 5898
-    },
-    {
       "path": "src/routes/__root.tsx",
-      "bytes": 4931
+      "bytes": 4962
     },
     {
       "path": "src/routes/index.tsx",
-      "bytes": 20228
+      "bytes": 11015
     },
     {
       "path": "src/routes/README.md",
@@ -407,7 +399,7 @@
     },
     {
       "path": "src/routes/_authenticated/relatorios.tsx",
-      "bytes": 13372
+      "bytes": 13361
     },
     {
       "path": "src/routes/_authenticated/orcamento/pdf.tsx",
@@ -415,7 +407,7 @@
     },
     {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "bytes": 11189
+      "bytes": 11150
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
@@ -423,11 +415,11 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
-      "bytes": 11260
+      "bytes": 11328
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 9748
+      "bytes": 9677
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -463,7 +455,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 29225
+      "bytes": 20878
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
@@ -479,7 +471,7 @@
     },
     {
       "path": "src/integrations/supabase/client.ts",
-      "bytes": 716
+      "bytes": 1295
     },
     {
       "path": "src/integrations/supabase/client.server.ts",
@@ -499,7 +491,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 43801
+      "bytes": 43676
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -729,10 +721,6 @@
     },
     {
       "source": "src/routeTree.gen.ts",
-      "target": "./routes/reset-password"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/configuracoes"
     },
     {
@@ -868,34 +856,6 @@
       "target": "@tanstack/react-start/server-entry"
     },
     {
-      "source": "src/routes/reset-password.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/reset-password.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/reset-password.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/reset-password.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/reset-password.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/reset-password.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/reset-password.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
       "source": "src/routes/__root.tsx",
       "target": "@tanstack/react-query"
     },
@@ -966,10 +926,6 @@
     {
       "source": "src/routes/index.tsx",
       "target": "@/components/ui/form"
-    },
-    {
-      "source": "src/routes/index.tsx",
-      "target": "@/components/ui/select"
     },
     {
       "source": "src/hooks/use-mobile.tsx",
@@ -2186,6 +2142,10 @@
     {
       "source": "src/integrations/supabase/client.ts",
       "target": "@supabase/supabase-js"
+    },
+    {
+      "source": "src/integrations/supabase/client.ts",
+      "target": "./types"
     },
     {
       "source": "src/integrations/supabase/client.ts",

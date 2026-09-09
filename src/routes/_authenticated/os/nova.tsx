@@ -44,13 +44,10 @@ function NovaOSPage() {
   const [selectedCliente, setSelectedCliente] = useState<string>("");
   const [tipoEquipamento, setTipoEquipamento] = useState<string>("");
   const [prioridade, setPrioridade] = useState<string>("Média");
-  const [entreguePor, setEntreguePor] = useState<string>("");
-  const [operadorId, setOperadorId] = useState<string>("");
   const [descricao, setDescricao] = useState<string>("");
   const [relatorioCliente, setRelatorioCliente] = useState<string>("");
-  const [fotos, setFotos] = useState<(File | null)[]>([null, null]);
+  const [fotos, setFotos] = useState<File[]>([]);
   const [pecas, setPecas] = useState<{id: number, nome: string, local: string}[]>([]);
-
   
   const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_lookup'],
@@ -94,20 +91,6 @@ function NovaOSPage() {
     }
   });
 
-  const { data: operadores = [] } = useQuery({
-    queryKey: ['operadores_lookup'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('usuarios')
-        .select('user_id, nome, cargo')
-        .eq('ativo', true)
-        .order('nome');
-      if (error) throw error;
-      return data || [];
-    }
-  });
-
-
   const handleAddPeca = () => {
     setPecas([...pecas, { id: Date.now(), nome: "", local: "" }]);
   };
@@ -122,19 +105,14 @@ function NovaOSPage() {
         toast.error("Selecione um cliente para prosseguir.");
         return;
       }
-      if (!entreguePor.trim()) {
-        toast.error("Informe quem trouxe o equipamento.");
-        return;
-      }
     }
-
     if (currentStep === 1) {
       if (!descricao.trim()) {
         toast.error("Preencha a descrição do defeito para prosseguir.");
         return;
       }
-      if (fotos.filter(f => f !== null).length < 2) {
-        toast.error("Adicione as 2 fotos do equipamento (obrigatório).");
+      if (fotos.length < 2) {
+        toast.error("Adicione pelo menos 2 fotos do equipamento (obrigatório).");
         return;
       }
     }
@@ -148,14 +126,6 @@ function NovaOSPage() {
   const handleSave = async () => {
     if (!selectedCliente || !descricao) {
       toast.error("Preencha cliente e descrição.");
-      return;
-    }
-    if (!entreguePor.trim()) {
-      toast.error("Informe quem trouxe o equipamento.");
-      return;
-    }
-    if (fotos.filter(f => f !== null).length < 2) {
-      toast.error("As fotos de entrada do equipamento são obrigatórias.");
       return;
     }
 
@@ -176,13 +146,10 @@ function NovaOSPage() {
           status: 'aberta',
           data_abertura: new Date().toISOString(),
           tipo_equipamento_id: tipoEquipamento,
-          entregue_por: entreguePor.trim(),
-          operador_atribuido: operadorId || null,
           tecnico_id: currentUserId
         })
         .select()
         .single();
-
 
       if (osError) throw osError;
 
@@ -351,32 +318,6 @@ function NovaOSPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Quem trouxe o equipamento *</Label>
-                <Input
-                  placeholder="Nome de quem entregou o equipamento"
-                  className="h-11 border-border"
-                  value={entreguePor}
-                  onChange={(e) => setEntreguePor(e.target.value)}
-                  maxLength={120}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Operador Responsável (Opcional)</Label>
-                <Select value={operadorId} onValueChange={setOperadorId}>
-                  <SelectTrigger className="h-11 border-border">
-                    <SelectValue placeholder="Definir depois..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {operadores.map((o: any) => (
-                      <SelectItem key={o.user_id} value={o.user_id}>
-                        {o.nome}{o.cargo ? ` — ${o.cargo}` : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
             </CardContent>
           </Card>
         )}
@@ -414,38 +355,30 @@ function NovaOSPage() {
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {[0, 1].map((index) => (
-                    <div key={index} className="flex flex-col gap-2">
-                      {fotos[index] ? (
-                        <div className="relative aspect-square rounded-xl border border-border overflow-hidden group shadow-sm">
-                          <img src={URL.createObjectURL(fotos[index]!)} className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Button variant="destructive" size="icon" onClick={() => {
-                              const newFotos = [...fotos];
-                              newFotos[index] = null;
-                              setFotos(newFotos);
-                            }}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <label className="relative aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors flex flex-col items-center justify-center cursor-pointer bg-slate-50">
-                          <Camera className="h-8 w-8 text-slate-400 mb-2" />
-                          <span className="text-[10px] font-bold uppercase text-slate-500 text-center px-2">
-                            {index === 0 ? "Foto Frontal / Geral" : "Foto Detalhe / Plaqueta"}
-                          </span>
-                          <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              const newFotos = [...fotos];
-                              newFotos[index] = e.target.files[0];
-                              setFotos(newFotos);
-                            }
-                          }} />
-                        </label>
-                      )}
+                  {fotos.map((foto, index) => (
+                    <div key={index} className="relative aspect-square rounded-xl border border-border overflow-hidden group shadow-sm">
+                      <img src={URL.createObjectURL(foto)} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button variant="destructive" size="icon" onClick={() => {
+                          setFotos(fotos.filter((_, i) => i !== index));
+                        }}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
+                  
+                  <label className="relative aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors flex flex-col items-center justify-center cursor-pointer bg-slate-50">
+                    <Camera className="h-8 w-8 text-slate-400 mb-2" />
+                    <span className="text-[10px] font-bold uppercase text-slate-500 text-center px-2">
+                      Adicionar Foto
+                    </span>
+                    <input type="file" accept="image/*" multiple capture="environment" className="hidden" onChange={(e) => {
+                      if (e.target.files?.length) {
+                        setFotos([...fotos, ...Array.from(e.target.files)]);
+                      }
+                    }} />
+                  </label>
                 </div>
               </CardContent>
             </Card>
@@ -545,24 +478,17 @@ function NovaOSPage() {
                     <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Relatório Vinculado</span>
                     <span className="font-bold text-slate-900 text-base">{relatorioCliente || "Nenhum"}</span>
                   </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Quem Trouxe</span>
-                    <span className="font-bold text-slate-900 text-base">{entreguePor || "Não informado"}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-1">Operador Responsável</span>
-                    <span className="font-bold text-slate-900 text-base">{operadores.find((o: any) => o.user_id === operadorId)?.nome || "A definir"}</span>
-                  </div>
-
                   <div className="col-span-2 mt-2 pt-4 border-t border-slate-200">
                     <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-2">Defeito Reportado</span>
                     <p className="text-slate-700 italic bg-white p-3 rounded border border-slate-200">{descricao || "Não informado"}</p>
                   </div>
-                  <div className="col-span-2 mt-2 pt-4 border-t border-slate-200 flex gap-4">
-                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-2 w-full">Fotos Anexadas</span>
-                    {fotos.map((f, i) => f && (
-                       <img key={i} src={URL.createObjectURL(f)} className="h-16 w-16 object-cover rounded shadow-sm border border-border" />
-                    ))}
+                  <div className="col-span-2 mt-2 pt-4 border-t border-slate-200">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground block mb-2 w-full">Fotos Anexadas ({fotos.length})</span>
+                    <div className="flex gap-4 overflow-x-auto pb-2">
+                      {fotos.map((f, i) => (
+                         <img key={i} src={URL.createObjectURL(f)} className="h-16 w-16 object-cover rounded shadow-sm border border-border shrink-0" />
+                      ))}
+                    </div>
                   </div>
                 </div>
                 

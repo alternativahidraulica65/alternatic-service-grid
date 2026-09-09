@@ -1,20 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
-import { brokeredPreviewStorage } from "./previewAuthStorage";
 
-const env = import.meta.env as Record<string, string | undefined>;
-
-const supabaseUrl =
-  env['VITE_SUPABASE_URL'] ??
-  (typeof process !== "undefined" ? process.env?.["SUPABASE_URL"] : undefined) ??
-  "";
-const supabasePublishableKey =
-  env['VITE_SUPABASE_PUBLISHABLE_KEY'] ??
-  (typeof process !== "undefined" ? process.env?.["SUPABASE_PUBLISHABLE_KEY"] : undefined) ??
-  "";
+const supabaseUrl = "https://mpwnrcxyyeqftrejwmmx.supabase.co";
+const supabasePublishableKey = "sb_publishable_H3jMZYabk8lKGsmmBGo-fg_DbkPUkGD";
+const memory = new Map<string, string>();
+const resilientStorage = {
+  getItem(key: string) {
+    try { return window.localStorage.getItem(key); } catch { return memory.get(key) ?? null; }
+  },
+  setItem(key: string, value: string) {
+    try { window.localStorage.setItem(key, value); } catch { memory.set(key, value); }
+  },
+  removeItem(key: string) {
+    try { window.localStorage.removeItem(key); } catch { memory.delete(key); }
+  },
+};
 
 export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {
-    storage: brokeredPreviewStorage(),
+    storage: resilientStorage,
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,

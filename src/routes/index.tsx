@@ -51,29 +51,6 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [isSendingReset, setIsSendingReset] = useState(false);
-
-  async function onForgotPassword() {
-    const email = loginForm.getValues("email").trim().toLowerCase();
-    if (!email || !email.includes("@")) {
-      toast.error("Informe seu e-mail", {
-        description: "Digite o e-mail no campo acima para receber o link de recuperação.",
-      });
-      return;
-    }
-    setIsSendingReset(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    setIsSendingReset(false);
-    if (error) {
-      toast.error("Não foi possível enviar", { description: error.message });
-      return;
-    }
-    toast.success("E-mail enviado", {
-      description: "Confira sua caixa de entrada para redefinir a senha.",
-    });
-  }
 
   useEffect(() => {
     const checkUser = async () => {
@@ -250,14 +227,6 @@ function LoginPage() {
                       <FormItem>
                         <div className="flex items-center justify-between">
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-400">Senha</FormLabel>
-                          <button
-                            type="button"
-                            onClick={onForgotPassword}
-                            disabled={isSendingReset || isLoading}
-                            className="text-[11px] font-semibold text-primary hover:underline disabled:opacity-50"
-                          >
-                            {isSendingReset ? "Enviando..." : "Esqueci minha senha"}
-                          </button>
                         </div>
                         <FormControl>
                           <div className="relative">
