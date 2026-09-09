@@ -128,6 +128,11 @@ function NovaOSPage() {
       toast.error("Preencha cliente e descrição.");
       return;
     }
+    if (fotos.length < 2) {
+      toast.error("Adicione pelo menos 2 fotos do equipamento.");
+      return;
+    }
+
 
     setLoading(true);
     try {
@@ -501,7 +506,7 @@ function NovaOSPage() {
             onClick={handleNext}
             className="bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold uppercase tracking-widest h-12 px-8 shadow-lg"
           >
-            Próximo Passo <ChevronRight className="ml-2 h-4 w-4" />
+            Criar OS <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         ) : (
           <Button 
