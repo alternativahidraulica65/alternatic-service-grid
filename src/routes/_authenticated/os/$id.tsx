@@ -545,22 +545,30 @@ function GestaoOSPage() {
 
     setFinalizingLaudo(true);
     try {
+      const statusAnterior = os?.status ?? null;
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ 
-          laudo_diagnostico: laudoData.diagnostico,
-          laudo_defeitos: laudoData.defeitos,
-          laudo_servicos_necessarios: laudoData.servicos_necessarios,
-          status: 'aguardando_gestor' // Altera status conforme solicitado
-        })
-        .eq('id', id);
-      
+        .update({
+          observacao: JSON.stringify(laudoData),
+          status: 'aguardando_gestor'
+        } as any)
+        .eq('id', osId as number);
+
       if (error) throw error;
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: osId as number,
+        status_anterior: statusAnterior,
+        status_novo: 'aguardando_gestor',
+        observacao: 'Laudo técnico finalizado',
+        alterado_por: profile?.id ?? null,
+      });
 
       toast.success("Laudo Técnico finalizado", {
         description: "OS alterada para 'Aguardando Gestor'."
       });
-      queryClient.invalidateQueries({ queryKey: ['os_detail', id] });
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
     } catch (error: any) {
       toast.error("Erro ao finalizar laudo: " + error.message);
     } finally {
