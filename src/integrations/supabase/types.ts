@@ -740,6 +740,7 @@ export type Database = {
           data_previsao_conclusao: string | null
           descricao: string | null
           empresa_id: string | null
+          entregue_por: string | null
           id: string
           laudo_defeitos: string | null
           laudo_diagnostico: string | null
@@ -763,6 +764,7 @@ export type Database = {
           data_previsao_conclusao?: string | null
           descricao?: string | null
           empresa_id?: string | null
+          entregue_por?: string | null
           id?: string
           laudo_defeitos?: string | null
           laudo_diagnostico?: string | null
@@ -786,6 +788,7 @@ export type Database = {
           data_previsao_conclusao?: string | null
           descricao?: string | null
           empresa_id?: string | null
+          entregue_por?: string | null
           id?: string
           laudo_defeitos?: string | null
           laudo_diagnostico?: string | null
