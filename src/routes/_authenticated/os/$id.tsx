@@ -126,6 +126,8 @@ function GestaoOSPage() {
     }
   });
 
+  const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+
 
   const { data: terceiros = [], isLoading: loadingTerceiros } = useQuery({
     queryKey: ['os_terceiros', id],
