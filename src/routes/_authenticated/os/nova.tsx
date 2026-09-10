@@ -210,22 +210,27 @@ function NovaOSPage() {
       const { data: userData } = await supabase.auth.getUser();
       const currentUserId = userData.user?.id || null;
 
+      const numeroOs = `OS-${Date.now().toString().slice(-8)}`;
+
       const { data: os, error: osError } = await supabase
         .from('ordens_servico')
         .insert({
+          numero_os: numeroOs,
+          cliente: clienteSelecionado?.nome ?? 'Cliente não informado',
           cliente_id: selectedCliente,
-          equipamento_id: tipoEquipamento || null,
+          tipo_equipamento_id: tipoEquipamento || null,
           status: 'aberta',
-          data_entrada: new Date().toISOString(),
+          prioridade,
+          data_abertura: new Date().toISOString(),
           operador_atribuido: currentUserId,
-          observacao: JSON.stringify({ diagnostico: descricao, prioridade }),
+          descricao,
         } as any)
         .select()
         .single();
 
       if (osError) throw osError;
 
-      const osId = Number((os as any).id);
+      const osId = (os as any).id as string;
 
       await supabase.from('historico_status_os' as any).insert({
         os_id: osId,
