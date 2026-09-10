@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T17:01:03.005007+00:00",
+  "generated_at": "2026-09-10T17:36:56.782397+00:00",
   "files": [
     {
       "path": "components.json",
@@ -475,7 +475,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 22373
+      "bytes": 22368
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
@@ -483,7 +483,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 72494
+      "bytes": 72430
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -2082,10 +2082,6 @@
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
       "target": "@/components/ui/skeleton"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.tsx",
-      "target": "@/lib/os-id"
     },
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
