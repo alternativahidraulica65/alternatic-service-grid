@@ -29,10 +29,11 @@ function KanbanCard({ os }: any) {
   return (
     <div className="p-3 rounded-lg bg-white border border-border hover:border-primary/50 transition-all shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">{os.id}</span>
-        <span className="text-[10px] text-muted-foreground">{os.data_entrada ? new Date(os.data_entrada).toLocaleDateString() : 'N/A'}</span>
+        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">{os.numero_os ?? os.id}</span>
+        <span className="text-[10px] text-muted-foreground">{os.criado_em ? new Date(os.criado_em).toLocaleDateString('pt-BR') : 'N/A'}</span>
       </div>
-      <p className="text-xs font-medium text-foreground mb-3 uppercase">{os.observacao || "Sem descrição"}</p>
+      <p className="text-xs font-medium text-foreground mb-3 uppercase">{os.descricao || "Sem descrição"}</p>
+
       <div className="flex items-center justify-between">
         <Badge variant="secondary" className="text-[9px] uppercase tracking-tighter">
           {os.cliente_id ? `Cliente ${os.cliente_id.substring(0,4)}` : "S/ Cliente"}
@@ -52,17 +53,12 @@ function DashboardGestor() {
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
     queryFn: async () => {
-      console.log('Carregando OS para dashboard gestor...');
-      // Ajustado: campo 'data_entrada' em vez de 'created_at'
       const { data, error } = await supabase
         .from('ordens_servico')
         .select('*')
-        .order('data_entrada', { ascending: false });
-      
-      if (error) {
-        console.error('Erro no dashboard gestor:', error);
-        throw error;
-      }
+        .order('criado_em', { ascending: false });
+
+      if (error) throw error;
       return data || [];
     }
   });
@@ -70,17 +66,17 @@ function DashboardGestor() {
   const { data: counters } = useQuery({
     queryKey: ['dashboard_gestor_counters'],
     queryFn: async () => {
-      // Ajustado: 'perfil' em vez de 'cargo', 'materias_primas' em vez de 'materiais'
       const [
         { count: operadores },
         { count: materiais }
       ] = await Promise.all([
-        supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('perfil', 'operador'),
+        supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('cargo', 'operador'),
         supabase.from('materias_primas').select('*', { count: 'exact', head: true })
       ]);
       return { operadores: operadores || 0, materiais: materiais || 0 };
     }
   });
+
 
   const stats = useMemo(() => {
     const naFila = ordens.filter(o => o.status === 'aberta').length;
