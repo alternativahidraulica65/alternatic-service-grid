@@ -76,14 +76,14 @@ function ClienteDetalhesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ordens_servico')
-        .select('id, equipamento_id, data_entrada, tipos_equipamento (nome, categoria_principal)')
+        .select('id, tipo_equipamento_id, data_abertura, tipos_equipamento (nome, categoria_principal)')
         .eq('cliente_id', id);
       if (error) throw error;
       return (data ?? []).map((o: any) => ({
         id: o.id,
         nome: o.tipos_equipamento?.nome ?? 'Equipamento não informado',
         tipo: o.tipos_equipamento?.categoria_principal ?? null,
-        ultima_manutencao: o.data_entrada,
+        ultima_manutencao: o.data_abertura,
       }));
     }
   });
@@ -387,7 +387,7 @@ function ClienteDetalhesPage() {
                           {orcamentos.map((o: any) => (
                              <TableRow key={o.id}>
                                 <TableCell className="pl-6 font-bold text-primary">{`#${o.id}`}</TableCell>
-                                <TableCell className="text-xs">{o.data_entrada ? format(new Date(o.data_entrada), "dd/MM/yyyy") : "—"}</TableCell>
+                                <TableCell className="text-xs">{o.data_abertura ? format(new Date(o.data_entrada), "dd/MM/yyyy") : "—"}</TableCell>
                                 <TableCell className="text-xs font-bold">{Number(o.valor_final ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
                                 <TableCell><Badge variant="outline" className="text-[9px] uppercase">{o.status}</Badge></TableCell>
                              </TableRow>

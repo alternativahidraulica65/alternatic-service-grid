@@ -89,7 +89,7 @@ function GestaoOSPage() {
       const { data, error } = await supabase
         .from('ordens_servico')
         .select('*, clientes (*), tipos_equipamento (*)')
-        .eq('id', osId as number)
+        .eq('id', osId)
         .single();
       if (error) throw error;
       return data as any;
@@ -115,7 +115,7 @@ function GestaoOSPage() {
       const { data, error } = await supabase
         .from('os_pecas_rastreio' as any)
         .select('*')
-        .eq('os_id', osId as number);
+        .eq('os_id', osId);
       if (error) throw error;
       return data ?? [];
     },
@@ -128,7 +128,7 @@ function GestaoOSPage() {
       const { data, error } = await supabase
         .from('historico_status_os' as any)
         .select('*')
-        .eq('os_id', osId as number)
+        .eq('os_id', osId)
         .order('data_alteracao', { ascending: false })
         .limit(50);
       if (error) throw error;
@@ -142,22 +142,22 @@ function GestaoOSPage() {
 
   const handleTipoEquipamentoChange = async (tipoId: string) => {
     try {
-      const anteriorId = os?.equipamento_id ?? null;
+      const anteriorId = os?.tipo_equipamento_id ?? null;
       if (anteriorId === tipoId) {
         setEditandoTipo(false);
         return;
       }
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ equipamento_id: tipoId } as any)
-        .eq('id', osId as number);
+        .update({ tipo_equipamento_id: tipoId } as any)
+        .eq('id', osId);
       if (error) throw error;
 
       const nomeAnterior = tiposEquipamento.find((t: any) => t.id === anteriorId)?.nome ?? 'Não informado';
       const nomeNovo = tiposEquipamento.find((t: any) => t.id === tipoId)?.nome ?? tipoId;
 
       const { error: logError } = await supabase.from('historico_status_os' as any).insert({
-        os_id: osId as number,
+        os_id: osId,
         status_anterior: os?.status ?? null,
         status_novo: os?.status ?? null,
         observacao: `Tipo de equipamento alterado de "${nomeAnterior}" para "${nomeNovo}"`,
@@ -181,7 +181,7 @@ function GestaoOSPage() {
       const { data, error } = await supabase
         .from('os_custos' as any)
         .select('*')
-        .eq('os_id', osId as number)
+        .eq('os_id', osId)
         .eq('categoria', 'terceiros');
       if (error) throw error;
       return data ?? [];
@@ -195,7 +195,7 @@ function GestaoOSPage() {
       const { data, error } = await supabase
         .from('os_custos' as any)
         .select('*')
-        .eq('os_id', osId as number);
+        .eq('os_id', osId);
       if (error) throw error;
       return data ?? [];
     },
@@ -251,9 +251,9 @@ function GestaoOSPage() {
   }, [os, steps]);
 
   const { data: checklistData = [], refetch: refetchChecklist, isLoading: loadingChecklist } = useQuery({
-    queryKey: ['os_checklist', osId, os?.equipamento_id],
+    queryKey: ['os_checklist', osId, os?.tipo_equipamento_id],
     queryFn: async () => {
-      const osTipoId = os?.equipamento_id ?? null;
+      const osTipoId = os?.tipo_equipamento_id ?? null;
 
       // 1. Modelos oficiais (checklist_templates) do tipo de equipamento da OS
       let itensTemplate: { componente: string; descricao: string }[] = [];
@@ -274,7 +274,7 @@ function GestaoOSPage() {
       let checklistQuery = supabase
         .from('os_checklist_tecnico' as any)
         .select('*, tipos_equipamento(nome, categoria_principal)')
-        .eq('os_id', osId as number);
+        .eq('os_id', osId);
 
       if (osTipoId) {
         checklistQuery = checklistQuery.eq('tipo_equipamento_id', osTipoId);
@@ -333,11 +333,11 @@ function GestaoOSPage() {
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
           .insert({
-            os_id: osId as number,
+            os_id: osId,
             item_peca: item.item,
             estado_atual: updates.status || item.status,
             observacao_tecnica: updates.observacao ?? item.observacao ?? null,
-            tipo_equipamento_id: item.tipo_equipamento_id || os?.equipamento_id || null,
+            tipo_equipamento_id: item.tipo_equipamento_id || os?.tipo_equipamento_id || null,
           });
 
         if (error) throw error;
@@ -377,7 +377,7 @@ function GestaoOSPage() {
 
         const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
         const { error: anexoError } = await supabase.from('fotos_anexos' as any).insert({
-          os_id: osId as number,
+          os_id: osId,
           url_arquivo: urlData.publicUrl,
           categoria: `checklist:${item?.item ?? itemId}`,
         });
@@ -397,7 +397,7 @@ function GestaoOSPage() {
       const { data, error } = await supabase
         .from('fotos_anexos' as any)
         .select('*')
-        .eq('os_id', osId as number)
+        .eq('os_id', osId)
         .like('categoria', 'checklist:%');
       if (error) throw error;
       return data ?? [];
@@ -428,12 +428,12 @@ function GestaoOSPage() {
       const { error } = await supabase
         .from('ordens_servico')
         .update({ status: 'vistoria' })
-        .eq('id', osId as number);
+        .eq('id', osId);
 
       if (error) throw error;
 
       await supabase.from('historico_status_os' as any).insert({
-        os_id: osId as number,
+        os_id: osId,
         status_anterior: statusAnterior,
         status_novo: 'vistoria',
         observacao: 'Checklist técnico finalizado e OS enviada para vistoria',
@@ -484,7 +484,7 @@ function GestaoOSPage() {
       const { data, error } = await supabase
         .from('fotos_anexos' as any)
         .select('*')
-        .eq('os_id', osId as number)
+        .eq('os_id', osId)
         .in('categoria', ['laudo_interno', 'laudo_pecas']);
       if (error) throw error;
       return data ?? [];
@@ -521,7 +521,7 @@ function GestaoOSPage() {
           const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
           
           await supabase.from('fotos_anexos' as any).insert({
-            os_id: osId as number,
+            os_id: osId,
             url_arquivo: urlData.publicUrl,
             categoria: tipo
           });
@@ -552,12 +552,12 @@ function GestaoOSPage() {
           observacao: JSON.stringify(laudoData),
           status: 'aguardando_gestor'
         } as any)
-        .eq('id', osId as number);
+        .eq('id', osId);
 
       if (error) throw error;
 
       await supabase.from('historico_status_os' as any).insert({
-        os_id: osId as number,
+        os_id: osId,
         status_anterior: statusAnterior,
         status_novo: 'aguardando_gestor',
         observacao: 'Laudo técnico finalizado',
@@ -741,7 +741,7 @@ function GestaoOSPage() {
                         </Button>
                       </div>
                       <Select
-                        value={os.equipamento_id || ""}
+                        value={os.tipo_equipamento_id || ""}
                         onValueChange={handleTipoEquipamentoChange}
                         disabled={!editandoTipo}
                       >
