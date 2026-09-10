@@ -668,10 +668,10 @@ function GestaoOSPage() {
         ];
         const toValue = (t: string) => t.toLowerCase().replace(" ", "-");
         const tabValues = TAB_LIST.map(toValue);
-        const activeIdx = tabValues.indexOf(activeTab);
+        const activeIdx = Math.max(0, tabValues.indexOf(activeTab));
         const goTab = (dir: number) => {
           const next = (activeIdx + dir + TAB_LIST.length) % TAB_LIST.length;
-          setActiveTab(tabValues[next]);
+          setActiveTab(tabValues[next]!);
         };
         const isTabCompleted = (tab: string) =>
           (tab === "Checklist" && os.status !== 'aberta') ||
