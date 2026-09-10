@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   Factory, 
   Settings, 
@@ -76,6 +76,54 @@ function DashboardGestor() {
       return { operadores: operadores || 0, materiais: materiais || 0 };
     }
   });
+
+
+  const { data: pecasPendentes = [] } = useQuery({
+    queryKey: ['dashboard_gestor_pecas_pendentes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .select('id, nome, os_id, status_peca, criado_em')
+        .or('status_peca.is.null,status_peca.eq.Pendente de Destinação')
+        .order('criado_em', { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const alertas = useMemo(() => {
+    const agora = Date.now();
+    const finalizados = ['entregue', 'encerrada', 'faturada', 'cancelada'];
+
+    const atrasadas = (ordens as any[])
+      .filter((o) => {
+        if (finalizados.includes(String(o.status))) return false;
+        const prazo = o.prazo_orcamento ?? o.data_previsao_conclusao;
+        return prazo ? new Date(prazo).getTime() < agora : false;
+      })
+      .map((o) => {
+        const prazo = o.prazo_orcamento ?? o.data_previsao_conclusao;
+        const dias = Math.max(1, Math.floor((agora - new Date(prazo).getTime()) / 86400000));
+        return {
+          id: `os-${o.id}`,
+          tipo: 'atraso' as const,
+          titulo: `${o.numero_os ?? 'OS'} atrasada!`,
+          descricao: `Prazo vencido há ${dias} dia(s). Status atual: ${String(o.status ?? '—').toUpperCase()}.`,
+          osId: o.id,
+        };
+      });
+
+    const pecas = (pecasPendentes as any[]).map((p) => ({
+      id: `peca-${p.id}`,
+      tipo: 'peca' as const,
+      titulo: `Peça sem destinação: ${p.nome ?? 'Peça'}`,
+      descricao: 'Defina manutenção, compra, usinagem, terceiros ou armazenagem.',
+      osId: p.os_id,
+    }));
+
+    return [...atrasadas, ...pecas].slice(0, 6);
+  }, [ordens, pecasPendentes]);
 
 
   const stats = useMemo(() => {
@@ -191,22 +239,33 @@ function DashboardGestor() {
            <CardTitle className="text-base font-bold">Alertas Operacionais</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg border border-red-200 bg-red-50/50 flex gap-3">
-              <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-red-800">OS-1020 Atrasada!</p>
-                <p className="text-xs text-red-600">Gargalo identificado no Torneiro. Prazo crítico excedido.</p>
-              </div>
+          {alertas.length === 0 ? (
+            <div className="py-6 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              Nenhum alerta operacional no momento
             </div>
-            <div className="p-4 rounded-lg border border-amber-200 bg-amber-50/50 flex gap-3">
-              <Package className="h-5 w-5 text-amber-500 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-amber-800">Peça pendente: Kit Vedação</p>
-                <p className="text-xs text-amber-600">Fornecedor não confirmou a entrega para hoje.</p>
-              </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {alertas.map((a) => (
+                <Link
+                  key={a.id}
+                  to="/os/$id"
+                  params={{ id: String(a.osId) }}
+                  className={`p-4 rounded-lg border flex gap-3 transition-colors ${a.tipo === 'atraso' ? 'border-red-200 bg-red-50/50 hover:bg-red-50' : 'border-amber-200 bg-amber-50/50 hover:bg-amber-50'}`}
+                >
+                  {a.tipo === 'atraso' ? (
+                    <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
+                  ) : (
+                    <Package className="h-5 w-5 text-amber-500 shrink-0" />
+                  )}
+                  <div>
+                    <p className={`text-sm font-bold ${a.tipo === 'atraso' ? 'text-red-800' : 'text-amber-800'}`}>{a.titulo}</p>
+                    <p className={`text-xs ${a.tipo === 'atraso' ? 'text-red-600' : 'text-amber-600'}`}>{a.descricao}</p>
+                  </div>
+                </Link>
+              ))}
             </div>
-          </div>
+          )}
+
         </CardContent>
       </Card>
     </div>
