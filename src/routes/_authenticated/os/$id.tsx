@@ -127,7 +127,7 @@ function GestaoOSPage() {
     (p: any) => !p.status_peca || p.status_peca === 'Pendente de Destinação',
   );
 
-  const { data: fotosPecas = [] } = useQuery({
+  const { data: fotosPorPeca = [] } = useQuery({
     queryKey: ['os_fotos_pecas', osId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -143,7 +143,8 @@ function GestaoOSPage() {
   });
 
   const fotosDaPeca = (pecaId: string) =>
-    (fotosPecas as any[]).filter((f: any) => String(f.categoria) === `peca:${pecaId}`);
+    (fotosPorPeca as any[]).filter((f: any) => String(f.categoria) === `peca:${pecaId}`);
+
 
 
   const { data: logsOs = [], isLoading: loadingLogs } = useQuery({
