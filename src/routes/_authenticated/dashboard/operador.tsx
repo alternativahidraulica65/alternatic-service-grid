@@ -137,7 +137,10 @@ function DashboardOperador() {
     router.navigate({ to: `/os/${id}` as any });
   };
 
-  const isAtrasada = (o: any) => o.status === 'atrasada' || (o.prazo_acordado && new Date(o.prazo_acordado) < new Date());
+  const isAtrasada = (o: any) => {
+    const prazo = o.prazo_orcamento || o.data_previsao_conclusao;
+    return o.status === 'atrasada' || (prazo && new Date(prazo) < new Date());
+  };
 
   const atrasadasCount = myOrders.filter(isAtrasada).length.toString().padStart(2, '0');
   const triagemCount = myOrders.filter((o: any) => o.status === 'aberta').length.toString().padStart(2, '0');
