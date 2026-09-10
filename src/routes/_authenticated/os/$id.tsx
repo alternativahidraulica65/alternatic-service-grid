@@ -331,6 +331,9 @@ function GestaoOSPage() {
 
   const [savingChecklist, setSavingChecklist] = useState(false);
 
+  const estadoLegadoDoChecklist = (status: string) =>
+    status === 'Bom' ? 'aprovado' : status === 'Ruim' ? 'recuperacao' : status;
+
   const sincronizarPecaDoChecklist = async (nomeItem: string, status: string) => {
     try {
       const { data: existentes } = await supabase
@@ -388,7 +391,7 @@ function GestaoOSPage() {
             os_id: osId,
             componente: item.item,
             item_peca: item.item,
-            estado: updates.status || item.status,
+            estado: estadoLegadoDoChecklist(updates.status || item.status),
             estado_atual: updates.status || item.status,
 
             observacao_tecnica: updates.observacao ?? item.observacao ?? null,
@@ -400,7 +403,7 @@ function GestaoOSPage() {
         const payload: any = {};
         if (updates.status !== undefined) {
           payload.estado_atual = updates.status;
-          payload.estado = updates.status;
+          payload.estado = estadoLegadoDoChecklist(updates.status);
         }
 
         if (updates.observacao !== undefined) payload.observacao_tecnica = updates.observacao;
