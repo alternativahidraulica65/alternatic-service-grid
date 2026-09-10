@@ -398,7 +398,11 @@ function GestaoOSPage() {
         if (error) throw error;
       } else {
         const payload: any = {};
-        if (updates.status !== undefined) payload.estado_atual = updates.status;
+        if (updates.status !== undefined) {
+          payload.estado_atual = updates.status;
+          payload.estado = updates.status;
+        }
+
         if (updates.observacao !== undefined) payload.observacao_tecnica = updates.observacao;
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
