@@ -131,6 +131,27 @@ function DashboardGestor() {
     return [...atrasadas, ...pecas].slice(0, 6);
   }, [ordens, pecasPendentes]);
 
+  const { data: todasPecas = [] } = useQuery({
+    queryKey: ['dashboard_gestor_pecas_todas'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .select('id, os_id');
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const totalPecasAbertas = useMemo(() => {
+    const abertas = new Set(
+      (ordens as any[])
+        .filter((o) => !STATUS_FINALIZADOS.includes(String(o.status)))
+        .map((o) => String(o.id)),
+    );
+    return (todasPecas as any[]).filter((p: any) => abertas.has(String(p.os_id))).length;
+  }, [todasPecas, ordens]);
+
+
 
   const stats = useMemo(() => {
     const naFila = ordens.filter(o => o.status === 'aberta').length;
