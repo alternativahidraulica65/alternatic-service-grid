@@ -386,8 +386,11 @@ function GestaoOSPage() {
           .from('os_checklist_tecnico' as any)
           .insert({
             os_id: osId,
+            componente: item.item,
             item_peca: item.item,
+            estado: updates.status || item.status,
             estado_atual: updates.status || item.status,
+
             observacao_tecnica: updates.observacao ?? item.observacao ?? null,
             tipo_equipamento_id: item.tipo_equipamento_id || os?.tipo_equipamento_id || null,
           });
@@ -395,7 +398,11 @@ function GestaoOSPage() {
         if (error) throw error;
       } else {
         const payload: any = {};
-        if (updates.status !== undefined) payload.estado_atual = updates.status;
+        if (updates.status !== undefined) {
+          payload.estado_atual = updates.status;
+          payload.estado = updates.status;
+        }
+
         if (updates.observacao !== undefined) payload.observacao_tecnica = updates.observacao;
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
