@@ -409,6 +409,30 @@ function GestaoOSPage() {
   const handleDefinirDestinacao = async (peca: any, destino: string) => {
     await handleUpdatePeca(peca.id, { status_peca: destino });
 
+    // Usinagem entra automaticamente na fila da bancada de usinagem (A5),
+    // aguardando a liberação do gestor.
+    if (destino === 'Refazer / Usinagem') {
+      try {
+        const { data: bancada } = await supabase
+          .from('bancadas' as any)
+          .select('id, codigo')
+          .eq('is_usinagem', true)
+          .limit(1)
+          .maybeSingle();
+        if (bancada) {
+          await supabase
+            .from('os_pecas_rastreio' as any)
+            .update({ bancada_id: (bancada as any).id, aprovado_gestor: false })
+            .eq('id', peca.id);
+          queryClient.invalidateQueries({ queryKey: ['bancadas_fila'] });
+          toast.info(`Peça enviada para a fila da bancada ${(bancada as any).codigo} — aguardando liberação do gestor`);
+        }
+      } catch {
+        // fila de bancada é complementar; não bloqueia a destinação
+      }
+    }
+
+
     const categoria = DESTINACOES_COM_CUSTO[destino];
     if (!categoria) return;
 
