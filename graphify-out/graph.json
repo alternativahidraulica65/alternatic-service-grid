@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T19:47:04.164182+00:00",
+  "generated_at": "2026-09-10T19:54:47.995373+00:00",
   "files": [
     {
       "path": "components.json",
@@ -406,6 +406,10 @@
       "bytes": 370
     },
     {
+      "path": "src/components/PecasDialog.tsx",
+      "bytes": 8694
+    },
+    {
       "path": "src/routes/_authenticated/dashboard.tsx",
       "bytes": 11295
     },
@@ -451,7 +455,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 12164
+      "bytes": 13284
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -1064,6 +1068,42 @@
       "target": "react"
     },
     {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
       "source": "src/routes/_authenticated/dashboard.tsx",
       "target": "@tanstack/react-router"
     },
@@ -1554,6 +1594,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/gestor.tsx",
       "target": "@/components/BancadasDialog"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/gestor.tsx",
+      "target": "@/components/PecasDialog"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
