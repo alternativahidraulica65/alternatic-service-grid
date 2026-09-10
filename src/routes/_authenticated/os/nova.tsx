@@ -84,7 +84,7 @@ function NovaOSPage() {
   });
 
   const clienteSelecionado = clientes.find((c: any) => c.id === selectedCliente);
-  const clientePendente = clienteSelecionado?.status_cadastro === 'pendente';
+  const clientePendente = ['pendente', 'provisório'].includes((clienteSelecionado?.status_cadastro ?? '').toLowerCase());
 
   const prazoInfo: Record<string, string> = {
     Baixa: "Orçamento em até 3 dias úteis",
@@ -210,22 +210,27 @@ function NovaOSPage() {
       const { data: userData } = await supabase.auth.getUser();
       const currentUserId = userData.user?.id || null;
 
+      const numeroOs = `OS-${Date.now().toString().slice(-8)}`;
+
       const { data: os, error: osError } = await supabase
         .from('ordens_servico')
         .insert({
+          numero_os: numeroOs,
+          cliente: clienteSelecionado?.nome ?? 'Cliente não informado',
           cliente_id: selectedCliente,
-          equipamento_id: tipoEquipamento || null,
+          tipo_equipamento_id: tipoEquipamento || null,
           status: 'aberta',
-          data_entrada: new Date().toISOString(),
+          prioridade,
+          data_abertura: new Date().toISOString(),
           operador_atribuido: currentUserId,
-          observacao: JSON.stringify({ diagnostico: descricao, prioridade }),
+          descricao,
         } as any)
         .select()
         .single();
 
       if (osError) throw osError;
 
-      const osId = Number((os as any).id);
+      const osId = (os as any).id as string;
 
       await supabase.from('historico_status_os' as any).insert({
         os_id: osId,
@@ -246,7 +251,7 @@ function NovaOSPage() {
             const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
             uploadedFotos.push({
               os_id: osId,
-              url_arquivo: urlData.publicUrl,
+              foto_url: urlData.publicUrl,
               categoria: 'triagem'
             });
           }

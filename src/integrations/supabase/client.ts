@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Banco de dados oficial da empresa (Alternativa Hidráulica).
-const supabaseUrl = "https://mpwnrcxyyeqftrejwmmx.supabase.co";
-const supabasePublishableKey = "sb_publishable_H3jMZYabk8lKGsmmBGo-fg_DbkPUkGD";
+// Banco único do app (Lovable Cloud) — mesma fonte exibida no painel de banco de dados.
+const supabaseUrl = import.meta.env['VITE_SUPABASE_URL'] as string;
+const supabasePublishableKey = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] as string;
 
 
 const memory = new Map<string, string>();

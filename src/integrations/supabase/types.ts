@@ -99,27 +99,36 @@ export type Database = {
       }
       checklist_templates: {
         Row: {
+          componente_peca: string | null
           criado_em: string
           criado_por: string | null
+          descricao_avaliacao: string | null
           id: string
-          itens: Json
-          nome: string
+          itens: Json | null
+          nome: string | null
+          ordem_exibicao: number | null
           tipo_equipamento_id: string | null
         }
         Insert: {
+          componente_peca?: string | null
           criado_em?: string
           criado_por?: string | null
+          descricao_avaliacao?: string | null
           id?: string
-          itens?: Json
-          nome: string
+          itens?: Json | null
+          nome?: string | null
+          ordem_exibicao?: number | null
           tipo_equipamento_id?: string | null
         }
         Update: {
+          componente_peca?: string | null
           criado_em?: string
           criado_por?: string | null
+          descricao_avaliacao?: string | null
           id?: string
-          itens?: Json
-          nome?: string
+          itens?: Json | null
+          nome?: string | null
+          ordem_exibicao?: number | null
           tipo_equipamento_id?: string | null
         }
         Relationships: [
@@ -128,44 +137,6 @@ export type Database = {
             columns: ["tipo_equipamento_id"]
             isOneToOne: false
             referencedRelation: "tipos_equipamento"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      cliente_contatos: {
-        Row: {
-          cargo: string | null
-          cliente_id: string
-          created_at: string | null
-          email: string | null
-          id: string
-          nome: string
-          telefone: string | null
-        }
-        Insert: {
-          cargo?: string | null
-          cliente_id: string
-          created_at?: string | null
-          email?: string | null
-          id?: string
-          nome: string
-          telefone?: string | null
-        }
-        Update: {
-          cargo?: string | null
-          cliente_id?: string
-          created_at?: string | null
-          email?: string | null
-          id?: string
-          nome?: string
-          telefone?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cliente_contatos_cliente_id_fkey"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
             referencedColumns: ["id"]
           },
         ]
@@ -225,9 +196,11 @@ export type Database = {
           id: string
           motivo_reprovacao: string | null
           nome: string
+          razao_social: string | null
           solicitado_por: string | null
           status_cadastro: string
           telefone: string | null
+          ultimo_numero_orcamento: number | null
           updated_at: string | null
         }
         Insert: {
@@ -240,9 +213,11 @@ export type Database = {
           id?: string
           motivo_reprovacao?: string | null
           nome: string
+          razao_social?: string | null
           solicitado_por?: string | null
           status_cadastro?: string
           telefone?: string | null
+          ultimo_numero_orcamento?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -255,9 +230,11 @@ export type Database = {
           id?: string
           motivo_reprovacao?: string | null
           nome?: string
+          razao_social?: string | null
           solicitado_por?: string | null
           status_cadastro?: string
           telefone?: string | null
+          ultimo_numero_orcamento?: number | null
           updated_at?: string | null
         }
         Relationships: []
@@ -283,61 +260,40 @@ export type Database = {
         }
         Relationships: []
       }
-      custos_os: {
+      contatos_cliente: {
         Row: {
-          aprovado_diretoria: boolean | null
-          categoria: string
-          comissao_vendedor: number | null
-          criado_em: string | null
-          criado_por: string | null
-          custo_interno: number | null
-          descricao: string
+          cargo: string | null
+          cliente_id: string
+          created_at: string | null
+          email: string | null
           id: string
-          is_terceirizado: boolean | null
-          margem_lucro_percentual: number | null
-          os_id: string
-          preco_venda_final: number | null
-          terceiro_nome: string | null
-          valor_venda: number | null
+          nome: string
+          telefone: string | null
         }
         Insert: {
-          aprovado_diretoria?: boolean | null
-          categoria: string
-          comissao_vendedor?: number | null
-          criado_em?: string | null
-          criado_por?: string | null
-          custo_interno?: number | null
-          descricao: string
+          cargo?: string | null
+          cliente_id: string
+          created_at?: string | null
+          email?: string | null
           id?: string
-          is_terceirizado?: boolean | null
-          margem_lucro_percentual?: number | null
-          os_id: string
-          preco_venda_final?: number | null
-          terceiro_nome?: string | null
-          valor_venda?: number | null
+          nome: string
+          telefone?: string | null
         }
         Update: {
-          aprovado_diretoria?: boolean | null
-          categoria?: string
-          comissao_vendedor?: number | null
-          criado_em?: string | null
-          criado_por?: string | null
-          custo_interno?: number | null
-          descricao?: string
+          cargo?: string | null
+          cliente_id?: string
+          created_at?: string | null
+          email?: string | null
           id?: string
-          is_terceirizado?: boolean | null
-          margem_lucro_percentual?: number | null
-          os_id?: string
-          preco_venda_final?: number | null
-          terceiro_nome?: string | null
-          valor_venda?: number | null
+          nome?: string
+          telefone?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "custos_os_os_id_fkey"
-            columns: ["os_id"]
+            foreignKeyName: "cliente_contatos_cliente_id_fkey"
+            columns: ["cliente_id"]
             isOneToOne: false
-            referencedRelation: "ordens_servico"
+            referencedRelation: "clientes"
             referencedColumns: ["id"]
           },
         ]
@@ -399,7 +355,64 @@ export type Database = {
         }
         Relationships: []
       }
-      historico_processo_os: {
+      fotos_anexos: {
+        Row: {
+          bucket: string | null
+          categoria: string | null
+          criado_em: string | null
+          criado_por: string | null
+          foto_url: string
+          id: string
+          legenda: string | null
+          os_id: string
+          peca_id: string | null
+          storage_path: string | null
+          tipo: string | null
+        }
+        Insert: {
+          bucket?: string | null
+          categoria?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url: string
+          id?: string
+          legenda?: string | null
+          os_id: string
+          peca_id?: string | null
+          storage_path?: string | null
+          tipo?: string | null
+        }
+        Update: {
+          bucket?: string | null
+          categoria?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          foto_url?: string
+          id?: string
+          legenda?: string | null
+          os_id?: string
+          peca_id?: string | null
+          storage_path?: string | null
+          tipo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_fotos_anexos_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_fotos_anexos_peca_id_fkey"
+            columns: ["peca_id"]
+            isOneToOne: false
+            referencedRelation: "os_guarda_pecas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      historico_status_os: {
         Row: {
           criado_em: string | null
           executor_id: string | null
@@ -587,7 +600,7 @@ export type Database = {
           },
         ]
       }
-      materiais: {
+      materias_primas: {
         Row: {
           criado_em: string | null
           densidade: number
@@ -860,11 +873,14 @@ export type Database = {
           criado_por: string | null
           data_verificacao: string | null
           estado: string | null
+          estado_atual: string | null
           foto_url: string | null
           id: string
+          item_peca: string | null
           observacao_tecnica: string | null
           os_id: string
           responsavel_id: string | null
+          tipo_equipamento_id: string | null
         }
         Insert: {
           componente: string
@@ -872,11 +888,14 @@ export type Database = {
           criado_por?: string | null
           data_verificacao?: string | null
           estado?: string | null
+          estado_atual?: string | null
           foto_url?: string | null
           id?: string
+          item_peca?: string | null
           observacao_tecnica?: string | null
           os_id: string
           responsavel_id?: string | null
+          tipo_equipamento_id?: string | null
         }
         Update: {
           componente?: string
@@ -884,11 +903,14 @@ export type Database = {
           criado_por?: string | null
           data_verificacao?: string | null
           estado?: string | null
+          estado_atual?: string | null
           foto_url?: string | null
           id?: string
+          item_peca?: string | null
           observacao_tecnica?: string | null
           os_id?: string
           responsavel_id?: string | null
+          tipo_equipamento_id?: string | null
         }
         Relationships: [
           {
@@ -898,61 +920,70 @@ export type Database = {
             referencedRelation: "ordens_servico"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "os_checklist_tecnico_tipo_equipamento_id_fkey"
+            columns: ["tipo_equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_equipamento"
+            referencedColumns: ["id"]
+          },
         ]
       }
-      os_fotos_anexos: {
+      os_custos: {
         Row: {
-          bucket: string | null
-          categoria: string | null
+          aprovado_diretoria: boolean | null
+          categoria: string
+          comissao_vendedor: number | null
           criado_em: string | null
           criado_por: string | null
-          foto_url: string
+          custo_interno: number | null
+          descricao: string
           id: string
-          legenda: string | null
+          is_terceirizado: boolean | null
+          margem_lucro_percentual: number | null
           os_id: string
-          peca_id: string | null
-          storage_path: string | null
-          tipo: string | null
+          preco_venda_final: number | null
+          terceiro_nome: string | null
+          valor_venda: number | null
         }
         Insert: {
-          bucket?: string | null
-          categoria?: string | null
+          aprovado_diretoria?: boolean | null
+          categoria: string
+          comissao_vendedor?: number | null
           criado_em?: string | null
           criado_por?: string | null
-          foto_url: string
+          custo_interno?: number | null
+          descricao: string
           id?: string
-          legenda?: string | null
+          is_terceirizado?: boolean | null
+          margem_lucro_percentual?: number | null
           os_id: string
-          peca_id?: string | null
-          storage_path?: string | null
-          tipo?: string | null
+          preco_venda_final?: number | null
+          terceiro_nome?: string | null
+          valor_venda?: number | null
         }
         Update: {
-          bucket?: string | null
-          categoria?: string | null
+          aprovado_diretoria?: boolean | null
+          categoria?: string
+          comissao_vendedor?: number | null
           criado_em?: string | null
           criado_por?: string | null
-          foto_url?: string
+          custo_interno?: number | null
+          descricao?: string
           id?: string
-          legenda?: string | null
+          is_terceirizado?: boolean | null
+          margem_lucro_percentual?: number | null
           os_id?: string
-          peca_id?: string | null
-          storage_path?: string | null
-          tipo?: string | null
+          preco_venda_final?: number | null
+          terceiro_nome?: string | null
+          valor_venda?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "os_fotos_anexos_os_id_fkey"
+            foreignKeyName: "custos_os_os_id_fkey"
             columns: ["os_id"]
             isOneToOne: false
             referencedRelation: "ordens_servico"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "os_fotos_anexos_peca_id_fkey"
-            columns: ["peca_id"]
-            isOneToOne: false
-            referencedRelation: "os_guarda_pecas"
             referencedColumns: ["id"]
           },
         ]
@@ -992,15 +1023,18 @@ export type Database = {
           },
         ]
       }
-      pecas_os: {
+      os_pecas_rastreio: {
         Row: {
           criado_em: string | null
           criado_por: string | null
           foto_url: string | null
           id: string
           localizacao: string | null
+          localizacao_fisica: string | null
           nome: string
+          observacao: string | null
           os_id: string
+          status_peca: string | null
         }
         Insert: {
           criado_em?: string | null
@@ -1008,8 +1042,11 @@ export type Database = {
           foto_url?: string | null
           id?: string
           localizacao?: string | null
+          localizacao_fisica?: string | null
           nome: string
+          observacao?: string | null
           os_id: string
+          status_peca?: string | null
         }
         Update: {
           criado_em?: string | null
@@ -1017,8 +1054,11 @@ export type Database = {
           foto_url?: string | null
           id?: string
           localizacao?: string | null
+          localizacao_fisica?: string | null
           nome?: string
+          observacao?: string | null
           os_id?: string
+          status_peca?: string | null
         }
         Relationships: [
           {
@@ -1256,63 +1296,7 @@ export type Database = {
       }
     }
     Views: {
-      fotos_anexos: {
-        Row: {
-          bucket: string | null
-          categoria: string | null
-          criado_em: string | null
-          criado_por: string | null
-          foto_url: string | null
-          id: string | null
-          legenda: string | null
-          os_id: string | null
-          peca_id: string | null
-          storage_path: string | null
-          tipo: string | null
-        }
-        Insert: {
-          bucket?: string | null
-          categoria?: string | null
-          criado_em?: string | null
-          criado_por?: string | null
-          foto_url?: string | null
-          id?: string | null
-          legenda?: string | null
-          os_id?: string | null
-          peca_id?: string | null
-          storage_path?: string | null
-          tipo?: string | null
-        }
-        Update: {
-          bucket?: string | null
-          categoria?: string | null
-          criado_em?: string | null
-          criado_por?: string | null
-          foto_url?: string | null
-          id?: string | null
-          legenda?: string | null
-          os_id?: string | null
-          peca_id?: string | null
-          storage_path?: string | null
-          tipo?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "os_fotos_anexos_os_id_fkey"
-            columns: ["os_id"]
-            isOneToOne: false
-            referencedRelation: "ordens_servico"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "os_fotos_anexos_peca_id_fkey"
-            columns: ["peca_id"]
-            isOneToOne: false
-            referencedRelation: "os_guarda_pecas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       add_dias_uteis: {
