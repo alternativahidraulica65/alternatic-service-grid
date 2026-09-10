@@ -1,14 +1,30 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     const { data: { user }, error } = await supabase.auth.getUser();
-    
+
     if (error || !user) {
-      throw redirect({ to: "/" });
+      // Não redireciona aqui: o redirect antes da hidratação quebra a tela.
+      // O AuthGate abaixo cuida disso já no cliente.
+      return {
+        user: null,
+        profile: null,
+        roles: [] as string[],
+        homeDashboard: "operador" as const,
+        canSwitchView: false,
+        isDiretor: false,
+        isFinanceiro: false,
+        isGestor: false,
+        isOperador: false,
+        isTerceirizado: false,
+        isAdmin: false,
+      };
     }
+
 
     // Fetch user profile and role using auth.uid() which is user.id
     const { data: profile } = await supabase
