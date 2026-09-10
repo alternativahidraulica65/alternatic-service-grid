@@ -52,6 +52,8 @@ function KanbanCard({ os }: any) {
 
 function DashboardGestor() {
   const { podeVerValoresFinanceiros } = useUserRole();
+  const [bancadasOpen, setBancadasOpen] = useState(false);
+
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
     queryFn: async () => {
