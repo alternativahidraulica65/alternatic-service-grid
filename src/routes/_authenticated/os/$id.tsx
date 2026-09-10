@@ -127,6 +127,26 @@ function GestaoOSPage() {
     (p: any) => !p.status_peca || p.status_peca === 'Pendente de Destinação',
   );
 
+  const { data: fotosPorPeca = [] } = useQuery({
+    queryKey: ['os_fotos_pecas', osId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fotos_anexos' as any)
+        .select('*')
+        .eq('os_id', osId)
+        .like('categoria', 'peca:%')
+        .order('criado_em', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
+  });
+
+  const fotosDaPeca = (pecaId: string) =>
+    (fotosPorPeca as any[]).filter((f: any) => String(f.categoria) === `peca:${pecaId}`);
+
+
+
   const { data: logsOs = [], isLoading: loadingLogs } = useQuery({
 
     queryKey: ['os_historico', osId],
@@ -378,6 +398,101 @@ function GestaoOSPage() {
       toast.error("Erro ao atualizar peça: " + error.message);
     }
   };
+
+  // Destinações que geram custo a ser preenchido pelo gestor
+  const DESTINACOES_COM_CUSTO: Record<string, string> = {
+    'Comprar Nova': 'material',
+    'Refazer / Usinagem': 'material',
+    'Terceiros': 'terceiros',
+  };
+
+  const handleDefinirDestinacao = async (peca: any, destino: string) => {
+    await handleUpdatePeca(peca.id, { status_peca: destino });
+
+    const categoria = DESTINACOES_COM_CUSTO[destino];
+    if (!categoria) return;
+
+    const nomePeca = peca.nome ?? peca.descricao ?? 'Peça';
+    const descricao = `${destino} - ${nomePeca}`;
+
+    try {
+      const { data: existente } = await supabase
+        .from('os_custos' as any)
+        .select('id')
+        .eq('os_id', osId)
+        .eq('descricao', descricao)
+        .limit(1);
+
+      if ((existente ?? []).length > 0) return;
+
+      const { error } = await supabase.from('os_custos' as any).insert({
+        os_id: osId,
+        descricao,
+        categoria,
+        custo_interno: 0,
+        valor_venda: 0,
+        is_terceirizado: categoria === 'terceiros',
+        criado_por: profile?.user_id ?? null,
+      });
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['os_custos', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_terceiros', osId] });
+      toast.info(`"${nomePeca}" enviada para Custos — aguardando valores do gestor`);
+    } catch (error: any) {
+      toast.error("Erro ao gerar custo: " + error.message);
+    }
+  };
+
+  const handleUpdateCusto = async (custoId: string, updates: any) => {
+    try {
+      const { error } = await supabase
+        .from('os_custos' as any)
+        .update(updates)
+        .eq('id', custoId);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['os_custos', osId] });
+      toast.success("Custo atualizado");
+    } catch (error: any) {
+      toast.error("Erro ao atualizar custo: " + error.message);
+    }
+  };
+
+  const [uploadingPecaId, setUploadingPecaId] = useState<string | null>(null);
+
+  const handleUploadFotosPeca = async (peca: any, files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploadingPecaId(peca.id);
+    try {
+      for (const file of Array.from(files)) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${osId}/pecas/${peca.id}-${Date.now()}-${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('os-assets')
+          .upload(fileName, file);
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
+        const { error: anexoError } = await supabase.from('fotos_anexos' as any).insert({
+          os_id: osId,
+          foto_url: urlData.publicUrl,
+          storage_path: fileName,
+          bucket: 'os-assets',
+          legenda: peca.nome ?? peca.descricao ?? 'Peça',
+          categoria: `peca:${peca.id}`,
+        });
+        if (anexoError) throw anexoError;
+      }
+      queryClient.invalidateQueries({ queryKey: ['os_fotos_pecas', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_fotos', osId] });
+      toast.success("Fotos anexadas à peça");
+    } catch (error: any) {
+      toast.error("Erro no upload: " + error.message);
+    } finally {
+      setUploadingPecaId(null);
+    }
+  };
+
 
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
@@ -1399,7 +1514,7 @@ function GestaoOSPage() {
                             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                               <Select
                                 value={peca.status_peca && peca.status_peca !== 'Pendente de Destinação' ? peca.status_peca : ''}
-                                onValueChange={(val) => handleUpdatePeca(peca.id, { status_peca: val })}
+                                onValueChange={(val) => handleDefinirDestinacao(peca, val)}
                               >
                                 <SelectTrigger className="h-9 w-full sm:w-48 text-[10px] font-bold uppercase border-slate-200 bg-white">
                                   <SelectValue placeholder="Definir destinação" />
@@ -1409,6 +1524,7 @@ function GestaoOSPage() {
                                   <SelectItem value="Comprar Nova" className="text-[10px] font-bold uppercase">Comprar Nova</SelectItem>
                                   <SelectItem value="Refazer / Usinagem" className="text-[10px] font-bold uppercase">Refazer / Usinagem</SelectItem>
                                   <SelectItem value="Terceiros" className="text-[10px] font-bold uppercase">Enviar a Terceiros</SelectItem>
+                                  <SelectItem value="Armazenagem" className="text-[10px] font-bold uppercase">Armazenagem (reutilizar)</SelectItem>
                                 </SelectContent>
                               </Select>
                               <Input
@@ -1424,13 +1540,59 @@ function GestaoOSPage() {
                               />
                               <Badge
                                 variant="outline"
-                                className={`text-[9px] font-black uppercase tracking-widest justify-center ${pendente ? 'bg-red-100 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
+                                className={`text-[9px] font-black uppercase tracking-widest justify-center ${pendente ? 'bg-red-100 text-red-600 border-red-200' : peca.status_peca === 'Armazenagem' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
                               >
-                                {pendente ? 'Pendente' : 'Destinada'}
+                                {pendente ? 'Pendente' : peca.status_peca === 'Armazenagem' ? 'Armazenada' : 'Destinada'}
                               </Badge>
                             </div>
                           </div>
+
+
+                          <div className="mt-4 pt-4 border-t border-border/60">
+                            <div className="flex items-center justify-between gap-3 mb-2">
+                              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Fotos da peça ({fotosDaPeca(peca.id).length}) — opcional
+                              </p>
+                              <label className="cursor-pointer">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    handleUploadFotosPeca(peca, e.target.files);
+                                    e.currentTarget.value = '';
+                                  }}
+                                />
+                                <span className="inline-flex items-center gap-2 h-8 px-3 rounded-md border border-slate-200 bg-white text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50">
+                                  <Camera className="h-3.5 w-3.5 text-primary" />
+                                  {uploadingPecaId === peca.id ? 'Enviando...' : 'Adicionar fotos'}
+                                </span>
+                              </label>
+                            </div>
+                            {fotosDaPeca(peca.id).length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {fotosDaPeca(peca.id).map((foto: any) => (
+                                  <a
+                                    key={foto.id}
+                                    href={foto.foto_url ?? foto.url_arquivo}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="block h-16 w-16 rounded-lg overflow-hidden border border-border"
+                                  >
+                                    <img
+                                      src={foto.foto_url ?? foto.url_arquivo}
+                                      alt={`Foto de ${peca.nome ?? 'peça'}`}
+                                      loading="lazy"
+                                      className="h-full w-full object-cover"
+                                    />
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
+
                       );
                     })
                   ) : (
@@ -1491,25 +1653,85 @@ function GestaoOSPage() {
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
                   <p className="text-lg font-black text-foreground">
-                    R$ {custos.filter((c: any) => c.categoria === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
+                    R$ {custos.filter((c: any) => c.categoria === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.custo_interno ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-border bg-slate-50">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
                   <p className="text-lg font-black text-foreground">
-                    R$ {custos.filter((c: any) => c.categoria === 'material').reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
+                    R$ {custos.filter((c: any) => c.categoria === 'material').reduce((acc: number, curr: any) => acc + Number(curr.custo_interno ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
                   <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
                   <p className="text-lg font-black text-primary">
-                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.valor_total_custo ?? 0), 0).toLocaleString('pt-BR')}
+                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.custo_interno ?? 0), 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
               </div>
-              <Button variant="outline" className="w-full border-dashed border-2 font-bold uppercase text-[10px] tracking-widest">
-                {loadingCustos ? "Carregando..." : "Lançar Novo Custo"}
-              </Button>
+              {/* Custos gerados automaticamente pela destinação das peças */}
+              <div className="space-y-3 mb-6">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Itens vindos das peças (aguardando valores do gestor)
+                </p>
+                {loadingCustos ? (
+                  <Skeleton className="h-14 w-full" />
+                ) : custos.length > 0 ? (
+                  custos.map((custo: any) => {
+                    const semValor = !Number(custo.custo_interno ?? 0);
+                    return (
+                      <div
+                        key={custo.id}
+                        className={`p-3 rounded-xl border flex flex-col lg:flex-row lg:items-center justify-between gap-3 ${semValor ? 'border-amber-300 bg-amber-50/40' : 'border-border bg-card'}`}
+                      >
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-tight text-foreground">{custo.descricao}</p>
+                          <p className="text-[10px] font-bold uppercase text-muted-foreground">{custo.categoria}</p>
+                        </div>
+                        {podeVerValoresFinanceiros ? (
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder="Custo interno"
+                              className="h-9 w-40 text-xs bg-white border-slate-200"
+                              defaultValue={custo.custo_interno ?? ''}
+                              onBlur={(e) => {
+                                const val = Number(e.target.value || 0);
+                                if (val !== Number(custo.custo_interno ?? 0)) {
+                                  handleUpdateCusto(custo.id, { custo_interno: val });
+                                }
+                              }}
+                            />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder="Valor de venda"
+                              className="h-9 w-40 text-xs bg-white border-slate-200"
+                              defaultValue={custo.valor_venda ?? ''}
+                              onBlur={(e) => {
+                                const val = Number(e.target.value || 0);
+                                if (val !== Number(custo.valor_venda ?? 0)) {
+                                  handleUpdateCusto(custo.id, { valor_venda: val });
+                                }
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest">
+                            {semValor ? 'Aguardando gestor' : 'Precificado'}
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="py-6 text-center opacity-40">
+                    <p className="text-[10px] font-bold uppercase">Nenhum custo lançado nesta OS.</p>
+                  </div>
+                )}
+              </div>
+
             </CardContent>
           </Card>
         </TabsContent>
