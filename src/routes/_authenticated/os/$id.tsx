@@ -1282,11 +1282,15 @@ function GestaoOSPage() {
                 <div>
                   <CardTitle className="text-base font-bold uppercase tracking-widest text-foreground flex items-center gap-2">
                     <Box className="h-5 w-5 text-primary" />
-                    Rastreamento de Componentes
+                    Destinação de Peças
                   </CardTitle>
-                  <CardDescription>Localização e situação física de cada peça.</CardDescription>
+                  <CardDescription>Peças marcadas como RUIM no checklist entram aqui automaticamente.</CardDescription>
                 </div>
-                <Button variant="outline" size="sm" className="h-9 border-primary text-primary hover:bg-primary/5 font-bold text-[10px] uppercase">Registrar Movimentação</Button>
+                {pecasPendentes.length > 0 && (
+                  <Badge className="bg-red-500 text-white text-[9px] font-black uppercase tracking-widest">
+                    {pecasPendentes.length} pendente(s)
+                  </Badge>
+                )}
              </CardHeader>
              <CardContent className="pt-6">
                 <div className="space-y-4">
@@ -1296,35 +1300,75 @@ function GestaoOSPage() {
                       <Skeleton className="h-16 w-full" />
                     </div>
                   ) : pecas.length > 0 ? (
-                    pecas.map((peca: any, i: number) => (
-                      <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
-                        <div className="flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border">
-                            <Box className="h-5 w-5 text-slate-400" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.descricao ?? peca.item_peca ?? peca.observacao ?? 'Peça'}</p>
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                              <MapPin className="h-3 w-3 text-primary" />
-                              {peca.localizacao_fisica ?? 'Sem localização'}
+                    pecas.map((peca: any) => {
+                      const pendente = !peca.status_peca || peca.status_peca === 'Pendente de Destinação';
+                      return (
+                        <div
+                          key={peca.id}
+                          className={`p-4 rounded-xl border bg-card transition-all ${pendente ? 'border-red-300 bg-red-50/40' : 'border-border'}`}
+                        >
+                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                              <div className={`h-10 w-10 rounded-lg flex items-center justify-center border ${pendente ? 'bg-red-100 border-red-200' : 'bg-slate-100 border-border'}`}>
+                                <Box className={`h-5 w-5 ${pendente ? 'text-red-500' : 'text-slate-400'}`} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold text-foreground uppercase tracking-tight">{peca.nome ?? peca.descricao ?? 'Peça'}</p>
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
+                                  <MapPin className="h-3 w-3 text-primary" />
+                                  {peca.localizacao_fisica || peca.localizacao || 'Sem localização definida'}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                              <Select
+                                value={peca.status_peca && peca.status_peca !== 'Pendente de Destinação' ? peca.status_peca : ''}
+                                onValueChange={(val) => handleUpdatePeca(peca.id, { status_peca: val })}
+                              >
+                                <SelectTrigger className="h-9 w-full sm:w-48 text-[10px] font-bold uppercase border-slate-200 bg-white">
+                                  <SelectValue placeholder="Definir destinação" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Manutenção" className="text-[10px] font-bold uppercase">Manutenção</SelectItem>
+                                  <SelectItem value="Comprar Nova" className="text-[10px] font-bold uppercase">Comprar Nova</SelectItem>
+                                  <SelectItem value="Refazer / Usinagem" className="text-[10px] font-bold uppercase">Refazer / Usinagem</SelectItem>
+                                  <SelectItem value="Terceiros" className="text-[10px] font-bold uppercase">Enviar a Terceiros</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Input
+                                placeholder="Onde está a peça? (gaveta, prateleira...)"
+                                className="h-9 w-full sm:w-64 text-xs border-slate-200 bg-white"
+                                defaultValue={peca.localizacao_fisica || peca.localizacao || ''}
+                                onBlur={(e) => {
+                                  const val = e.target.value.trim();
+                                  if (val !== (peca.localizacao_fisica || peca.localizacao || '')) {
+                                    handleUpdatePeca(peca.id, { localizacao_fisica: val, localizacao: val });
+                                  }
+                                }}
+                              />
+                              <Badge
+                                variant="outline"
+                                className={`text-[9px] font-black uppercase tracking-widest justify-center ${pendente ? 'bg-red-100 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
+                              >
+                                {pendente ? 'Pendente' : 'Destinada'}
+                              </Badge>
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest mb-1 bg-slate-50 text-slate-600">Registrada</Badge>
-                        </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
-                    <div className="py-10 text-center opacity-20">
+                    <div className="py-10 text-center opacity-40">
                       <Box className="h-10 w-10 mx-auto mb-2" />
-                      <p className="text-[10px] font-bold uppercase">Nenhuma peça registrada</p>
+                      <p className="text-[10px] font-bold uppercase">Nenhuma peça pendente. Marque itens como RUIM no checklist.</p>
                     </div>
                   )}
                 </div>
              </CardContent>
            </Card>
         </TabsContent>
+
         <TabsContent value="terceiros">
           <Card className="border-border shadow-md">
             <CardHeader className="bg-muted/10 border-b border-border/50">
