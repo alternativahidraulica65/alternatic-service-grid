@@ -1089,9 +1089,10 @@ function GestaoOSPage() {
                <div className="mb-6 flex items-center justify-between">
                  <div>
                    <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Itens do Checklist</h3>
-                   <p className="text-[10px] text-muted-foreground font-medium">Fotos obrigatórias para itens com defeito.</p>
+                   <p className="text-[10px] text-muted-foreground font-medium">Marque BOM no que está aprovado. Ao marcar RUIM, a peça vai automaticamente para destinação em "Peças" (foto obrigatória).</p>
                  </div>
                  <Badge variant="outline" className="text-[10px] font-black uppercase">{checklistData.length} itens</Badge>
+
                </div>
 
                <div className="space-y-3">
