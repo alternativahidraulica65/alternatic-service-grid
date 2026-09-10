@@ -183,14 +183,23 @@ function DashboardGestor() {
           </CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">Equip. Parados</CardContent>
         </Card>
-        <Card className="col-span-2 lg:col-span-1 border-border shadow-sm">
+        <Card
+          role="button"
+          tabIndex={0}
+          onClick={() => setBancadasOpen(true)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setBancadasOpen(true); }}
+          className="col-span-2 lg:col-span-1 border-border shadow-sm cursor-pointer hover:border-primary/60 hover:shadow-md transition-all"
+        >
           <CardHeader className="p-4">
             <CardTitle className="text-lg font-black">
               {counters?.operadores.toString().padStart(2, '0') || "00"}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Operadores</CardContent>
+          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">
+            Operadores / Bancadas
+          </CardContent>
         </Card>
+
         <Card className="col-span-2 lg:col-span-1 border-border shadow-sm">
           <CardHeader className="p-4"><CardTitle className="text-lg font-black">03</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Terceiros</CardContent>
