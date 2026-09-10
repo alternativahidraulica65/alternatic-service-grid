@@ -84,7 +84,7 @@ function NovaOSPage() {
   });
 
   const clienteSelecionado = clientes.find((c: any) => c.id === selectedCliente);
-  const clientePendente = clienteSelecionado?.status_cadastro === 'pendente';
+  const clientePendente = ['pendente', 'provisório'].includes((clienteSelecionado?.status_cadastro ?? '').toLowerCase());
 
   const prazoInfo: Record<string, string> = {
     Baixa: "Orçamento em até 3 dias úteis",
@@ -251,7 +251,7 @@ function NovaOSPage() {
             const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
             uploadedFotos.push({
               os_id: osId,
-              url_arquivo: urlData.publicUrl,
+              foto_url: urlData.publicUrl,
               categoria: 'triagem'
             });
           }
