@@ -25,7 +25,7 @@ import {
   History as HistoryIcon
 } from "lucide-react";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     }
 
     // Bloqueia acesso a painel de outro perfil (exceto diretor/dev)
-    const view = path.split("/")[2];
+    const view = path.split("/")[2] ?? "";
     const known = ["diretor", "financeiro", "gestor", "operador"];
     if (!canSwitchView && known.includes(view) && view !== home) {
       throw redirect({ to: `/dashboard/${home}` as any, replace: true });
