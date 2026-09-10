@@ -1545,8 +1545,52 @@ function GestaoOSPage() {
                               </Badge>
                             </div>
 
+                          {/* Registro fotográfico da peça (ilimitado, opcional) */}
+                          <div className="mt-4 pt-4 border-t border-border/60">
+                            <div className="flex items-center justify-between gap-3 mb-2">
+                              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Fotos da peça ({fotosDaPeca(peca.id).length}) — opcional
+                              </p>
+                              <label className="cursor-pointer">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    handleUploadFotosPeca(peca, e.target.files);
+                                    e.currentTarget.value = '';
+                                  }}
+                                />
+                                <span className="inline-flex items-center gap-2 h-8 px-3 rounded-md border border-slate-200 bg-white text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50">
+                                  <Camera className="h-3.5 w-3.5 text-primary" />
+                                  {uploadingPecaId === peca.id ? 'Enviando...' : 'Adicionar fotos'}
+                                </span>
+                              </label>
+                            </div>
+                            {fotosDaPeca(peca.id).length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {fotosDaPeca(peca.id).map((foto: any) => (
+                                  <a
+                                    key={foto.id}
+                                    href={foto.foto_url ?? foto.url_arquivo}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="block h-16 w-16 rounded-lg overflow-hidden border border-border"
+                                  >
+                                    <img
+                                      src={foto.foto_url ?? foto.url_arquivo}
+                                      alt={`Foto de ${peca.nome ?? 'peça'}`}
+                                      loading="lazy"
+                                      className="h-full w-full object-cover"
+                                    />
+                                  </a>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
+
                       );
                     })
                   ) : (
