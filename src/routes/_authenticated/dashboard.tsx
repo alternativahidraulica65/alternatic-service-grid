@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useRouter, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouter, Link, redirect } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { 
   LogOut, 
@@ -64,31 +64,13 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function DashboardLayout() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, profile, roles, isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado } = Route.useRouteContext();
-  
-  const [activeView, setActiveView] = useState<string | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  useEffect(() => {
-    if (isDiretor && !activeView) {
-      setActiveView("diretor");
-    } else if (!isDiretor) {
-      if (isFinanceiro) setActiveView("financeiro");
-      else if (isGestor) setActiveView("gestor");
-      else if (isOperador) setActiveView("operador");
-      else if (isTerceirizado) setActiveView("terceirizado");
-      else setActiveView("operador");
-    }
-  }, [isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado]);
+  const { user, profile, roles, isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado, homeDashboard, canSwitchView } = Route.useRouteContext() as any;
 
-  useEffect(() => {
-    if (activeView) {
-      const target = `/dashboard/${activeView}` as any;
-      if (router.state.location.pathname === '/dashboard') {
-        router.navigate({ to: target, replace: true });
-      }
-    }
-  }, [activeView, router]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const currentPath = router.state.location.pathname;
+  const activeView = currentPath.split("/")[2] || homeDashboard || "operador";
+
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
