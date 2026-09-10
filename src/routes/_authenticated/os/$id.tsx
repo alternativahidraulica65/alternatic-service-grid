@@ -80,7 +80,7 @@ function GestaoOSPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { profile } = Route.useRouteContext();
-  const { podeVerValoresFinanceiros } = useUserRole();
+  const { podeVerValoresFinanceiros, podeGerenciarOS } = useUserRole();
 
   const { data: os, isLoading } = useQuery({
     queryKey: ['os_detail', osId],
@@ -727,36 +727,56 @@ function GestaoOSPage() {
                       )}
                     </div>
                     <div className="col-span-2">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Tipo de Equipamento</p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-slate-400 hover:text-primary"
-                          onClick={() => setEditandoTipo((v) => !v)}
-                          title={editandoTipo ? "Cancelar edição" : "Editar tipo de equipamento"}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                      <Select
-                        value={os.tipo_equipamento_id || ""}
-                        onValueChange={handleTipoEquipamentoChange}
-                        disabled={!editandoTipo}
-                      >
-                        <SelectTrigger className="w-full md:w-80 h-9 text-xs font-bold uppercase border-slate-200 bg-white disabled:opacity-100 disabled:cursor-default">
-                          <SelectValue placeholder="Selecione o tipo de equipamento" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {tiposEquipamento.map((tipo: any) => (
-                            <SelectItem key={tipo.id} value={tipo.id} className="text-xs font-bold uppercase">
-                              {tipo.nome}
-                              {tipo.categoria_principal ? ` — ${tipo.categoria_principal}` : ""}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="rounded-xl border border-border bg-muted/20 p-4">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Tipo de Equipamento</p>
+                          {podeGerenciarOS ? (
+                            <Button
+                              variant={editandoTipo ? "secondary" : "outline"}
+                              size="sm"
+                              className="h-7 px-3 text-[9px] font-black uppercase tracking-widest"
+                              onClick={() => setEditandoTipo((v) => !v)}
+                            >
+                              <Pencil className="h-3 w-3 mr-1.5" />
+                              {editandoTipo ? "Cancelar" : "Editar"}
+                            </Button>
+                          ) : (
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/70">
+                              Somente leitura
+                            </span>
+                          )}
+                        </div>
 
+                        {podeGerenciarOS && editandoTipo ? (
+                          <Select
+                            value={os.tipo_equipamento_id || ""}
+                            onValueChange={handleTipoEquipamentoChange}
+                          >
+                            <SelectTrigger className="w-full md:w-96 h-10 text-xs font-bold uppercase bg-background">
+                              <SelectValue placeholder="Selecione o tipo de equipamento" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {tiposEquipamento.map((tipo: any) => (
+                                <SelectItem key={tipo.id} value={tipo.id} className="text-xs font-bold uppercase">
+                                  {tipo.nome}
+                                  {tipo.categoria_principal ? ` — ${tipo.categoria_principal}` : ""}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-foreground">
+                              {(os as any).tipos_equipamento?.nome || "Não definido"}
+                            </span>
+                            {(os as any).tipos_equipamento?.categoria_principal && (
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                {(os as any).tipos_equipamento.categoria_principal}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
