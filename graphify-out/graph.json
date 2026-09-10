@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T12:38:29.951529+00:00",
+  "generated_at": "2026-09-10T16:49:54.138776+00:00",
   "files": [
     {
       "path": "components.json",
@@ -210,6 +210,10 @@
       "bytes": 2069
     },
     {
+      "path": "supabase/migrations/20260910164733_2d41e8e8-b0ba-4ef3-aeba-bcabbeb425b3.sql",
+      "bytes": 1258
+    },
+    {
       "path": "supabase/migrations/20260816194837_f1262daf-e8d1-429f-b15e-6b7c9dfe2e6c.sql",
       "bytes": 778
     },
@@ -328,6 +332,10 @@
     {
       "path": "supabase/migrations/20260816171001_10388a0f-40ff-434f-8a03-031d97394e04.sql",
       "bytes": 450
+    },
+    {
+      "path": "supabase/migrations/20260910164435_7641bc50-c12b-46ee-9fa3-8ba50007d335.sql",
+      "bytes": 337
     },
     {
       "path": "supabase/migrations/20260816171012_b1dab003-675f-452c-8561-39d03b57f618.sql",
@@ -467,15 +475,15 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 22365
+      "bytes": 22373
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 32103
+      "bytes": 32287
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 72634
+      "bytes": 72494
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -487,11 +495,11 @@
     },
     {
       "path": "src/integrations/supabase/client.ts",
-      "bytes": 918
+      "bytes": 960
     },
     {
       "path": "src/integrations/supabase/client.server.ts",
-      "bytes": 587
+      "bytes": 477
     },
     {
       "path": "src/integrations/supabase/auth-attacher.ts",
@@ -507,7 +515,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 44734
+      "bytes": 44717
     },
     {
       "path": "src/components/ui/alert.tsx",
