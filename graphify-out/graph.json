@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T16:57:21.713822+00:00",
+  "generated_at": "2026-09-10T17:01:03.005007+00:00",
   "files": [
     {
       "path": "components.json",
@@ -499,7 +499,7 @@
     },
     {
       "path": "src/integrations/supabase/client.server.ts",
-      "bytes": 477
+      "bytes": 480
     },
     {
       "path": "src/integrations/supabase/auth-attacher.ts",
