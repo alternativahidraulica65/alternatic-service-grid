@@ -379,6 +379,101 @@ function GestaoOSPage() {
     }
   };
 
+  // Destinações que geram custo a ser preenchido pelo gestor
+  const DESTINACOES_COM_CUSTO: Record<string, string> = {
+    'Comprar Nova': 'material',
+    'Refazer / Usinagem': 'material',
+    'Terceiros': 'terceiros',
+  };
+
+  const handleDefinirDestinacao = async (peca: any, destino: string) => {
+    await handleUpdatePeca(peca.id, { status_peca: destino });
+
+    const categoria = DESTINACOES_COM_CUSTO[destino];
+    if (!categoria) return;
+
+    const nomePeca = peca.nome ?? peca.descricao ?? 'Peça';
+    const descricao = `${destino} - ${nomePeca}`;
+
+    try {
+      const { data: existente } = await supabase
+        .from('os_custos' as any)
+        .select('id')
+        .eq('os_id', osId)
+        .eq('descricao', descricao)
+        .limit(1);
+
+      if ((existente ?? []).length > 0) return;
+
+      const { error } = await supabase.from('os_custos' as any).insert({
+        os_id: osId,
+        descricao,
+        categoria,
+        custo_interno: 0,
+        valor_venda: 0,
+        is_terceirizado: categoria === 'terceiros',
+        criado_por: profile?.user_id ?? null,
+      });
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['os_custos', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_terceiros', osId] });
+      toast.info(`"${nomePeca}" enviada para Custos — aguardando valores do gestor`);
+    } catch (error: any) {
+      toast.error("Erro ao gerar custo: " + error.message);
+    }
+  };
+
+  const handleUpdateCusto = async (custoId: string, updates: any) => {
+    try {
+      const { error } = await supabase
+        .from('os_custos' as any)
+        .update(updates)
+        .eq('id', custoId);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['os_custos', osId] });
+      toast.success("Custo atualizado");
+    } catch (error: any) {
+      toast.error("Erro ao atualizar custo: " + error.message);
+    }
+  };
+
+  const [uploadingPecaId, setUploadingPecaId] = useState<string | null>(null);
+
+  const handleUploadFotosPeca = async (peca: any, files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploadingPecaId(peca.id);
+    try {
+      for (const file of Array.from(files)) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${osId}/pecas/${peca.id}-${Date.now()}-${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('os-assets')
+          .upload(fileName, file);
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
+        const { error: anexoError } = await supabase.from('fotos_anexos' as any).insert({
+          os_id: osId,
+          foto_url: urlData.publicUrl,
+          storage_path: fileName,
+          bucket: 'os-assets',
+          legenda: peca.nome ?? peca.descricao ?? 'Peça',
+          categoria: `peca:${peca.id}`,
+        });
+        if (anexoError) throw anexoError;
+      }
+      queryClient.invalidateQueries({ queryKey: ['os_fotos_pecas', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_fotos', osId] });
+      toast.success("Fotos anexadas à peça");
+    } catch (error: any) {
+      toast.error("Erro no upload: " + error.message);
+    } finally {
+      setUploadingPecaId(null);
+    }
+  };
+
+
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
       const item: any = checklistData.find((i: any) => i.id === itemId);
