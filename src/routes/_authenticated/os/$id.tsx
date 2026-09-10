@@ -26,7 +26,9 @@ import {
   Image as ImageIcon,
   Check,
   Pencil,
-  AlertTriangle
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight
 
 
 } from "lucide-react";
@@ -137,6 +139,7 @@ function GestaoOSPage() {
   });
 
   const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("resumo");
   const [editandoTipo, setEditandoTipo] = useState(false);
 
   const handleTipoEquipamentoChange = async (tipoId: string) => {
@@ -657,32 +660,63 @@ function GestaoOSPage() {
         ))}
       </div>
 
-      <Tabs defaultValue="resumo" className="w-full">
-        <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
-          {[
-            "Resumo", 
-            "Checklist", 
-            "Laudo Técnico", 
-            "Peças", 
-            "Terceiros",
-            "Custos",
-            "Orçamento", 
-            "Aprovação", 
-            "Execução",
-            "Faturamento",
-            "Entrega",
-            "Garantia",
-            "Auditoria"
-          ].map((tab) => {
-            const isCompleted = 
-              (tab === "Checklist" && os.status !== 'aberta') ||
-              (tab === "Laudo Técnico" && ['orcamento_pendente', 'aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status)) ||
-              (tab === "Orçamento" && ['aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status));
+      {(() => {
+        const TAB_LIST = [
+          "Resumo", "Checklist", "Laudo Técnico", "Peças", "Terceiros",
+          "Custos", "Orçamento", "Aprovação", "Execução",
+          "Faturamento", "Entrega", "Garantia", "Auditoria"
+        ];
+        const toValue = (t: string) => t.toLowerCase().replace(" ", "-");
+        const tabValues = TAB_LIST.map(toValue);
+        const activeIdx = Math.max(0, tabValues.indexOf(activeTab));
+        const goTab = (dir: number) => {
+          const next = (activeIdx + dir + TAB_LIST.length) % TAB_LIST.length;
+          setActiveTab(tabValues[next]!);
+        };
+        const isTabCompleted = (tab: string) =>
+          (tab === "Checklist" && os.status !== 'aberta') ||
+          (tab === "Laudo Técnico" && ['orcamento_pendente', 'aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status)) ||
+          (tab === "Orçamento" && ['aprovada', 'usinagem', 'montagem', 'pronto'].includes(os.status));
+
+        return (
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* Navegação mobile: uma categoria por vez com setas */}
+        <div className="flex md:hidden items-center justify-between gap-2 mb-6 border border-border rounded-lg bg-card px-2 py-2">
+          <button
+            type="button"
+            onClick={() => goTab(-1)}
+            aria-label="Categoria anterior"
+            className="shrink-0 h-9 w-9 grid place-items-center rounded-md border border-border bg-muted/30 active:bg-muted"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <div className="flex-1 min-w-0 text-center">
+            <p className="font-black uppercase text-xs tracking-widest text-primary truncate flex items-center justify-center gap-2">
+              {TAB_LIST[activeIdx]}
+              {isTabCompleted(TAB_LIST[activeIdx]!) && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
+            </p>
+            <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-0.5">
+              {activeIdx + 1} de {TAB_LIST.length}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => goTab(1)}
+            aria-label="Próxima categoria"
+            className="shrink-0 h-9 w-9 grid place-items-center rounded-md border border-border bg-muted/30 active:bg-muted"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+
+        <TabsList className="hidden md:flex w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
+          {TAB_LIST.map((tab) => {
+            const isCompleted = isTabCompleted(tab);
 
             return (
-              <TabsTrigger 
-                key={tab} 
-                value={tab.toLowerCase().replace(" ", "-")} 
+              <TabsTrigger
+                key={tab}
+                value={toValue(tab)}
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none shadow-none font-bold uppercase text-[10px] tracking-widest px-0 h-12 transition-all shrink-0 flex items-center gap-2"
               >
                 {tab}
@@ -1481,6 +1515,8 @@ function GestaoOSPage() {
            </Card>
         </TabsContent>
       </Tabs>
+        );
+      })()}
     </div>
   );
 }
