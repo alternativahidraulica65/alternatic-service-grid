@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
 // Banco único do app (Lovable Cloud) — mesma fonte exibida no painel de banco de dados.
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+const supabaseUrl = import.meta.env['VITE_SUPABASE_URL'] as string;
+const supabasePublishableKey = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] as string;
 
 
 const memory = new Map<string, string>();
