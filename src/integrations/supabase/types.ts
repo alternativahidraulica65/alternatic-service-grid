@@ -97,6 +97,39 @@ export type Database = {
           },
         ]
       }
+      bancadas: {
+        Row: {
+          ativo: boolean
+          codigo: string
+          criado_em: string
+          id: string
+          is_usinagem: boolean
+          nome: string
+          tecnico_nome: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          codigo: string
+          criado_em?: string
+          id?: string
+          is_usinagem?: boolean
+          nome: string
+          tecnico_nome?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          codigo?: string
+          criado_em?: string
+          id?: string
+          is_usinagem?: boolean
+          nome?: string
+          tecnico_nome?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       checklist_templates: {
         Row: {
           componente_peca: string | null
@@ -1025,6 +1058,8 @@ export type Database = {
       }
       os_pecas_rastreio: {
         Row: {
+          aprovado_gestor: boolean
+          bancada_id: string | null
           criado_em: string | null
           criado_por: string | null
           foto_url: string | null
@@ -1037,6 +1072,8 @@ export type Database = {
           status_peca: string | null
         }
         Insert: {
+          aprovado_gestor?: boolean
+          bancada_id?: string | null
           criado_em?: string | null
           criado_por?: string | null
           foto_url?: string | null
@@ -1049,6 +1086,8 @@ export type Database = {
           status_peca?: string | null
         }
         Update: {
+          aprovado_gestor?: boolean
+          bancada_id?: string | null
           criado_em?: string | null
           criado_por?: string | null
           foto_url?: string | null
@@ -1061,6 +1100,13 @@ export type Database = {
           status_peca?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "os_pecas_rastreio_bancada_id_fkey"
+            columns: ["bancada_id"]
+            isOneToOne: false
+            referencedRelation: "bancadas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pecas_os_os_id_fkey"
             columns: ["os_id"]
