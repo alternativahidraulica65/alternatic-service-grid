@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BancadasDialog } from "@/components/BancadasDialog";
+import { PecasDialog, STATUS_FINALIZADOS } from "@/components/PecasDialog";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
@@ -53,6 +54,7 @@ function KanbanCard({ os }: any) {
 function DashboardGestor() {
   const { podeVerValoresFinanceiros } = useUserRole();
   const [bancadasOpen, setBancadasOpen] = useState(false);
+  const [pecasOpen, setPecasOpen] = useState(false);
 
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
@@ -128,6 +130,27 @@ function DashboardGestor() {
 
     return [...atrasadas, ...pecas].slice(0, 6);
   }, [ordens, pecasPendentes]);
+
+  const { data: todasPecas = [] } = useQuery({
+    queryKey: ['dashboard_gestor_pecas_todas'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .select('id, os_id');
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const totalPecasAbertas = useMemo(() => {
+    const abertas = new Set(
+      (ordens as any[])
+        .filter((o) => !STATUS_FINALIZADOS.includes(String(o.status)))
+        .map((o) => String(o.id)),
+    );
+    return (todasPecas as any[]).filter((p: any) => abertas.has(String(p.os_id))).length;
+  }, [todasPecas, ordens]);
+
 
 
   const stats = useMemo(() => {
@@ -208,13 +231,19 @@ function DashboardGestor() {
           <CardHeader className="p-4"><CardTitle className="text-lg font-black">03</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Terceiros</CardContent>
         </Card>
-        <Card className="col-span-2 lg:col-span-1 border-border shadow-sm">
+        <Card
+          role="button"
+          tabIndex={0}
+          onClick={() => setPecasOpen(true)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPecasOpen(true); }}
+          className="col-span-2 lg:col-span-1 border-border shadow-sm cursor-pointer hover:border-primary/60 hover:shadow-md transition-all"
+        >
           <CardHeader className="p-4">
             <CardTitle className="text-lg font-black">
-              {counters?.materiais.toString().padStart(2, '0') || "00"}
+              {totalPecasAbertas.toString().padStart(2, '0')}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Materiais</CardContent>
+          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Peças</CardContent>
         </Card>
       </div>
 
@@ -283,6 +312,7 @@ function DashboardGestor() {
       </Card>
 
       <BancadasDialog open={bancadasOpen} onOpenChange={setBancadasOpen} ordens={ordens as any[]} />
+      <PecasDialog open={pecasOpen} onOpenChange={setPecasOpen} ordens={ordens as any[]} />
     </div>
 
   );
