@@ -98,7 +98,7 @@ function DashboardLayout() {
   );
 
   const ViewSwitcher = () => {
-    if (!isDiretor) return null;
+    if (!canSwitchView) return null;
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -117,9 +117,9 @@ function DashboardLayout() {
             <DropdownMenuItem 
               key={view}
               onClick={() => {
-                setActiveView(view);
                 router.navigate({ to: `/dashboard/${view}` as any });
               }}
+
               className={`capitalize ${activeView === view ? "bg-primary text-primary-foreground font-bold" : "hover:bg-white/10"}`}
             >
               Perfil {view}
