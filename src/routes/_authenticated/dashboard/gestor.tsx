@@ -29,10 +29,11 @@ function KanbanCard({ os }: any) {
   return (
     <div className="p-3 rounded-lg bg-white border border-border hover:border-primary/50 transition-all shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">{os.id}</span>
-        <span className="text-[10px] text-muted-foreground">{os.data_entrada ? new Date(os.data_entrada).toLocaleDateString() : 'N/A'}</span>
+        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">{os.numero_os ?? os.id}</span>
+        <span className="text-[10px] text-muted-foreground">{os.criado_em ? new Date(os.criado_em).toLocaleDateString('pt-BR') : 'N/A'}</span>
       </div>
-      <p className="text-xs font-medium text-foreground mb-3 uppercase">{os.observacao || "Sem descrição"}</p>
+      <p className="text-xs font-medium text-foreground mb-3 uppercase">{os.descricao || "Sem descrição"}</p>
+
       <div className="flex items-center justify-between">
         <Badge variant="secondary" className="text-[9px] uppercase tracking-tighter">
           {os.cliente_id ? `Cliente ${os.cliente_id.substring(0,4)}` : "S/ Cliente"}
