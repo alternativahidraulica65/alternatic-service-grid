@@ -29,7 +29,8 @@ function OSItem({ os, onClick }: any) {
     'pronto': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
   };
 
-  const isVencida = os.prazo_acordado && new Date(os.prazo_acordado) < new Date();
+  const prazo = os.prazo_orcamento || os.data_previsao_conclusao || null;
+  const isVencida = prazo && new Date(prazo) < new Date();
 
   return (
     <div className="group flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all">
@@ -39,7 +40,7 @@ function OSItem({ os, onClick }: any) {
         </div>
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-black text-primary uppercase tracking-widest">{os.id}</span>
+            <span className="text-xs font-black text-primary uppercase tracking-widest">{os.numero_os}</span>
             <Badge variant="outline" className={`text-[9px] uppercase font-bold ${statusColors[os.status] || ''}`}>
               {os.status}
             </Badge>
@@ -49,15 +50,15 @@ function OSItem({ os, onClick }: any) {
               </Badge>
             )}
           </div>
-          <p className="text-sm font-bold text-foreground">Cliente {os.cliente_id?.substring(0,4) || ""}</p>
-          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">{os.observacao}</p>
+          <p className="text-sm font-bold text-foreground">{os.cliente || "Cliente não informado"}</p>
+          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">{os.descricao || os.observacoes || ""}</p>
         </div>
       </div>
       <div className="flex items-center gap-3">
         <div className="hidden sm:flex flex-col items-end mr-4">
           <span className="text-[10px] font-bold text-muted-foreground uppercase">Prazo</span>
           <span className={`text-xs font-black ${isVencida ? 'text-red-500' : 'text-foreground'}`}>
-            {os.prazo_acordado ? new Date(os.prazo_acordado).toLocaleDateString() : 'N/A'}
+            {prazo ? new Date(prazo).toLocaleDateString('pt-BR') : 'N/A'}
           </span>
         </div>
         <Button 
