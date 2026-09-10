@@ -1515,6 +1515,8 @@ function GestaoOSPage() {
            </Card>
         </TabsContent>
       </Tabs>
+        );
+      })()}
     </div>
   );
 }
