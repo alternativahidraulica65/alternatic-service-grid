@@ -78,3 +78,24 @@ export const Route = createFileRoute("/_authenticated")({
   },
   component: AuthGate,
 });
+
+function AuthGate() {
+  const { user } = Route.useRouteContext() as any;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate({ to: "/", replace: true });
+    }
+  }, [user, navigate]);
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-400 text-xs font-bold uppercase tracking-widest">
+        Verificando acesso...
+      </div>
+    );
+  }
+
+  return <Outlet />;
+}
