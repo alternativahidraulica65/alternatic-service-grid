@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BancadasDialog } from "@/components/BancadasDialog";
+import { PecasDialog, STATUS_FINALIZADOS } from "@/components/PecasDialog";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
