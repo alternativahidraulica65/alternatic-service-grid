@@ -1544,8 +1544,9 @@ function GestaoOSPage() {
                                 {pendente ? 'Pendente' : peca.status_peca === 'Armazenagem' ? 'Armazenada' : 'Destinada'}
                               </Badge>
                             </div>
+                          </div>
 
-                          {/* Registro fotográfico da peça (ilimitado, opcional) */}
+
                           <div className="mt-4 pt-4 border-t border-border/60">
                             <div className="flex items-center justify-between gap-3 mb-2">
                               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
