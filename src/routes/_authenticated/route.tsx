@@ -35,10 +35,22 @@ export const Route = createFileRoute("/_authenticated")({
     const isDev = user.email === "dev@admin.com" || user.email === "teste.dev@alternativahidraulica.local" || user.email === "admin@teste.com";
     const hasFullAccess = isDiretor || isDev;
 
+    // Dashboard inicial de acordo com o perfil real do usuário
+    const cargo = (profile as any)?.cargo as string | undefined;
+    const has = (r: string) => roles.includes(r as any) || cargo === r;
+
+    let homeDashboard: "diretor" | "financeiro" | "gestor" | "operador" = "operador";
+    if (hasFullAccess || has("diretor")) homeDashboard = "diretor";
+    else if (has("administrativo_financeiro")) homeDashboard = "financeiro";
+    else if (has("gestor")) homeDashboard = "gestor";
+    else homeDashboard = "operador";
+
     return { 
       user, 
       profile, 
       roles,
+      homeDashboard,
+      canSwitchView: hasFullAccess,
       isDiretor: hasFullAccess,
       isFinanceiro: isFinanceiro || hasFullAccess,
       isGestor: isGestor || hasFullAccess,
@@ -46,6 +58,7 @@ export const Route = createFileRoute("/_authenticated")({
       isTerceirizado: isTerceirizado || hasFullAccess,
       isAdmin: hasFullAccess
     };
+
   },
   component: () => <Outlet />,
 });

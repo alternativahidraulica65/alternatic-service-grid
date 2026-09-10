@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useRouter, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouter, Link, redirect } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { 
   LogOut, 
@@ -25,7 +25,7 @@ import {
   History as HistoryIcon
 } from "lucide-react";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -40,37 +40,37 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  beforeLoad: ({ context, location }) => {
+    const { homeDashboard, canSwitchView } = context as any;
+    const home = homeDashboard || "operador";
+    const path = location.pathname.replace(/\/+$/, "");
+
+    // /dashboard -> painel do perfil
+    if (path === "/dashboard") {
+      throw redirect({ to: `/dashboard/${home}` as any, replace: true });
+    }
+
+    // Bloqueia acesso a painel de outro perfil (exceto diretor/dev)
+    const view = path.split("/")[2] ?? "";
+    const known = ["diretor", "financeiro", "gestor", "operador"];
+    if (!canSwitchView && known.includes(view) && view !== home) {
+      throw redirect({ to: `/dashboard/${home}` as any, replace: true });
+    }
+  },
   component: DashboardLayout,
 });
+
 
 function DashboardLayout() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, profile, roles, isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado } = Route.useRouteContext();
-  
-  const [activeView, setActiveView] = useState<string | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  useEffect(() => {
-    if (isDiretor && !activeView) {
-      setActiveView("diretor");
-    } else if (!isDiretor) {
-      if (isFinanceiro) setActiveView("financeiro");
-      else if (isGestor) setActiveView("gestor");
-      else if (isOperador) setActiveView("operador");
-      else if (isTerceirizado) setActiveView("terceirizado");
-      else setActiveView("operador");
-    }
-  }, [isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado]);
+  const { user, profile, roles, isDiretor, isFinanceiro, isGestor, isOperador, isTerceirizado, homeDashboard, canSwitchView } = Route.useRouteContext() as any;
 
-  useEffect(() => {
-    if (activeView) {
-      const target = `/dashboard/${activeView}` as any;
-      if (router.state.location.pathname === '/dashboard') {
-        router.navigate({ to: target, replace: true });
-      }
-    }
-  }, [activeView, router]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const currentPath = router.state.location.pathname;
+  const activeView = currentPath.split("/")[2] || homeDashboard || "operador";
+
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
@@ -98,7 +98,7 @@ function DashboardLayout() {
   );
 
   const ViewSwitcher = () => {
-    if (!isDiretor) return null;
+    if (!canSwitchView) return null;
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -117,9 +117,9 @@ function DashboardLayout() {
             <DropdownMenuItem 
               key={view}
               onClick={() => {
-                setActiveView(view);
                 router.navigate({ to: `/dashboard/${view}` as any });
               }}
+
               className={`capitalize ${activeView === view ? "bg-primary text-primary-foreground font-bold" : "hover:bg-white/10"}`}
             >
               Perfil {view}
