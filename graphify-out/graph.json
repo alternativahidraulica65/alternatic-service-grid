@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T19:39:24.584513+00:00",
+  "generated_at": "2026-09-10T19:47:04.164182+00:00",
   "files": [
     {
       "path": "components.json",
@@ -192,6 +192,10 @@
     {
       "path": "supabase/migrations/20260816175839_bb47e219-9c3c-4d8a-9b82-9393b997e66f.sql",
       "bytes": 2794
+    },
+    {
+      "path": "supabase/migrations/20260910194424_575a1fe0-821e-45c0-b63b-04273fe0a3b5.sql",
+      "bytes": 1560
     },
     {
       "path": "supabase/migrations/20260819142028_96122685-68cd-47be-8492-767ea97f83c1.sql",
@@ -394,6 +398,10 @@
       "bytes": 1249
     },
     {
+      "path": "src/components/BancadasDialog.tsx",
+      "bytes": 9790
+    },
+    {
       "path": "src/components/ClientOnly.tsx",
       "bytes": 370
     },
@@ -443,7 +451,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 11612
+      "bytes": 12164
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -483,7 +491,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 91653
+      "bytes": 92546
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -515,7 +523,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 44717
+      "bytes": 45977
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -1008,6 +1016,50 @@
       "target": "@/integrations/supabase/client"
     },
     {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
       "source": "src/components/ClientOnly.tsx",
       "target": "react"
     },
@@ -1498,6 +1550,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/gestor.tsx",
       "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/gestor.tsx",
+      "target": "@/components/BancadasDialog"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
