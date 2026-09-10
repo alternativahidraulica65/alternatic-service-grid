@@ -326,10 +326,55 @@ function GestaoOSPage() {
 
   const [savingChecklist, setSavingChecklist] = useState(false);
 
+  const sincronizarPecaDoChecklist = async (nomeItem: string, status: string) => {
+    try {
+      const { data: existentes } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .select('*')
+        .eq('os_id', osId)
+        .eq('nome', nomeItem);
+
+      const atual: any = (existentes ?? [])[0];
+
+      if (status === 'Ruim') {
+        if (!atual) {
+          const { error } = await supabase.from('os_pecas_rastreio' as any).insert({
+            os_id: osId,
+            nome: nomeItem,
+            status_peca: 'Pendente de Destinação',
+            observacao: 'Gerada automaticamente pelo checklist (item marcado como RUIM)',
+            criado_por: profile?.user_id ?? null,
+          });
+          if (error) throw error;
+          toast.info(`"${nomeItem}" enviada para destinação em Peças`);
+        }
+      } else if (atual && (!atual.status_peca || atual.status_peca === 'Pendente de Destinação')) {
+        await supabase.from('os_pecas_rastreio' as any).delete().eq('id', atual.id);
+      }
+      queryClient.invalidateQueries({ queryKey: ['os_pecas', osId] });
+    } catch (error: any) {
+      toast.error("Erro ao sincronizar peça: " + error.message);
+    }
+  };
+
+  const handleUpdatePeca = async (pecaId: string, updates: any) => {
+    try {
+      const { error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .update(updates)
+        .eq('id', pecaId);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['os_pecas', osId] });
+      toast.success("Peça atualizada");
+    } catch (error: any) {
+      toast.error("Erro ao atualizar peça: " + error.message);
+    }
+  };
+
   const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
     try {
+      const item: any = checklistData.find((i: any) => i.id === itemId);
       if (itemId.startsWith('temp-')) {
-        const item: any = checklistData.find((i: any) => i.id === itemId);
         if (!item) return;
 
         const { error } = await supabase
@@ -344,20 +389,25 @@ function GestaoOSPage() {
 
         if (error) throw error;
       } else {
+        const payload: any = {};
+        if (updates.status !== undefined) payload.estado_atual = updates.status;
+        if (updates.observacao !== undefined) payload.observacao_tecnica = updates.observacao;
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
-          .update({
-            estado_atual: updates.status,
-            observacao_tecnica: updates.observacao,
-          })
+          .update(payload)
           .eq('id', itemId);
         if (error) throw error;
+      }
+
+      if (updates.status && item?.item) {
+        await sincronizarPecaDoChecklist(item.item, updates.status);
       }
       refetchChecklist();
     } catch (error: any) {
       toast.error("Erro ao atualizar item: " + error.message);
     }
   };
+
 
   const handleChecklistPhoto = async (itemId: string) => {
     const item: any = checklistData.find((i: any) => i.id === itemId);
