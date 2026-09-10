@@ -643,6 +643,12 @@ function GestaoOSPage() {
               >
                 Exportar Resumo (PDF)
               </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                onClick={() => setLogsDialogOpen(true)}
+              >
+                Detalhes
+              </DropdownMenuItem>
               <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer text-red-400">Cancelar OS</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
