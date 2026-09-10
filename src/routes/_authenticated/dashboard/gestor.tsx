@@ -312,6 +312,7 @@ function DashboardGestor() {
       </Card>
 
       <BancadasDialog open={bancadasOpen} onOpenChange={setBancadasOpen} ordens={ordens as any[]} />
+      <PecasDialog open={pecasOpen} onOpenChange={setPecasOpen} ordens={ordens as any[]} />
     </div>
 
   );
