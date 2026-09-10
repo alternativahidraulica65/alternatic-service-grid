@@ -26,7 +26,9 @@ import {
   Image as ImageIcon,
   Check,
   Pencil,
-  AlertTriangle
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight
 
 
 } from "lucide-react";
@@ -137,6 +139,7 @@ function GestaoOSPage() {
   });
 
   const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("resumo");
   const [editandoTipo, setEditandoTipo] = useState(false);
 
   const handleTipoEquipamentoChange = async (tipoId: string) => {
