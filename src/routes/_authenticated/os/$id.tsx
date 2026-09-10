@@ -123,7 +123,12 @@ function GestaoOSPage() {
     enabled: osId !== null,
   });
 
+  const pecasPendentes = (pecas as any[]).filter(
+    (p: any) => !p.status_peca || p.status_peca === 'Pendente de Destinação',
+  );
+
   const { data: logsOs = [], isLoading: loadingLogs } = useQuery({
+
     queryKey: ['os_historico', osId],
     queryFn: async () => {
       const { data, error } = await supabase
