@@ -99,27 +99,36 @@ export type Database = {
       }
       checklist_templates: {
         Row: {
+          componente_peca: string | null
           criado_em: string
           criado_por: string | null
+          descricao_avaliacao: string | null
           id: string
-          itens: Json
-          nome: string
+          itens: Json | null
+          nome: string | null
+          ordem_exibicao: number | null
           tipo_equipamento_id: string | null
         }
         Insert: {
+          componente_peca?: string | null
           criado_em?: string
           criado_por?: string | null
+          descricao_avaliacao?: string | null
           id?: string
-          itens?: Json
-          nome: string
+          itens?: Json | null
+          nome?: string | null
+          ordem_exibicao?: number | null
           tipo_equipamento_id?: string | null
         }
         Update: {
+          componente_peca?: string | null
           criado_em?: string
           criado_por?: string | null
+          descricao_avaliacao?: string | null
           id?: string
-          itens?: Json
-          nome?: string
+          itens?: Json | null
+          nome?: string | null
+          ordem_exibicao?: number | null
           tipo_equipamento_id?: string | null
         }
         Relationships: [
