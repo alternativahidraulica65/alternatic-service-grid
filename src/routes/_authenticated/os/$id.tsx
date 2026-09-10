@@ -393,6 +393,20 @@ function GestaoOSPage() {
     input.click();
   };
 
+  const { data: fotosOs = [] } = useQuery({
+    queryKey: ['os_fotos', osId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fotos_anexos' as any)
+        .select('*')
+        .eq('os_id', osId)
+        .order('criado_em', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
+  });
+
   const { data: fotosChecklist = [] } = useQuery({
     queryKey: ['os_fotos_checklist', osId],
     queryFn: async () => {
