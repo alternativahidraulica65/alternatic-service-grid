@@ -678,7 +678,7 @@ function GestaoOSPage() {
         const TAB_LIST = [
           "Resumo", "Checklist", "Laudo Técnico", "Peças", "Terceiros",
           "Custos", "Orçamento", "Aprovação", "Execução",
-          "Faturamento", "Entrega", "Garantia", "Auditoria"
+          "Faturamento", "Entrega", "Garantia"
         ];
         const toValue = (t: string) => t.toLowerCase().replace(" ", "-");
         const tabValues = TAB_LIST.map(toValue);
