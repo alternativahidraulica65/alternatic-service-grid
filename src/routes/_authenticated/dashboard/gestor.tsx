@@ -78,6 +78,54 @@ function DashboardGestor() {
   });
 
 
+  const { data: pecasPendentes = [] } = useQuery({
+    queryKey: ['dashboard_gestor_pecas_pendentes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .select('id, nome, os_id, status_peca, criado_em')
+        .or('status_peca.is.null,status_peca.eq.Pendente de Destinação')
+        .order('criado_em', { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const alertas = useMemo(() => {
+    const agora = Date.now();
+    const finalizados = ['entregue', 'encerrada', 'faturada', 'cancelada'];
+
+    const atrasadas = (ordens as any[])
+      .filter((o) => {
+        if (finalizados.includes(String(o.status))) return false;
+        const prazo = o.prazo_orcamento ?? o.data_previsao_conclusao;
+        return prazo ? new Date(prazo).getTime() < agora : false;
+      })
+      .map((o) => {
+        const prazo = o.prazo_orcamento ?? o.data_previsao_conclusao;
+        const dias = Math.max(1, Math.floor((agora - new Date(prazo).getTime()) / 86400000));
+        return {
+          id: `os-${o.id}`,
+          tipo: 'atraso' as const,
+          titulo: `${o.numero_os ?? 'OS'} atrasada!`,
+          descricao: `Prazo vencido há ${dias} dia(s). Status atual: ${String(o.status ?? '—').toUpperCase()}.`,
+          osId: o.id,
+        };
+      });
+
+    const pecas = (pecasPendentes as any[]).map((p) => ({
+      id: `peca-${p.id}`,
+      tipo: 'peca' as const,
+      titulo: `Peça sem destinação: ${p.nome ?? 'Peça'}`,
+      descricao: 'Defina manutenção, compra, usinagem, terceiros ou armazenagem.',
+      osId: p.os_id,
+    }));
+
+    return [...atrasadas, ...pecas].slice(0, 6);
+  }, [ordens, pecasPendentes]);
+
+
   const stats = useMemo(() => {
     const naFila = ordens.filter(o => o.status === 'aberta').length;
     const atrasadas = ordens.filter(o => o.status === 'atrasada').length;
