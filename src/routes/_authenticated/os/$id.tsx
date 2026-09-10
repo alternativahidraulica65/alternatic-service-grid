@@ -643,6 +643,12 @@ function GestaoOSPage() {
               >
                 Exportar Resumo (PDF)
               </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
+                onClick={() => setLogsDialogOpen(true)}
+              >
+                Detalhes
+              </DropdownMenuItem>
               <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer text-red-400">Cancelar OS</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -678,7 +684,7 @@ function GestaoOSPage() {
         const TAB_LIST = [
           "Resumo", "Checklist", "Laudo Técnico", "Peças", "Terceiros",
           "Custos", "Orçamento", "Aprovação", "Execução",
-          "Faturamento", "Entrega", "Garantia", "Auditoria"
+          "Faturamento", "Entrega", "Garantia"
         ];
         const toValue = (t: string) => t.toLowerCase().replace(" ", "-");
         const tabValues = TAB_LIST.map(toValue);
@@ -1536,24 +1542,6 @@ function GestaoOSPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="auditoria">
-           <Card className="border-border shadow-md overflow-hidden">
-             <CardHeader className="bg-slate-900 text-white border-b border-white/5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <History className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base font-bold uppercase tracking-widest">Log de Auditoria da OS</CardTitle>
-                  </div>
-                </div>
-             </CardHeader>
-             <CardContent className="pt-6 px-0">
-                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                  <History className="h-12 w-12 mb-4 opacity-20" />
-                  <p className="text-xs font-bold uppercase tracking-widest">Histórico de alterações sendo processado.</p>
-                </div>
-             </CardContent>
-           </Card>
-        </TabsContent>
       </Tabs>
         );
       })()}
