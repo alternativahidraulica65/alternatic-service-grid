@@ -693,7 +693,7 @@ function GestaoOSPage() {
           <div className="flex-1 min-w-0 text-center">
             <p className="font-black uppercase text-xs tracking-widest text-primary truncate flex items-center justify-center gap-2">
               {TAB_LIST[activeIdx]}
-              {isTabCompleted(TAB_LIST[activeIdx]) && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
+              {isTabCompleted(TAB_LIST[activeIdx]!) && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
             </p>
             <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-0.5">
               {activeIdx + 1} de {TAB_LIST.length}
