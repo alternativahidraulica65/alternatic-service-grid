@@ -478,7 +478,7 @@ function GestaoOSPage() {
 
   const handleFinalizarChecklist = async () => {
     const itemsPendingPhoto = checklistData.filter((item: any) => 
-      (item.status === 'Danificado' || item.status === 'Substituir') && !fotoDoItem(item)
+      (item.status === 'Ruim' || item.status === 'Danificado' || item.status === 'Substituir') && !fotoDoItem(item)
     );
 
     if (itemsPendingPhoto.length > 0) {
