@@ -834,23 +834,49 @@ function GestaoOSPage() {
                 </CardContent>
               </Card>
 
-              {/* Auditoria de Reabertura */}
+              {/* Galeria de Imagens da OS */}
               <Card className="border-border shadow-md">
                 <CardHeader className="bg-slate-50 border-b border-border/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                      <History className="h-4 w-4 text-slate-400" />
-                      Histórico de Reabertura
+                      <ImageIcon className="h-4 w-4 text-primary" />
+                      Imagens da OS
                     </CardTitle>
-                    <Button variant="ghost" size="sm" className="text-[9px] font-black uppercase text-primary">
-                      Solicitar Revisão
-                    </Button>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                      {fotosOs.length} {fotosOs.length === 1 ? 'foto' : 'fotos'}
+                    </span>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <div className="text-[10px] text-muted-foreground text-center py-4 font-bold uppercase tracking-widest bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
-                    Nenhuma reabertura registrada para esta OS.
-                  </div>
+                  {fotosOs.length > 0 ? (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {(fotosOs as any[]).map((foto: any) => (
+                        <a
+                          key={foto.id}
+                          href={foto.url_arquivo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative aspect-square overflow-hidden rounded-lg border border-border/60 bg-slate-50"
+                        >
+                          <img
+                            src={foto.url_arquivo}
+                            alt={foto.categoria || "Foto da OS"}
+                            loading="lazy"
+                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                          />
+                          <div className="absolute inset-x-0 bottom-0 bg-black/60 px-1.5 py-1">
+                            <p className="text-[8px] font-bold uppercase tracking-widest text-white truncate">
+                              {String(foto.categoria || 'registro').replace('checklist:', '')}
+                            </p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-[10px] text-muted-foreground text-center py-6 font-bold uppercase tracking-widest bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
+                      Nenhuma imagem registrada para esta OS.
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
