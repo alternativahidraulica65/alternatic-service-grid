@@ -1044,99 +1044,108 @@ function GestaoOSPage() {
                  <Badge variant="outline" className="text-[10px] font-black uppercase">{checklistData.length} itens</Badge>
                </div>
 
-               <div className="rounded-xl border border-border overflow-hidden">
-                 <table className="w-full text-left border-collapse">
-                   <thead>
-                     <tr className="bg-slate-50 border-b border-border">
-                       <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Item</th>
-                       <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
-                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 w-1/4">Observação</th>
-                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Data/Resp.</th>
-                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Foto</th>
-                     </tr>
-                   </thead>
-                   <tbody className="divide-y divide-border">
-                     {loadingChecklist ? (
-                       <tr>
-                         <td colSpan={4} className="px-4 py-10 text-center animate-pulse text-[10px] font-bold uppercase text-slate-400">Carregando itens...</td>
-                       </tr>
-                     ) : checklistData.length === 0 ? (
-                       <tr>
-                         <td colSpan={4} className="px-4 py-10 text-center text-[10px] font-bold uppercase text-slate-400">Nenhum item definido para este equipamento.</td>
-                       </tr>
-                     ) : (
-                       checklistData.map((item: any) => (
-                         <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                           <td className="px-4 py-4">
-                             <span className="text-sm font-bold text-slate-700 uppercase">{item.item}</span>
-                           </td>
-                           <td className="px-4 py-4">
-                             <Select 
-                               value={item.status || "Pendente"} 
-                               onValueChange={(val) => handleUpdateChecklistItem(item.id, { status: val })}
+               <div className="space-y-3">
+                 {loadingChecklist ? (
+                   <div className="py-10 text-center animate-pulse text-[10px] font-bold uppercase text-slate-400">Carregando itens...</div>
+                 ) : checklistData.length === 0 ? (
+                   <div className="py-10 text-center text-[10px] font-bold uppercase text-slate-400">Nenhum item definido para este equipamento.</div>
+                 ) : (
+                   checklistData.map((item: any) => {
+                     const bom = item.status === 'Bom' || item.status === 'Aprovado';
+                     const ruim = item.status === 'Ruim' || item.status === 'Danificado' || item.status === 'Substituir';
+                     return (
+                       <div
+                         key={item.id}
+                         className={`rounded-xl border p-4 transition-all ${
+                           ruim ? 'border-red-300 bg-red-50/60' : bom ? 'border-emerald-200 bg-emerald-50/40' : 'border-border bg-card'
+                         }`}
+                       >
+                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                           <div className="flex items-start gap-3 min-w-0">
+                             <div
+                               className={`h-9 w-9 shrink-0 rounded-lg flex items-center justify-center border ${
+                                 ruim ? 'bg-red-100 border-red-200' : bom ? 'bg-emerald-100 border-emerald-200' : 'bg-slate-100 border-border'
+                               }`}
                              >
-                               <SelectTrigger className="h-9 w-40 text-[10px] font-bold uppercase border-slate-200 bg-white">
-                                 <SelectValue placeholder="Status" />
-                               </SelectTrigger>
-                               <SelectContent>
-                                 <SelectItem value="Pendente" className="text-[10px] font-bold uppercase">Pendente</SelectItem>
-                                 <SelectItem value="Aprovado" className="text-[10px] font-bold uppercase">Aprovado</SelectItem>
-                                 <SelectItem value="Danificado" className="text-[10px] font-bold uppercase text-red-600">Danificado</SelectItem>
-                                 <SelectItem value="Substituir" className="text-[10px] font-bold uppercase text-amber-600">Substituir</SelectItem>
-                                 <SelectItem value="Recuperar" className="text-[10px] font-bold uppercase text-blue-600">Recuperar</SelectItem>
-                                 <SelectItem value="Não Aplicável" className="text-[10px] font-bold uppercase">Não Aplicável</SelectItem>
-                               </SelectContent>
-                             </Select>
-                           </td>
-                           <td className="px-4 py-4">
-                             <Input 
-                               placeholder="Descreva o estado ou observação..." 
-                               className="h-9 text-xs border-slate-200 bg-white"
-                               defaultValue={item.observacao || ""}
-                               onBlur={(e) => handleUpdateChecklistItem(item.id, { observacao: e.target.value })}
-                             />
-                           </td>
-                            <td className="px-4 py-4 text-center">
-                              {item.data_verificacao && (
-                                <div className="space-y-0.5">
-                                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">
-                                    {new Date(item.data_verificacao).toLocaleDateString()}
-                                  </p>
-                                  <Badge variant="outline" className="text-[7px] font-black uppercase py-0 h-3 border-slate-100 text-slate-400">
-                                    Técnico
-                                  </Badge>
-                                </div>
-                              )}
-                            </td>
-                            <td className="px-4 py-4">
-                              <div className="flex items-center justify-center gap-2">
-                                <div className="relative group">
-                                  {fotoDoItem(item) && (
-                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                                      <img src={fotoDoItem(item)} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
-                                    </div>
-                                  )}
-                                  <Button 
-                                    variant={fotoDoItem(item) ? "default" : "outline"} 
-                                    size="sm" 
-                                    className={`h-9 gap-2 px-3 border-slate-200 ${!fotoDoItem(item) && (item.status === 'Danificado' || item.status === 'Substituir') ? 'border-red-500 text-red-500 animate-pulse' : ''}`}
-                                    onClick={() => handleChecklistPhoto(item.id)}
-                                  >
-                                    <Camera className={`h-4 w-4 ${fotoDoItem(item) ? 'text-primary-foreground' : 'text-slate-400'}`} />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">{fotoDoItem(item) ? "Ver" : "Foto"}</span>
-                                  </Button>
-                                </div>
-                                {!fotoDoItem(item) && (item.status === 'Danificado' || item.status === 'Substituir') && (
-                                  <span className="text-[8px] font-black uppercase text-red-500 animate-pulse">Obrigatória</span>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                       ))
-                     )}
-                   </tbody>
-                 </table>
+                               {ruim ? (
+                                 <AlertTriangle className="h-4 w-4 text-red-500" />
+                               ) : bom ? (
+                                 <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                               ) : (
+                                 <ClipboardCheck className="h-4 w-4 text-slate-400" />
+                               )}
+                             </div>
+                             <div className="min-w-0">
+                               <p className="text-sm font-bold text-slate-800 uppercase tracking-tight">{item.item}</p>
+                               {item.descricao && (
+                                 <p className="text-[10px] font-medium text-muted-foreground">{item.descricao}</p>
+                               )}
+                               {ruim && (
+                                 <p className="text-[9px] font-black uppercase tracking-widest text-red-500 mt-1">
+                                   Peça enviada para destinação
+                                 </p>
+                               )}
+                             </div>
+                           </div>
+
+                           <div className="flex flex-wrap items-center gap-2">
+                             <Button
+                               size="sm"
+                               variant={bom ? 'default' : 'outline'}
+                               className={`h-9 px-4 text-[10px] font-black uppercase tracking-widest gap-2 ${
+                                 bom ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600' : 'border-slate-200 bg-white text-slate-500'
+                               }`}
+                               onClick={() => handleUpdateChecklistItem(item.id, { status: 'Bom' })}
+                             >
+                               <CheckCircle2 className="h-4 w-4" />
+                               Bom
+                             </Button>
+                             <Button
+                               size="sm"
+                               variant={ruim ? 'default' : 'outline'}
+                               className={`h-9 px-4 text-[10px] font-black uppercase tracking-widest gap-2 ${
+                                 ruim ? 'bg-red-600 hover:bg-red-700 text-white border-red-600' : 'border-slate-200 bg-white text-slate-500'
+                               }`}
+                               onClick={() => handleUpdateChecklistItem(item.id, { status: 'Ruim' })}
+                             >
+                               <AlertTriangle className="h-4 w-4" />
+                               Ruim
+                             </Button>
+                             <div className="relative group">
+                               {fotoDoItem(item) && (
+                                 <div className="absolute -top-28 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
+                                   <img src={fotoDoItem(item)} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
+                                 </div>
+                               )}
+                               <Button
+                                 variant={fotoDoItem(item) ? 'default' : 'outline'}
+                                 size="sm"
+                                 className={`h-9 gap-2 px-3 ${!fotoDoItem(item) && ruim ? 'border-red-500 text-red-500 animate-pulse' : 'border-slate-200'}`}
+                                 onClick={() => handleChecklistPhoto(item.id)}
+                               >
+                                 <Camera className="h-4 w-4" />
+                                 <span className="text-[9px] font-black uppercase tracking-widest">
+                                   {fotoDoItem(item) ? 'Ver' : ruim ? 'Foto obrigatória' : 'Foto'}
+                                 </span>
+                               </Button>
+                             </div>
+                           </div>
+                         </div>
+
+                         {ruim && (
+                           <Input
+                             placeholder="O que está errado nesta peça?"
+                             className="mt-3 h-9 text-xs border-red-200 bg-white"
+                             defaultValue={item.observacao || ''}
+                             onBlur={(e) => handleUpdateChecklistItem(item.id, { observacao: e.target.value })}
+                           />
+                         )}
+                       </div>
+                     );
+                   })
+                 )}
                </div>
+
 
                <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-50/50 p-4 rounded-xl">
                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">Ao finalizar, a OS avança para a próxima etapa.</p>
