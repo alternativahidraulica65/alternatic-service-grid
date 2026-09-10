@@ -18,8 +18,10 @@ import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BancadasDialog } from "@/components/BancadasDialog";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
   component: DashboardGestor,
