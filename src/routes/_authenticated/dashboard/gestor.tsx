@@ -239,22 +239,33 @@ function DashboardGestor() {
            <CardTitle className="text-base font-bold">Alertas Operacionais</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg border border-red-200 bg-red-50/50 flex gap-3">
-              <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-red-800">OS-1020 Atrasada!</p>
-                <p className="text-xs text-red-600">Gargalo identificado no Torneiro. Prazo crítico excedido.</p>
-              </div>
+          {alertas.length === 0 ? (
+            <div className="py-6 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              Nenhum alerta operacional no momento
             </div>
-            <div className="p-4 rounded-lg border border-amber-200 bg-amber-50/50 flex gap-3">
-              <Package className="h-5 w-5 text-amber-500 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-amber-800">Peça pendente: Kit Vedação</p>
-                <p className="text-xs text-amber-600">Fornecedor não confirmou a entrega para hoje.</p>
-              </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {alertas.map((a) => (
+                <Link
+                  key={a.id}
+                  to="/os/$id"
+                  params={{ id: String(a.osId) }}
+                  className={`p-4 rounded-lg border flex gap-3 transition-colors ${a.tipo === 'atraso' ? 'border-red-200 bg-red-50/50 hover:bg-red-50' : 'border-amber-200 bg-amber-50/50 hover:bg-amber-50'}`}
+                >
+                  {a.tipo === 'atraso' ? (
+                    <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
+                  ) : (
+                    <Package className="h-5 w-5 text-amber-500 shrink-0" />
+                  )}
+                  <div>
+                    <p className={`text-sm font-bold ${a.tipo === 'atraso' ? 'text-red-800' : 'text-amber-800'}`}>{a.titulo}</p>
+                    <p className={`text-xs ${a.tipo === 'atraso' ? 'text-red-600' : 'text-amber-600'}`}>{a.descricao}</p>
+                  </div>
+                </Link>
+              ))}
             </div>
-          </div>
+          )}
+
         </CardContent>
       </Card>
     </div>
