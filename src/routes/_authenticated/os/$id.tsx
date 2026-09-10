@@ -127,6 +127,25 @@ function GestaoOSPage() {
     (p: any) => !p.status_peca || p.status_peca === 'Pendente de Destinação',
   );
 
+  const { data: fotosPecas = [] } = useQuery({
+    queryKey: ['os_fotos_pecas', osId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fotos_anexos' as any)
+        .select('*')
+        .eq('os_id', osId)
+        .like('categoria', 'peca:%')
+        .order('criado_em', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: osId !== null,
+  });
+
+  const fotosDaPeca = (pecaId: string) =>
+    (fotosPecas as any[]).filter((f: any) => String(f.categoria) === `peca:${pecaId}`);
+
+
   const { data: logsOs = [], isLoading: loadingLogs } = useQuery({
 
     queryKey: ['os_historico', osId],
