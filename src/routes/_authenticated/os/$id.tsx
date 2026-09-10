@@ -1513,7 +1513,7 @@ function GestaoOSPage() {
                             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                               <Select
                                 value={peca.status_peca && peca.status_peca !== 'Pendente de Destinação' ? peca.status_peca : ''}
-                                onValueChange={(val) => handleUpdatePeca(peca.id, { status_peca: val })}
+                                onValueChange={(val) => handleDefinirDestinacao(peca, val)}
                               >
                                 <SelectTrigger className="h-9 w-full sm:w-48 text-[10px] font-bold uppercase border-slate-200 bg-white">
                                   <SelectValue placeholder="Definir destinação" />
@@ -1523,6 +1523,7 @@ function GestaoOSPage() {
                                   <SelectItem value="Comprar Nova" className="text-[10px] font-bold uppercase">Comprar Nova</SelectItem>
                                   <SelectItem value="Refazer / Usinagem" className="text-[10px] font-bold uppercase">Refazer / Usinagem</SelectItem>
                                   <SelectItem value="Terceiros" className="text-[10px] font-bold uppercase">Enviar a Terceiros</SelectItem>
+                                  <SelectItem value="Armazenagem" className="text-[10px] font-bold uppercase">Armazenagem (reutilizar)</SelectItem>
                                 </SelectContent>
                               </Select>
                               <Input
@@ -1538,11 +1539,12 @@ function GestaoOSPage() {
                               />
                               <Badge
                                 variant="outline"
-                                className={`text-[9px] font-black uppercase tracking-widest justify-center ${pendente ? 'bg-red-100 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
+                                className={`text-[9px] font-black uppercase tracking-widest justify-center ${pendente ? 'bg-red-100 text-red-600 border-red-200' : peca.status_peca === 'Armazenagem' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
                               >
-                                {pendente ? 'Pendente' : 'Destinada'}
+                                {pendente ? 'Pendente' : peca.status_peca === 'Armazenagem' ? 'Armazenada' : 'Destinada'}
                               </Badge>
                             </div>
+
                           </div>
                         </div>
                       );
