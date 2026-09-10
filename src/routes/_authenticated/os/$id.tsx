@@ -58,7 +58,6 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toOsId } from "@/lib/os-id";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 function descreverLog(log: any): string {
@@ -77,7 +76,7 @@ export const Route = createFileRoute("/_authenticated/os/$id")({
 
 function GestaoOSPage() {
   const { id } = Route.useParams();
-  const osId = toOsId(id);
+  const osId = id;
   const router = useRouter();
   const queryClient = useQueryClient();
   const { profile } = Route.useRouteContext();
@@ -129,7 +128,7 @@ function GestaoOSPage() {
         .from('historico_status_os' as any)
         .select('*')
         .eq('os_id', osId)
-        .order('data_alteracao', { ascending: false })
+        .order('criado_em', { ascending: false })
         .limit(50);
       if (error) throw error;
       return data ?? [];
@@ -161,7 +160,7 @@ function GestaoOSPage() {
         status_anterior: os?.status ?? null,
         status_novo: os?.status ?? null,
         observacao: `Tipo de equipamento alterado de "${nomeAnterior}" para "${nomeNovo}"`,
-        alterado_por: profile?.id ?? null,
+        executor_id: profile?.id ?? null,
       });
       if (logError) console.warn('Falha ao registrar histórico:', logError.message);
 
@@ -437,7 +436,7 @@ function GestaoOSPage() {
         status_anterior: statusAnterior,
         status_novo: 'vistoria',
         observacao: 'Checklist técnico finalizado e OS enviada para vistoria',
-        alterado_por: profile?.id ?? null,
+        executor_id: profile?.id ?? null,
       });
 
       toast.success("Checklist finalizado", {
@@ -561,7 +560,7 @@ function GestaoOSPage() {
         status_anterior: statusAnterior,
         status_novo: 'aguardando_gestor',
         observacao: 'Laudo técnico finalizado',
-        alterado_por: profile?.id ?? null,
+        executor_id: profile?.id ?? null,
       });
 
       toast.success("Laudo Técnico finalizado", {
@@ -882,7 +881,7 @@ function GestaoOSPage() {
                         <p className="text-xs font-bold text-foreground truncate">{descreverLog(log)}</p>
                       </div>
                       <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
-                        {new Date(log.data_alteracao).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        {new Date(log.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                   ))
@@ -907,7 +906,7 @@ function GestaoOSPage() {
                       <p className="text-xs font-bold text-foreground">{descreverLog(log)}</p>
                     </div>
                     <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
-                      {new Date(log.data_alteracao).toLocaleString('pt-BR')}
+                      {new Date(log.criado_em).toLocaleString('pt-BR')}
                     </span>
                   </div>
                 ))}

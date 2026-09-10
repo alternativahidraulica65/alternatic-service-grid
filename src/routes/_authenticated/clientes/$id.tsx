@@ -128,7 +128,7 @@ function ClienteDetalhesPage() {
         .from('historico_status_os' as any)
         .select('*, ordens_servico!inner(cliente_id)')
         .eq('ordens_servico.cliente_id', id)
-        .order('data_alteracao', { ascending: false });
+        .order('criado_em', { ascending: false });
       if (error) throw error;
       return data ?? [];
     }
