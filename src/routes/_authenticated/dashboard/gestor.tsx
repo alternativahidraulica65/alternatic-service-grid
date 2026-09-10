@@ -52,17 +52,12 @@ function DashboardGestor() {
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
     queryFn: async () => {
-      console.log('Carregando OS para dashboard gestor...');
-      // Ajustado: campo 'data_entrada' em vez de 'created_at'
       const { data, error } = await supabase
         .from('ordens_servico')
         .select('*')
-        .order('data_entrada', { ascending: false });
-      
-      if (error) {
-        console.error('Erro no dashboard gestor:', error);
-        throw error;
-      }
+        .order('criado_em', { ascending: false });
+
+      if (error) throw error;
       return data || [];
     }
   });
@@ -70,17 +65,17 @@ function DashboardGestor() {
   const { data: counters } = useQuery({
     queryKey: ['dashboard_gestor_counters'],
     queryFn: async () => {
-      // Ajustado: 'perfil' em vez de 'cargo', 'materias_primas' em vez de 'materiais'
       const [
         { count: operadores },
         { count: materiais }
       ] = await Promise.all([
-        supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('perfil', 'operador'),
+        supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('cargo', 'operador'),
         supabase.from('materias_primas').select('*', { count: 'exact', head: true })
       ]);
       return { operadores: operadores || 0, materiais: materiais || 0 };
     }
   });
+
 
   const stats = useMemo(() => {
     const naFila = ordens.filter(o => o.status === 'aberta').length;
