@@ -67,7 +67,6 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
     descricao: "",
     categoria: "outros",
     custo: "",
-    venda: "",
     fornecedor_id: "",
   });
   const [salvando, setSalvando] = useState(false);
@@ -151,7 +150,6 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
       terceiros: porCategoria("terceiros"),
       mao_de_obra: porCategoria("mao_de_obra"),
       outros: total - porCategoria("material") - porCategoria("terceiros") - porCategoria("mao_de_obra"),
-      venda: soma(custos as any[], "valor_venda"),
       total,
       pago,
       pendente: total - pago,
@@ -205,7 +203,6 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
         descricao: novo.descricao.trim(),
         categoria: novo.categoria,
         custo_interno: Number(novo.custo || 0),
-        valor_venda: Number(novo.venda || 0),
         fornecedor_id: novo.fornecedor_id || null,
         is_terceirizado: novo.categoria === "terceiros",
         criado_por: profile?.user_id ?? null,
@@ -214,7 +211,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
       await registrarLog(
         `Custo lançado: "${novo.descricao.trim()}" (${novo.categoria}) — ${brl(Number(novo.custo || 0))}`
       );
-      setNovo({ descricao: "", categoria: "outros", custo: "", venda: "", fornecedor_id: "" });
+      setNovo({ descricao: "", categoria: "outros", custo: "", fornecedor_id: "" });
       invalidar();
       toast.success("Custo lançado");
     } catch (e: any) {
@@ -359,7 +356,6 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
         <KPI label="Custo Total" valor={totais.total} destaque />
         <KPI label="Já Pago" valor={totais.pago} />
         <KPI label="A Pagar" valor={totais.pendente} />
-        <KPI label="Valor de Venda" valor={totais.venda} destaque />
       </div>
 
       {/* Fornecedores pendentes de aprovação */}
@@ -463,16 +459,6 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
               className="h-9 text-xs"
               value={novo.custo}
               onChange={(e) => setNovo({ ...novo, custo: e.target.value })}
-            />
-          </div>
-          <div>
-            <Label className="text-[10px] font-bold uppercase">Venda (R$)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              className="h-9 text-xs"
-              value={novo.venda}
-              onChange={(e) => setNovo({ ...novo, venda: e.target.value })}
             />
           </div>
         </div>
@@ -626,21 +612,6 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                             { custo_interno: val },
                             `Custo "${custo.descricao}" atualizado para ${brl(val)}`
                           );
-                        }
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] font-bold uppercase">Venda (R$)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      className="h-9 text-xs bg-white"
-                      defaultValue={custo.valor_venda ?? ""}
-                      onBlur={(e) => {
-                        const val = Number(e.target.value || 0);
-                        if (val !== Number(custo.valor_venda ?? 0)) {
-                          atualizarCusto(custo, { valor_venda: val });
                         }
                       }}
                     />
