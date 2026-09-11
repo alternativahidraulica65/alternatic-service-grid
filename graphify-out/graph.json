@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T17:37:09.709263+00:00",
+  "generated_at": "2026-09-11T17:40:21.987625+00:00",
   "files": [
     {
       "path": "components.json",
@@ -439,7 +439,7 @@
     },
     {
       "path": "src/components/CustosOsPanel.tsx",
-      "bytes": 27917
+      "bytes": 26704
     },
     {
       "path": "src/components/ClientOnly.tsx",
