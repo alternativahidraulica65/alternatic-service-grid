@@ -55,6 +55,7 @@ export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogPro
         .from("os_pecas_rastreio" as any)
         .select("id, nome, os_id, status_peca, bancada_id, aprovado_gestor, criado_em")
         .not("bancada_id", "is", null)
+        .not("status_peca", "in", "(concluida,finalizada,entregue,cancelada)")
         .order("criado_em", { ascending: false });
       if (error) throw error;
       return data ?? [];
