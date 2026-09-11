@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { 
   Factory, 
   Settings, 
@@ -15,10 +15,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BancadasDialog } from "@/components/BancadasDialog";
 import { PecasDialog, STATUS_FINALIZADOS } from "@/components/PecasDialog";
@@ -29,9 +30,25 @@ export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
   component: DashboardGestor,
 });
 
-function KanbanCard({ os }: any) {
+function KanbanCard({ os, onOpen, onDragStart }: any) {
+  const draggingRef = useRef(false);
   return (
-    <div className="p-3 rounded-lg bg-white border border-border hover:border-primary/50 transition-all shadow-sm">
+    <div
+      role="button"
+      tabIndex={0}
+      draggable
+      onDragStart={(e) => {
+        draggingRef.current = true;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(os.id));
+        onDragStart?.(os);
+      }}
+      onDragEnd={() => { setTimeout(() => { draggingRef.current = false; }, 50); }}
+      onClick={() => { if (!draggingRef.current) onOpen?.(os); }}
+      onKeyDown={(e) => { if (e.key === 'Enter') onOpen?.(os); }}
+      className="p-3 rounded-lg bg-white border border-border hover:border-primary/50 transition-all shadow-sm cursor-grab active:cursor-grabbing"
+    >
+
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">{os.numero_os ?? os.id}</span>
         <span className="text-[10px] text-muted-foreground">{os.criado_em ? new Date(os.criado_em).toLocaleDateString('pt-BR') : 'N/A'}</span>
@@ -57,6 +74,35 @@ function DashboardGestor() {
   const [bancadasOpen, setBancadasOpen] = useState(false);
   const [pecasOpen, setPecasOpen] = useState(false);
   const [atrasadasOpen, setAtrasadasOpen] = useState(false);
+  const [dragOsId, setDragOsId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const moverStatus = async (os: any, novoStatus: string) => {
+    if (!os || os.status === novoStatus) return;
+    const anterior = String(os.status ?? '');
+    const { error: updErr } = await supabase
+      .from('ordens_servico')
+      .update({ status: novoStatus })
+      .eq('id', os.id);
+    if (updErr) {
+      toast.error(`Erro ao mover OS: ${updErr.message}`);
+      return;
+    }
+
+    const { data: auth } = await supabase.auth.getUser();
+    await supabase.from('historico_status_os' as any).insert({
+      os_id: os.id,
+      status_anterior: anterior || null,
+      status_novo: novoStatus,
+      observacao: 'Movido no Kanban do gestor',
+      executor_id: auth?.user?.id ?? null,
+    });
+
+    toast.success(`${os.numero_os ?? 'OS'} movida para ${novoStatus}`);
+    queryClient.invalidateQueries({ queryKey: ['dashboard_gestor_os'] });
+  };
+
 
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
@@ -273,7 +319,19 @@ function DashboardGestor() {
         {stats.columns.map((column) => {
           const items = ordens.filter(o => o.status === column.status);
           return (
-            <div key={column.title} className="flex flex-col gap-2 min-w-[180px]">
+            <div
+              key={column.title}
+              className="flex flex-col gap-2 min-w-[180px]"
+              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const id = e.dataTransfer.getData('text/plain') || dragOsId;
+                const os = (ordens as any[]).find((o) => String(o.id) === String(id));
+                setDragOsId(null);
+                if (os) moverStatus(os, column.status);
+              }}
+            >
+
               <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                 {column.title}
                 <Badge variant="secondary" className="text-[9px]">{items.length}</Badge>
@@ -285,7 +343,14 @@ function DashboardGestor() {
                     <Skeleton className="h-24 w-full" />
                   </div>
                 ) : (
-                  items.map((os, i) => <KanbanCard key={os.id || i} os={os} />)
+                  items.map((os, i) => (
+                    <KanbanCard
+                      key={os.id || i}
+                      os={os}
+                      onOpen={(o: any) => navigate({ to: '/os/$id', params: { id: String(o.id) } })}
+                      onDragStart={(o: any) => setDragOsId(String(o.id))}
+                    />
+                  ))
                 )}
                 {!isLoading && items.length === 0 && (
                   <div className="h-20 flex items-center justify-center opacity-20">
