@@ -327,6 +327,16 @@ export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogPro
                             >
                               {p.aprovado_gestor ? "Revogar" : "Aprovar"}
                             </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-[9px] font-black uppercase"
+                              disabled={!p.aprovado_gestor}
+                              title={p.aprovado_gestor ? "Dar baixa" : "Libere o serviço antes de dar baixa"}
+                              onClick={() => darBaixa(p)}
+                            >
+                              Dar baixa
+                            </Button>
                           </div>
                         </div>
                       );
