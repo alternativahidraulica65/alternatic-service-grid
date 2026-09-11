@@ -721,21 +721,36 @@ function GestaoOSPage() {
   const [fotosInternas, setFotosInternas] = useState<any[]>([]);
   const [fotosPecas, setFotosPecas] = useState<any[]>([]);
   const [finalizingLaudo, setFinalizingLaudo] = useState(false);
+  const [editandoLaudo, setEditandoLaudo] = useState(false);
+  const [salvandoEdicaoLaudo, setSalvandoEdicaoLaudo] = useState(false);
 
   useEffect(() => {
     if (os) {
-      // O laudo é persistido na coluna oficial "observacao" (JSON).
+      // O laudo é persistido na coluna oficial "observacoes" (JSON).
+      const bruto = (os as any).observacoes ?? (os as any).observacao ?? "";
       let laudo: any = {};
       try {
-        laudo = os.observacao ? JSON.parse(os.observacao) : {};
+        laudo = bruto ? JSON.parse(bruto) : {};
       } catch {
-        laudo = { diagnostico: os.observacao ?? "" };
+        laudo = { diagnostico: bruto };
       }
       setLaudoData({
         diagnostico: laudo.diagnostico || "",
         defeitos: laudo.defeitos || "",
         servicos_necessarios: laudo.servicos_necessarios || ""
       });
+      setEditandoLaudo(false);
+    }
+  }, [os]);
+
+  const laudoSalvo = useMemo(() => {
+    const bruto = (os as any)?.observacoes ?? (os as any)?.observacao ?? "";
+    if (!bruto) return false;
+    try {
+      const j = JSON.parse(bruto);
+      return Boolean(j?.diagnostico || j?.defeitos || j?.servicos_necessarios);
+    } catch {
+      return Boolean(String(bruto).trim());
     }
   }, [os]);
 
