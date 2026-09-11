@@ -448,6 +448,7 @@ export type Database = {
       historico_status_os: {
         Row: {
           criado_em: string | null
+          executor_email: string | null
           executor_id: string | null
           id: string
           observacao: string | null
@@ -457,6 +458,7 @@ export type Database = {
         }
         Insert: {
           criado_em?: string | null
+          executor_email?: string | null
           executor_id?: string | null
           id?: string
           observacao?: string | null
@@ -466,6 +468,7 @@ export type Database = {
         }
         Update: {
           criado_em?: string | null
+          executor_email?: string | null
           executor_id?: string | null
           id?: string
           observacao?: string | null
