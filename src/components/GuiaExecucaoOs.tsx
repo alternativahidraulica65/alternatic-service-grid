@@ -356,6 +356,16 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     toast.success("Tarefa removida");
   };
 
+  const confirmarItem = (item: Item) => {
+    const motivo = item.verificar?.() ?? null;
+    if (motivo) {
+      setAlertaItem({ aberto: true, titulo: item.titulo, motivo, irPara: item.irPara });
+      return;
+    }
+    invalidarTudo();
+    toast.success(`"${item.titulo}" confirmado como concluído`);
+  };
+
   const blocos = useMemo<Bloco[]>(() => {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
