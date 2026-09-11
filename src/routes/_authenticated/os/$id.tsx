@@ -1042,6 +1042,61 @@ function GestaoOSPage() {
     }
   };
 
+  // ===== Entrega / Finalização da OS =====
+  const [entregaForm, setEntregaForm] = useState({ data_entrega: "", entregue_por: "", testado: "" });
+  const [salvandoEntrega, setSalvandoEntrega] = useState(false);
+  const [editandoEntrega, setEditandoEntrega] = useState(false);
+
+  useEffect(() => {
+    if (!os) return;
+    const raw = (os as any).data_entrega as string | null;
+    setEntregaForm({
+      data_entrega: raw ? String(raw).slice(0, 10) : "",
+      entregue_por: (os as any).entregue_por ?? "",
+      testado: (os as any).testado === true ? "sim" : (os as any).testado === false ? "nao" : "",
+    });
+  }, [os]);
+
+  const entregaRegistrada = Boolean((os as any)?.data_entrega);
+
+  const handleSalvarEntrega = async () => {
+    if (!entregaForm.data_entrega || !entregaForm.entregue_por.trim() || !entregaForm.testado) {
+      toast.error("Campos obrigatórios", { description: "Informe data de entrega, quem retirou e se foi testado." });
+      return;
+    }
+    setSalvandoEntrega(true);
+    try {
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({
+          data_entrega: new Date(`${entregaForm.data_entrega}T12:00:00`).toISOString(),
+          entregue_por: entregaForm.entregue_por.trim(),
+          testado: entregaForm.testado === "sim",
+          status: 'entregue',
+        } as any)
+        .eq('id', osId);
+      if (error) throw error;
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: osId,
+        status_anterior: os?.status ?? null,
+        status_novo: 'entregue',
+        observacao: `OS finalizada — retirada por ${entregaForm.entregue_por.trim()} em ${new Date(`${entregaForm.data_entrega}T12:00:00`).toLocaleDateString('pt-BR')} | Testado: ${entregaForm.testado === 'sim' ? 'Sim' : 'Não'}`,
+        executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
+      });
+
+      toast.success("Entrega registrada", { description: "OS finalizada e registrada no histórico." });
+      setEditandoEntrega(false);
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
+    } catch (error: any) {
+      toast.error("Erro ao registrar entrega: " + error.message);
+    } finally {
+      setSalvandoEntrega(false);
+    }
+  };
+
 
 
   if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
@@ -2191,19 +2246,81 @@ function GestaoOSPage() {
 
         <TabsContent value="entrega">
           <Card className="border-border shadow-md">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
+            <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
               <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
                 <Truck className="h-5 w-5 text-primary" />
-                Logística de Entrega
+                Finalização da OS
               </CardTitle>
+              {entregaRegistrada && !editandoEntrega && podeGerenciarOS && (
+                <Button variant="ghost" size="icon" onClick={() => setEditandoEntrega(true)} title="Editar entrega">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              )}
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Truck className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Aguardando prontidão do equipamento.</p>
-              </div>
+              {entregaRegistrada && !editandoEntrega ? (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-lg border border-border p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Data de Entrega</p>
+                    <p className="text-lg font-black">{new Date((os as any).data_entrega).toLocaleDateString('pt-BR')}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Quem Retirou</p>
+                    <p className="text-lg font-black">{(os as any).entregue_por || '—'}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Testado</p>
+                    <Badge variant={(os as any).testado ? 'default' : 'destructive'} className="text-xs font-bold uppercase">
+                      {(os as any).testado ? 'Sim' : 'Não'}
+                    </Badge>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-5 max-w-2xl">
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-bold uppercase tracking-widest">Data de Entrega</Label>
+                      <Input
+                        type="date"
+                        value={entregaForm.data_entrega}
+                        onChange={(e) => setEntregaForm({ ...entregaForm, data_entrega: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-bold uppercase tracking-widest">Quem Retirou</Label>
+                      <Input
+                        placeholder="Nome de quem retirou"
+                        value={entregaForm.entregue_por}
+                        onChange={(e) => setEntregaForm({ ...entregaForm, entregue_por: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-bold uppercase tracking-widest">Testado</Label>
+                      <Select value={entregaForm.testado} onValueChange={(v) => setEntregaForm({ ...entregaForm, testado: v })}>
+                        <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="sim">Sim</SelectItem>
+                          <SelectItem value="nao">Não</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSalvarEntrega} disabled={salvandoEntrega || !podeGerenciarOS} className="font-bold uppercase tracking-widest">
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      {salvandoEntrega ? 'Salvando...' : 'Finalizar OS'}
+                    </Button>
+                    {editandoEntrega && (
+                      <Button variant="outline" onClick={() => setEditandoEntrega(false)} className="font-bold uppercase tracking-widest">
+                        Cancelar
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
+
         </TabsContent>
 
         <TabsContent value="garantia">
