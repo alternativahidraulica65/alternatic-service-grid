@@ -87,6 +87,20 @@ const vendedorSchema = z.object({
 type VendedorFormValues = z.infer<typeof vendedorSchema>;
 
 export const Route = createFileRoute("/_authenticated/admin/vendedores")({
+  beforeLoad: ({ context, location }) => {
+    const { roles, profile, isDiretor, isFinanceiro } = context as any;
+    const cargo = profile?.cargo || "";
+    const temPermissao =
+      isDiretor ||
+      isFinanceiro ||
+      cargo === "diretor" ||
+      cargo === "administrativo_financeiro" ||
+      (roles as string[]).includes("diretor") ||
+      (roles as string[]).includes("administrativo_financeiro");
+    if (!temPermissao) {
+      throw redirect({ to: "/dashboard", search: { redirect: location.href } });
+    }
+  },
   component: VendedoresPage,
 });
 
