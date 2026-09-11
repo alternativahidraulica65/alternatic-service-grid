@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T18:09:58.483142+00:00",
+  "generated_at": "2026-09-11T18:20:51.648804+00:00",
   "files": [
     {
       "path": "components.json",
@@ -286,6 +286,10 @@
       "bytes": 750
     },
     {
+      "path": "supabase/migrations/20260911181928_9caaa017-a1c8-476d-bb39-a32a79d5148f.sql",
+      "bytes": 143
+    },
+    {
       "path": "supabase/migrations/20260911144018_7b9d2200-fccb-46ff-9c93-cf727437505a.sql",
       "bytes": 521
     },
@@ -547,7 +551,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 105582
+      "bytes": 111610
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -579,7 +583,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 50006
+      "bytes": 50226
     },
     {
       "path": "src/components/ui/alert.tsx",
