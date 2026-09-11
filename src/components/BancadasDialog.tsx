@@ -20,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Cog, UserCheck, CheckCircle2, Clock, Wrench } from "lucide-react";
+import { Cog, UserCheck, CheckCircle2, Clock, Wrench, Pencil, Plus } from "lucide-react";
+import { STATUS_FINALIZADOS } from "@/components/PecasDialog";
 
 interface BancadasDialogProps {
   open: boolean;
@@ -31,6 +32,8 @@ interface BancadasDialogProps {
 export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogProps) {
   const queryClient = useQueryClient();
   const [nomes, setNomes] = useState<Record<string, string>>({});
+  const [editando, setEditando] = useState<Record<string, boolean>>({});
+  const [osSelecionada, setOsSelecionada] = useState<Record<string, string>>({});
 
   const { data: bancadas = [] } = useQuery({
     queryKey: ["bancadas"],
