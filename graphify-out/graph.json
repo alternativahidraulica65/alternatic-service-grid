@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T18:02:03.874340+00:00",
+  "generated_at": "2026-09-11T18:09:58.483142+00:00",
   "files": [
     {
       "path": "components.json",
@@ -28,10 +28,6 @@
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 3469
     },
     {
       "path": ".lovable/project.json",
@@ -116,6 +112,10 @@
     {
       "path": ".lovable/plan/refatoração-para-integração-nativa-supabase-2026-08-22.md",
       "bytes": 1590
+    },
+    {
+      "path": ".lovable/plan/guia-de-execução-da-os-próximos-passos-2026-09-11.md",
+      "bytes": 3469
     },
     {
       "path": ".lovable/plan/plano-de-implementação-módulo-financeiro-avançado-alternativ-2026-08-19.md",
@@ -236,6 +236,10 @@
     {
       "path": "supabase/migrations/20260911170335_3d388d3b-48cb-425a-9f36-db42d23cf940.sql",
       "bytes": 2123
+    },
+    {
+      "path": "supabase/migrations/20260911180654_f4ac3a4a-3e60-45d9-91f0-667df83c6971.sql",
+      "bytes": 1154
     },
     {
       "path": "supabase/migrations/20260816194148_8f669713-d64a-4861-a648-a894901bbbef.sql",
@@ -450,6 +454,10 @@
       "bytes": 12047
     },
     {
+      "path": "src/components/GuiaExecucaoOs.tsx",
+      "bytes": 24558
+    },
+    {
       "path": "src/components/PecasDialog.tsx",
       "bytes": 8694
     },
@@ -539,7 +547,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 105617
+      "bytes": 105582
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -571,7 +579,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 48490
+      "bytes": 50006
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -1281,6 +1289,66 @@
     },
     {
       "source": "src/components/TerceirosDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/progress"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
       "target": "lucide-react"
     },
     {
@@ -2434,6 +2502,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
       "target": "@/components/CustosOsPanel"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.tsx",
+      "target": "@/components/GuiaExecucaoOs"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
