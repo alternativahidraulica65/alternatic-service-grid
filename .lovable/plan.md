@@ -1,42 +1,31 @@
-# Configurações: Empresas (CNPJs) + Gestão de Usuários
+# Unificar bancos de dados duplicados
+
+## Diagnóstico confirmado
+
+Existem DOIS bancos de dados ativos:
+
+1. **Banco do app** (gerenciado pelo Lovable, usado pelo código hoje): `omyaiprywidpxtbnntiq`
+   - Contém tudo que construímos: ordens_servico, os_pecas_rastreio, os_custos, bancadas, os_tarefas, historico_status_os, usuarios, user_roles, fornecedores, clientes etc.
+2. **Banco da imagem do usuário**: `mpwnrcxyyeqftrejwmmx`
+   - Contém tabelas diferentes: configuracoes_empresa, profiles, equipamentos, terceirizados, logs_auditoria, materia_prima_precos, vendedor_clientes, além de clientes, ordens_servico, usuarios, fornecedores.
+   - Acesso confirmado (tabelas respondem 200 via API).
+
+**Conclusão**: não há dados falsos — o app está olhando para um banco e o usuário para outro. Isso explica por que a tabela configuracoes_empresa "existia" para o usuário mas não para nós.
 
 ## Objetivo
 
-Transformar a tela de Configurações em um painel real, ligado ao banco, com duas áreas:
+O app deve usar UM único banco: o `mpwnrcxyyeqftrejwmmx` (o banco oficial do usuário).
 
-1. **Empresas emissoras (CNPJs)** com regras padrão que alimentam automaticamente o orçamento.
-2. **Gestão de usuários**: criar usuário, resetar senha, editar permissão (cargo/role) e ativar/desativar.
+## Plano
 
-Acesso restrito a Diretor e Administrativo/Financeiro.
+1. **Inventário completo do banco oficial** — listar todas as tabelas e colunas do `mpwnrcxyyeqftrejwmmx` para mapear diferenças de estrutura (ex.: profiles vs usuarios, equipamentos vs cliente_equipamentos, logs_auditoria vs logs_sistema).
+2. **Apontar o app para o banco oficial** — trocar as credenciais/URL de conexão do projeto Lovable para `mpwnrcxyyeqftrejwmmx` (o segredo EXTERNAL_SUPABASE_SECRET_KEY já funciona nele).
+3. **Criar no banco oficial o que falta** — migration incremental com as tabelas/colunas que o app precisa e não existem lá (bancadas, os_tarefas, historico_status_os, colunas de terceiros/pagamento etc.), sem DROP nem perda de dados.
+4. **Migrar dados essenciais** (se houver dados reais no banco do app que devam ser preservados) — copiar linhas de ordens_servico, os_pecas_rastreio, os_custos etc. para o banco oficial. Se o usuário confirmar que os dados atuais do app são só teste, pular esta etapa.
+5. **Adaptar o código** onde os nomes de tabela/coluna divergirem (profiles vs usuarios etc.), mantendo o Supabase como fonte única de verdade.
+6. **Validar** — login, dashboards, detalhe da OS e lista de peças apontando para o banco oficial.
 
-## 1. Empresas e regras padrão
+## Decisões que preciso de você
 
-Verifiquei o banco agora: **a tabela `configuracoes_empresa` ainda não existe** (só existe `configuracoes_vendedores` e `empresas_emissoras`). Então ela será criada com esse nome, uma linha por CNPJ, ligada às empresas já cadastradas (Alternativa Matriz, Filial Sul, Equipamentos, Hidráulica Matriz).
-
-Campos por empresa:
-- Identificação: razão social, nome fantasia, CNPJ, inscrição estadual, endereço, cidade/UF, CEP, telefone, e-mail, site
-- Regras do orçamento: prazo de entrega padrão (dias úteis), prazo de garantia (dias/meses), imposto (%), margem de lucro padrão (%), comissão padrão (%), validade da proposta (dias)
-- Sugestões extras (padrões da empresa): condição de pagamento padrão, forma de pagamento, observações/termos padrão que entram no rodapé do orçamento, texto de garantia, prefixo de numeração de orçamento, empresa padrão do sistema (marcar uma como principal)
-
-Na tela: lista de CNPJs à esquerda, formulário completo à direita, botão para adicionar novo CNPJ e para desativar. Tudo salvo direto no banco.
-
-**Efeito no orçamento:** ao abrir o orçamento de uma OS, os campos imposto, margem, comissão, prazo de entrega, garantia e validade já vêm preenchidos com os padrões da empresa vinculada à OS (com a empresa principal como reserva). O gestor ainda pode alterar manualmente naquele orçamento.
-
-## 2. Gestão de usuários
-
-Na mesma tela, a lista de colaboradores passa a ter ações reais:
-- **Novo usuário**: nome, e-mail, senha inicial, cargo — cria a conta de acesso e o perfil
-- **Resetar senha**: define uma nova senha na hora ou envia e-mail de redefinição
-- **Editar permissão**: troca de cargo/role (Diretor, Administrativo/Financeiro, Gestor, Operador, Técnico, Terceirizado), gravando na tabela de papéis
-- **Ativar/desativar acesso**
-- Busca por nome/e-mail funcionando
-
-Cada ação fica registrada no log de auditoria com o e-mail de quem executou.
-
-## Detalhes técnicos
-
-- Migração incremental: `CREATE TABLE public.configuracoes_empresa` com `empresa_id` referenciando `empresas_emissoras`, `unique(empresa_id)`, `created_at/updated_at` + trigger; GRANTs para `authenticated`/`service_role`; RLS: leitura para autenticados, escrita apenas para `has_role(diretor)`/`administrativo_financeiro`.
-- Colunas extras em `empresas_emissoras` apenas se necessário (`ativo`, `principal`) — nada é apagado.
-- Criação de usuário / reset de senha exigem privilégio de administrador: server functions em `src/lib/admin-usuarios.functions.ts` com `requireSupabaseAuth`, validando o papel do chamador via `has_role` antes de usar o cliente administrativo (import dinâmico dentro do handler).
-- Front: reescrita de `src/routes/_authenticated/configuracoes.tsx` (abas Empresas / Usuários / Segurança), mantendo o estilo industrial existente.
-- Orçamento: `src/routes/_authenticated/os/$id.orcamento.tsx` passa a buscar as configurações da empresa da OS para inicializar imposto/margem/comissão/prazos, em vez do valor fixo 8,5%.
+- Confirmar que o banco oficial é mesmo o `mpwnrcxyyeqftrejwmmx` (o da imagem).
+- Os dados atuais dentro do app (OS de teste, peças, custos) devem ser migrados ou podem ser descartados?
