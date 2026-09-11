@@ -386,6 +386,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
         : "Nenhum item avaliado ainda",
       situacao: checklistPreenchido ? "concluido" : "pendente",
       irPara: "checklist",
+      verificar: () =>
+        checklistPreenchido
+          ? null
+          : "A vistoria técnica ainda não foi finalizada. Avalie todos os itens do checklist antes de concluir esta etapa.",
     });
 
     const laudoOk = !!(os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios);
@@ -395,6 +399,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
       detalhe: laudoOk ? "Laudo registrado" : "Diagnóstico, defeitos e serviços necessários",
       situacao: laudoOk ? "concluido" : "pendente",
       irPara: "laudo-técnico",
+      verificar: () =>
+        laudoOk
+          ? null
+          : "O laudo técnico ainda não foi preenchido. Registre diagnóstico, defeitos e serviços necessários na aba Laudo Técnico.",
     });
 
     const prazoOrc = os?.prazo_orcamento ? new Date(os.prazo_orcamento) : null;
@@ -409,6 +417,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
           ? "atrasado"
           : "pendente",
       irPara: "orçamento",
+      verificar: () =>
+        orcamentoOk
+          ? null
+          : "O orçamento ainda não foi gerado. Lance os valores e gere o orçamento na aba Orçamento.",
     });
 
     const aprovado = ["aprovada", "usinagem", "montagem", "pronto", "entregue", "encerrado", "faturamento"].includes(
@@ -420,6 +432,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
       detalhe: `Status atual da OS: ${os?.status ?? "—"}`,
       situacao: aprovado ? "concluido" : "pendente",
       irPara: "aprovação",
+      verificar: () =>
+        aprovado
+          ? null
+          : "A aprovação do cliente ainda não foi registrada. Avance o status da OS após a aprovação.",
     });
 
     // 2. Peças
