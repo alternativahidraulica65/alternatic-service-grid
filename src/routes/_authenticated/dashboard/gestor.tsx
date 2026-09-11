@@ -192,7 +192,7 @@ function DashboardGestor() {
               {isLoading ? <Skeleton className="h-8 w-12 bg-white/20" /> : stats.naFila.toString().padStart(2, '0')}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">OS na Fila</CardContent>
+          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">Total em Aberto</CardContent>
         </Card>
         <Card className="col-span-2 lg:col-span-1 bg-red-500 text-white border-none shadow-lg">
           <CardHeader className="p-4">
