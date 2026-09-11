@@ -452,6 +452,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
             : `${p.status_peca}${p.localizacao_fisica || p.localizacao ? ` • ${p.localizacao_fisica || p.localizacao}` : ""}`,
         situacao: semDestino ? "pendente" : "concluido",
         irPara: "peças",
+        verificar: () =>
+          semDestino
+            ? "A peça ainda não tem destinação definida. Defina na aba Peças (comprar, usinar, terceiros ou armazenar)."
+            : null,
       };
     });
 
@@ -534,6 +538,12 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
           : `${Number(c.custo_interno).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} • ${c.pago ? `pago em ${dataBr(c.data_pagamento)}` : "a pagar"}`,
         situacao: semValor ? "pendente" : c.pago ? "concluido" : "pendente",
         irPara: "custos",
+        verificar: () =>
+          semValor
+            ? "O valor do custo ainda não foi lançado. Informe o valor na aba Custos."
+            : !c.pago
+              ? "O custo tem valor lançado, mas ainda não foi marcado como pago na aba Custos."
+              : null,
       };
     });
 
