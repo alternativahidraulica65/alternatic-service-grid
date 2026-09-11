@@ -24,6 +24,7 @@ import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminVendedoresRouteImport } from './routes/_authenticated/admin/vendedores'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedClientesIdRouteImport } from './routes/_authenticated/clientes/$id'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedDashboardDiretorRouteImport } from './routes/_authenticated/dashboard/diretor'
 import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_authenticated/dashboard/financeiro'
 import { Route as AuthenticatedDashboardGestorRouteImport } from './routes/_authenticated/dashboard/gestor'
@@ -116,6 +117,12 @@ const AuthenticatedClientesIdRoute = AuthenticatedClientesIdRouteImport.update({
   path: '/clientes/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardDiretorRoute =
   AuthenticatedDashboardDiretorRouteImport.update({
     id: '/diretor',
@@ -205,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
@@ -212,7 +220,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/reset-password': typeof ResetPasswordRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
-  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
@@ -232,6 +239,7 @@ export interface FileRoutesByTo {
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
+  '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/financeiro/fornecedores': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
@@ -261,6 +269,7 @@ export interface FileRoutesById {
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/_authenticated/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
@@ -290,6 +299,7 @@ export interface FileRouteTypes {
     | '/os/$id'
     | '/os/nova'
     | '/clientes/'
+    | '/dashboard/'
     | '/os/$id/orcamento'
     | '/financeiro/fornecedores/'
   fileRoutesByTo: FileRoutesByTo
@@ -297,7 +307,6 @@ export interface FileRouteTypes {
     | '/'
     | '/reset-password'
     | '/configuracoes'
-    | '/dashboard'
     | '/historico'
     | '/kanban'
     | '/orcamento'
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/os/$id'
     | '/os/nova'
     | '/clientes'
+    | '/dashboard'
     | '/os/$id/orcamento'
     | '/financeiro/fornecedores'
   id:
@@ -345,6 +355,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
     | '/_authenticated/clientes/'
+    | '/_authenticated/dashboard/'
     | '/_authenticated/os/$id/orcamento'
     | '/_authenticated/financeiro/fornecedores/'
   fileRoutesById: FileRoutesById
@@ -462,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientesIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/diretor': {
       id: '/_authenticated/dashboard/diretor'
       path: '/diretor'
@@ -547,6 +565,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardFinanceiroRoute: typeof AuthenticatedDashboardFinanceiroRoute
   AuthenticatedDashboardGestorRoute: typeof AuthenticatedDashboardGestorRoute
   AuthenticatedDashboardOperadorRoute: typeof AuthenticatedDashboardOperadorRoute
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
@@ -556,6 +575,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
       AuthenticatedDashboardFinanceiroRoute,
     AuthenticatedDashboardGestorRoute: AuthenticatedDashboardGestorRoute,
     AuthenticatedDashboardOperadorRoute: AuthenticatedDashboardOperadorRoute,
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 
 const AuthenticatedDashboardRouteWithChildren =
