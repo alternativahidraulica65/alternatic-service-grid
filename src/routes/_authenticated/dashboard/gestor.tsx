@@ -319,7 +319,19 @@ function DashboardGestor() {
         {stats.columns.map((column) => {
           const items = ordens.filter(o => o.status === column.status);
           return (
-            <div key={column.title} className="flex flex-col gap-2 min-w-[180px]">
+            <div
+              key={column.title}
+              className="flex flex-col gap-2 min-w-[180px]"
+              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const id = e.dataTransfer.getData('text/plain') || dragOsId;
+                const os = (ordens as any[]).find((o) => String(o.id) === String(id));
+                setDragOsId(null);
+                if (os) moverStatus(os, column.status);
+              }}
+            >
+
               <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                 {column.title}
                 <Badge variant="secondary" className="text-[9px]">{items.length}</Badge>
