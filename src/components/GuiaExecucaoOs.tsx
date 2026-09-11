@@ -43,9 +43,9 @@ interface Item {
   titulo: string;
   detalhe?: string | null;
   situacao: Situacao;
-  acaoLabel?: string;
-  onAcao?: () => void | Promise<void>;
-  irPara?: string;
+  acaoLabel?: string | undefined;
+  onAcao?: (() => void | Promise<void>) | undefined;
+  irPara?: string | undefined;
   extra?: { label: string; onClick: () => void | Promise<void> } | null;
   removivel?: (() => void | Promise<void>) | null;
 }
