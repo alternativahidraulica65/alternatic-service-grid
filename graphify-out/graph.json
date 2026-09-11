@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T20:26:59.762154+00:00",
+  "generated_at": "2026-09-11T20:36:01.392404+00:00",
   "files": [
     {
       "path": "components.json",
@@ -503,7 +503,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/index.tsx",
-      "bytes": 341
+      "bytes": 901
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
@@ -1774,6 +1774,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/index.tsx",
       "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/index.tsx",
+      "target": "react"
     },
     {
       "source": "src/routes/_authenticated/dashboard/diretor.tsx",
