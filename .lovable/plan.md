@@ -11,7 +11,7 @@ Acesso restrito a Diretor e Administrativo/Financeiro.
 
 ## 1. Empresas e regras padrão
 
-Nova tabela `public.configuracoes_empresa`, uma linha por CNPJ, ligada às empresas já cadastradas (Alternativa Matriz, Filial Sul, Equipamentos, Hidráulica Matriz).
+Verifiquei o banco agora: **a tabela `configuracoes_empresa` ainda não existe** (só existe `configuracoes_vendedores` e `empresas_emissoras`). Então ela será criada com esse nome, uma linha por CNPJ, ligada às empresas já cadastradas (Alternativa Matriz, Filial Sul, Equipamentos, Hidráulica Matriz).
 
 Campos por empresa:
 - Identificação: razão social, nome fantasia, CNPJ, inscrição estadual, endereço, cidade/UF, CEP, telefone, e-mail, site
