@@ -751,6 +751,36 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={alertaConclusao.aberto} onOpenChange={(aberto) => setAlertaConclusao((p) => ({ ...p, aberto }))}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg font-black uppercase tracking-tight flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              Não é possível concluir a OS
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Existem itens obrigatórios pendentes. Resolva-os antes de marcar a OS como concluída.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <ul className="space-y-2">
+              {alertaConclusao.itens.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-xs font-medium">
+                  <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Button
+              className="w-full text-[10px] font-black uppercase"
+              onClick={() => setAlertaConclusao({ aberto: false, itens: [] })}
+            >
+              Entendi
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
