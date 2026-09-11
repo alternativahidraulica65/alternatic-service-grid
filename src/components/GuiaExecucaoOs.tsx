@@ -50,6 +50,8 @@ interface Item {
   irPara?: string | undefined;
   extra?: { label: string; onClick: () => void | Promise<void> } | null;
   removivel?: (() => void | Promise<void>) | null;
+  /** Retorna null se o item pode ser concluído, ou a mensagem do que falta. */
+  verificar?: (() => string | null) | undefined;
 }
 
 interface Bloco {
@@ -82,6 +84,12 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     itens: [],
   });
   const [atualizandoStatus, setAtualizandoStatus] = useState(false);
+  const [alertaItem, setAlertaItem] = useState<{
+    aberto: boolean;
+    titulo: string;
+    motivo: string;
+    irPara?: string | undefined;
+  }>({ aberto: false, titulo: "", motivo: "" });
 
   const { data: pecas = [], isLoading: loadingPecas } = useQuery({
     queryKey: ["os_pecas", osId],
