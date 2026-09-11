@@ -34,8 +34,8 @@ export function useFotoUrl(url?: string | null, storagePath?: string | null) {
 }
 
 interface FotoThumbProps {
-  url?: string | null;
-  path?: string | null;
+  url?: string | null | undefined;
+  path?: string | null | undefined;
   alt?: string;
   label?: string;
   className?: string;
