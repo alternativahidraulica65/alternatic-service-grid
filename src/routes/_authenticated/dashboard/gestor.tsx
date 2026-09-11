@@ -22,6 +22,7 @@ import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BancadasDialog } from "@/components/BancadasDialog";
 import { PecasDialog, STATUS_FINALIZADOS } from "@/components/PecasDialog";
+import { OsAtrasadasDialog, isOsAtrasada } from "@/components/OsAtrasadasDialog";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
@@ -55,6 +56,7 @@ function DashboardGestor() {
   const { podeVerValoresFinanceiros } = useUserRole();
   const [bancadasOpen, setBancadasOpen] = useState(false);
   const [pecasOpen, setPecasOpen] = useState(false);
+  const [atrasadasOpen, setAtrasadasOpen] = useState(false);
 
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
@@ -155,7 +157,7 @@ function DashboardGestor() {
 
   const stats = useMemo(() => {
     const naFila = ordens.filter(o => o.status === 'aberta').length;
-    const atrasadas = ordens.filter(o => o.status === 'atrasada').length;
+    const atrasadas = (ordens as any[]).filter((o) => isOsAtrasada(o)).length;
     
     const columns = [
       { title: "Triagem", status: "aberta" },
@@ -194,7 +196,13 @@ function DashboardGestor() {
           </CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">Total em Aberto</CardContent>
         </Card>
-        <Card className="col-span-2 lg:col-span-1 bg-red-500 text-white border-none shadow-lg">
+        <Card
+          role="button"
+          tabIndex={0}
+          onClick={() => setAtrasadasOpen(true)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setAtrasadasOpen(true); }}
+          className="col-span-2 lg:col-span-1 bg-red-500 text-white border-none shadow-lg cursor-pointer hover:bg-red-600 transition-colors"
+        >
           <CardHeader className="p-4">
             <CardTitle className="text-2xl font-black">
               {isLoading ? <Skeleton className="h-8 w-12 bg-white/20" /> : stats.atrasadas.toString().padStart(2, '0')}
@@ -313,6 +321,7 @@ function DashboardGestor() {
 
       <BancadasDialog open={bancadasOpen} onOpenChange={setBancadasOpen} ordens={ordens as any[]} />
       <PecasDialog open={pecasOpen} onOpenChange={setPecasOpen} ordens={ordens as any[]} />
+      <OsAtrasadasDialog open={atrasadasOpen} onOpenChange={setAtrasadasOpen} ordens={ordens as any[]} />
     </div>
 
   );
