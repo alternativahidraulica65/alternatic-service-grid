@@ -85,6 +85,20 @@ function DashboardGestor() {
     }
   });
 
+  const { data: pecasEmBancadas = [] } = useQuery({
+    queryKey: ['dashboard_gestor_pecas_bancadas'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .select('id, nome, os_id, status_peca, bancada_id, criado_em')
+        .not('bancada_id', 'is', null)
+        .not('status_peca', 'in', '(concluida,finalizada,entregue,cancelada)')
+        .order('criado_em', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
 
   const { data: pecasPendentes = [] } = useQuery({
     queryKey: ['dashboard_gestor_pecas_pendentes'],
@@ -227,7 +241,7 @@ function DashboardGestor() {
         >
           <CardHeader className="p-4">
             <CardTitle className="text-lg font-black">
-              {counters?.operadores.toString().padStart(2, '0') || "00"}
+              {pecasEmBancadas.length.toString().padStart(2, '0')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">
