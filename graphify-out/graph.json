@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T17:30:44.239039+00:00",
+  "generated_at": "2026-09-11T17:37:09.709263+00:00",
   "files": [
     {
       "path": "components.json",
@@ -274,6 +274,10 @@
       "bytes": 427
     },
     {
+      "path": "supabase/migrations/20260911173431_76ed07a9-1215-4cc1-9475-84d00ce1a2d5.sql",
+      "bytes": 780
+    },
+    {
       "path": "supabase/migrations/20260822125039_37c8ea00-390d-49fe-be96-0f1a2ba00dd4.sql",
       "bytes": 750
     },
@@ -434,6 +438,10 @@
       "bytes": 16351
     },
     {
+      "path": "src/components/CustosOsPanel.tsx",
+      "bytes": 27917
+    },
+    {
       "path": "src/components/ClientOnly.tsx",
       "bytes": 370
     },
@@ -531,7 +539,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 110416
+      "bytes": 105617
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -563,7 +571,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 47351
+      "bytes": 48490
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -1158,6 +1166,74 @@
     {
       "source": "src/components/BancadasDialog.tsx",
       "target": "@/components/PecasDialog"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/FotoThumb"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/components/ClientOnly.tsx",
@@ -2354,6 +2430,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
       "target": "@/components/FotoThumb"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.tsx",
+      "target": "@/components/CustosOsPanel"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",

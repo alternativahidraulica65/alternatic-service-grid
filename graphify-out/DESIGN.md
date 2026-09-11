@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-09-11T17:30:44.239039+00:00
+Generated: 2026-09-11T17:37:09.709263+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -150,6 +150,7 @@ Generated: 2026-09-11T17:30:44.239039+00:00
 ## Project components
 - src/components/BancadasDialog.tsx
 - src/components/ClientOnly.tsx
+- src/components/CustosOsPanel.tsx
 - src/components/FotoThumb.tsx
 - src/components/OsAtrasadasDialog.tsx
 - src/components/PecasDialog.tsx
