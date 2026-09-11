@@ -64,6 +64,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FotoThumb, FotoChecklist } from "@/components/FotoThumb";
 import { CustosOsPanel } from "@/components/CustosOsPanel";
+import { GuiaExecucaoOs } from "@/components/GuiaExecucaoOs";
 
 
 function descreverLog(log: any): string {
