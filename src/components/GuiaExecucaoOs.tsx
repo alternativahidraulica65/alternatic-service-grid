@@ -158,13 +158,13 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     queryClient.invalidateQueries({ queryKey: ["bancadas_fila"] });
   };
 
-  const registrarLog = async (observacao: string) => {
+  const registrarLog = async (observacao: string, statusAnterior?: string | null, statusNovo?: string | null) => {
     try {
       const { data: auth } = await supabase.auth.getUser();
       await supabase.from("historico_status_os" as any).insert({
         os_id: osId,
-        status_anterior: os?.status ?? null,
-        status_novo: os?.status ?? "em_andamento",
+        status_anterior: statusAnterior ?? os?.status ?? null,
+        status_novo: statusNovo ?? os?.status ?? "em_andamento",
         observacao,
         executor_id: auth?.user?.id ?? null,
         executor_email: await getExecutorEmail(),
@@ -173,6 +173,67 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
       /* log é complementar, não bloqueia a ação */
     }
   };
+
+  const obterPendenciasObrigatorias = useMemo(() => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const lista = pecas as any[];
+    const listaCustos = custos as any[];
+    const pendencias: string[] = [];
+
+    const checklistPreenchido =
+      checklist.length > 0 && checklist.every((c: any) => c.estado || c.estado_atual);
+    if (!checklistPreenchido) pendencias.push("Vistoria técnica (checklist) não finalizada");
+
+    const laudoOk = !!(os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios);
+    if (!laudoOk) pendencias.push("Laudo técnico não preenchido");
+
+    const orcamentoOk = Number(os?.valor_total ?? 0) > 0;
+    if (!orcamentoOk) pendencias.push("Orçamento não gerado");
+
+    const aprovado = ["aprovada", "usinagem", "montagem", "pronto", "entregue", "encerrado", "faturamento"].includes(
+      String(os?.status ?? ""),
+    );
+    if (!aprovado) pendencias.push("Aprovação do cliente não registrada");
+
+    const pecasSemDestino = lista.filter(
+      (p: any) => !p.status_peca || p.status_peca === "Pendente de Destinação",
+    );
+    if (pecasSemDestino.length > 0) {
+      pendencias.push(`${pecasSemDestino.length} peça(s) sem destinação definida`);
+    }
+
+    const terceirosPendentes = lista.filter(
+      (p: any) =>
+        String(p.status_peca ?? "").toLowerCase().includes("terceiro") && !p.terceiro_recebido_em,
+    );
+    if (terceirosPendentes.length > 0) {
+      pendencias.push(`${terceirosPendentes.length} peça(s) enviada(s) a terceiros não recebida(s)`);
+    }
+
+    const bancadasPendentes = lista.filter(
+      (p: any) =>
+        p.bancada_id && !STATUS_PECA_FINAL.includes(String(p.status_peca ?? "").toLowerCase()),
+    );
+    if (bancadasPendentes.length > 0) {
+      pendencias.push(`${bancadasPendentes.length} serviço(s) em bancada não concluído(s)`);
+    }
+
+    const custosSemValor = listaCustos.filter((c: any) => !Number(c.custo_interno ?? 0));
+    if (custosSemValor.length > 0) {
+      pendencias.push(`${custosSemValor.length} custo(s) sem valor lançado`);
+    }
+
+    const custosNaoPagos = listaCustos.filter(
+      (c: any) => Number(c.custo_interno ?? 0) > 0 && !c.pago,
+    );
+    if (custosNaoPagos.length > 0) {
+      pendencias.push(`${custosNaoPagos.length} custo(s) em aberto não pago(s)`);
+    }
+
+    return pendencias;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pecas, custos, checklist, os]);
 
   const atualizarPeca = async (pecaId: string, updates: any, msg: string, log?: string) => {
     const { error } = await supabase
