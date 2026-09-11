@@ -167,7 +167,7 @@ function ClientesPage() {
   });
 
   const filteredClientes = clientes.filter((c: any) => 
-    c.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (c.nome ?? c.razao_social ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.cnpj?.includes(searchTerm) ||
     c.endereco?.toLowerCase().includes(searchTerm.toLowerCase())
   );
