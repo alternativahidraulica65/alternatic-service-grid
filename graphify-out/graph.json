@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T13:35:15.523691+00:00",
+  "generated_at": "2026-09-11T13:41:49.369273+00:00",
   "files": [
     {
       "path": "components.json",
@@ -238,6 +238,10 @@
       "bytes": 666
     },
     {
+      "path": "supabase/migrations/20260911134122_cce69471-d54c-4908-9266-e0e0791c0eb5.sql",
+      "bytes": 903
+    },
+    {
       "path": "supabase/migrations/20260819232440_d0831b9d-5d1a-40a1-9401-3ef90d24eddd.sql",
       "bytes": 1786
     },
@@ -415,7 +419,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11295
+      "bytes": 11314
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -479,7 +483,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 26877
+      "bytes": 27415
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
