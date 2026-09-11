@@ -241,7 +241,7 @@ function DashboardGestor() {
         >
           <CardHeader className="p-4">
             <CardTitle className="text-lg font-black">
-              {counters?.operadores.toString().padStart(2, '0') || "00"}
+              {pecasEmBancadas.length.toString().padStart(2, '0')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">
