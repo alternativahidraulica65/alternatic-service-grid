@@ -306,7 +306,7 @@ function GestaoOSPage() {
       // 2. Execução já registrada (os_checklist_tecnico) — os_id é INTEGER
       let checklistQuery = supabase
         .from('os_checklist_tecnico' as any)
-        .select('*, tipos_equipamento(nome, categoria_principal)')
+        .select('*, tipos_equipamento!os_checklist_tecnico_tipo_equipamento_id_fkey(nome, categoria_principal)')
         .eq('os_id', osId);
 
       if (osTipoId) {
