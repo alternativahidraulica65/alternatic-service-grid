@@ -74,6 +74,35 @@ function DashboardGestor() {
   const [bancadasOpen, setBancadasOpen] = useState(false);
   const [pecasOpen, setPecasOpen] = useState(false);
   const [atrasadasOpen, setAtrasadasOpen] = useState(false);
+  const [dragOsId, setDragOsId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const moverStatus = async (os: any, novoStatus: string) => {
+    if (!os || os.status === novoStatus) return;
+    const anterior = String(os.status ?? '');
+    const { error: updErr } = await supabase
+      .from('ordens_servico')
+      .update({ status: novoStatus })
+      .eq('id', os.id);
+    if (updErr) {
+      toast.error(`Erro ao mover OS: ${updErr.message}`);
+      return;
+    }
+
+    const { data: auth } = await supabase.auth.getUser();
+    await supabase.from('historico_status_os' as any).insert({
+      os_id: os.id,
+      status_anterior: anterior || null,
+      status_novo: novoStatus,
+      observacao: 'Movido no Kanban do gestor',
+      executor_id: auth?.user?.id ?? null,
+    });
+
+    toast.success(`${os.numero_os ?? 'OS'} movida para ${novoStatus}`);
+    queryClient.invalidateQueries({ queryKey: ['dashboard_gestor_os'] });
+  };
+
 
   const { data: ordens = [], isLoading, error } = useQuery({
     queryKey: ['dashboard_gestor_os'],
