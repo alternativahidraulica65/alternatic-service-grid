@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T21:05:21.478821+00:00",
+  "generated_at": "2026-09-11T21:18:15.557102+00:00",
   "files": [
     {
       "path": "components.json",
@@ -26,12 +26,12 @@
       "bytes": 480
     },
     {
-      "path": "tsconfig.json",
-      "bytes": 820
+      "path": "roadmap.md",
+      "bytes": 1998
     },
     {
-      "path": ".lovable/plan.md",
-      "bytes": 2958
+      "path": "tsconfig.json",
+      "bytes": 820
     },
     {
       "path": ".lovable/project.json",
@@ -128,6 +128,10 @@
     {
       "path": ".lovable/plan/plan-database-sync-and-schema-update-2026-08-23.md",
       "bytes": 1550
+    },
+    {
+      "path": ".lovable/plan/unificar-em-um-único-banco-de-dados-2026-09-11.md",
+      "bytes": 2958
     },
     {
       "path": ".lovable/plan/plano-de-refatoração-autenticação-direta-por-e-mail-e-senha-2026-08-17.md",
