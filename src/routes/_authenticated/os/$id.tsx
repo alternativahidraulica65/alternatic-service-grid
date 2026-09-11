@@ -433,11 +433,71 @@ function GestaoOSPage() {
   };
 
   // Destinações que geram custo a ser preenchido pelo gestor
-  const DESTINACOES_COM_CUSTO: Record<string, string> = {
-    'Comprar Nova': 'material',
-    'Refazer / Usinagem': 'material',
-    'Terceiros': 'terceiros',
+  const categoriaCustoDoDestino = (destino?: string | null): string | null => {
+    const d = String(destino ?? '').toLowerCase();
+    if (!d) return null;
+    if (d.includes('terceiro')) return 'terceiros';
+    if (d.includes('comprar')) return 'material';
+    if (d.includes('usinagem') || d.includes('refazer')) return 'material';
+    return null;
   };
+
+  // Garante que a peça destinada tenha um item de custo vinculado à OS (Supabase)
+  const garantirCustoDaPeca = async (peca: any, opts?: { silencioso?: boolean }) => {
+    const categoria = categoriaCustoDoDestino(peca?.status_peca);
+    if (!categoria) return false;
+
+    const nomePeca = peca.nome ?? peca.descricao ?? 'Peça';
+    const descricao = `${peca.status_peca} - ${nomePeca}`;
+
+    const { data: existente } = await supabase
+      .from('os_custos' as any)
+      .select('id')
+      .eq('os_id', peca.os_id ?? osId)
+      .eq('descricao', descricao)
+      .limit(1);
+    if ((existente ?? []).length > 0) return false;
+
+    const { error } = await supabase.from('os_custos' as any).insert({
+      os_id: peca.os_id ?? osId,
+      descricao,
+      categoria,
+      custo_interno: 0,
+      valor_venda: 0,
+      is_terceirizado: categoria === 'terceiros',
+      terceiro_nome: categoria === 'terceiros' ? (peca.terceiro_nome ?? null) : null,
+      criado_por: profile?.user_id ?? null,
+    });
+    if (error) throw error;
+
+    if (!opts?.silencioso) {
+      toast.info(`"${nomePeca}" enviada para Custos — aguardando valores do gestor`);
+    }
+    return true;
+  };
+
+  // Sincroniza custos de peças já destinadas anteriormente
+  useEffect(() => {
+    if (!osId || !Array.isArray(pecas) || pecas.length === 0) return;
+    let cancelado = false;
+    (async () => {
+      let criou = false;
+      for (const peca of pecas as any[]) {
+        if (!categoriaCustoDoDestino(peca?.status_peca)) continue;
+        try {
+          const feito = await garantirCustoDaPeca(peca, { silencioso: true });
+          criou = criou || feito;
+        } catch {
+          // não bloqueia a tela
+        }
+      }
+      if (criou && !cancelado) {
+        queryClient.invalidateQueries({ queryKey: ['os_custos', osId] });
+        queryClient.invalidateQueries({ queryKey: ['os_terceiros', osId] });
+      }
+    })();
+    return () => { cancelado = true; };
+  }, [osId, pecas]);
 
   const handleDefinirDestinacao = async (peca: any, destino: string) => {
     const extras = destino === 'Terceiros'
@@ -468,39 +528,109 @@ function GestaoOSPage() {
       }
     }
 
-
-    const categoria = DESTINACOES_COM_CUSTO[destino];
-    if (!categoria) return;
-
-    const nomePeca = peca.nome ?? peca.descricao ?? 'Peça';
-    const descricao = `${destino} - ${nomePeca}`;
-
     try {
-      const { data: existente } = await supabase
-        .from('os_custos' as any)
-        .select('id')
-        .eq('os_id', osId)
-        .eq('descricao', descricao)
-        .limit(1);
-
-      if ((existente ?? []).length > 0) return;
-
-      const { error } = await supabase.from('os_custos' as any).insert({
-        os_id: osId,
-        descricao,
-        categoria,
-        custo_interno: 0,
-        valor_venda: 0,
-        is_terceirizado: categoria === 'terceiros',
-        criado_por: profile?.user_id ?? null,
-      });
-      if (error) throw error;
-
+      await garantirCustoDaPeca({ ...peca, status_peca: destino, ...extras });
       queryClient.invalidateQueries({ queryKey: ['os_custos', osId] });
       queryClient.invalidateQueries({ queryKey: ['os_terceiros', osId] });
-      toast.info(`"${nomePeca}" enviada para Custos — aguardando valores do gestor`);
     } catch (error: any) {
       toast.error("Erro ao gerar custo: " + error.message);
+    }
+  };
+
+  // ===== Terceiros (peças enviadas para fora) =====
+  const [terceiroForm, setTerceiroForm] = useState<Record<string, { nome: string; prazo: string; obs: string }>>({});
+  const [salvandoTerceiro, setSalvandoTerceiro] = useState<string | null>(null);
+
+  const pecasTerceiros = useMemo(
+    () => (pecas as any[]).filter((p) => String(p.status_peca ?? '').toLowerCase().includes('terceiro')),
+    [pecas]
+  );
+
+  const formTerceiro = (peca: any) =>
+    terceiroForm[peca.id] ?? {
+      nome: peca.terceiro_nome ?? '',
+      prazo: peca.terceiro_prazo_entrega ?? '',
+      obs: peca.terceiro_observacao ?? '',
+    };
+
+  const setFormTerceiro = (pecaId: string, patch: Partial<{ nome: string; prazo: string; obs: string }>) =>
+    setTerceiroForm((prev) => ({
+      ...prev,
+      [pecaId]: { ...(prev[pecaId] ?? { nome: '', prazo: '', obs: '' }), ...patch },
+    }));
+
+  const handleSalvarTerceiro = async (peca: any) => {
+    const f = formTerceiro(peca);
+    setSalvandoTerceiro(peca.id);
+    try {
+      const { error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .update({
+          terceiro_nome: f.nome || null,
+          terceiro_prazo_entrega: f.prazo || null,
+          terceiro_observacao: f.obs || null,
+          terceiro_enviado_em: peca.terceiro_enviado_em ?? new Date().toISOString(),
+        })
+        .eq('id', peca.id);
+      if (error) throw error;
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: peca.os_id ?? osId,
+        status_anterior: os?.status ?? null,
+        status_novo: os?.status ?? 'em_andamento',
+        observacao: `Terceiros: "${peca.nome ?? 'Peça'}" com ${f.nome || 'terceiro não informado'}${f.prazo ? ` · prazo ${f.prazo}` : ''}`,
+        executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
+      });
+
+      // mantém o custo de terceiros com o nome atualizado
+      const descricao = `${peca.status_peca} - ${peca.nome ?? 'Peça'}`;
+      await supabase
+        .from('os_custos' as any)
+        .update({ terceiro_nome: f.nome || null })
+        .eq('os_id', peca.os_id ?? osId)
+        .eq('descricao', descricao);
+
+      queryClient.invalidateQueries({ queryKey: ['os_pecas', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_custos', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
+      toast.success('Dados do terceiro salvos');
+    } catch (e: any) {
+      toast.error('Erro ao salvar terceiro: ' + e.message);
+    } finally {
+      setSalvandoTerceiro(null);
+    }
+  };
+
+  const handleReceberTerceiro = async (peca: any) => {
+    setSalvandoTerceiro(peca.id);
+    try {
+      const { error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .update({
+          status_peca: 'Recebido de Terceiros',
+          terceiro_recebido_em: new Date().toISOString(),
+          terceiro_recebido_por: profile?.user_id ?? null,
+        })
+        .eq('id', peca.id);
+      if (error) throw error;
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: peca.os_id ?? osId,
+        status_anterior: os?.status ?? null,
+        status_novo: os?.status ?? 'em_andamento',
+        observacao: `Baixa de terceiros: "${peca.nome ?? 'Peça'}" recebida de ${peca.terceiro_nome ?? 'terceiro'}`,
+        executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['os_pecas', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
+      toast.success('Recebimento registrado no histórico da OS');
+    } catch (e: any) {
+      toast.error('Erro ao registrar recebimento: ' + e.message);
+    } finally {
+      setSalvandoTerceiro(null);
     }
   };
 
@@ -1828,25 +1958,98 @@ function GestaoOSPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              {loadingTerceiros ? (
+              {loadingPecas ? (
                 <div className="space-y-4">
                   <Skeleton className="h-12 w-full" />
                   <Skeleton className="h-12 w-full" />
                 </div>
-              ) : terceiros.length > 0 ? (
+              ) : pecasTerceiros.length > 0 ? (
                 <div className="space-y-4">
-                  {terceiros.map((t: any, i: number) => (
-                    <div key={t.id || i} className="flex items-center justify-between p-4 rounded-xl border border-border">
-                       <p className="text-sm font-bold uppercase">{t.descricao}</p>
-                       <p className="text-sm font-black text-primary">R$ {Number(t.valor).toLocaleString('pt-BR')}</p>
-                    </div>
-                  ))}
+                  {pecasTerceiros.map((peca: any) => {
+                    const f = formTerceiro(peca);
+                    const recebido = !!peca.terceiro_recebido_em;
+                    const custo = (custos as any[]).find(
+                      (c) => c.descricao === `${peca.status_peca} - ${peca.nome ?? 'Peça'}`
+                    );
+                    return (
+                      <div key={peca.id} className={`p-4 rounded-xl border space-y-4 ${recebido ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-300 bg-amber-50/30'}`}>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <p className="text-sm font-bold uppercase text-foreground">{peca.nome ?? 'Peça'}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              OS #{os.numero_os ?? os.id} · Enviado em {peca.terceiro_enviado_em ? new Date(peca.terceiro_enviado_em).toLocaleDateString('pt-BR') : '—'}
+                            </p>
+                          </div>
+                          <Badge variant="outline" className={`text-[9px] font-black uppercase tracking-widest ${recebido ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-amber-100 text-amber-700 border-amber-200'}`}>
+                            {recebido ? `Recebido em ${new Date(peca.terceiro_recebido_em).toLocaleDateString('pt-BR')}` : 'Fora da empresa'}
+                          </Badge>
+                        </div>
+
+                        <div className="grid gap-3 md:grid-cols-3">
+                          <div className="space-y-1">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Terceiro</Label>
+                            <Input
+                              className="h-9 text-sm bg-white"
+                              placeholder="Nome do terceiro"
+                              value={f.nome}
+                              onChange={(e) => setFormTerceiro(peca.id, { nome: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Prazo de Entrega</Label>
+                            <Input
+                              type="date"
+                              className="h-9 text-sm bg-white"
+                              value={f.prazo ? String(f.prazo).slice(0, 10) : ''}
+                              onChange={(e) => setFormTerceiro(peca.id, { prazo: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Observação</Label>
+                            <Input
+                              className="h-9 text-sm bg-white"
+                              placeholder="Serviço combinado, valores, etc."
+                              value={f.obs}
+                              onChange={(e) => setFormTerceiro(peca.id, { obs: e.target.value })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            {custo
+                              ? `Custo vinculado: R$ ${Number(custo.custo_interno ?? 0).toLocaleString('pt-BR')}`
+                              : 'Custo será gerado na aba Custos'}
+                          </p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              className="h-9 text-[10px] font-bold uppercase tracking-widest"
+                              onClick={() => handleSalvarTerceiro(peca)}
+                              disabled={salvandoTerceiro === peca.id}
+                            >
+                              Salvar
+                            </Button>
+                            {!recebido && (
+                              <Button
+                                className="h-9 text-[10px] font-black uppercase tracking-widest bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                                onClick={() => handleReceberTerceiro(peca)}
+                                disabled={salvandoTerceiro === peca.id}
+                              >
+                                <PackageCheck className="h-3.5 w-3.5" /> Dar baixa (recebido)
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                   <Users className="h-12 w-12 mb-4 opacity-20" />
-                  <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
-                  <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
+                  <p className="text-xs font-bold uppercase tracking-widest">Nenhuma peça enviada a terceiros nesta OS.</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mt-2 opacity-70">Marque uma peça como "Enviar a Terceiros" na aba Peças.</p>
                 </div>
               )}
             </CardContent>
