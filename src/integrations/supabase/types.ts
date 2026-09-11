@@ -357,34 +357,49 @@ export type Database = {
       }
       fornecedores: {
         Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
           ativo: boolean | null
           cnpj: string | null
           contato: string | null
           criado_em: string | null
           id: string
           limite_mensal: number | null
+          motivo_reprovacao: string | null
           nome: string
           observacoes: string | null
+          solicitado_por: string | null
+          status_cadastro: string
         }
         Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
           ativo?: boolean | null
           cnpj?: string | null
           contato?: string | null
           criado_em?: string | null
           id?: string
           limite_mensal?: number | null
+          motivo_reprovacao?: string | null
           nome: string
           observacoes?: string | null
+          solicitado_por?: string | null
+          status_cadastro?: string
         }
         Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
           ativo?: boolean | null
           cnpj?: string | null
           contato?: string | null
           criado_em?: string | null
           id?: string
           limite_mensal?: number | null
+          motivo_reprovacao?: string | null
           nome?: string
           observacoes?: string | null
+          solicitado_por?: string | null
+          status_cadastro?: string
         }
         Relationships: []
       }
@@ -986,11 +1001,14 @@ export type Database = {
           criado_em: string | null
           criado_por: string | null
           custo_interno: number | null
+          data_pagamento: string | null
           descricao: string
+          fornecedor_id: string | null
           id: string
           is_terceirizado: boolean | null
           margem_lucro_percentual: number | null
           os_id: string
+          pago: boolean
           preco_venda_final: number | null
           terceiro_nome: string | null
           valor_venda: number | null
@@ -1002,11 +1020,14 @@ export type Database = {
           criado_em?: string | null
           criado_por?: string | null
           custo_interno?: number | null
+          data_pagamento?: string | null
           descricao: string
+          fornecedor_id?: string | null
           id?: string
           is_terceirizado?: boolean | null
           margem_lucro_percentual?: number | null
           os_id: string
+          pago?: boolean
           preco_venda_final?: number | null
           terceiro_nome?: string | null
           valor_venda?: number | null
@@ -1018,11 +1039,14 @@ export type Database = {
           criado_em?: string | null
           criado_por?: string | null
           custo_interno?: number | null
+          data_pagamento?: string | null
           descricao?: string
+          fornecedor_id?: string | null
           id?: string
           is_terceirizado?: boolean | null
           margem_lucro_percentual?: number | null
           os_id?: string
+          pago?: boolean
           preco_venda_final?: number | null
           terceiro_nome?: string | null
           valor_venda?: number | null
@@ -1033,6 +1057,13 @@ export type Database = {
             columns: ["os_id"]
             isOneToOne: false
             referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_custos_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
             referencedColumns: ["id"]
           },
         ]

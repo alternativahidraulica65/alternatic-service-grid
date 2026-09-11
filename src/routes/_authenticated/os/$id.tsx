@@ -63,6 +63,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FotoThumb, FotoChecklist } from "@/components/FotoThumb";
+import { CustosOsPanel } from "@/components/CustosOsPanel";
+
 
 function descreverLog(log: any): string {
   if (log.status_anterior && log.status_novo && log.status_anterior !== log.status_novo) {
@@ -2065,90 +2067,9 @@ function GestaoOSPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="grid gap-6 md:grid-cols-3 mb-6">
-                <div className="p-4 rounded-xl border border-border bg-slate-50">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Mão de Obra</p>
-                  <p className="text-lg font-black text-foreground">
-                    R$ {custos.filter((c: any) => c.categoria === 'mao_de_obra').reduce((acc: number, curr: any) => acc + Number(curr.custo_interno ?? 0), 0).toLocaleString('pt-BR')}
-                  </p>
-                </div>
-                <div className="p-4 rounded-xl border border-border bg-slate-50">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Materiais/Peças</p>
-                  <p className="text-lg font-black text-foreground">
-                    R$ {custos.filter((c: any) => c.categoria === 'material').reduce((acc: number, curr: any) => acc + Number(curr.custo_interno ?? 0), 0).toLocaleString('pt-BR')}
-                  </p>
-                </div>
-                <div className="p-4 rounded-xl border border-primary/10 bg-primary/5">
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Custo Total</p>
-                  <p className="text-lg font-black text-primary">
-                    R$ {custos.reduce((acc: number, curr: any) => acc + Number(curr.custo_interno ?? 0), 0).toLocaleString('pt-BR')}
-                  </p>
-                </div>
-              </div>
-              {/* Custos gerados automaticamente pela destinação das peças */}
-              <div className="space-y-3 mb-6">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Itens vindos das peças (aguardando valores do gestor)
-                </p>
-                {loadingCustos ? (
-                  <Skeleton className="h-14 w-full" />
-                ) : custos.length > 0 ? (
-                  custos.map((custo: any) => {
-                    const semValor = !Number(custo.custo_interno ?? 0);
-                    return (
-                      <div
-                        key={custo.id}
-                        className={`p-3 rounded-xl border flex flex-col lg:flex-row lg:items-center justify-between gap-3 ${semValor ? 'border-amber-300 bg-amber-50/40' : 'border-border bg-card'}`}
-                      >
-                        <div>
-                          <p className="text-xs font-bold uppercase tracking-tight text-foreground">{custo.descricao}</p>
-                          <p className="text-[10px] font-bold uppercase text-muted-foreground">{custo.categoria}</p>
-                        </div>
-                        {podeVerValoresFinanceiros ? (
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="Custo interno"
-                              className="h-9 w-40 text-xs bg-white border-slate-200"
-                              defaultValue={custo.custo_interno ?? ''}
-                              onBlur={(e) => {
-                                const val = Number(e.target.value || 0);
-                                if (val !== Number(custo.custo_interno ?? 0)) {
-                                  handleUpdateCusto(custo.id, { custo_interno: val });
-                                }
-                              }}
-                            />
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="Valor de venda"
-                              className="h-9 w-40 text-xs bg-white border-slate-200"
-                              defaultValue={custo.valor_venda ?? ''}
-                              onBlur={(e) => {
-                                const val = Number(e.target.value || 0);
-                                if (val !== Number(custo.valor_venda ?? 0)) {
-                                  handleUpdateCusto(custo.id, { valor_venda: val });
-                                }
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest">
-                            {semValor ? 'Aguardando gestor' : 'Precificado'}
-                          </Badge>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="py-6 text-center opacity-40">
-                    <p className="text-[10px] font-bold uppercase">Nenhum custo lançado nesta OS.</p>
-                  </div>
-                )}
-              </div>
-
+              <CustosOsPanel osId={osId} profile={profile} osStatus={os?.status} />
             </CardContent>
+
           </Card>
         </TabsContent>
 
