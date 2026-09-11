@@ -75,7 +75,36 @@ export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogPro
       return;
     }
     queryClient.invalidateQueries({ queryKey: ["bancadas"] });
+    setEditando((prev) => ({ ...prev, [bancada.id]: false }));
     toast.success(`Técnico da ${bancada.codigo} atualizado`);
+  };
+
+  const osAbertas = (ordens ?? []).filter(
+    (o: any) => !STATUS_FINALIZADOS.includes(String(o.status)),
+  );
+
+  const adicionarOs = async (bancada: any) => {
+    const osId = osSelecionada[bancada.id];
+    if (!osId) {
+      toast.error("Selecione uma OS");
+      return;
+    }
+    const os: any = osPorId.get(String(osId));
+    const { error } = await supabase.from("os_pecas_rastreio" as any).insert({
+      os_id: osId,
+      nome: `Serviço ${os?.numero_os ?? "OS"}`,
+      bancada_id: bancada.id,
+      aprovado_gestor: false,
+      status_peca: "Refazer/Usinagem",
+    });
+    if (error) {
+      toast.error("Erro ao adicionar OS: " + error.message);
+      return;
+    }
+    setOsSelecionada((prev) => ({ ...prev, [bancada.id]: "" }));
+    queryClient.invalidateQueries({ queryKey: ["bancadas_fila"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard_gestor_pecas_todas"] });
+    toast.success(`OS adicionada à ${bancada.codigo}`);
   };
 
   const atualizarPeca = async (pecaId: string, updates: any, msg: string) => {
