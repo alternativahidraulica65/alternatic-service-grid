@@ -343,7 +343,14 @@ function DashboardGestor() {
                     <Skeleton className="h-24 w-full" />
                   </div>
                 ) : (
-                  items.map((os, i) => <KanbanCard key={os.id || i} os={os} />)
+                  items.map((os, i) => (
+                    <KanbanCard
+                      key={os.id || i}
+                      os={os}
+                      onOpen={(o: any) => navigate({ to: '/os/$id', params: { id: String(o.id) } })}
+                      onDragStart={(o: any) => setDragOsId(String(o.id))}
+                    />
+                  ))
                 )}
                 {!isLoading && items.length === 0 && (
                   <div className="h-20 flex items-center justify-center opacity-20">
