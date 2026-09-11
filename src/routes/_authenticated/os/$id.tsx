@@ -399,6 +399,35 @@ function GestaoOSPage() {
     }
   };
 
+  const handleBaixaUsinagem = async (peca: any) => {
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const userId = auth?.user?.id ?? null;
+
+      const { error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .update({ status_peca: 'concluida' })
+        .eq('id', peca.id);
+      if (error) throw error;
+
+      const statusOs = String(os?.status ?? '');
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: peca.os_id ?? osId,
+        status_anterior: statusOs || null,
+        status_novo: statusOs || 'em_andamento',
+        observacao: `Baixa de usinagem: serviço "${peca.nome ?? peca.descricao ?? 'Peça'}" concluído na bancada.`,
+        executor_id: userId,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['os_pecas', osId] });
+      queryClient.invalidateQueries({ queryKey: ['bancadas_fila'] });
+      queryClient.invalidateQueries({ queryKey: ['historico', osId] });
+      toast.success('Baixa registrada e gravada no histórico da OS');
+    } catch (e: any) {
+      toast.error('Erro ao dar baixa: ' + e.message);
+    }
+  };
+
   // Destinações que geram custo a ser preenchido pelo gestor
   const DESTINACOES_COM_CUSTO: Record<string, string> = {
     'Comprar Nova': 'material',
@@ -1571,6 +1600,33 @@ function GestaoOSPage() {
                               >
                                 {pendente ? 'Pendente' : peca.status_peca === 'Armazenagem' ? 'Armazenada' : 'Destinada'}
                               </Badge>
+                              {peca.bancada_id && peca.status_peca !== 'concluida' && (
+                                <>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-[9px] font-black uppercase tracking-widest justify-center ${peca.aprovado_gestor ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}
+                                  >
+                                    {peca.aprovado_gestor ? 'Usinagem liberada' : 'Usinagem pendente'}
+                                  </Badge>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-9 text-[9px] font-black uppercase"
+                                    disabled={!peca.aprovado_gestor}
+                                    onClick={() => handleBaixaUsinagem(peca)}
+                                  >
+                                    Dar baixa
+                                  </Button>
+                                </>
+                              )}
+                              {peca.status_peca === 'concluida' && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-[9px] font-black uppercase tracking-widest justify-center bg-slate-100 text-slate-600 border-slate-200"
+                                >
+                                  Usinagem concluída
+                                </Badge>
+                              )}
                             </div>
                           </div>
 
