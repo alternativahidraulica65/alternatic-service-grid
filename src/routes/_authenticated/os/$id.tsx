@@ -1609,20 +1609,51 @@ function GestaoOSPage() {
               {/* Rodapé do Card */}
               <div className="mt-12 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">
-                  Ao finalizar, o status da OS será alterado para "Aguardando Gestor".
+                  {laudoSalvo && !editandoLaudo
+                    ? "Laudo já registrado. Use o lápis para editar."
+                    : laudoSalvo
+                      ? "As edições serão registradas no histórico da OS."
+                      : 'Ao finalizar, o status da OS será alterado para "Aguardando Gestor".'}
                 </p>
-                <div className="flex gap-3">
-                  <Button variant="outline" className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300">
-                    Cancelar
-                  </Button>
-                  <Button 
-                    className="h-10 px-8 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200 gap-2"
-                    onClick={handleFinalizarLaudo}
-                    disabled={finalizingLaudo}
+                {laudoSalvo && !editandoLaudo ? (
+                  <Button
+                    variant="outline"
+                    className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300 gap-2"
+                    onClick={() => setEditandoLaudo(true)}
                   >
-                    {finalizingLaudo ? "Finalizando..." : "Finalizar Diagnóstico"}
+                    <Pencil className="h-3.5 w-3.5" /> Editar Laudo
                   </Button>
-                </div>
+                ) : (
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300"
+                      onClick={() => {
+                        if (laudoSalvo) setEditandoLaudo(false);
+                        else router.history.back();
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                    {laudoSalvo ? (
+                      <Button
+                        className="h-10 px-8 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200 gap-2"
+                        onClick={handleSalvarEdicaoLaudo}
+                        disabled={salvandoEdicaoLaudo}
+                      >
+                        {salvandoEdicaoLaudo ? "Salvando..." : "Salvar Alterações"}
+                      </Button>
+                    ) : (
+                      <Button 
+                        className="h-10 px-8 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200 gap-2"
+                        onClick={handleFinalizarLaudo}
+                        disabled={finalizingLaudo}
+                      >
+                        {finalizingLaudo ? "Finalizando..." : "Finalizar Diagnóstico"}
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
