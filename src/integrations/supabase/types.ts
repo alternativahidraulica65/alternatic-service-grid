@@ -592,8 +592,10 @@ export type Database = {
           criado_em: string
           dados_anteriores: Json | null
           dados_novos: Json | null
+          descricao: string | null
           entidade: string
           id: string
+          os_id: string | null
           os_numero: string | null
           registro_id: string | null
           usuario_id: string | null
@@ -604,8 +606,10 @@ export type Database = {
           criado_em?: string
           dados_anteriores?: Json | null
           dados_novos?: Json | null
-          entidade: string
+          descricao?: string | null
+          entidade?: string
           id?: string
+          os_id?: string | null
           os_numero?: string | null
           registro_id?: string | null
           usuario_id?: string | null
@@ -616,14 +620,23 @@ export type Database = {
           criado_em?: string
           dados_anteriores?: Json | null
           dados_novos?: Json | null
+          descricao?: string | null
           entidade?: string
           id?: string
+          os_id?: string | null
           os_numero?: string | null
           registro_id?: string | null
           usuario_id?: string | null
           usuario_nome?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "logs_sistema_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "logs_sistema_usuario_id_fkey"
             columns: ["usuario_id"]
