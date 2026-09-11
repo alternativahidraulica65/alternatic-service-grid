@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T21:18:15.557102+00:00",
+  "generated_at": "2026-09-11T22:04:00.539090+00:00",
   "files": [
     {
       "path": "components.json",
@@ -7,7 +7,7 @@
     },
     {
       "path": "vite.config.ts",
-      "bytes": 820
+      "bytes": 1195
     },
     {
       "path": "eslint.config.js",
@@ -27,7 +27,7 @@
     },
     {
       "path": "roadmap.md",
-      "bytes": 1998
+      "bytes": 1640
     },
     {
       "path": "tsconfig.json",
@@ -551,7 +551,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 27180
+      "bytes": 27206
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
@@ -588,6 +588,10 @@
     {
       "path": "src/integrations/supabase/auth-middleware.ts",
       "bytes": 3234
+    },
+    {
+      "path": "src/integrations/supabase/app-client.ts",
+      "bytes": 1354
     },
     {
       "path": "src/integrations/supabase/previewAuthStorage.ts",
@@ -786,6 +790,10 @@
     {
       "source": "vite.config.ts",
       "target": "@lovable.dev/vite-tanstack-config"
+    },
+    {
+      "source": "vite.config.ts",
+      "target": "node:path"
     },
     {
       "source": "eslint.config.js",
@@ -2702,6 +2710,10 @@
     {
       "source": "src/integrations/supabase/auth-middleware.ts",
       "target": "./types"
+    },
+    {
+      "source": "src/integrations/supabase/app-client.ts",
+      "target": "@supabase/supabase-js"
     },
     {
       "source": "src/components/ui/alert.tsx",
