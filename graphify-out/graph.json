@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T14:53:38.686632+00:00",
+  "generated_at": "2026-09-11T15:10:22.538880+00:00",
   "files": [
     {
       "path": "components.json",
@@ -406,6 +406,10 @@
       "bytes": 1249
     },
     {
+      "path": "src/components/FotoThumb.tsx",
+      "bytes": 4637
+    },
+    {
       "path": "src/components/OsAtrasadasDialog.tsx",
       "bytes": 3762
     },
@@ -511,7 +515,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 95565
+      "bytes": 94395
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -1034,6 +1038,30 @@
     {
       "source": "src/utils/export.ts",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/components/OsAtrasadasDialog.tsx",
@@ -2282,6 +2310,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
       "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.tsx",
+      "target": "@/components/FotoThumb"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
