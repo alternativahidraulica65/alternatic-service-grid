@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -65,6 +65,31 @@ export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogPro
 
   const osPorId = new Map((ordens ?? []).map((o: any) => [String(o.id), o]));
 
+  // Garante que qualquer peça marcada como "Refazer/Usinagem" sem bancada
+  // entre automaticamente na fila da bancada de usinagem (A5) como pendente.
+  useEffect(() => {
+    const sincronizarUsinagem = async () => {
+      const bancadaUsinagem = (bancadas as any[]).find((b: any) => b.is_usinagem);
+      if (!bancadaUsinagem) return;
+      const { data: pendentes, error } = await supabase
+        .from("os_pecas_rastreio" as any)
+        .select("id")
+        .is("bancada_id", null)
+        .ilike("status_peca", "refazer%usinagem%")
+        .not("status_peca", "in", "(concluida,finalizada,entregue,cancelada)");
+      if (error || !(pendentes ?? []).length) return;
+      const { error: updError } = await supabase
+        .from("os_pecas_rastreio" as any)
+        .update({ bancada_id: (bancadaUsinagem as any).id, aprovado_gestor: false })
+        .in("id", (pendentes as any[]).map((p: any) => p.id));
+      if (!updError) {
+        queryClient.invalidateQueries({ queryKey: ["bancadas_fila"] });
+      }
+    };
+    if (open && (bancadas as any[]).length > 0) sincronizarUsinagem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, (bancadas as any[]).length]);
+
   const salvarTecnico = async (bancada: any) => {
     const nome = (nomes[bancada.id] ?? bancada.tecnico_nome ?? "").trim();
     const { error } = await supabase
@@ -96,7 +121,7 @@ export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogPro
       nome: `Serviço ${os?.numero_os ?? "OS"}`,
       bancada_id: bancada.id,
       aprovado_gestor: false,
-      status_peca: "Refazer/Usinagem",
+      status_peca: "Refazer / Usinagem",
     });
     if (error) {
       toast.error("Erro ao adicionar OS: " + error.message);
