@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T17:17:18.991860+00:00",
+  "generated_at": "2026-09-11T17:25:35.284849+00:00",
   "files": [
     {
       "path": "components.json",
@@ -531,7 +531,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 94920
+      "bytes": 100632
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
