@@ -1571,6 +1571,33 @@ function GestaoOSPage() {
                               >
                                 {pendente ? 'Pendente' : peca.status_peca === 'Armazenagem' ? 'Armazenada' : 'Destinada'}
                               </Badge>
+                              {peca.bancada_id && peca.status_peca !== 'concluida' && (
+                                <>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-[9px] font-black uppercase tracking-widest justify-center ${peca.aprovado_gestor ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}
+                                  >
+                                    {peca.aprovado_gestor ? 'Usinagem liberada' : 'Usinagem pendente'}
+                                  </Badge>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-9 text-[9px] font-black uppercase"
+                                    disabled={!peca.aprovado_gestor}
+                                    onClick={() => handleBaixaUsinagem(peca)}
+                                  >
+                                    Dar baixa
+                                  </Button>
+                                </>
+                              )}
+                              {peca.status_peca === 'concluida' && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-[9px] font-black uppercase tracking-widest justify-center bg-slate-100 text-slate-600 border-slate-200"
+                                >
+                                  Usinagem concluída
+                                </Badge>
+                              )}
                             </div>
                           </div>
 
