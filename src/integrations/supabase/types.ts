@@ -829,6 +829,7 @@ export type Database = {
           cliente_id: string | null
           criado_em: string | null
           data_abertura: string | null
+          data_entrega: string | null
           data_previsao_conclusao: string | null
           descricao: string | null
           empresa_id: string | null
@@ -845,6 +846,7 @@ export type Database = {
           prioridade: string | null
           status: string
           tecnico_id: string | null
+          testado: boolean | null
           tipo_equipamento_id: string | null
           updated_at: string | null
           valor_total: number | null
@@ -854,6 +856,7 @@ export type Database = {
           cliente_id?: string | null
           criado_em?: string | null
           data_abertura?: string | null
+          data_entrega?: string | null
           data_previsao_conclusao?: string | null
           descricao?: string | null
           empresa_id?: string | null
@@ -870,6 +873,7 @@ export type Database = {
           prioridade?: string | null
           status?: string
           tecnico_id?: string | null
+          testado?: boolean | null
           tipo_equipamento_id?: string | null
           updated_at?: string | null
           valor_total?: number | null
@@ -879,6 +883,7 @@ export type Database = {
           cliente_id?: string | null
           criado_em?: string | null
           data_abertura?: string | null
+          data_entrega?: string | null
           data_previsao_conclusao?: string | null
           descricao?: string | null
           empresa_id?: string | null
@@ -895,6 +900,7 @@ export type Database = {
           prioridade?: string | null
           status?: string
           tecnico_id?: string | null
+          testado?: boolean | null
           tipo_equipamento_id?: string | null
           updated_at?: string | null
           valor_total?: number | null
