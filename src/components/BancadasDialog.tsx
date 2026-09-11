@@ -119,7 +119,38 @@ export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogPro
     }
     queryClient.invalidateQueries({ queryKey: ["bancadas_fila"] });
     queryClient.invalidateQueries({ queryKey: ["dashboard_gestor_pecas_pendentes"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard_gestor_pecas_todas"] });
     toast.success(msg);
+  };
+
+  const darBaixa = async (peca: any) => {
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const userId = auth?.user?.id ?? null;
+      const os: any = osPorId.get(String(peca.os_id));
+
+      const { error } = await supabase
+        .from("os_pecas_rastreio" as any)
+        .update({ status_peca: "concluida" })
+        .eq("id", peca.id);
+      if (error) throw error;
+
+      const statusOs = String(os?.status ?? "");
+      await supabase.from("historico_status_os" as any).insert({
+        os_id: peca.os_id,
+        status_anterior: statusOs || null,
+        status_novo: statusOs || "em_andamento",
+        observacao: `Baixa de usinagem: serviço "${peca.nome ?? "Peça"}" concluído na bancada.`,
+        executor_id: userId,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["bancadas_fila"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard_gestor_pecas_todas"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard_gestor_pecas_pendentes"] });
+      toast.success("Baixa registrada e gravada no histórico da OS");
+    } catch (e: any) {
+      toast.error("Erro ao dar baixa: " + e.message);
+    }
   };
 
   return (
