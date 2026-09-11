@@ -50,6 +50,8 @@ interface Item {
   irPara?: string | undefined;
   extra?: { label: string; onClick: () => void | Promise<void> } | null;
   removivel?: (() => void | Promise<void>) | null;
+  /** Retorna null se o item pode ser concluído, ou a mensagem do que falta. */
+  verificar?: (() => string | null) | undefined;
 }
 
 interface Bloco {
@@ -82,6 +84,12 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     itens: [],
   });
   const [atualizandoStatus, setAtualizandoStatus] = useState(false);
+  const [alertaItem, setAlertaItem] = useState<{
+    aberto: boolean;
+    titulo: string;
+    motivo: string;
+    irPara?: string | undefined;
+  }>({ aberto: false, titulo: "", motivo: "" });
 
   const { data: pecas = [], isLoading: loadingPecas } = useQuery({
     queryKey: ["os_pecas", osId],
@@ -348,6 +356,16 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     toast.success("Tarefa removida");
   };
 
+  const confirmarItem = (item: Item) => {
+    const motivo = item.verificar?.() ?? null;
+    if (motivo) {
+      setAlertaItem({ aberto: true, titulo: item.titulo, motivo, irPara: item.irPara });
+      return;
+    }
+    invalidarTudo();
+    toast.success(`"${item.titulo}" confirmado como concluído`);
+  };
+
   const blocos = useMemo<Bloco[]>(() => {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -368,6 +386,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
         : "Nenhum item avaliado ainda",
       situacao: checklistPreenchido ? "concluido" : "pendente",
       irPara: "checklist",
+      verificar: () =>
+        checklistPreenchido
+          ? null
+          : "A vistoria técnica ainda não foi finalizada. Avalie todos os itens do checklist antes de concluir esta etapa.",
     });
 
     const laudoOk = !!(os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios);
@@ -377,6 +399,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
       detalhe: laudoOk ? "Laudo registrado" : "Diagnóstico, defeitos e serviços necessários",
       situacao: laudoOk ? "concluido" : "pendente",
       irPara: "laudo-técnico",
+      verificar: () =>
+        laudoOk
+          ? null
+          : "O laudo técnico ainda não foi preenchido. Registre diagnóstico, defeitos e serviços necessários na aba Laudo Técnico.",
     });
 
     const prazoOrc = os?.prazo_orcamento ? new Date(os.prazo_orcamento) : null;
@@ -391,6 +417,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
           ? "atrasado"
           : "pendente",
       irPara: "orçamento",
+      verificar: () =>
+        orcamentoOk
+          ? null
+          : "O orçamento ainda não foi gerado. Lance os valores e gere o orçamento na aba Orçamento.",
     });
 
     const aprovado = ["aprovada", "usinagem", "montagem", "pronto", "entregue", "encerrado", "faturamento"].includes(
@@ -402,6 +432,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
       detalhe: `Status atual da OS: ${os?.status ?? "—"}`,
       situacao: aprovado ? "concluido" : "pendente",
       irPara: "aprovação",
+      verificar: () =>
+        aprovado
+          ? null
+          : "A aprovação do cliente ainda não foi registrada. Avance o status da OS após a aprovação.",
     });
 
     // 2. Peças
@@ -418,6 +452,10 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
             : `${p.status_peca}${p.localizacao_fisica || p.localizacao ? ` • ${p.localizacao_fisica || p.localizacao}` : ""}`,
         situacao: semDestino ? "pendente" : "concluido",
         irPara: "peças",
+        verificar: () =>
+          semDestino
+            ? "A peça ainda não tem destinação definida. Defina na aba Peças (comprar, usinar, terceiros ou armazenar)."
+            : null,
       };
     });
 
@@ -500,6 +538,12 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
           : `${Number(c.custo_interno).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} • ${c.pago ? `pago em ${dataBr(c.data_pagamento)}` : "a pagar"}`,
         situacao: semValor ? "pendente" : c.pago ? "concluido" : "pendente",
         irPara: "custos",
+        verificar: () =>
+          semValor
+            ? "O valor do custo ainda não foi lançado. Informe o valor na aba Custos."
+            : !c.pago
+              ? "O custo tem valor lançado, mas ainda não foi marcado como pago na aba Custos."
+              : null,
       };
     });
 
@@ -662,6 +706,16 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
                   </div>
 
                   <div className="flex items-center gap-1 shrink-0">
+                    {!item.onAcao && item.verificar && item.situacao !== "concluido" && (
+                      <Button
+                        size="sm"
+                        className="h-7 text-[9px] font-black uppercase"
+                        onClick={() => confirmarItem(item)}
+                      >
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Concluir
+                      </Button>
+                    )}
                     {item.acaoLabel && item.onAcao && (
                       <Button
                         size="sm"
@@ -778,6 +832,47 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
             >
               Entendi
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={alertaItem.aberto} onOpenChange={(aberto) => setAlertaItem((p) => ({ ...p, aberto }))}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg font-black uppercase tracking-tight flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              Não é possível concluir
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              {alertaItem.titulo}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs font-medium flex items-start gap-2">
+              <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+              {alertaItem.motivo}
+            </p>
+            <div className="flex gap-2">
+              {alertaItem.irPara && (
+                <Button
+                  variant="outline"
+                  className="flex-1 text-[10px] font-black uppercase"
+                  onClick={() => {
+                    const aba = alertaItem.irPara!;
+                    setAlertaItem({ aberto: false, titulo: "", motivo: "" });
+                    onIrParaAba(aba);
+                  }}
+                >
+                  Abrir aba
+                </Button>
+              )}
+              <Button
+                className="flex-1 text-[10px] font-black uppercase"
+                onClick={() => setAlertaItem({ aberto: false, titulo: "", motivo: "" })}
+              >
+                Entendi
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
