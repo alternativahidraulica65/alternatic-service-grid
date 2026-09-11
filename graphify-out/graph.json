@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T13:13:22.650373+00:00",
+  "generated_at": "2026-09-11T13:15:25.802020+00:00",
   "files": [
     {
       "path": "components.json",
@@ -398,6 +398,10 @@
       "bytes": 1249
     },
     {
+      "path": "src/components/OsAtrasadasDialog.tsx",
+      "bytes": 3762
+    },
+    {
       "path": "src/components/BancadasDialog.tsx",
       "bytes": 9790
     },
@@ -455,7 +459,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 13289
+      "bytes": 13805
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -1018,6 +1022,30 @@
     {
       "source": "src/utils/export.ts",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "@/components/ui/dialog"
     },
     {
       "source": "src/components/BancadasDialog.tsx",
@@ -1598,6 +1626,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/gestor.tsx",
       "target": "@/components/PecasDialog"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/gestor.tsx",
+      "target": "@/components/OsAtrasadasDialog"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
