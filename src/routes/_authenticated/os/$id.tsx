@@ -1102,7 +1102,8 @@ function GestaoOSPage() {
                       {(fotosOs as any[]).map((foto: any) => (
                         <FotoThumb
                           key={foto.id}
-                          url={foto.url_arquivo}
+                          url={foto.foto_url ?? foto.url_arquivo}
+                          path={foto.storage_path}
                           alt={foto.categoria || "Foto da OS"}
                           label={String(foto.categoria || 'registro').replace('checklist:', '')}
                         />
@@ -1343,7 +1344,8 @@ function GestaoOSPage() {
                                Ruim
                              </Button>
                               <FotoChecklist
-                                url={fotoDoItem(item)}
+                                url={fotoDoItem(item)?.url}
+                                path={fotoDoItem(item)?.path}
                                 obrigatoria={ruim && !fotoDoItem(item)}
                                 onUpload={() => handleChecklistPhoto(item.id)}
                               />
@@ -1451,7 +1453,8 @@ function GestaoOSPage() {
                           fotosInternas.map((foto, idx) => (
                             <FotoThumb
                               key={idx}
-                              url={foto.url_arquivo}
+                              url={foto.foto_url ?? foto.url_arquivo}
+                              path={foto.storage_path}
                               alt="Interna"
                               className="group relative h-20 w-full overflow-hidden rounded-lg border border-border shadow-sm bg-slate-50"
                             />
@@ -1475,7 +1478,8 @@ function GestaoOSPage() {
                           fotosPecas.map((foto, idx) => (
                             <FotoThumb
                               key={idx}
-                              url={foto.url_arquivo}
+                              url={foto.foto_url ?? foto.url_arquivo}
+                              path={foto.storage_path}
                               alt="Peça"
                               className="group relative h-20 w-full overflow-hidden rounded-lg border border-border shadow-sm bg-slate-50"
                             />
@@ -1650,6 +1654,7 @@ function GestaoOSPage() {
                                    <FotoThumb
                                      key={foto.id}
                                      url={foto.foto_url ?? foto.url_arquivo}
+                                     path={foto.storage_path}
                                      alt={`Foto de ${peca.nome ?? 'peça'}`}
                                      className="block h-16 w-16 rounded-lg overflow-hidden border border-border bg-slate-50"
                                    />
