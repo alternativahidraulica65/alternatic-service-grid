@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T18:46:50.265267+00:00",
+  "generated_at": "2026-09-11T20:26:59.762154+00:00",
   "files": [
     {
       "path": "components.json",
@@ -39,7 +39,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 27609
+      "bytes": 28475
     },
     {
       "path": "src/start.ts",
@@ -467,7 +467,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11314
+      "bytes": 11162
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -500,6 +500,10 @@
     {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
       "bytes": 11228
+    },
+    {
+      "path": "src/routes/_authenticated/dashboard/index.tsx",
+      "bytes": 341
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
@@ -862,6 +866,10 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/clientes/$id"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/dashboard/index"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -1762,6 +1770,10 @@
     {
       "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
       "target": "@/components/ui/separator"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/index.tsx",
+      "target": "@tanstack/react-router"
     },
     {
       "source": "src/routes/_authenticated/dashboard/diretor.tsx",
