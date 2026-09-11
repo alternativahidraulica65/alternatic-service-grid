@@ -63,6 +63,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FotoThumb, FotoChecklist } from "@/components/FotoThumb";
+import { CustosOsPanel } from "@/components/CustosOsPanel";
+
 
 function descreverLog(log: any): string {
   if (log.status_anterior && log.status_novo && log.status_anterior !== log.status_novo) {
