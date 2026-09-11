@@ -105,6 +105,7 @@ export function FotoThumb({ url, path, alt, label, className, imgClassName }: Fo
 
 interface FotoChecklistProps {
   url?: string | null;
+  path?: string | null;
   obrigatoria?: boolean;
   onUpload: () => void;
 }
@@ -113,12 +114,13 @@ interface FotoChecklistProps {
  * Foto de item de checklist: miniatura clicável (lightbox) + botão para trocar,
  * ou botão de envio quando ainda não há foto.
  */
-export function FotoChecklist({ url, obrigatoria, onUpload }: FotoChecklistProps) {
-  if (url) {
+export function FotoChecklist({ url, path, obrigatoria, onUpload }: FotoChecklistProps) {
+  if (url || path) {
     return (
       <div className="flex items-center gap-2">
         <FotoThumb
           url={url}
+          path={path}
           alt="Foto do item"
           className="h-9 w-9 rounded-md overflow-hidden border border-primary/40 bg-slate-50"
         />
