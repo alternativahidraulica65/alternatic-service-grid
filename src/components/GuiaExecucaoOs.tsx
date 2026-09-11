@@ -77,6 +77,11 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
   const [dialogAberto, setDialogAberto] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [nova, setNova] = useState({ titulo: "", descricao: "", prazo: "", responsavel: "" });
+  const [alertaConclusao, setAlertaConclusao] = useState<{ aberto: boolean; itens: string[] }>({
+    aberto: false,
+    itens: [],
+  });
+  const [atualizandoStatus, setAtualizandoStatus] = useState(false);
 
   const { data: pecas = [], isLoading: loadingPecas } = useQuery({
     queryKey: ["os_pecas", osId],
