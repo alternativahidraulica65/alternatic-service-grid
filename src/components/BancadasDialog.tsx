@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getExecutorEmail } from "@/lib/log-executor";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -167,6 +168,7 @@ export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogPro
         status_novo: statusOs || "em_andamento",
         observacao: `Baixa de usinagem: serviço "${peca.nome ?? "Peça"}" concluído na bancada.`,
         executor_id: userId,
+        executor_email: await getExecutorEmail(),
       });
 
       queryClient.invalidateQueries({ queryKey: ["bancadas_fila"] });

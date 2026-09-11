@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { getExecutorEmail } from "@/lib/log-executor";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   ArrowLeft, 
@@ -237,6 +238,7 @@ function NovaOSPage() {
         status_anterior: null,
         status_novo: 'aberta',
         observacao: `Ordem de serviço aberta (prioridade ${prioridade})`,
+        executor_email: await getExecutorEmail(),
       });
 
       // Upload das fotos de entrada

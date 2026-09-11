@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   ClipboardList, 
   Wrench, 
@@ -190,6 +191,7 @@ function GestaoOSPage() {
         status_novo: os?.status ?? null,
         observacao: `Tipo de equipamento alterado de "${nomeAnterior}" para "${nomeNovo}"`,
         executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
       });
       if (logError) console.warn('Falha ao registrar histórico:', logError.message);
 
@@ -418,6 +420,7 @@ function GestaoOSPage() {
         status_novo: statusOs || 'em_andamento',
         observacao: `Baixa de usinagem: serviço "${peca.nome ?? peca.descricao ?? 'Peça'}" concluído na bancada.`,
         executor_id: userId,
+        executor_email: await getExecutorEmail(),
       });
 
       queryClient.invalidateQueries({ queryKey: ['os_pecas', osId] });
@@ -695,6 +698,7 @@ function GestaoOSPage() {
         status_novo: 'vistoria',
         observacao: 'Checklist técnico finalizado e OS enviada para vistoria',
         executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
       });
 
       toast.success("Checklist finalizado", {
@@ -821,6 +825,7 @@ function GestaoOSPage() {
         status_novo: 'aguardando_gestor',
         observacao: 'Laudo técnico finalizado',
         executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
       });
 
       toast.success("Laudo Técnico finalizado", {
