@@ -1958,25 +1958,98 @@ function GestaoOSPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              {loadingTerceiros ? (
+              {loadingPecas ? (
                 <div className="space-y-4">
                   <Skeleton className="h-12 w-full" />
                   <Skeleton className="h-12 w-full" />
                 </div>
-              ) : terceiros.length > 0 ? (
+              ) : pecasTerceiros.length > 0 ? (
                 <div className="space-y-4">
-                  {terceiros.map((t: any, i: number) => (
-                    <div key={t.id || i} className="flex items-center justify-between p-4 rounded-xl border border-border">
-                       <p className="text-sm font-bold uppercase">{t.descricao}</p>
-                       <p className="text-sm font-black text-primary">R$ {Number(t.valor).toLocaleString('pt-BR')}</p>
-                    </div>
-                  ))}
+                  {pecasTerceiros.map((peca: any) => {
+                    const f = formTerceiro(peca);
+                    const recebido = !!peca.terceiro_recebido_em;
+                    const custo = (custos as any[]).find(
+                      (c) => c.descricao === `${peca.status_peca} - ${peca.nome ?? 'Peça'}`
+                    );
+                    return (
+                      <div key={peca.id} className={`p-4 rounded-xl border space-y-4 ${recebido ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-300 bg-amber-50/30'}`}>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <p className="text-sm font-bold uppercase text-foreground">{peca.nome ?? 'Peça'}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              OS #{os.numero_os ?? os.id} · Enviado em {peca.terceiro_enviado_em ? new Date(peca.terceiro_enviado_em).toLocaleDateString('pt-BR') : '—'}
+                            </p>
+                          </div>
+                          <Badge variant="outline" className={`text-[9px] font-black uppercase tracking-widest ${recebido ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-amber-100 text-amber-700 border-amber-200'}`}>
+                            {recebido ? `Recebido em ${new Date(peca.terceiro_recebido_em).toLocaleDateString('pt-BR')}` : 'Fora da empresa'}
+                          </Badge>
+                        </div>
+
+                        <div className="grid gap-3 md:grid-cols-3">
+                          <div className="space-y-1">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Terceiro</Label>
+                            <Input
+                              className="h-9 text-sm bg-white"
+                              placeholder="Nome do terceiro"
+                              value={f.nome}
+                              onChange={(e) => setFormTerceiro(peca.id, { nome: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Prazo de Entrega</Label>
+                            <Input
+                              type="date"
+                              className="h-9 text-sm bg-white"
+                              value={f.prazo ? String(f.prazo).slice(0, 10) : ''}
+                              onChange={(e) => setFormTerceiro(peca.id, { prazo: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Observação</Label>
+                            <Input
+                              className="h-9 text-sm bg-white"
+                              placeholder="Serviço combinado, valores, etc."
+                              value={f.obs}
+                              onChange={(e) => setFormTerceiro(peca.id, { obs: e.target.value })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            {custo
+                              ? `Custo vinculado: R$ ${Number(custo.custo_interno ?? 0).toLocaleString('pt-BR')}`
+                              : 'Custo será gerado na aba Custos'}
+                          </p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              className="h-9 text-[10px] font-bold uppercase tracking-widest"
+                              onClick={() => handleSalvarTerceiro(peca)}
+                              disabled={salvandoTerceiro === peca.id}
+                            >
+                              Salvar
+                            </Button>
+                            {!recebido && (
+                              <Button
+                                className="h-9 text-[10px] font-black uppercase tracking-widest bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                                onClick={() => handleReceberTerceiro(peca)}
+                                disabled={salvandoTerceiro === peca.id}
+                              >
+                                <PackageCheck className="h-3.5 w-3.5" /> Dar baixa (recebido)
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                   <Users className="h-12 w-12 mb-4 opacity-20" />
-                  <p className="text-xs font-bold uppercase tracking-widest">Nenhum serviço de terceiro registrado.</p>
-                  <Button variant="outline" className="mt-4 border-primary text-primary font-bold text-[10px] uppercase">Contratar Terceiro</Button>
+                  <p className="text-xs font-bold uppercase tracking-widest">Nenhuma peça enviada a terceiros nesta OS.</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mt-2 opacity-70">Marque uma peça como "Enviar a Terceiros" na aba Peças.</p>
                 </div>
               )}
             </CardContent>
