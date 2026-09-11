@@ -1490,36 +1490,56 @@ function GestaoOSPage() {
             </CardHeader>
             <CardContent className="pt-6">
               <div className="grid md:grid-cols-3 gap-8">
-                {/* Coluna da Esquerda: Textareas */}
+                {/* Coluna da Esquerda: Laudo */}
                 <div className="md:col-span-2 space-y-6">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Diagnóstico</Label>
-                    <Textarea 
-                      placeholder="Descreva o diagnóstico técnico..." 
-                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
-                      value={laudoData.diagnostico}
-                      onChange={(e) => setLaudoData(prev => ({ ...prev, diagnostico: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Defeitos</Label>
-                    <Textarea 
-                      placeholder="Liste os defeitos encontrados..." 
-                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
-                      value={laudoData.defeitos}
-                      onChange={(e) => setLaudoData(prev => ({ ...prev, defeitos: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Serviços Necessários</Label>
-                    <Textarea 
-                      placeholder="Descreva os serviços que precisam ser realizados..." 
-                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
-                      value={laudoData.servicos_necessarios}
-                      onChange={(e) => setLaudoData(prev => ({ ...prev, servicos_necessarios: e.target.value }))}
-                    />
-                  </div>
+                  {laudoSalvo && !editandoLaudo ? (
+                    <>
+                      {([
+                        ['Diagnóstico', laudoData.diagnostico],
+                        ['Defeitos', laudoData.defeitos],
+                        ['Serviços Necessários', laudoData.servicos_necessarios],
+                      ] as [string, string][]).map(([titulo, texto]) => (
+                        <div key={titulo} className="space-y-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{titulo}</Label>
+                          <div className="rounded-xl border border-border bg-slate-50/50 p-4 text-sm whitespace-pre-wrap min-h-[80px] text-slate-800">
+                            {texto || <span className="text-slate-400 font-bold text-[10px] uppercase">Não informado</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Diagnóstico</Label>
+                        <Textarea 
+                          placeholder="Descreva o diagnóstico técnico..." 
+                          className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                          value={laudoData.diagnostico}
+                          onChange={(e) => setLaudoData(prev => ({ ...prev, diagnostico: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Defeitos</Label>
+                        <Textarea 
+                          placeholder="Liste os defeitos encontrados..." 
+                          className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                          value={laudoData.defeitos}
+                          onChange={(e) => setLaudoData(prev => ({ ...prev, defeitos: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Serviços Necessários</Label>
+                        <Textarea 
+                          placeholder="Descreva os serviços que precisam ser realizados..." 
+                          className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                          value={laudoData.servicos_necessarios}
+                          onChange={(e) => setLaudoData(prev => ({ ...prev, servicos_necessarios: e.target.value }))}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
+
 
                 {/* Coluna da Direita: Fotos */}
                 <div className="space-y-8">
