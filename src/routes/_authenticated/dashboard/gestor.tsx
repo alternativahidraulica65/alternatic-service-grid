@@ -29,9 +29,25 @@ export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
   component: DashboardGestor,
 });
 
-function KanbanCard({ os }: any) {
+function KanbanCard({ os, onOpen, onDragStart }: any) {
+  const draggingRef = useRef(false);
   return (
-    <div className="p-3 rounded-lg bg-white border border-border hover:border-primary/50 transition-all shadow-sm">
+    <div
+      role="button"
+      tabIndex={0}
+      draggable
+      onDragStart={(e) => {
+        draggingRef.current = true;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(os.id));
+        onDragStart?.(os);
+      }}
+      onDragEnd={() => { setTimeout(() => { draggingRef.current = false; }, 50); }}
+      onClick={() => { if (!draggingRef.current) onOpen?.(os); }}
+      onKeyDown={(e) => { if (e.key === 'Enter') onOpen?.(os); }}
+      className="p-3 rounded-lg bg-white border border-border hover:border-primary/50 transition-all shadow-sm cursor-grab active:cursor-grabbing"
+    >
+
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">{os.numero_os ?? os.id}</span>
         <span className="text-[10px] text-muted-foreground">{os.criado_em ? new Date(os.criado_em).toLocaleDateString('pt-BR') : 'N/A'}</span>
