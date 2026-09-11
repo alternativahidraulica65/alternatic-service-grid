@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   Factory, 
   Settings, 
@@ -99,6 +100,7 @@ function DashboardGestor() {
       status_novo: novoStatus,
       observacao: 'Movido no Kanban do gestor',
       executor_id: auth?.user?.id ?? null,
+      executor_email: await getExecutorEmail(),
     });
 
     toast.success(`${os.numero_os ?? 'OS'} movida para ${novoStatus}`);

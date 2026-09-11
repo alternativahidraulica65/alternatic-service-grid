@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   ClipboardList, 
   Wrench, 
@@ -190,6 +191,7 @@ function GestaoOSPage() {
         status_novo: os?.status ?? null,
         observacao: `Tipo de equipamento alterado de "${nomeAnterior}" para "${nomeNovo}"`,
         executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
       });
       if (logError) console.warn('Falha ao registrar histórico:', logError.message);
 
@@ -418,6 +420,7 @@ function GestaoOSPage() {
         status_novo: statusOs || 'em_andamento',
         observacao: `Baixa de usinagem: serviço "${peca.nome ?? peca.descricao ?? 'Peça'}" concluído na bancada.`,
         executor_id: userId,
+        executor_email: await getExecutorEmail(),
       });
 
       queryClient.invalidateQueries({ queryKey: ['os_pecas', osId] });
@@ -695,6 +698,7 @@ function GestaoOSPage() {
         status_novo: 'vistoria',
         observacao: 'Checklist técnico finalizado e OS enviada para vistoria',
         executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
       });
 
       toast.success("Checklist finalizado", {
@@ -821,6 +825,7 @@ function GestaoOSPage() {
         status_novo: 'aguardando_gestor',
         observacao: 'Laudo técnico finalizado',
         executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
       });
 
       toast.success("Laudo Técnico finalizado", {
@@ -1210,6 +1215,8 @@ function GestaoOSPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{"Histórico"}</p>
                         <p className="text-xs font-bold text-foreground truncate">{descreverLog(log)}</p>
+                        <p className="text-[9px] font-bold text-primary truncate">{log.executor_email || 'usuário não identificado'}</p>
+
                       </div>
                       <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
                         {new Date(log.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
@@ -1235,6 +1242,8 @@ function GestaoOSPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{"Histórico"}</p>
                       <p className="text-xs font-bold text-foreground">{descreverLog(log)}</p>
+                      <p className="text-[9px] font-bold text-primary">{log.executor_email || 'usuário não identificado'}</p>
+
                     </div>
                     <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
                       {new Date(log.criado_em).toLocaleString('pt-BR')}

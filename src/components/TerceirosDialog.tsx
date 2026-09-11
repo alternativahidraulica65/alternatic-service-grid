@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { getExecutorEmail } from "@/lib/log-executor";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
@@ -121,6 +122,7 @@ export function TerceirosDialog({ open, onOpenChange, ordens }: TerceirosDialogP
           peca.terceiro_nome || "terceiro não informado"
         }.`,
         executor_id: userId,
+        executor_email: await getExecutorEmail(),
       });
 
       queryClient.invalidateQueries({ queryKey: ["gestor_terceiros_pecas"] });

@@ -448,6 +448,8 @@ function ClienteDetalhesPage() {
                                 <div>
                                    <p className="text-xs font-bold uppercase">{h.acao}</p>
                                    <p className="text-[10px] text-muted-foreground uppercase">{h.tabela}</p>
+                                   <p className="text-[10px] font-bold text-primary lowercase">{(h as any).executor_email || "usuário não identificado"}</p>
+
                                 </div>
                              </div>
                              <div className="text-[10px] font-medium text-muted-foreground">
