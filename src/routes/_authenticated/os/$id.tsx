@@ -1242,6 +1242,8 @@ function GestaoOSPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{"Histórico"}</p>
                       <p className="text-xs font-bold text-foreground">{descreverLog(log)}</p>
+                      <p className="text-[9px] font-bold text-primary">{log.executor_email || 'usuário não identificado'}</p>
+
                     </div>
                     <span className="text-[9px] font-medium text-muted-foreground uppercase shrink-0">
                       {new Date(log.criado_em).toLocaleString('pt-BR')}
