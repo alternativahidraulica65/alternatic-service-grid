@@ -721,21 +721,36 @@ function GestaoOSPage() {
   const [fotosInternas, setFotosInternas] = useState<any[]>([]);
   const [fotosPecas, setFotosPecas] = useState<any[]>([]);
   const [finalizingLaudo, setFinalizingLaudo] = useState(false);
+  const [editandoLaudo, setEditandoLaudo] = useState(false);
+  const [salvandoEdicaoLaudo, setSalvandoEdicaoLaudo] = useState(false);
 
   useEffect(() => {
     if (os) {
-      // O laudo é persistido na coluna oficial "observacao" (JSON).
+      // O laudo é persistido na coluna oficial "observacoes" (JSON).
+      const bruto = (os as any).observacoes ?? (os as any).observacao ?? "";
       let laudo: any = {};
       try {
-        laudo = os.observacao ? JSON.parse(os.observacao) : {};
+        laudo = bruto ? JSON.parse(bruto) : {};
       } catch {
-        laudo = { diagnostico: os.observacao ?? "" };
+        laudo = { diagnostico: bruto };
       }
       setLaudoData({
         diagnostico: laudo.diagnostico || "",
         defeitos: laudo.defeitos || "",
         servicos_necessarios: laudo.servicos_necessarios || ""
       });
+      setEditandoLaudo(false);
+    }
+  }, [os]);
+
+  const laudoSalvo = useMemo(() => {
+    const bruto = (os as any)?.observacoes ?? (os as any)?.observacao ?? "";
+    if (!bruto) return false;
+    try {
+      const j = JSON.parse(bruto);
+      return Boolean(j?.diagnostico || j?.defeitos || j?.servicos_necessarios);
+    } catch {
+      return Boolean(String(bruto).trim());
     }
   }, [os]);
 
@@ -839,6 +854,62 @@ function GestaoOSPage() {
       setFinalizingLaudo(false);
     }
   };
+
+  const handleSalvarEdicaoLaudo = async () => {
+    if (!laudoData.diagnostico || !laudoData.defeitos || !laudoData.servicos_necessarios) {
+      toast.error("Campos obrigatórios", {
+        description: "Preencha o diagnóstico, defeitos e serviços necessários."
+      });
+      return;
+    }
+    setSalvandoEdicaoLaudo(true);
+    try {
+      const bruto = (os as any)?.observacoes ?? "";
+      let anterior: any = {};
+      try { anterior = bruto ? JSON.parse(bruto) : {}; } catch { anterior = { diagnostico: bruto }; }
+
+      const rotulos: Record<string, string> = {
+        diagnostico: "Diagnóstico",
+        defeitos: "Defeitos",
+        servicos_necessarios: "Serviços Necessários",
+      };
+      const alterados = (Object.keys(rotulos) as (keyof typeof laudoData)[])
+        .filter((k) => (anterior?.[k] ?? "") !== laudoData[k])
+        .map((k) => rotulos[k as string]);
+
+      if (alterados.length === 0) {
+        setEditandoLaudo(false);
+        toast.info("Nenhuma alteração no laudo.");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ observacoes: JSON.stringify(laudoData) } as any)
+        .eq('id', osId);
+      if (error) throw error;
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: osId,
+        status_anterior: os?.status ?? null,
+        status_novo: os?.status ?? 'em_diagnostico',
+        observacao: `Laudo técnico editado (${alterados.join(', ')})`,
+        executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
+      });
+
+      toast.success("Laudo atualizado", { description: "Alteração registrada no histórico." });
+      setEditandoLaudo(false);
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
+    } catch (error: any) {
+      toast.error("Erro ao salvar laudo: " + error.message);
+    } finally {
+      setSalvandoEdicaoLaudo(false);
+    }
+  };
+
+
 
   if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
   if (!os) return <div className="p-10 text-center uppercase font-black text-red-500">Ordem de Serviço não encontrada.</div>;
@@ -1407,7 +1478,18 @@ function GestaoOSPage() {
                     Laudo Técnico
                   </CardTitle>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
+                  {laudoSalvo && !editandoLaudo && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      title="Editar laudo"
+                      className="h-7 w-7 border-slate-300"
+                      onClick={() => setEditandoLaudo(true)}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
                   <Badge variant="outline" className="h-7 text-[10px] font-bold uppercase border-slate-200">
                     Status: {os.status === 'aguardando_gestor' ? 'Aguardando Gestor' : 'Em Diagnóstico'}
                   </Badge>
@@ -1419,36 +1501,56 @@ function GestaoOSPage() {
             </CardHeader>
             <CardContent className="pt-6">
               <div className="grid md:grid-cols-3 gap-8">
-                {/* Coluna da Esquerda: Textareas */}
+                {/* Coluna da Esquerda: Laudo */}
                 <div className="md:col-span-2 space-y-6">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Diagnóstico</Label>
-                    <Textarea 
-                      placeholder="Descreva o diagnóstico técnico..." 
-                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
-                      value={laudoData.diagnostico}
-                      onChange={(e) => setLaudoData(prev => ({ ...prev, diagnostico: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Defeitos</Label>
-                    <Textarea 
-                      placeholder="Liste os defeitos encontrados..." 
-                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
-                      value={laudoData.defeitos}
-                      onChange={(e) => setLaudoData(prev => ({ ...prev, defeitos: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Serviços Necessários</Label>
-                    <Textarea 
-                      placeholder="Descreva os serviços que precisam ser realizados..." 
-                      className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
-                      value={laudoData.servicos_necessarios}
-                      onChange={(e) => setLaudoData(prev => ({ ...prev, servicos_necessarios: e.target.value }))}
-                    />
-                  </div>
+                  {laudoSalvo && !editandoLaudo ? (
+                    <>
+                      {([
+                        ['Diagnóstico', laudoData.diagnostico],
+                        ['Defeitos', laudoData.defeitos],
+                        ['Serviços Necessários', laudoData.servicos_necessarios],
+                      ] as [string, string][]).map(([titulo, texto]) => (
+                        <div key={titulo} className="space-y-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{titulo}</Label>
+                          <div className="rounded-xl border border-border bg-slate-50/50 p-4 text-sm whitespace-pre-wrap min-h-[80px] text-slate-800">
+                            {texto || <span className="text-slate-400 font-bold text-[10px] uppercase">Não informado</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Diagnóstico</Label>
+                        <Textarea 
+                          placeholder="Descreva o diagnóstico técnico..." 
+                          className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                          value={laudoData.diagnostico}
+                          onChange={(e) => setLaudoData(prev => ({ ...prev, diagnostico: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Defeitos</Label>
+                        <Textarea 
+                          placeholder="Liste os defeitos encontrados..." 
+                          className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                          value={laudoData.defeitos}
+                          onChange={(e) => setLaudoData(prev => ({ ...prev, defeitos: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Serviços Necessários</Label>
+                        <Textarea 
+                          placeholder="Descreva os serviços que precisam ser realizados..." 
+                          className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
+                          value={laudoData.servicos_necessarios}
+                          onChange={(e) => setLaudoData(prev => ({ ...prev, servicos_necessarios: e.target.value }))}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
+
 
                 {/* Coluna da Direita: Fotos */}
                 <div className="space-y-8">
@@ -1507,20 +1609,51 @@ function GestaoOSPage() {
               {/* Rodapé do Card */}
               <div className="mt-12 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">
-                  Ao finalizar, o status da OS será alterado para "Aguardando Gestor".
+                  {laudoSalvo && !editandoLaudo
+                    ? "Laudo já registrado. Use o lápis para editar."
+                    : laudoSalvo
+                      ? "As edições serão registradas no histórico da OS."
+                      : 'Ao finalizar, o status da OS será alterado para "Aguardando Gestor".'}
                 </p>
-                <div className="flex gap-3">
-                  <Button variant="outline" className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300">
-                    Cancelar
-                  </Button>
-                  <Button 
-                    className="h-10 px-8 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200 gap-2"
-                    onClick={handleFinalizarLaudo}
-                    disabled={finalizingLaudo}
+                {laudoSalvo && !editandoLaudo ? (
+                  <Button
+                    variant="outline"
+                    className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300 gap-2"
+                    onClick={() => setEditandoLaudo(true)}
                   >
-                    {finalizingLaudo ? "Finalizando..." : "Finalizar Diagnóstico"}
+                    <Pencil className="h-3.5 w-3.5" /> Editar Laudo
                   </Button>
-                </div>
+                ) : (
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      className="h-10 px-8 font-bold uppercase text-[10px] tracking-widest border-slate-300"
+                      onClick={() => {
+                        if (laudoSalvo) setEditandoLaudo(false);
+                        else router.history.back();
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                    {laudoSalvo ? (
+                      <Button
+                        className="h-10 px-8 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200 gap-2"
+                        onClick={handleSalvarEdicaoLaudo}
+                        disabled={salvandoEdicaoLaudo}
+                      >
+                        {salvandoEdicaoLaudo ? "Salvando..." : "Salvar Alterações"}
+                      </Button>
+                    ) : (
+                      <Button 
+                        className="h-10 px-8 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200 gap-2"
+                        onClick={handleFinalizarLaudo}
+                        disabled={finalizingLaudo}
+                      >
+                        {finalizingLaudo ? "Finalizando..." : "Finalizar Diagnóstico"}
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
