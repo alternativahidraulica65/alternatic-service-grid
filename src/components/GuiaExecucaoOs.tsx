@@ -11,9 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -75,6 +77,11 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
   const [dialogAberto, setDialogAberto] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [nova, setNova] = useState({ titulo: "", descricao: "", prazo: "", responsavel: "" });
+  const [alertaConclusao, setAlertaConclusao] = useState<{ aberto: boolean; itens: string[] }>({
+    aberto: false,
+    itens: [],
+  });
+  const [atualizandoStatus, setAtualizandoStatus] = useState(false);
 
   const { data: pecas = [], isLoading: loadingPecas } = useQuery({
     queryKey: ["os_pecas", osId],
@@ -151,13 +158,13 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     queryClient.invalidateQueries({ queryKey: ["bancadas_fila"] });
   };
 
-  const registrarLog = async (observacao: string) => {
+  const registrarLog = async (observacao: string, statusAnterior?: string | null, statusNovo?: string | null) => {
     try {
       const { data: auth } = await supabase.auth.getUser();
       await supabase.from("historico_status_os" as any).insert({
         os_id: osId,
-        status_anterior: os?.status ?? null,
-        status_novo: os?.status ?? "em_andamento",
+        status_anterior: statusAnterior ?? os?.status ?? null,
+        status_novo: statusNovo ?? os?.status ?? "em_andamento",
         observacao,
         executor_id: auth?.user?.id ?? null,
         executor_email: await getExecutorEmail(),
@@ -165,6 +172,105 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     } catch {
       /* log é complementar, não bloqueia a ação */
     }
+  };
+
+  const obterPendenciasObrigatorias = useMemo(() => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const lista = pecas as any[];
+    const listaCustos = custos as any[];
+    const pendencias: string[] = [];
+
+    const checklistPreenchido =
+      checklist.length > 0 && checklist.every((c: any) => c.estado || c.estado_atual);
+    if (!checklistPreenchido) pendencias.push("Vistoria técnica (checklist) não finalizada");
+
+    const laudoOk = !!(os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios);
+    if (!laudoOk) pendencias.push("Laudo técnico não preenchido");
+
+    const orcamentoOk = Number(os?.valor_total ?? 0) > 0;
+    if (!orcamentoOk) pendencias.push("Orçamento não gerado");
+
+    const aprovado = ["aprovada", "usinagem", "montagem", "pronto", "entregue", "encerrado", "faturamento"].includes(
+      String(os?.status ?? ""),
+    );
+    if (!aprovado) pendencias.push("Aprovação do cliente não registrada");
+
+    const pecasSemDestino = lista.filter(
+      (p: any) => !p.status_peca || p.status_peca === "Pendente de Destinação",
+    );
+    if (pecasSemDestino.length > 0) {
+      pendencias.push(`${pecasSemDestino.length} peça(s) sem destinação definida`);
+    }
+
+    const terceirosPendentes = lista.filter(
+      (p: any) =>
+        String(p.status_peca ?? "").toLowerCase().includes("terceiro") && !p.terceiro_recebido_em,
+    );
+    if (terceirosPendentes.length > 0) {
+      pendencias.push(`${terceirosPendentes.length} peça(s) enviada(s) a terceiros não recebida(s)`);
+    }
+
+    const bancadasPendentes = lista.filter(
+      (p: any) =>
+        p.bancada_id && !STATUS_PECA_FINAL.includes(String(p.status_peca ?? "").toLowerCase()),
+    );
+    if (bancadasPendentes.length > 0) {
+      pendencias.push(`${bancadasPendentes.length} serviço(s) em bancada não concluído(s)`);
+    }
+
+    const custosSemValor = listaCustos.filter((c: any) => !Number(c.custo_interno ?? 0));
+    if (custosSemValor.length > 0) {
+      pendencias.push(`${custosSemValor.length} custo(s) sem valor lançado`);
+    }
+
+    const custosNaoPagos = listaCustos.filter(
+      (c: any) => Number(c.custo_interno ?? 0) > 0 && !c.pago,
+    );
+    if (custosNaoPagos.length > 0) {
+      pendencias.push(`${custosNaoPagos.length} custo(s) em aberto não pago(s)`);
+    }
+
+    return pendencias;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pecas, custos, checklist, os]);
+
+  const osEstaEncerrada = ["encerrado", "entregue", "cancelada"].includes(String(os?.status ?? ""));
+
+  const alternarConclusaoOs = async (marcarConcluida: boolean) => {
+    if (marcarConcluida) {
+      const pendencias = obterPendenciasObrigatorias;
+      if (pendencias.length > 0) {
+        setAlertaConclusao({ aberto: true, itens: pendencias });
+        return;
+      }
+    }
+
+    setAtualizandoStatus(true);
+    const statusAnterior = String(os?.status ?? "");
+    const statusNovo = marcarConcluida ? "encerrado" : "pronto";
+
+    const { error } = await supabase
+      .from("ordens_servico" as any)
+      .update({ status: statusNovo, data_encerramento: marcarConcluida ? new Date().toISOString() : null })
+      .eq("id", osId);
+
+    setAtualizandoStatus(false);
+
+    if (error) {
+      toast.error("Erro ao atualizar status: " + error.message);
+      return;
+    }
+
+    await registrarLog(
+      marcarConcluida ? "OS concluída pelo gestor" : "OS reaberta pelo gestor",
+      statusAnterior,
+      statusNovo,
+    );
+
+    queryClient.invalidateQueries({ queryKey: ["os", osId] });
+    queryClient.invalidateQueries({ queryKey: ["os_historico", osId] });
+    toast.success(marcarConcluida ? "OS concluída com sucesso" : "OS reaberta");
   };
 
   const atualizarPeca = async (pecaId: string, updates: any, msg: string, log?: string) => {
@@ -472,6 +578,17 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
             <Badge className="bg-red-100 text-red-700 border-red-200 text-[9px] font-black uppercase">
               {atrasados} atrasados
             </Badge>
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5">
+              <Checkbox
+                id="concluir-os"
+                checked={osEstaEncerrada}
+                disabled={atualizandoStatus}
+                onCheckedChange={(v) => alternarConclusaoOs(Boolean(v))}
+              />
+              <Label htmlFor="concluir-os" className="text-[10px] font-black uppercase tracking-widest cursor-pointer">
+                OS concluída
+              </Label>
+            </div>
             <Button
               size="sm"
               className="h-8 text-[10px] font-black uppercase"
@@ -630,6 +747,36 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
               onClick={criarTarefa}
             >
               {salvando ? "Salvando..." : "Adicionar tarefa"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={alertaConclusao.aberto} onOpenChange={(aberto) => setAlertaConclusao((p) => ({ ...p, aberto }))}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg font-black uppercase tracking-tight flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              Não é possível concluir a OS
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Existem itens obrigatórios pendentes. Resolva-os antes de marcar a OS como concluída.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <ul className="space-y-2">
+              {alertaConclusao.itens.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-xs font-medium">
+                  <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Button
+              className="w-full text-[10px] font-black uppercase"
+              onClick={() => setAlertaConclusao({ aberto: false, itens: [] })}
+            >
+              Entendi
             </Button>
           </div>
         </DialogContent>
