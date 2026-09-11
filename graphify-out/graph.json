@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T16:32:42.684018+00:00",
+  "generated_at": "2026-09-11T16:55:58.777576+00:00",
   "files": [
     {
       "path": "components.json",
@@ -419,7 +419,7 @@
     },
     {
       "path": "src/components/BancadasDialog.tsx",
-      "bytes": 15034
+      "bytes": 16246
     },
     {
       "path": "src/components/ClientOnly.tsx",
