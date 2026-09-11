@@ -835,6 +835,47 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={alertaItem.aberto} onOpenChange={(aberto) => setAlertaItem((p) => ({ ...p, aberto }))}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg font-black uppercase tracking-tight flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              Não é possível concluir
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              {alertaItem.titulo}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs font-medium flex items-start gap-2">
+              <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+              {alertaItem.motivo}
+            </p>
+            <div className="flex gap-2">
+              {alertaItem.irPara && (
+                <Button
+                  variant="outline"
+                  className="flex-1 text-[10px] font-black uppercase"
+                  onClick={() => {
+                    const aba = alertaItem.irPara!;
+                    setAlertaItem({ aberto: false, titulo: "", motivo: "" });
+                    onIrParaAba(aba);
+                  }}
+                >
+                  Abrir aba
+                </Button>
+              )}
+              <Button
+                className="flex-1 text-[10px] font-black uppercase"
+                onClick={() => setAlertaItem({ aberto: false, titulo: "", motivo: "" })}
+              >
+                Entendi
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
