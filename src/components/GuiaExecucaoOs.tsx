@@ -235,6 +235,44 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pecas, custos, checklist, os]);
 
+  const osEstaEncerrada = ["encerrado", "entregue", "cancelada"].includes(String(os?.status ?? ""));
+
+  const alternarConclusaoOs = async (marcarConcluida: boolean) => {
+    if (marcarConcluida) {
+      const pendencias = obterPendenciasObrigatorias;
+      if (pendencias.length > 0) {
+        setAlertaConclusao({ aberto: true, itens: pendencias });
+        return;
+      }
+    }
+
+    setAtualizandoStatus(true);
+    const statusAnterior = String(os?.status ?? "");
+    const statusNovo = marcarConcluida ? "encerrado" : "pronto";
+
+    const { error } = await supabase
+      .from("ordens_servico" as any)
+      .update({ status: statusNovo, data_encerramento: marcarConcluida ? new Date().toISOString() : null })
+      .eq("id", osId);
+
+    setAtualizandoStatus(false);
+
+    if (error) {
+      toast.error("Erro ao atualizar status: " + error.message);
+      return;
+    }
+
+    await registrarLog(
+      marcarConcluida ? "OS concluída pelo gestor" : "OS reaberta pelo gestor",
+      statusAnterior,
+      statusNovo,
+    );
+
+    queryClient.invalidateQueries({ queryKey: ["os", osId] });
+    queryClient.invalidateQueries({ queryKey: ["os_historico", osId] });
+    toast.success(marcarConcluida ? "OS concluída com sucesso" : "OS reaberta");
+  };
+
   const atualizarPeca = async (pecaId: string, updates: any, msg: string, log?: string) => {
     const { error } = await supabase
       .from("os_pecas_rastreio" as any)
