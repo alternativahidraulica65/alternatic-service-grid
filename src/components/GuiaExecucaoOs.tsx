@@ -578,6 +578,17 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
             <Badge className="bg-red-100 text-red-700 border-red-200 text-[9px] font-black uppercase">
               {atrasados} atrasados
             </Badge>
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5">
+              <Checkbox
+                id="concluir-os"
+                checked={osEstaEncerrada}
+                disabled={atualizandoStatus}
+                onCheckedChange={(v) => alternarConclusaoOs(Boolean(v))}
+              />
+              <Label htmlFor="concluir-os" className="text-[10px] font-black uppercase tracking-widest cursor-pointer">
+                OS concluída
+              </Label>
+            </div>
             <Button
               size="sm"
               className="h-8 text-[10px] font-black uppercase"
