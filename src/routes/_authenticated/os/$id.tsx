@@ -64,6 +64,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FotoThumb, FotoChecklist } from "@/components/FotoThumb";
 import { CustosOsPanel } from "@/components/CustosOsPanel";
+import { GuiaExecucaoOs } from "@/components/GuiaExecucaoOs";
 
 
 function descreverLog(log: any): string {
@@ -2147,14 +2148,16 @@ function GestaoOSPage() {
             <CardHeader className="bg-muted/10 border-b border-border/50">
               <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
                 <Activity className="h-5 w-5 text-primary" />
-                Execução de Serviços
+                Guia de Execução — Próximos Passos
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Activity className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Aguardando início da execução.</p>
-              </div>
+              <GuiaExecucaoOs
+                osId={osId}
+                os={os}
+                profile={profile}
+                onIrParaAba={(aba) => setActiveTab(aba)}
+              />
             </CardContent>
           </Card>
         </TabsContent>
