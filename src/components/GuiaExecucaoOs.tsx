@@ -706,6 +706,16 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
                   </div>
 
                   <div className="flex items-center gap-1 shrink-0">
+                    {!item.onAcao && item.verificar && item.situacao !== "concluido" && (
+                      <Button
+                        size="sm"
+                        className="h-7 text-[9px] font-black uppercase"
+                        onClick={() => confirmarItem(item)}
+                      >
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Concluir
+                      </Button>
+                    )}
                     {item.acaoLabel && item.onAcao && (
                       <Button
                         size="sm"
