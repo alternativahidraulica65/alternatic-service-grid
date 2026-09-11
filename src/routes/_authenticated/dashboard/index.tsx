@@ -1,13 +1,29 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
-  beforeLoad: ({ context }) => {
-    const home = (context as any)?.homeDashboard || "operador";
-
-    if (home === "diretor") throw redirect({ to: "/dashboard/diretor", replace: true });
-    if (home === "financeiro") throw redirect({ to: "/dashboard/financeiro", replace: true });
-    if (home === "gestor") throw redirect({ to: "/dashboard/gestor", replace: true });
-    throw redirect({ to: "/dashboard/operador", replace: true });
-  },
-  component: () => null,
+  component: DashboardRedirect,
 });
+
+function DashboardRedirect() {
+  const context = Route.useRouteContext() as any;
+  const navigate = useNavigate();
+  const home = context?.homeDashboard || "operador";
+
+  useEffect(() => {
+    const destinos = {
+      diretor: "/dashboard/diretor",
+      financeiro: "/dashboard/financeiro",
+      gestor: "/dashboard/gestor",
+      operador: "/dashboard/operador",
+    } as const;
+    const destino = destinos[home as keyof typeof destinos] ?? "/dashboard/operador";
+    navigate({ to: destino, replace: true });
+  }, [home, navigate]);
+
+  return (
+    <div className="p-10 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+      Carregando painel...
+    </div>
+  );
+}
