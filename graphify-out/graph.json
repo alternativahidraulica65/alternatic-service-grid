@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T19:54:47.995373+00:00",
+  "generated_at": "2026-09-11T13:13:22.650373+00:00",
   "files": [
     {
       "path": "components.json",
@@ -455,7 +455,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 13284
+      "bytes": 13289
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
