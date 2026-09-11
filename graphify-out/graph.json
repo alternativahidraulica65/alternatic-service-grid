@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T17:04:26.528668+00:00",
+  "generated_at": "2026-09-11T17:17:18.991860+00:00",
   "files": [
     {
       "path": "components.json",
@@ -210,6 +210,10 @@
       "bytes": 2621
     },
     {
+      "path": "supabase/migrations/20260911171517_39adc852-9895-4aff-b424-8ec9470c862c.sql",
+      "bytes": 319
+    },
+    {
       "path": "supabase/migrations/20260816194804_e71a4819-984e-4ce8-926d-5d5147dcbbcf.sql",
       "bytes": 379
     },
@@ -406,6 +410,10 @@
       "bytes": 1371
     },
     {
+      "path": "src/lib/log-executor.ts",
+      "bytes": 356
+    },
+    {
       "path": "src/lib/utils.ts",
       "bytes": 169
     },
@@ -423,7 +431,7 @@
     },
     {
       "path": "src/components/BancadasDialog.tsx",
-      "bytes": 16246
+      "bytes": 16351
     },
     {
       "path": "src/components/ClientOnly.tsx",
@@ -431,7 +439,7 @@
     },
     {
       "path": "src/components/TerceirosDialog.tsx",
-      "bytes": 11942
+      "bytes": 12047
     },
     {
       "path": "src/components/PecasDialog.tsx",
@@ -483,7 +491,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 17741
+      "bytes": 17844
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -515,15 +523,15 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 22368
+      "bytes": 22528
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 32287
+      "bytes": 32392
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 94396
+      "bytes": 94920
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -555,7 +563,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 47229
+      "bytes": 47351
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -1036,6 +1044,10 @@
       "target": "@tanstack/react-router"
     },
     {
+      "source": "src/lib/log-executor.ts",
+      "target": "@/integrations/supabase/client"
+    },
+    {
       "source": "src/lib/utils.ts",
       "target": "clsx"
     },
@@ -1101,6 +1113,10 @@
     },
     {
       "source": "src/components/BancadasDialog.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
       "target": "@tanstack/react-query"
     },
     {
@@ -1150,6 +1166,10 @@
     {
       "source": "src/components/TerceirosDialog.tsx",
       "target": "react"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/lib/log-executor"
     },
     {
       "source": "src/components/TerceirosDialog.tsx",
@@ -1673,6 +1693,10 @@
     },
     {
       "source": "src/routes/_authenticated/dashboard/gestor.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/gestor.tsx",
       "target": "lucide-react"
     },
     {
@@ -2189,6 +2213,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
       "target": "@tanstack/react-query"
     },
     {
@@ -2242,6 +2270,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
       "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.tsx",
+      "target": "@/lib/log-executor"
     },
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
