@@ -407,7 +407,10 @@ function GestaoOSPage() {
   };
 
   const handleDefinirDestinacao = async (peca: any, destino: string) => {
-    await handleUpdatePeca(peca.id, { status_peca: destino });
+    const extras = destino === 'Terceiros'
+      ? { terceiro_enviado_em: peca.terceiro_enviado_em ?? new Date().toISOString(), terceiro_recebido_em: null, terceiro_recebido_por: null }
+      : {};
+    await handleUpdatePeca(peca.id, { status_peca: destino, ...extras });
 
     // Usinagem entra automaticamente na fila da bancada de usinagem (A5),
     // aguardando a liberação do gestor.

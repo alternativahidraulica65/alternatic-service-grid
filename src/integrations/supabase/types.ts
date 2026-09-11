@@ -1070,6 +1070,12 @@ export type Database = {
           observacao: string | null
           os_id: string
           status_peca: string | null
+          terceiro_enviado_em: string | null
+          terceiro_nome: string | null
+          terceiro_observacao: string | null
+          terceiro_prazo_entrega: string | null
+          terceiro_recebido_em: string | null
+          terceiro_recebido_por: string | null
         }
         Insert: {
           aprovado_gestor?: boolean
@@ -1084,6 +1090,12 @@ export type Database = {
           observacao?: string | null
           os_id: string
           status_peca?: string | null
+          terceiro_enviado_em?: string | null
+          terceiro_nome?: string | null
+          terceiro_observacao?: string | null
+          terceiro_prazo_entrega?: string | null
+          terceiro_recebido_em?: string | null
+          terceiro_recebido_por?: string | null
         }
         Update: {
           aprovado_gestor?: boolean
@@ -1098,6 +1110,12 @@ export type Database = {
           observacao?: string | null
           os_id?: string
           status_peca?: string | null
+          terceiro_enviado_em?: string | null
+          terceiro_nome?: string | null
+          terceiro_observacao?: string | null
+          terceiro_prazo_entrega?: string | null
+          terceiro_recebido_em?: string | null
+          terceiro_recebido_por?: string | null
         }
         Relationships: [
           {

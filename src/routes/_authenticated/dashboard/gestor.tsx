@@ -24,6 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BancadasDialog } from "@/components/BancadasDialog";
 import { PecasDialog, STATUS_FINALIZADOS } from "@/components/PecasDialog";
 import { OsAtrasadasDialog, isOsAtrasada } from "@/components/OsAtrasadasDialog";
+import { TerceirosDialog } from "@/components/TerceirosDialog";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
@@ -74,6 +75,7 @@ function DashboardGestor() {
   const [bancadasOpen, setBancadasOpen] = useState(false);
   const [pecasOpen, setPecasOpen] = useState(false);
   const [atrasadasOpen, setAtrasadasOpen] = useState(false);
+  const [terceirosOpen, setTerceirosOpen] = useState(false);
   const [dragOsId, setDragOsId] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -193,6 +195,19 @@ function DashboardGestor() {
     return [...atrasadas, ...pecas].slice(0, 6);
   }, [ordens, pecasPendentes]);
 
+  const { data: pecasTerceiros = [] } = useQuery({
+    queryKey: ['dashboard_gestor_pecas_terceiros'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .select('id, os_id')
+        .eq('status_peca', 'Terceiros')
+        .is('terceiro_recebido_em', null);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const { data: todasPecas = [] } = useQuery({
     queryKey: ['dashboard_gestor_pecas_todas'],
     queryFn: async () => {
@@ -295,8 +310,18 @@ function DashboardGestor() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-2 lg:col-span-1 border-border shadow-sm">
-          <CardHeader className="p-4"><CardTitle className="text-lg font-black">03</CardTitle></CardHeader>
+        <Card
+          role="button"
+          tabIndex={0}
+          onClick={() => setTerceirosOpen(true)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setTerceirosOpen(true); }}
+          className="col-span-2 lg:col-span-1 border-border shadow-sm cursor-pointer hover:border-primary/60 hover:shadow-md transition-all"
+        >
+          <CardHeader className="p-4">
+            <CardTitle className="text-lg font-black">
+              {pecasTerceiros.length.toString().padStart(2, '0')}
+            </CardTitle>
+          </CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Terceiros</CardContent>
         </Card>
         <Card
@@ -401,6 +426,7 @@ function DashboardGestor() {
       <BancadasDialog open={bancadasOpen} onOpenChange={setBancadasOpen} ordens={ordens as any[]} />
       <PecasDialog open={pecasOpen} onOpenChange={setPecasOpen} ordens={ordens as any[]} />
       <OsAtrasadasDialog open={atrasadasOpen} onOpenChange={setAtrasadasOpen} ordens={ordens as any[]} />
+      <TerceirosDialog open={terceirosOpen} onOpenChange={setTerceirosOpen} ordens={ordens as any[]} />
     </div>
 
   );
