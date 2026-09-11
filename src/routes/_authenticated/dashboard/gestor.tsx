@@ -295,8 +295,18 @@ function DashboardGestor() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-2 lg:col-span-1 border-border shadow-sm">
-          <CardHeader className="p-4"><CardTitle className="text-lg font-black">03</CardTitle></CardHeader>
+        <Card
+          role="button"
+          tabIndex={0}
+          onClick={() => setTerceirosOpen(true)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setTerceirosOpen(true); }}
+          className="col-span-2 lg:col-span-1 border-border shadow-sm cursor-pointer hover:border-primary/60 hover:shadow-md transition-all"
+        >
+          <CardHeader className="p-4">
+            <CardTitle className="text-lg font-black">
+              {pecasTerceiros.length.toString().padStart(2, '0')}
+            </CardTitle>
+          </CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase text-muted-foreground">Terceiros</CardContent>
         </Card>
         <Card
