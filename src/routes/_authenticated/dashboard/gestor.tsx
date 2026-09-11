@@ -24,6 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BancadasDialog } from "@/components/BancadasDialog";
 import { PecasDialog, STATUS_FINALIZADOS } from "@/components/PecasDialog";
 import { OsAtrasadasDialog, isOsAtrasada } from "@/components/OsAtrasadasDialog";
+import { TerceirosDialog } from "@/components/TerceirosDialog";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
@@ -74,6 +75,7 @@ function DashboardGestor() {
   const [bancadasOpen, setBancadasOpen] = useState(false);
   const [pecasOpen, setPecasOpen] = useState(false);
   const [atrasadasOpen, setAtrasadasOpen] = useState(false);
+  const [terceirosOpen, setTerceirosOpen] = useState(false);
   const [dragOsId, setDragOsId] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -192,6 +194,19 @@ function DashboardGestor() {
 
     return [...atrasadas, ...pecas].slice(0, 6);
   }, [ordens, pecasPendentes]);
+
+  const { data: pecasTerceiros = [] } = useQuery({
+    queryKey: ['dashboard_gestor_pecas_terceiros'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('os_pecas_rastreio' as any)
+        .select('id, os_id')
+        .eq('status_peca', 'Terceiros')
+        .is('terceiro_recebido_em', null);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
 
   const { data: todasPecas = [] } = useQuery({
     queryKey: ['dashboard_gestor_pecas_todas'],
@@ -411,6 +426,7 @@ function DashboardGestor() {
       <BancadasDialog open={bancadasOpen} onOpenChange={setBancadasOpen} ordens={ordens as any[]} />
       <PecasDialog open={pecasOpen} onOpenChange={setPecasOpen} ordens={ordens as any[]} />
       <OsAtrasadasDialog open={atrasadasOpen} onOpenChange={setAtrasadasOpen} ordens={ordens as any[]} />
+      <TerceirosDialog open={terceirosOpen} onOpenChange={setTerceirosOpen} ordens={ordens as any[]} />
     </div>
 
   );
