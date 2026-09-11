@@ -1478,7 +1478,18 @@ function GestaoOSPage() {
                     Laudo Técnico
                   </CardTitle>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
+                  {laudoSalvo && !editandoLaudo && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      title="Editar laudo"
+                      className="h-7 w-7 border-slate-300"
+                      onClick={() => setEditandoLaudo(true)}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
                   <Badge variant="outline" className="h-7 text-[10px] font-bold uppercase border-slate-200">
                     Status: {os.status === 'aguardando_gestor' ? 'Aguardando Gestor' : 'Em Diagnóstico'}
                   </Badge>
