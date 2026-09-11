@@ -45,11 +45,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     const home = homeDashboard || "operador";
     const path = location.pathname.replace(/\/+$/, "");
 
-    // /dashboard -> painel do perfil
-    if (path === "/dashboard") {
-      throw redirect({ to: `/dashboard/${home}` as any, replace: true });
-    }
-
     // Bloqueia acesso a painel de outro perfil (exceto diretor/dev)
     const view = path.split("/")[2] ?? "";
     const known = ["diretor", "financeiro", "gestor", "operador"];
