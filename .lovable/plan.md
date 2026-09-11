@@ -1,31 +1,30 @@
-# Unificar bancos de dados duplicados
+# Unificar em um único banco de dados
 
 ## Diagnóstico confirmado
 
-Existem DOIS bancos de dados ativos:
+Existem DOIS bancos ativos hoje:
 
-1. **Banco do app** (gerenciado pelo Lovable, usado pelo código hoje): `omyaiprywidpxtbnntiq`
-   - Contém tudo que construímos: ordens_servico, os_pecas_rastreio, os_custos, bancadas, os_tarefas, historico_status_os, usuarios, user_roles, fornecedores, clientes etc.
-2. **Banco da imagem do usuário**: `mpwnrcxyyeqftrejwmmx`
-   - Contém tabelas diferentes: configuracoes_empresa, profiles, equipamentos, terceirizados, logs_auditoria, materia_prima_precos, vendedor_clientes, além de clientes, ordens_servico, usuarios, fornecedores.
-   - Acesso confirmado (tabelas respondem 200 via API).
+1. **Banco atual do app** (`omyaiprywidpxtbnntiq`) — é para onde o código aponta. Contém tudo que construímos: ordens_servico, os_pecas_rastreio, os_custos, bancadas, os_tarefas, historico_status_os, usuarios, user_roles, clientes, fornecedores, orcamentos etc.
+2. **Seu banco oficial** (`mpwnrcxyyeqftrejwmmx`, o da imagem) — acesso já validado. Contém tabelas que não existem no banco do app: configuracoes_empresa, profiles, equipamentos, terceirizados, logs_auditoria, materia_prima_precos, vendedor_clientes, além de clientes, ordens_servico, usuarios, fornecedores.
 
-**Conclusão**: não há dados falsos — o app está olhando para um banco e o usuário para outro. Isso explica por que a tabela configuracoes_empresa "existia" para o usuário mas não para nós.
+Não havia dados falsos: o app estava gravando em um banco e você olhando outro.
 
-## Objetivo
+## Regra permanente
 
-O app deve usar UM único banco: o `mpwnrcxyyeqftrejwmmx` (o banco oficial do usuário).
+**Um único banco: o Supabase `mpwnrcxyyeqftrejwmmx`.** Nenhum outro banco pode ser criado ou usado neste projeto. Vou gravar isso na memória do projeto para valer em todas as sessões futuras.
 
-## Plano
+## Etapas
 
-1. **Inventário completo do banco oficial** — listar todas as tabelas e colunas do `mpwnrcxyyeqftrejwmmx` para mapear diferenças de estrutura (ex.: profiles vs usuarios, equipamentos vs cliente_equipamentos, logs_auditoria vs logs_sistema).
-2. **Apontar o app para o banco oficial** — trocar as credenciais/URL de conexão do projeto Lovable para `mpwnrcxyyeqftrejwmmx` (o segredo EXTERNAL_SUPABASE_SECRET_KEY já funciona nele).
-3. **Criar no banco oficial o que falta** — migration incremental com as tabelas/colunas que o app precisa e não existem lá (bancadas, os_tarefas, historico_status_os, colunas de terceiros/pagamento etc.), sem DROP nem perda de dados.
-4. **Migrar dados essenciais** (se houver dados reais no banco do app que devam ser preservados) — copiar linhas de ordens_servico, os_pecas_rastreio, os_custos etc. para o banco oficial. Se o usuário confirmar que os dados atuais do app são só teste, pular esta etapa.
-5. **Adaptar o código** onde os nomes de tabela/coluna divergirem (profiles vs usuarios etc.), mantendo o Supabase como fonte única de verdade.
-6. **Validar** — login, dashboards, detalhe da OS e lista de peças apontando para o banco oficial.
+1. **Inventário completo do banco oficial** — todas as tabelas, colunas, chaves, políticas de acesso e funções, para mapear o que existe, o que falta e onde os nomes divergem (profiles vs usuarios, equipamentos vs cliente_equipamentos, logs_auditoria vs logs_sistema, terceirizados).
+2. **Completar o esquema do banco oficial** — migration incremental criando somente o que falta para o app funcionar (bancadas, os_tarefas, historico_status_os, colunas de terceiros, pagamento de custos, prazo de orçamento, entrega/testado etc.), com as permissões e regras de acesso corretas. Sem apagar nada do que já existe lá.
+3. **Migrar os dados** do banco atual para o oficial, na ordem de dependência (clientes, usuários/perfis, fornecedores, ordens de serviço, peças, custos, checklists, laudos, fotos, logs). Registros que já existirem no destino não são duplicados; nada é apagado na origem.
+4. **Migrar contas de acesso e arquivos** — usuários/senhas de login e os arquivos guardados (fotos das peças, comprovantes, PDFs de orçamento) precisam ser recriados/copiados no banco oficial para que login e imagens continuem funcionando.
+5. **Apontar o app para o banco oficial** — trocar a conexão do projeto e ajustar o código onde os nomes de tabela/coluna divergirem.
+6. **Validar de ponta a ponta** — login por perfil, dashboards, detalhe da OS, peças, bancadas, terceiros, custos e logs, todos lendo do banco oficial.
 
-## Decisões que preciso de você
+## Observações técnicas
 
-- Confirmar que o banco oficial é mesmo o `mpwnrcxyyeqftrejwmmx` (o da imagem).
-- Os dados atuais dentro do app (OS de teste, peças, custos) devem ser migrados ou podem ser descartados?
+- O segredo de acesso ao banco oficial já existe no projeto e responde corretamente via API.
+- A migração dos dados será feita por script, tabela a tabela, com verificação de contagem antes e depois.
+- Contas de autenticação não são copiáveis por SQL comum: serão recriadas com senha temporária e você define a definitiva no primeiro acesso, a menos que você prefira outra abordagem.
+- Nenhum DROP TABLE nem exclusão de dados será executado em nenhum dos dois bancos.
