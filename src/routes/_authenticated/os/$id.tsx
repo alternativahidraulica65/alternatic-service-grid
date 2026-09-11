@@ -808,7 +808,7 @@ function GestaoOSPage() {
       const { error } = await supabase
         .from('ordens_servico')
         .update({
-          observacao: JSON.stringify(laudoData),
+          observacoes: JSON.stringify(laudoData),
           status: 'aguardando_gestor'
         } as any)
         .eq('id', osId);
