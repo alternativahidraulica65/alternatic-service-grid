@@ -855,6 +855,62 @@ function GestaoOSPage() {
     }
   };
 
+  const handleSalvarEdicaoLaudo = async () => {
+    if (!laudoData.diagnostico || !laudoData.defeitos || !laudoData.servicos_necessarios) {
+      toast.error("Campos obrigatórios", {
+        description: "Preencha o diagnóstico, defeitos e serviços necessários."
+      });
+      return;
+    }
+    setSalvandoEdicaoLaudo(true);
+    try {
+      const bruto = (os as any)?.observacoes ?? "";
+      let anterior: any = {};
+      try { anterior = bruto ? JSON.parse(bruto) : {}; } catch { anterior = { diagnostico: bruto }; }
+
+      const rotulos: Record<string, string> = {
+        diagnostico: "Diagnóstico",
+        defeitos: "Defeitos",
+        servicos_necessarios: "Serviços Necessários",
+      };
+      const alterados = (Object.keys(rotulos) as (keyof typeof laudoData)[])
+        .filter((k) => (anterior?.[k] ?? "") !== laudoData[k])
+        .map((k) => rotulos[k as string]);
+
+      if (alterados.length === 0) {
+        setEditandoLaudo(false);
+        toast.info("Nenhuma alteração no laudo.");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('ordens_servico')
+        .update({ observacoes: JSON.stringify(laudoData) } as any)
+        .eq('id', osId);
+      if (error) throw error;
+
+      await supabase.from('historico_status_os' as any).insert({
+        os_id: osId,
+        status_anterior: os?.status ?? null,
+        status_novo: os?.status ?? 'em_diagnostico',
+        observacao: `Laudo técnico editado (${alterados.join(', ')})`,
+        executor_id: profile?.id ?? null,
+        executor_email: await getExecutorEmail(),
+      });
+
+      toast.success("Laudo atualizado", { description: "Alteração registrada no histórico." });
+      setEditandoLaudo(false);
+      queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
+      queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
+    } catch (error: any) {
+      toast.error("Erro ao salvar laudo: " + error.message);
+    } finally {
+      setSalvandoEdicaoLaudo(false);
+    }
+  };
+
+
+
   if (isLoading) return <div className="p-10 text-center uppercase font-black text-slate-400 animate-pulse">Carregando OS...</div>;
   if (!os) return <div className="p-10 text-center uppercase font-black text-red-500">Ordem de Serviço não encontrada.</div>;
 
