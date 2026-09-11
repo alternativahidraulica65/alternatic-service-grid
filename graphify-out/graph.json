@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T13:41:49.369273+00:00",
+  "generated_at": "2026-09-11T14:42:17.846709+00:00",
   "files": [
     {
       "path": "components.json",
@@ -266,6 +266,10 @@
       "bytes": 750
     },
     {
+      "path": "supabase/migrations/20260911144018_7b9d2200-fccb-46ff-9c93-cf727437505a.sql",
+      "bytes": 521
+    },
+    {
       "path": "supabase/migrations/20260819232637_0315354a-c652-4757-a9da-47600ce45eef.sql",
       "bytes": 2098
     },
@@ -414,6 +418,10 @@
       "bytes": 370
     },
     {
+      "path": "src/components/TerceirosDialog.tsx",
+      "bytes": 11942
+    },
+    {
       "path": "src/components/PecasDialog.tsx",
       "bytes": 8694
     },
@@ -463,7 +471,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 16731
+      "bytes": 17741
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -503,7 +511,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 92546
+      "bytes": 92755
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -535,7 +543,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 45977
+      "bytes": 46799
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -1104,6 +1112,46 @@
       "target": "react"
     },
     {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
       "source": "src/components/PecasDialog.tsx",
       "target": "react"
     },
@@ -1642,6 +1690,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/gestor.tsx",
       "target": "@/components/OsAtrasadasDialog"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/gestor.tsx",
+      "target": "@/components/TerceirosDialog"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
