@@ -166,20 +166,66 @@ export function BancadasDialog({ open, onOpenChange, ordens }: BancadasDialogPro
 
                 <div className="flex items-center gap-2">
                   <UserCheck className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <Input
-                    className="h-8 text-xs"
-                    placeholder="Nome do técnico"
-                    value={nomes[b.id] ?? b.tecnico_nome ?? ""}
-                    onChange={(e) => setNomes((prev) => ({ ...prev, [b.id]: e.target.value }))}
-                  />
+                  {b.tecnico_nome && !editando[b.id] ? (
+                    <>
+                      <p className="flex-1 text-xs font-bold truncate">{b.tecnico_nome}</p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-[10px] font-bold uppercase"
+                        onClick={() => {
+                          setNomes((prev) => ({ ...prev, [b.id]: b.tecnico_nome ?? "" }));
+                          setEditando((prev) => ({ ...prev, [b.id]: true }));
+                        }}
+                      >
+                        <Pencil className="h-3 w-3 mr-1" /> Editar
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Input
+                        className="h-8 text-xs"
+                        placeholder="Nome do técnico"
+                        value={nomes[b.id] ?? b.tecnico_nome ?? ""}
+                        onChange={(e) => setNomes((prev) => ({ ...prev, [b.id]: e.target.value }))}
+                      />
+                      <Button
+                        size="sm"
+                        className="h-8 text-[10px] font-bold uppercase"
+                        onClick={() => salvarTecnico(b)}
+                      >
+                        Salvar
+                      </Button>
+                    </>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={osSelecionada[b.id] ?? ""}
+                    onValueChange={(val) => setOsSelecionada((prev) => ({ ...prev, [b.id]: val }))}
+                  >
+                    <SelectTrigger className="h-8 flex-1 text-[10px] font-bold uppercase">
+                      <SelectValue placeholder="Adicionar OS na bancada" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {osAbertas.map((o: any) => (
+                        <SelectItem key={o.id} value={String(o.id)} className="text-[10px] font-bold uppercase">
+                          {o.numero_os ?? String(o.id).slice(0, 8)} — {o.cliente ?? "S/ Cliente"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Button
                     size="sm"
+                    variant="outline"
                     className="h-8 text-[10px] font-bold uppercase"
-                    onClick={() => salvarTecnico(b)}
+                    onClick={() => adicionarOs(b)}
                   >
-                    Salvar
+                    <Plus className="h-3 w-3 mr-1" /> Add
                   </Button>
                 </div>
+
 
                 <div className="space-y-2">
                   {itens.length === 0 ? (
