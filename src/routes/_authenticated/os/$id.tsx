@@ -61,6 +61,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FotoThumb, FotoChecklist } from "@/components/FotoThumb";
 
 function descreverLog(log: any): string {
   if (log.status_anterior && log.status_novo && log.status_anterior !== log.status_novo) {
@@ -616,7 +617,9 @@ function GestaoOSPage() {
         const { data: urlData } = supabase.storage.from('os-assets').getPublicUrl(fileName);
         const { error: anexoError } = await supabase.from('fotos_anexos' as any).insert({
           os_id: osId,
-          url_arquivo: urlData.publicUrl,
+          foto_url: urlData.publicUrl,
+          storage_path: fileName,
+          bucket: 'os-assets',
           categoria: `checklist:${item?.item ?? itemId}`,
         });
         if (anexoError) throw anexoError;
@@ -657,10 +660,12 @@ function GestaoOSPage() {
     enabled: osId !== null,
   });
 
-  const fotoDoItem = (item: any) =>
-    (fotosChecklist as any[]).find(
+  const fotoDoItem = (item: any) => {
+    const foto = (fotosChecklist as any[]).find(
       (f: any) => String(f.categoria).toLowerCase() === `checklist:${String(item?.item ?? '').toLowerCase()}`,
-    )?.url_arquivo ?? null;
+    );
+    return foto ? { url: foto.foto_url ?? foto.url_arquivo ?? null, path: foto.storage_path ?? null } : null;
+  };
 
   const handleFinalizarChecklist = async () => {
     const itemsPendingPhoto = checklistData.filter((item: any) => 
@@ -774,7 +779,9 @@ function GestaoOSPage() {
           
           await supabase.from('fotos_anexos' as any).insert({
             os_id: osId,
-            url_arquivo: urlData.publicUrl,
+            foto_url: urlData.publicUrl,
+            storage_path: fileName,
+            bucket: 'os-assets',
             categoria: tipo
           });
         } catch (error: any) {
@@ -1093,25 +1100,13 @@ function GestaoOSPage() {
                   {fotosOs.length > 0 ? (
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                       {(fotosOs as any[]).map((foto: any) => (
-                        <a
+                        <FotoThumb
                           key={foto.id}
-                          href={foto.url_arquivo}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group relative aspect-square overflow-hidden rounded-lg border border-border/60 bg-slate-50"
-                        >
-                          <img
-                            src={foto.url_arquivo}
-                            alt={foto.categoria || "Foto da OS"}
-                            loading="lazy"
-                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                          />
-                          <div className="absolute inset-x-0 bottom-0 bg-black/60 px-1.5 py-1">
-                            <p className="text-[8px] font-bold uppercase tracking-widest text-white truncate">
-                              {String(foto.categoria || 'registro').replace('checklist:', '')}
-                            </p>
-                          </div>
-                        </a>
+                          url={foto.foto_url ?? foto.url_arquivo}
+                          path={foto.storage_path}
+                          alt={foto.categoria || "Foto da OS"}
+                          label={String(foto.categoria || 'registro').replace('checklist:', '')}
+                        />
                       ))}
                     </div>
                   ) : (
@@ -1348,24 +1343,12 @@ function GestaoOSPage() {
                                <AlertTriangle className="h-4 w-4" />
                                Ruim
                              </Button>
-                             <div className="relative group">
-                               {fotoDoItem(item) && (
-                                 <div className="absolute -top-28 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                                   <img src={fotoDoItem(item)} className="h-24 w-24 object-cover rounded-lg border-2 border-primary shadow-2xl" />
-                                 </div>
-                               )}
-                               <Button
-                                 variant={fotoDoItem(item) ? 'default' : 'outline'}
-                                 size="sm"
-                                 className={`h-9 gap-2 px-3 ${!fotoDoItem(item) && ruim ? 'border-red-500 text-red-500 animate-pulse' : 'border-slate-200'}`}
-                                 onClick={() => handleChecklistPhoto(item.id)}
-                               >
-                                 <Camera className="h-4 w-4" />
-                                 <span className="text-[9px] font-black uppercase tracking-widest">
-                                   {fotoDoItem(item) ? 'Ver' : ruim ? 'Foto obrigatória' : 'Foto'}
-                                 </span>
-                               </Button>
-                             </div>
+                              <FotoChecklist
+                                url={fotoDoItem(item)?.url}
+                                path={fotoDoItem(item)?.path}
+                                obrigatoria={ruim && !fotoDoItem(item)}
+                                onUpload={() => handleChecklistPhoto(item.id)}
+                              />
                            </div>
                          </div>
 
@@ -1468,7 +1451,13 @@ function GestaoOSPage() {
                           <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
                         ) : (
                           fotosInternas.map((foto, idx) => (
-                            <img key={idx} src={foto.url_arquivo} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Interna" />
+                            <FotoThumb
+                              key={idx}
+                              url={foto.foto_url ?? foto.url_arquivo}
+                              path={foto.storage_path}
+                              alt="Interna"
+                              className="group relative h-20 w-full overflow-hidden rounded-lg border border-border shadow-sm bg-slate-50"
+                            />
                           ))
                         )}
                       </div>
@@ -1487,7 +1476,13 @@ function GestaoOSPage() {
                           <div className="col-span-2 flex items-center justify-center h-24 text-[10px] font-bold text-slate-400 uppercase">Nenhuma foto</div>
                         ) : (
                           fotosPecas.map((foto, idx) => (
-                            <img key={idx} src={foto.url_arquivo} className="h-20 w-full object-cover rounded-lg border border-border shadow-sm" alt="Peça" />
+                            <FotoThumb
+                              key={idx}
+                              url={foto.foto_url ?? foto.url_arquivo}
+                              path={foto.storage_path}
+                              alt="Peça"
+                              className="group relative h-20 w-full overflow-hidden rounded-lg border border-border shadow-sm bg-slate-50"
+                            />
                           ))
                         )}
                       </div>
@@ -1655,22 +1650,15 @@ function GestaoOSPage() {
                             </div>
                             {fotosDaPeca(peca.id).length > 0 && (
                               <div className="flex flex-wrap gap-2">
-                                {fotosDaPeca(peca.id).map((foto: any) => (
-                                  <a
-                                    key={foto.id}
-                                    href={foto.foto_url ?? foto.url_arquivo}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="block h-16 w-16 rounded-lg overflow-hidden border border-border"
-                                  >
-                                    <img
-                                      src={foto.foto_url ?? foto.url_arquivo}
-                                      alt={`Foto de ${peca.nome ?? 'peça'}`}
-                                      loading="lazy"
-                                      className="h-full w-full object-cover"
-                                    />
-                                  </a>
-                                ))}
+                                 {fotosDaPeca(peca.id).map((foto: any) => (
+                                   <FotoThumb
+                                     key={foto.id}
+                                     url={foto.foto_url ?? foto.url_arquivo}
+                                     path={foto.storage_path}
+                                     alt={`Foto de ${peca.nome ?? 'peça'}`}
+                                     className="block h-16 w-16 rounded-lg overflow-hidden border border-border bg-slate-50"
+                                   />
+                                 ))}
                               </div>
                             )}
                           </div>
