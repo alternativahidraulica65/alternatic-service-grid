@@ -35,6 +35,7 @@ export function useFotoUrl(url?: string | null, storagePath?: string | null) {
 
 interface FotoThumbProps {
   url?: string | null;
+  path?: string | null;
   alt?: string;
   label?: string;
   className?: string;
@@ -44,9 +45,9 @@ interface FotoThumbProps {
 /**
  * Miniatura de foto do storage privado com lightbox ao clicar.
  */
-export function FotoThumb({ url, alt, label, className, imgClassName }: FotoThumbProps) {
+export function FotoThumb({ url, path, alt, label, className, imgClassName }: FotoThumbProps) {
   const [aberta, setAberta] = useState(false);
-  const { data: src } = useFotoUrl(url);
+  const { data: src } = useFotoUrl(url, path);
 
   return (
     <>
