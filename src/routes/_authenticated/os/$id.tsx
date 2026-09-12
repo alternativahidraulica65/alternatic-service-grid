@@ -857,34 +857,41 @@ function GestaoOSPage() {
   const [editandoLaudo, setEditandoLaudo] = useState(false);
   const [salvandoEdicaoLaudo, setSalvandoEdicaoLaudo] = useState(false);
 
+  // Lê o laudo das colunas oficiais, com fallback para o JSON legado em "observacoes".
+  const lerLaudoDoRegistro = (registro: any) => {
+    const diag = registro?.laudo_diagnostico ?? "";
+    const def = registro?.laudo_defeitos ?? "";
+    const serv = registro?.laudo_servicos_necessarios ?? "";
+    if (diag || def || serv) {
+      return { diagnostico: diag, defeitos: def, servicos_necessarios: serv };
+    }
+    const bruto = registro?.observacoes ?? registro?.observacao ?? "";
+    let laudo: any = {};
+    try {
+      laudo = bruto ? JSON.parse(bruto) : {};
+    } catch {
+      laudo = { diagnostico: bruto };
+    }
+    return {
+      diagnostico: laudo.diagnostico || "",
+      defeitos: laudo.defeitos || "",
+      servicos_necessarios: laudo.servicos_necessarios || "",
+    };
+  };
+
   useEffect(() => {
     if (os) {
-      // O laudo é persistido na coluna oficial "observacoes" (JSON).
-      const bruto = (os as any).observacoes ?? (os as any).observacao ?? "";
-      let laudo: any = {};
-      try {
-        laudo = bruto ? JSON.parse(bruto) : {};
-      } catch {
-        laudo = { diagnostico: bruto };
-      }
-      setLaudoData({
-        diagnostico: laudo.diagnostico || "",
-        defeitos: laudo.defeitos || "",
-        servicos_necessarios: laudo.servicos_necessarios || ""
-      });
+      setLaudoData(lerLaudoDoRegistro(os));
       setEditandoLaudo(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [os]);
 
   const laudoSalvo = useMemo(() => {
-    const bruto = (os as any)?.observacoes ?? (os as any)?.observacao ?? "";
-    if (!bruto) return false;
-    try {
-      const j = JSON.parse(bruto);
-      return Boolean(j?.diagnostico || j?.defeitos || j?.servicos_necessarios);
-    } catch {
-      return Boolean(String(bruto).trim());
-    }
+    if (!os) return false;
+    const l = lerLaudoDoRegistro(os);
+    return Boolean(l.diagnostico || l.defeitos || l.servicos_necessarios);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [os]);
 
   const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
