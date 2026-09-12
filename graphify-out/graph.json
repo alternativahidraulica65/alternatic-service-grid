@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T01:23:31.115572+00:00",
+  "generated_at": "2026-09-12T01:50:43.429565+00:00",
   "files": [
     {
       "path": "components.json",
@@ -434,6 +434,10 @@
       "bytes": 356
     },
     {
+      "path": "src/lib/admin-usuarios.functions.ts",
+      "bytes": 5555
+    },
+    {
       "path": "src/lib/utils.ts",
       "bytes": 169
     },
@@ -479,7 +483,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 12186
+      "bytes": 33053
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
@@ -567,7 +571,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 20446
+      "bytes": 21424
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -1092,6 +1096,10 @@
       "target": "@/integrations/supabase/client"
     },
     {
+      "source": "src/lib/admin-usuarios.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
       "source": "src/lib/utils.ts",
       "target": "clsx"
     },
@@ -1465,7 +1473,11 @@
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
-      "target": "@/integrations/supabase/client"
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "sonner"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
@@ -1473,7 +1485,15 @@
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
-      "target": "react"
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/lib/admin-usuarios.functions"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
@@ -1494,6 +1514,22 @@
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
       "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/ui/tabs"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/ui/select"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
