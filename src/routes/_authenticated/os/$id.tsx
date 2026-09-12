@@ -1006,9 +1006,7 @@ function GestaoOSPage() {
     }
     setSalvandoEdicaoLaudo(true);
     try {
-      const bruto = (os as any)?.observacoes ?? "";
-      let anterior: any = {};
-      try { anterior = bruto ? JSON.parse(bruto) : {}; } catch { anterior = { diagnostico: bruto }; }
+      const anterior = lerLaudoDoRegistro(os);
 
       const rotulos: Record<string, string> = {
         diagnostico: "Diagnóstico",
