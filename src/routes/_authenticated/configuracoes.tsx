@@ -15,6 +15,7 @@ import {
   Plus,
   Pencil,
   KeyRound,
+  Trash2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -23,6 +24,7 @@ import {
   resetarSenha,
   definirPermissao,
   definirStatusUsuario,
+  excluirUsuario,
 } from "@/lib/admin-usuarios.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,6 +62,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_authenticated/configuracoes")({
   component: ConfiguracoesPage,
@@ -193,6 +206,40 @@ function AbaEmpresas() {
   const queryClient = useQueryClient();
   const [aberta, setAberta] = useState(false);
   const [editando, setEditando] = useState<Empresa | null>(null);
+  const [excluindo, setExcluindo] = useState<Empresa | null>(null);
+  const [removendo, setRemovendo] = useState(false);
+
+  const confirmarExclusao = async () => {
+    if (!excluindo) return;
+    setRemovendo(true);
+    try {
+      const { error: erroCfg } = await supabase
+        .from("configuracoes_empresa")
+        .delete()
+        .eq("empresa_id", excluindo.id);
+      if (erroCfg) throw erroCfg;
+
+      const { error } = await supabase
+        .from("empresas_emissoras")
+        .delete()
+        .eq("id", excluindo.id);
+      if (error) throw error;
+
+      toast.success("Empresa excluída.");
+      setExcluindo(null);
+      queryClient.invalidateQueries({ queryKey: ["empresas_emissoras_config"] });
+      queryClient.invalidateQueries({ queryKey: ["configuracoes_empresa"] });
+    } catch (e: any) {
+      toast.error(
+        "Não foi possível excluir: " +
+          (e.message?.includes("foreign key")
+            ? "esta empresa já está vinculada a ordens de serviço."
+            : e.message),
+      );
+    } finally {
+      setRemovendo(false);
+    }
+  };
 
   const { data: empresas = [] } = useQuery({
     queryKey: ["empresas_emissoras_config"],
@@ -274,6 +321,14 @@ function AbaEmpresas() {
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-600"
+                    onClick={() => setExcluindo(empresa)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4 pt-5 text-xs">
@@ -330,6 +385,33 @@ function AbaEmpresas() {
           queryClient.invalidateQueries({ queryKey: ["configuracoes_empresa"] });
         }}
       />
+
+      <AlertDialog open={!!excluindo} onOpenChange={(v) => !v && setExcluindo(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display uppercase tracking-tight">
+              Excluir empresa?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              A empresa <strong>{excluindo?.nome || excluindo?.razao_social}</strong> e suas regras
+              padrão serão removidas definitivamente. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                confirmarExclusao();
+              }}
+              disabled={removendo}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {removendo ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -594,6 +676,8 @@ function AbaUsuarios() {
   const [busca, setBusca] = useState("");
   const [novoAberto, setNovoAberto] = useState(false);
   const [senhaAlvo, setSenhaAlvo] = useState<{ userId: string; nome: string } | null>(null);
+  const [excluirAlvo, setExcluirAlvo] = useState<{ userId: string; nome: string } | null>(null);
+  const [removendo, setRemovendo] = useState(false);
 
   const { data: usuarios = [] } = useQuery({
     queryKey: ["usuarios_config_list"],
@@ -649,6 +733,22 @@ function AbaUsuarios() {
       recarregar();
     } catch (e: any) {
       toast.error("Erro: " + e.message);
+    }
+  };
+
+  const confirmarExclusaoUsuario = async () => {
+    if (!excluirAlvo) return;
+    setRemovendo(true);
+    try {
+      const accessToken = await getAccessToken();
+      await excluirUsuario({ data: { accessToken, userId: excluirAlvo.userId } });
+      toast.success("Usuário excluído.");
+      setExcluirAlvo(null);
+      recarregar();
+    } catch (e: any) {
+      toast.error("Não foi possível excluir: " + e.message);
+    } finally {
+      setRemovendo(false);
     }
   };
 
@@ -737,14 +837,21 @@ function AbaUsuarios() {
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell className="py-4 text-center">
-                    <Badge
-                      className={`${
-                        user.ativo ? "bg-emerald-500" : "bg-slate-400"
-                      } border-none text-[9px] font-black uppercase tracking-widest text-white`}
-                    >
-                      {user.ativo ? "Ativo" : "Inativo"}
-                    </Badge>
+                  <TableCell className="py-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <Switch
+                        checked={!!user.ativo}
+                        onCheckedChange={(v) => alterarStatus(user.user_id, v)}
+                        className="data-[state=checked]:bg-emerald-500"
+                      />
+                      <span
+                        className={`text-[9px] font-black uppercase tracking-widest ${
+                          user.ativo ? "text-emerald-600" : "text-muted-foreground"
+                        }`}
+                      >
+                        {user.ativo ? "Ativo" : "Inativo"}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell className="py-4 pr-6 text-right">
                     <DropdownMenu>
@@ -763,10 +870,13 @@ function AbaUsuarios() {
                           Resetar senha
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="cursor-pointer text-[10px] font-bold uppercase tracking-widest hover:bg-white/10"
-                          onClick={() => alterarStatus(user.user_id, !user.ativo)}
+                          className="cursor-pointer text-[10px] font-bold uppercase tracking-widest text-red-400 hover:bg-white/10 focus:text-red-400"
+                          onClick={() =>
+                            setExcluirAlvo({ userId: user.user_id, nome: user.nome })
+                          }
                         >
-                          {user.ativo ? "Desativar acesso" : "Reativar acesso"}
+                          <Trash2 className="mr-2 h-3.5 w-3.5" />
+                          Excluir usuário
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -790,6 +900,33 @@ function AbaUsuarios() {
 
       <DialogNovoUsuario aberto={novoAberto} onOpenChange={setNovoAberto} onSalvo={recarregar} />
       <DialogSenha alvo={senhaAlvo} onClose={() => setSenhaAlvo(null)} />
+
+      <AlertDialog open={!!excluirAlvo} onOpenChange={(v) => !v && setExcluirAlvo(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display uppercase tracking-tight">
+              Excluir usuário?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              O acesso de <strong>{excluirAlvo?.nome}</strong> e seu cadastro serão removidos
+              definitivamente. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                confirmarExclusaoUsuario();
+              }}
+              disabled={removendo}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {removendo ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
