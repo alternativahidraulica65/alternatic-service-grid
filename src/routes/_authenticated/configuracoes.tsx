@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ import {
   Pencil,
   KeyRound,
   Trash2,
+  ArrowLeft,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -169,6 +170,16 @@ function ConfiguracoesPage() {
   return (
     <div className="space-y-8 p-6 pb-20 md:p-10">
       <div>
+        <Button
+          asChild
+          variant="ghost"
+          className="mb-4 h-10 px-3 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground"
+        >
+          <Link to="/dashboard">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar ao Dashboard
+          </Link>
+        </Button>
         <h2 className="font-display text-3xl font-black uppercase tracking-tighter text-foreground">
           CONFIGURAÇÕES E <span className="text-primary">CONTROLE</span>
         </h2>
