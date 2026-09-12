@@ -83,7 +83,7 @@ function DashboardLayout() {
     { label: "Materiais", icon: Factory, to: "/engenharia/materiais", roles: ["diretor", "gestor"] },
     { label: "Fornecedores", icon: Truck, to: "/financeiro/fornecedores", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Vendedores", icon: Users, to: "/admin/vendedores", roles: ["diretor", "administrativo_financeiro"] },
-    { label: "Usuários", icon: Users, to: "/admin/usuarios", roles: ["diretor"] },
+    { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Checklists", icon: ClipboardCheck, to: "/admin/checklist-templates", roles: ["diretor", "gestor"] },
     { label: "Auditoria", icon: HistoryIcon, to: "/admin/auditoria", roles: ["diretor"] },
   ];
