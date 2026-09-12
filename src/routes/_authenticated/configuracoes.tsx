@@ -321,6 +321,14 @@ function AbaEmpresas() {
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-600"
+                    onClick={() => setExcluindo(empresa)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4 pt-5 text-xs">
