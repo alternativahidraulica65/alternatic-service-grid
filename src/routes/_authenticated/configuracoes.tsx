@@ -206,6 +206,40 @@ function AbaEmpresas() {
   const queryClient = useQueryClient();
   const [aberta, setAberta] = useState(false);
   const [editando, setEditando] = useState<Empresa | null>(null);
+  const [excluindo, setExcluindo] = useState<Empresa | null>(null);
+  const [removendo, setRemovendo] = useState(false);
+
+  const confirmarExclusao = async () => {
+    if (!excluindo) return;
+    setRemovendo(true);
+    try {
+      const { error: erroCfg } = await supabase
+        .from("configuracoes_empresa")
+        .delete()
+        .eq("empresa_id", excluindo.id);
+      if (erroCfg) throw erroCfg;
+
+      const { error } = await supabase
+        .from("empresas_emissoras")
+        .delete()
+        .eq("id", excluindo.id);
+      if (error) throw error;
+
+      toast.success("Empresa excluída.");
+      setExcluindo(null);
+      queryClient.invalidateQueries({ queryKey: ["empresas_emissoras_config"] });
+      queryClient.invalidateQueries({ queryKey: ["configuracoes_empresa"] });
+    } catch (e: any) {
+      toast.error(
+        "Não foi possível excluir: " +
+          (e.message?.includes("foreign key")
+            ? "esta empresa já está vinculada a ordens de serviço."
+            : e.message),
+      );
+    } finally {
+      setRemovendo(false);
+    }
+  };
 
   const { data: empresas = [] } = useQuery({
     queryKey: ["empresas_emissoras_config"],
