@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T02:30:38.034607+00:00",
+  "generated_at": "2026-09-12T02:36:18.533406+00:00",
   "files": [
     {
       "path": "components.json",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 28475
+      "bytes": 27469
     },
     {
       "path": "src/start.ts",
@@ -487,7 +487,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11162
+      "bytes": 11199
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -548,10 +548,6 @@
     {
       "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
       "bytes": 9933
-    },
-    {
-      "path": "src/routes/_authenticated/admin/usuarios.tsx",
-      "bytes": 8987
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
@@ -878,10 +874,6 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/admin/checklist-templates"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/admin/usuarios"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -2154,58 +2146,6 @@
     {
       "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
       "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/usuarios.tsx",
-      "target": "@/components/ui/separator"
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
