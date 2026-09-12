@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, 
@@ -357,13 +357,21 @@ function ClienteDetalhesPage() {
                        </TableRow>
                      </TableHeader>
                      <TableBody>
-                       {ordens.map(os => (
-                         <TableRow key={os.id}>
-                           <TableCell className="pl-6 font-bold text-primary">{os.numero_os}</TableCell>
-                           <TableCell className="text-xs">{os.data_abertura ? format(new Date(os.data_abertura), "dd/MM/yyyy") : "—"}</TableCell>
-                           <TableCell><Badge variant="secondary" className="text-[9px] uppercase">{os.status}</Badge></TableCell>
-                         </TableRow>
-                       ))}
+                        {ordens.map(os => (
+                          <TableRow key={os.id}>
+                            <TableCell className="pl-6 font-bold text-primary">
+                              <Link
+                                to="/os/$id"
+                                params={{ id: os.id }}
+                                className="hover:underline hover:text-primary/80"
+                              >
+                                {os.numero_os}
+                              </Link>
+                            </TableCell>
+                            <TableCell className="text-xs">{os.data_abertura ? format(new Date(os.data_abertura), "dd/MM/yyyy") : "—"}</TableCell>
+                            <TableCell><Badge variant="secondary" className="text-[9px] uppercase">{os.status}</Badge></TableCell>
+                          </TableRow>
+                        ))}
                      </TableBody>
                   </Table>
               </CardContent>
