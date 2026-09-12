@@ -137,11 +137,12 @@ function OrcamentoOSPage() {
       const inicio = new Date();
       inicio.setDate(1);
       inicio.setHours(0, 0, 0, 0);
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('ordens_servico')
         .select('valor_total, clientes!inner(vendedor_id)')
-        .eq('clientes.vendedor_id' as any, vendedor.id)
+        .eq('clientes.vendedor_id', vendedor.id)
         .gte('criado_em', inicio.toISOString());
+
       if (error) throw error;
       return (data || []).reduce((acc: number, o: any) => acc + Number(o.valor_total || 0), 0);
     }
