@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T01:15:56.910684+00:00",
+  "generated_at": "2026-09-12T01:18:38.241711+00:00",
   "files": [
     {
       "path": "components.json",
@@ -555,7 +555,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 22528
+      "bytes": 22891
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
