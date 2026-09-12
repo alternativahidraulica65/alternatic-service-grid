@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   ClipboardList, 
