@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T22:44:36.276962+00:00",
+  "generated_at": "2026-09-12T01:09:32.782497+00:00",
   "files": [
     {
       "path": "components.json",
@@ -411,7 +411,7 @@
     },
     {
       "path": "src/hooks/useUserRole.ts",
-      "bytes": 1051
+      "bytes": 1132
     },
     {
       "path": "src/lib/error-capture.ts",
@@ -483,7 +483,7 @@
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
-      "bytes": 3244
+      "bytes": 3334
     },
     {
       "path": "src/routes/_authenticated/historico.tsx",
