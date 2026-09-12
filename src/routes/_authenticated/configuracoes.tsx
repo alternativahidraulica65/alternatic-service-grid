@@ -900,6 +900,33 @@ function AbaUsuarios() {
 
       <DialogNovoUsuario aberto={novoAberto} onOpenChange={setNovoAberto} onSalvo={recarregar} />
       <DialogSenha alvo={senhaAlvo} onClose={() => setSenhaAlvo(null)} />
+
+      <AlertDialog open={!!excluirAlvo} onOpenChange={(v) => !v && setExcluirAlvo(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display uppercase tracking-tight">
+              Excluir usuário?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              O acesso de <strong>{excluirAlvo?.nome}</strong> e seu cadastro serão removidos
+              definitivamente. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                confirmarExclusaoUsuario();
+              }}
+              disabled={removendo}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {removendo ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
