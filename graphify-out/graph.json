@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T01:51:58.197015+00:00",
+  "generated_at": "2026-09-12T02:01:06.770819+00:00",
   "files": [
     {
       "path": "components.json",
@@ -435,7 +435,7 @@
     },
     {
       "path": "src/lib/admin-usuarios.functions.ts",
-      "bytes": 6729
+      "bytes": 7348
     },
     {
       "path": "src/lib/utils.ts",
@@ -483,7 +483,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 33053
+      "bytes": 38086
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
@@ -1538,6 +1538,14 @@
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
       "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/ui/switch"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/ui/alert-dialog"
     },
     {
       "source": "src/routes/_authenticated/route.tsx",
