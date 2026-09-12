@@ -76,6 +76,32 @@ function OrcamentoOSPage() {
     }
   });
 
+  // Regras padrão definidas em Configurações (por CNPJ emissor da OS).
+  const { data: configEmpresa } = useQuery({
+    queryKey: ['config_empresa_orcamento', os?.empresa_id],
+    enabled: !!os,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('configuracoes_empresa')
+        .select('*')
+        .order('id');
+      if (error) throw error;
+      const lista = (data || []) as any[];
+      return lista.find((c) => c.empresa_id === os?.empresa_id) || lista[0] || null;
+    }
+  });
+
+  const [regrasAplicadas, setRegrasAplicadas] = useState(false);
+  useEffect(() => {
+    if (!configEmpresa || regrasAplicadas) return;
+    if (configEmpresa.imposto_padrao != null) setImposto(Number(configEmpresa.imposto_padrao));
+    if (configEmpresa.margem_padrao != null && Number(configEmpresa.margem_padrao) > 0) {
+      setMargem(Number(configEmpresa.margem_padrao));
+    }
+    setRegrasAplicadas(true);
+  }, [configEmpresa, regrasAplicadas]);
+
+
   const custoBase = useMemo(() => itens.reduce((acc, item) => acc + item.total, 0), [itens]);
   
   const calculos = useMemo(() => {
