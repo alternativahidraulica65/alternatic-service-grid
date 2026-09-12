@@ -385,6 +385,33 @@ function AbaEmpresas() {
           queryClient.invalidateQueries({ queryKey: ["configuracoes_empresa"] });
         }}
       />
+
+      <AlertDialog open={!!excluindo} onOpenChange={(v) => !v && setExcluindo(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display uppercase tracking-tight">
+              Excluir empresa?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              A empresa <strong>{excluindo?.nome || excluindo?.razao_social}</strong> e suas regras
+              padrão serão removidas definitivamente. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                confirmarExclusao();
+              }}
+              disabled={removendo}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {removendo ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
