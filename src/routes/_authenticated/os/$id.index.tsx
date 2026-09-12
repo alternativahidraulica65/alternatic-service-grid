@@ -77,7 +77,7 @@ function descreverLog(log: any): string {
 }
 
 
-export const Route = createFileRoute("/_authenticated/os/$id")({
+export const Route = createFileRoute("/_authenticated/os/$id/")({
   component: GestaoOSPage,
 });
 
