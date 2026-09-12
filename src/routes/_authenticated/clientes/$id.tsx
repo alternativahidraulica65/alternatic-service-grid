@@ -48,6 +48,35 @@ export const Route = createFileRoute("/_authenticated/clientes/$id")({
 function ClienteDetalhesPage() {
   const { id } = Route.useParams();
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const { data: vendedoresAtivos = [] } = useQuery({
+    queryKey: ['vendedores_ativos'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vendedores')
+        .select('id, nome, apelido, tipo_comissao, percentual, valor_comissao')
+        .eq('ativo' as any, true)
+        .order('nome');
+      if (error) throw error;
+      return (data || []) as any[];
+    }
+  });
+
+  const definirVendedor = async (vendedorId: string) => {
+    const valor = vendedorId === 'nenhum' ? null : vendedorId;
+    const { error } = await supabase
+      .from('clientes')
+      .update({ vendedor_id: valor } as any)
+      .eq('id', id);
+    if (error) {
+      toast.error("Não foi possível salvar o vendedor: " + error.message);
+      return;
+    }
+    toast.success("Vendedor responsável atualizado.");
+    queryClient.invalidateQueries({ queryKey: ['cliente', id] });
+  };
+
 
   const { data: cliente, isLoading: isLoadingCliente } = useQuery({
     queryKey: ['cliente', id],
