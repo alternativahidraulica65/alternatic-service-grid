@@ -278,8 +278,8 @@ function OrcamentoOSPage() {
         comissao_calculada: totais.comissao.valor,
       };
       if (enviarAprovacao) {
-        payload.status = "orcamento_pendente";
-        payload.status_financeiro = "Aguardando Aprovação";
+        payload["status"] = "orcamento_pendente";
+        payload["status_financeiro"] = "Aguardando Aprovação";
       }
 
       const { error } = await supabase.from("ordens_servico").update(payload as any).eq("id", id);
