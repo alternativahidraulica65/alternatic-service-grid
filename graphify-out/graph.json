@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T02:29:23.804949+00:00",
+  "generated_at": "2026-09-12T02:30:38.034607+00:00",
   "files": [
     {
       "path": "components.json",
@@ -555,7 +555,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 30796
+      "bytes": 31167
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
