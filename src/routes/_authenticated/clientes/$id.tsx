@@ -53,11 +53,12 @@ function ClienteDetalhesPage() {
   const { data: vendedoresAtivos = [] } = useQuery({
     queryKey: ['vendedores_ativos'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('vendedores')
         .select('id, nome, apelido, tipo_comissao, percentual, valor_comissao')
-        .eq('ativo' as any, true)
+        .eq('ativo', true)
         .order('nome');
+
       if (error) throw error;
       return (data || []) as any[];
     }
