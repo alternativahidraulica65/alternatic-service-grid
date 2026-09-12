@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T02:38:15.221258+00:00",
+  "generated_at": "2026-09-12T13:49:16.432452+00:00",
   "files": [
     {
       "path": "components.json",
@@ -575,7 +575,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 24121
+      "bytes": 31795
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -2577,6 +2577,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "sonner"
     },
     {
@@ -2601,11 +2605,11 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/table"
+      "target": "@/components/ui/textarea"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/checkbox"
+      "target": "@/components/ui/table"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
