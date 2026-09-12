@@ -1151,7 +1151,7 @@ function GestaoOSPage() {
             <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
               <DropdownMenuItem 
                 className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer"
-                onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+                onClick={() => router.navigate({ to: '/os/$id/orcamento', params: { id } } as any)}
               >
                 Gerar Orçamento
               </DropdownMenuItem>
@@ -2160,7 +2160,7 @@ function GestaoOSPage() {
               {podeVerValoresFinanceiros && (
                 <Button 
                   className="h-9 bg-primary text-primary-foreground font-bold uppercase text-[10px] tracking-widest px-4"
-                  onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+                  onClick={() => router.navigate({ to: '/os/$id/orcamento', params: { id } } as any)}
                 >
                   Abrir Módulo de Orçamento
                 </Button>
@@ -2179,7 +2179,7 @@ function GestaoOSPage() {
                   <Button 
                     variant="outline" 
                     className="mt-6 border-primary text-primary font-black uppercase text-[10px] tracking-widest px-8"
-                    onClick={() => router.navigate({ to: '/_authenticated/os/$id/orcamento', params: { id } } as any)}
+                    onClick={() => router.navigate({ to: '/os/$id/orcamento', params: { id } } as any)}
                   >
                     Configurar Orçamento
                   </Button>
