@@ -857,34 +857,41 @@ function GestaoOSPage() {
   const [editandoLaudo, setEditandoLaudo] = useState(false);
   const [salvandoEdicaoLaudo, setSalvandoEdicaoLaudo] = useState(false);
 
+  // Lê o laudo das colunas oficiais, com fallback para o JSON legado em "observacoes".
+  const lerLaudoDoRegistro = (registro: any) => {
+    const diag = registro?.laudo_diagnostico ?? "";
+    const def = registro?.laudo_defeitos ?? "";
+    const serv = registro?.laudo_servicos_necessarios ?? "";
+    if (diag || def || serv) {
+      return { diagnostico: diag, defeitos: def, servicos_necessarios: serv };
+    }
+    const bruto = registro?.observacoes ?? registro?.observacao ?? "";
+    let laudo: any = {};
+    try {
+      laudo = bruto ? JSON.parse(bruto) : {};
+    } catch {
+      laudo = { diagnostico: bruto };
+    }
+    return {
+      diagnostico: laudo.diagnostico || "",
+      defeitos: laudo.defeitos || "",
+      servicos_necessarios: laudo.servicos_necessarios || "",
+    };
+  };
+
   useEffect(() => {
     if (os) {
-      // O laudo é persistido na coluna oficial "observacoes" (JSON).
-      const bruto = (os as any).observacoes ?? (os as any).observacao ?? "";
-      let laudo: any = {};
-      try {
-        laudo = bruto ? JSON.parse(bruto) : {};
-      } catch {
-        laudo = { diagnostico: bruto };
-      }
-      setLaudoData({
-        diagnostico: laudo.diagnostico || "",
-        defeitos: laudo.defeitos || "",
-        servicos_necessarios: laudo.servicos_necessarios || ""
-      });
+      setLaudoData(lerLaudoDoRegistro(os));
       setEditandoLaudo(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [os]);
 
   const laudoSalvo = useMemo(() => {
-    const bruto = (os as any)?.observacoes ?? (os as any)?.observacao ?? "";
-    if (!bruto) return false;
-    try {
-      const j = JSON.parse(bruto);
-      return Boolean(j?.diagnostico || j?.defeitos || j?.servicos_necessarios);
-    } catch {
-      return Boolean(String(bruto).trim());
-    }
+    if (!os) return false;
+    const l = lerLaudoDoRegistro(os);
+    return Boolean(l.diagnostico || l.defeitos || l.servicos_necessarios);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [os]);
 
   const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
@@ -960,7 +967,9 @@ function GestaoOSPage() {
       const { error } = await supabase
         .from('ordens_servico')
         .update({
-          observacoes: JSON.stringify(laudoData),
+          laudo_diagnostico: laudoData.diagnostico,
+          laudo_defeitos: laudoData.defeitos,
+          laudo_servicos_necessarios: laudoData.servicos_necessarios,
           status: 'aguardando_gestor'
         } as any)
         .eq('id', osId);
@@ -997,9 +1006,7 @@ function GestaoOSPage() {
     }
     setSalvandoEdicaoLaudo(true);
     try {
-      const bruto = (os as any)?.observacoes ?? "";
-      let anterior: any = {};
-      try { anterior = bruto ? JSON.parse(bruto) : {}; } catch { anterior = { diagnostico: bruto }; }
+      const anterior = lerLaudoDoRegistro(os);
 
       const rotulos: Record<string, string> = {
         diagnostico: "Diagnóstico",
@@ -1018,7 +1025,11 @@ function GestaoOSPage() {
 
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ observacoes: JSON.stringify(laudoData) } as any)
+        .update({
+          laudo_diagnostico: laudoData.diagnostico,
+          laudo_defeitos: laudoData.defeitos,
+          laudo_servicos_necessarios: laudoData.servicos_necessarios,
+        } as any)
         .eq('id', osId);
       if (error) throw error;
 
@@ -1341,7 +1352,17 @@ function GestaoOSPage() {
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
-                      <p className="text-muted-foreground font-medium italic">{os.observacoes || "Nenhuma observação."}</p>
+                      <p className="text-muted-foreground font-medium italic">{(() => {
+                        const bruto = String(os.observacoes ?? "");
+                        if (!bruto.trim()) return "Nenhuma observação.";
+                        try {
+                          const j = JSON.parse(bruto);
+                          if (j && typeof j === "object" && ("diagnostico" in j || "defeitos" in j || "servicos_necessarios" in j)) {
+                            return "Observações registradas no Laudo Técnico.";
+                          }
+                        } catch { /* texto livre */ }
+                        return bruto;
+                      })()}</p>
                     </div>
                   </div>
                 </CardContent>
