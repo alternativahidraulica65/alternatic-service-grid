@@ -77,6 +77,8 @@ function descreverLog(log: any): string {
 }
 
 
+const FOTOS_VAZIAS: any[] = [];
+
 export const Route = createFileRoute("/_authenticated/os/$id/")({
   component: GestaoOSPage,
 });
@@ -894,7 +896,7 @@ function GestaoOSPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [os]);
 
-  const { data: fotosLaudo = [], refetch: refetchFotos } = useQuery({
+  const { data: fotosLaudo = FOTOS_VAZIAS, refetch: refetchFotos } = useQuery({
     queryKey: ['os_fotos_laudo', osId],
     queryFn: async () => {
       const { data, error } = await supabase
