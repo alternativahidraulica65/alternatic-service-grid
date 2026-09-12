@@ -1352,7 +1352,17 @@ function GestaoOSPage() {
                     </div>
                     <div className="col-span-2 pt-2 border-t border-border/50">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Observações Internas</p>
-                      <p className="text-muted-foreground font-medium italic">{os.observacoes || "Nenhuma observação."}</p>
+                      <p className="text-muted-foreground font-medium italic">{(() => {
+                        const bruto = String(os.observacoes ?? "");
+                        if (!bruto.trim()) return "Nenhuma observação.";
+                        try {
+                          const j = JSON.parse(bruto);
+                          if (j && typeof j === "object" && ("diagnostico" in j || "defeitos" in j || "servicos_necessarios" in j)) {
+                            return "Observações registradas no Laudo Técnico.";
+                          }
+                        } catch { /* texto livre */ }
+                        return bruto;
+                      })()}</p>
                     </div>
                   </div>
                 </CardContent>
