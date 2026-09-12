@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T01:18:38.241711+00:00",
+  "generated_at": "2026-09-12T01:23:31.115572+00:00",
   "files": [
     {
       "path": "components.json",
@@ -467,7 +467,7 @@
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
-      "bytes": 34498
+      "bytes": 35176
     },
     {
       "path": "src/components/PecasDialog.tsx",
@@ -563,7 +563,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 111656
+      "bytes": 112658
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
