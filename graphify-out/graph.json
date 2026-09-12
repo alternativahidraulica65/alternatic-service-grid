@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T02:20:36.488983+00:00",
+  "generated_at": "2026-09-12T02:29:23.804949+00:00",
   "files": [
     {
       "path": "components.json",
@@ -32,10 +32,6 @@
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 3316
     },
     {
       "path": ".lovable/project.json",
@@ -124,6 +120,10 @@
     {
       "path": ".lovable/plan/guia-de-execução-da-os-próximos-passos-2026-09-11.md",
       "bytes": 3469
+    },
+    {
+      "path": ".lovable/plan/vendedores-conectados-ao-banco-real-2026-09-12.md",
+      "bytes": 3316
     },
     {
       "path": ".lovable/plan/plano-de-implementação-módulo-financeiro-avançado-alternativ-2026-08-19.md",
@@ -446,6 +446,10 @@
       "bytes": 169
     },
     {
+      "path": "src/lib/comissao.ts",
+      "bytes": 4152
+    },
+    {
       "path": "src/utils/export.ts",
       "bytes": 1249
     },
@@ -551,7 +555,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 27415
+      "bytes": 30796
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
@@ -563,7 +567,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 22891
+      "bytes": 25243
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
@@ -575,7 +579,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 21424
+      "bytes": 24121
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -2245,6 +2249,10 @@
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/switch"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/components/ui/table"
     },
     {
@@ -2257,7 +2265,11 @@
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/form"
+      "target": "@/components/ui/alert-dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/label"
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
@@ -2269,23 +2281,11 @@
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@hookform/resolvers/zod"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "react-hook-form"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "zod"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "sonner"
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/integrations/supabase/types"
+      "target": "@/lib/comissao"
     },
     {
       "source": "src/routes/_authenticated/admin/auditoria.tsx",
@@ -2406,6 +2406,18 @@
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
       "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "@/lib/comissao"
     },
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
@@ -2626,6 +2638,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/comissao"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
