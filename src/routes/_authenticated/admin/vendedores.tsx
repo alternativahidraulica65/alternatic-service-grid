@@ -278,10 +278,11 @@ function VendedoresPage() {
     if (!excluindo) return;
     setRemovendo(true);
     try {
-      const { count } = await supabase
+      const { count } = await (supabase as any)
         .from("clientes")
         .select("id", { count: "exact", head: true })
-        .eq("vendedor_id" as any, excluindo.id);
+        .eq("vendedor_id", excluindo.id);
+
 
       if ((count || 0) > 0) {
         toast.error(
