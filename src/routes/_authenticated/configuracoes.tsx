@@ -364,7 +364,7 @@ function DialogEmpresa({
   aberta: boolean;
   onOpenChange: (v: boolean) => void;
   empresa: Empresa | null;
-  config?: ConfigEmpresa;
+  config?: ConfigEmpresa | undefined;
   onSalvo: () => void;
 }) {
   const [salvando, setSalvando] = useState(false);
