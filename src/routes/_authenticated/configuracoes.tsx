@@ -676,6 +676,8 @@ function AbaUsuarios() {
   const [busca, setBusca] = useState("");
   const [novoAberto, setNovoAberto] = useState(false);
   const [senhaAlvo, setSenhaAlvo] = useState<{ userId: string; nome: string } | null>(null);
+  const [excluirAlvo, setExcluirAlvo] = useState<{ userId: string; nome: string } | null>(null);
+  const [removendo, setRemovendo] = useState(false);
 
   const { data: usuarios = [] } = useQuery({
     queryKey: ["usuarios_config_list"],
@@ -731,6 +733,22 @@ function AbaUsuarios() {
       recarregar();
     } catch (e: any) {
       toast.error("Erro: " + e.message);
+    }
+  };
+
+  const confirmarExclusaoUsuario = async () => {
+    if (!excluirAlvo) return;
+    setRemovendo(true);
+    try {
+      const accessToken = await getAccessToken();
+      await excluirUsuario({ data: { accessToken, userId: excluirAlvo.userId } });
+      toast.success("Usuário excluído.");
+      setExcluirAlvo(null);
+      recarregar();
+    } catch (e: any) {
+      toast.error("Não foi possível excluir: " + e.message);
+    } finally {
+      setRemovendo(false);
     }
   };
 
