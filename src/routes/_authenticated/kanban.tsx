@@ -37,7 +37,6 @@ export const Route = createFileRoute("/_authenticated/kanban")({
 });
 
 function KanbanPage() {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   
   const { data: ordens = [], refetch } = useQuery({
