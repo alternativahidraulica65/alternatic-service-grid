@@ -335,13 +335,20 @@ function VendedoresPage() {
   return (
     <div className="container-industrial py-8 space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-display font-black text-slate-900 uppercase tracking-tight">
-            Gestão de Vendedores &amp; Comissões
-          </h1>
-          <p className="text-slate-500 font-medium">
-            Cadastro completo, empresas vinculadas e regra de comissão usada no orçamento.
-          </p>
+        <div className="flex items-start md:items-center gap-3">
+          <Link to="/dashboard">
+            <Button variant="outline" size="icon" className="border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-display font-black text-slate-900 uppercase tracking-tight">
+              Gestão de Vendedores &amp; Comissões
+            </h1>
+            <p className="text-slate-500 font-medium">
+              Cadastro completo, empresas vinculadas e regra de comissão usada no orçamento.
+            </p>
+          </div>
         </div>
         <Button onClick={abrirNovo} className="btn-industrial bg-slate-900 text-white hover:bg-slate-800">
           <Plus className="mr-2 h-4 w-4" />
