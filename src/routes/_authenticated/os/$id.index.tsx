@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   ClipboardList, 
@@ -1120,6 +1120,11 @@ function GestaoOSPage() {
       {/* Cabeçalho da OS */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
         <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" className="h-10 w-10 shrink-0 border-border" asChild>
+            <Link to="/kanban" title="Voltar ao painel Kanban">
+              <ChevronLeft className="h-5 w-5 text-primary" />
+            </Link>
+          </Button>
           <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
             <Wrench className="h-8 w-8 text-primary-foreground" />
           </div>
