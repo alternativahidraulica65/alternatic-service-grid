@@ -837,14 +837,21 @@ function AbaUsuarios() {
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell className="py-4 text-center">
-                    <Badge
-                      className={`${
-                        user.ativo ? "bg-emerald-500" : "bg-slate-400"
-                      } border-none text-[9px] font-black uppercase tracking-widest text-white`}
-                    >
-                      {user.ativo ? "Ativo" : "Inativo"}
-                    </Badge>
+                  <TableCell className="py-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <Switch
+                        checked={!!user.ativo}
+                        onCheckedChange={(v) => alterarStatus(user.user_id, v)}
+                        className="data-[state=checked]:bg-emerald-500"
+                      />
+                      <span
+                        className={`text-[9px] font-black uppercase tracking-widest ${
+                          user.ativo ? "text-emerald-600" : "text-muted-foreground"
+                        }`}
+                      >
+                        {user.ativo ? "Ativo" : "Inativo"}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell className="py-4 pr-6 text-right">
                     <DropdownMenu>
