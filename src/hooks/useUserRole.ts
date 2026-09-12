@@ -6,8 +6,9 @@ export function useUserRole() {
   const cargo = profile?.cargo || '';
   const userRoles = roles || [];
 
-  const isDiretor = userRoles.includes('diretor') || cargo === 'diretor';
   const isFinanceiro = userRoles.includes('administrativo_financeiro') || cargo === 'administrativo_financeiro';
+  // Financeiro tem acesso irrestrito (mesmo nível do Diretor).
+  const isDiretor = userRoles.includes('diretor') || cargo === 'diretor' || isFinanceiro;
   const isGestor = userRoles.includes('gestor') || cargo === 'gestor';
   const isOperador = userRoles.includes('operador') || cargo === 'operador';
   const isDev = profile?.email === "dev@admin.com" || profile?.email === "teste.dev@alternativahidraulica.local" || profile?.email === "admin@teste.com";
