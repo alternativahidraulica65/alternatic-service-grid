@@ -193,7 +193,17 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
       checklist.length > 0 && checklist.every((c: any) => c.estado || c.estado_atual);
     if (!checklistPreenchido) pendencias.push("Vistoria técnica (checklist) não finalizada");
 
-    const laudoOk = !!(os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios);
+    const laudoOk = (() => {
+      if (os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios) return true;
+      const bruto = String(os?.observacoes ?? "");
+      if (!bruto.trim()) return false;
+      try {
+        const j = JSON.parse(bruto);
+        return Boolean(j?.diagnostico || j?.defeitos || j?.servicos_necessarios);
+      } catch {
+        return false;
+      }
+    })();
     if (!laudoOk) pendencias.push("Laudo técnico não preenchido");
 
     const orcamentoOk = Number(os?.valor_total ?? 0) > 0;
