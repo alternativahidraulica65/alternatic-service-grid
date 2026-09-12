@@ -198,3 +198,24 @@ export const definirStatusUsuario = createServerFn({ method: "POST" })
     }
     return { ok: true, aviso: avisoAcesso };
   });
+
+export const excluirUsuario = createServerFn({ method: "POST" })
+  .validator((d: { accessToken: string; userId: string }) => d)
+  .handler(async ({ data }) => {
+    const { adminKey } = await autorizar(data.accessToken);
+
+    await adminFetch(`/rest/v1/user_roles?user_id=eq.${data.userId}`, {
+      key: adminKey,
+      method: "DELETE",
+    });
+    await adminFetch(`/rest/v1/usuarios?user_id=eq.${data.userId}`, {
+      key: adminKey,
+      method: "DELETE",
+    });
+    await adminFetch(`/auth/v1/admin/users/${data.userId}`, {
+      key: adminKey,
+      method: "DELETE",
+    });
+
+    return { ok: true };
+  });
