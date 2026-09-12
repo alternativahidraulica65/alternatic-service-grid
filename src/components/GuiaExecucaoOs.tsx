@@ -392,7 +392,18 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
           : "A vistoria técnica ainda não foi finalizada. Avalie todos os itens do checklist antes de concluir esta etapa.",
     });
 
-    const laudoOk = !!(os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios);
+    const laudoOk = (() => {
+      if (os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios) return true;
+      // Fallback: laudos antigos salvos como JSON em "observacoes"
+      const bruto = String(os?.observacoes ?? "");
+      if (!bruto.trim()) return false;
+      try {
+        const j = JSON.parse(bruto);
+        return Boolean(j?.diagnostico || j?.defeitos || j?.servicos_necessarios);
+      } catch {
+        return false;
+      }
+    })();
     fluxo.push({
       id: "fluxo-laudo",
       titulo: "Laudo técnico preenchido",
