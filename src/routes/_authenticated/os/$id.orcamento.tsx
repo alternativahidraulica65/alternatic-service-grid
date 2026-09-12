@@ -43,7 +43,7 @@ function OrcamentoOSPage() {
   const [itens, setItens] = useState<ItemOrcamento[]>([]);
   const [imposto, setImposto] = useState(8.5);
   const [margem, setMargem] = useState(25);
-  const [comissao, setComissao] = useState(5);
+  const [valorFinalManualInicial] = useState<null>(null);
   const [valorFinalManual, setValorFinalManual] = useState<number | null>(null);
   const [fotosSelecionadas, setFotosSelecionadas] = useState<string[]>([]);
   const [osRelacionadas, setOsRelacionadas] = useState<string[]>([id]);
