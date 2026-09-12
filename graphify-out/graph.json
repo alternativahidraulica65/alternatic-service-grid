@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T01:09:32.782497+00:00",
+  "generated_at": "2026-09-12T01:14:27.057287+00:00",
   "files": [
     {
       "path": "components.json",
@@ -547,7 +547,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
-      "bytes": 15133
+      "bytes": 23427
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
@@ -2282,6 +2282,10 @@
     {
       "source": "src/routes/_authenticated/admin/auditoria.tsx",
       "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ui/dialog"
     },
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
