@@ -1,5 +1,9 @@
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { rotuloComissao } from "@/lib/comissao";
+
 import { 
   ArrowLeft, 
   Building2, 
@@ -44,6 +48,36 @@ export const Route = createFileRoute("/_authenticated/clientes/$id")({
 function ClienteDetalhesPage() {
   const { id } = Route.useParams();
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const { data: vendedoresAtivos = [] } = useQuery({
+    queryKey: ['vendedores_ativos'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('vendedores')
+        .select('id, nome, apelido, tipo_comissao, percentual, valor_comissao')
+        .eq('ativo', true)
+        .order('nome');
+
+      if (error) throw error;
+      return (data || []) as any[];
+    }
+  });
+
+  const definirVendedor = async (vendedorId: string) => {
+    const valor = vendedorId === 'nenhum' ? null : vendedorId;
+    const { error } = await supabase
+      .from('clientes')
+      .update({ vendedor_id: valor } as any)
+      .eq('id', id);
+    if (error) {
+      toast.error("Não foi possível salvar o vendedor: " + error.message);
+      return;
+    }
+    toast.success("Vendedor responsável atualizado.");
+    queryClient.invalidateQueries({ queryKey: ['cliente', id] });
+  };
+
 
   const { data: cliente, isLoading: isLoadingCliente } = useQuery({
     queryKey: ['cliente', id],
@@ -290,6 +324,29 @@ function ClienteDetalhesPage() {
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço</p>
                   <p className="text-sm font-medium">{cliente.endereco || "Não informado"}</p>
                 </div>
+                <div className="md:col-span-2 space-y-2 pt-4 border-t border-dashed border-border">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Vendedor responsável</p>
+                  <Select
+                    value={(cliente as any).vendedor_id || 'nenhum'}
+                    onValueChange={definirVendedor}
+                  >
+                    <SelectTrigger className="max-w-md">
+                      <SelectValue placeholder="Selecione o vendedor" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="nenhum">Sem vendedor</SelectItem>
+                      {vendedoresAtivos.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>
+                          {v.apelido || v.nome} — {rotuloComissao(v)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[11px] text-muted-foreground">
+                    A comissão dos orçamentos deste cliente segue a regra cadastrada para o vendedor.
+                  </p>
+                </div>
+
              </CardContent>
            </Card>
         </TabsContent>

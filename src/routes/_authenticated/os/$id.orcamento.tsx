@@ -16,6 +16,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { calcularComissao } from "@/lib/comissao";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +45,7 @@ function OrcamentoOSPage() {
   const [itens, setItens] = useState<ItemOrcamento[]>([]);
   const [imposto, setImposto] = useState(8.5);
   const [margem, setMargem] = useState(25);
-  const [comissao, setComissao] = useState(5);
+  
   const [valorFinalManual, setValorFinalManual] = useState<number | null>(null);
   const [fotosSelecionadas, setFotosSelecionadas] = useState<string[]>([]);
   const [osRelacionadas, setOsRelacionadas] = useState<string[]>([id]);
@@ -102,30 +104,95 @@ function OrcamentoOSPage() {
   }, [configEmpresa, regrasAplicadas]);
 
 
+  // Vendedor responsável pelo cliente da OS (regra de comissão vem do cadastro).
+  const { data: vendedor } = useQuery({
+    queryKey: ['vendedor_da_os', os?.cliente_id],
+    enabled: !!os?.cliente_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('clientes')
+        .select('vendedor_id, vendedores ( * )')
+        .eq('id', (os as any).cliente_id)
+        .maybeSingle();
+      if (error) throw error;
+      return ((data as any)?.vendedores || null) as any;
+    }
+  });
+
+  // Custos reais da OS (peças e terceirizados) para a regra de margem bruta.
+  const { data: custosOS = [] } = useQuery({
+    queryKey: ['os_custos_comissao', id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('os_custos').select('*').eq('os_id', id);
+      if (error) throw error;
+      return (data || []) as any[];
+    }
+  });
+
+  // Faturamento acumulado do vendedor no mês (regra por metas).
+  const { data: faturamentoMes = 0 } = useQuery({
+    queryKey: ['faturamento_mes_vendedor', vendedor?.id],
+    enabled: !!vendedor?.id && vendedor?.tipo_comissao === 'metas',
+    queryFn: async () => {
+      const inicio = new Date();
+      inicio.setDate(1);
+      inicio.setHours(0, 0, 0, 0);
+      const { data, error } = await (supabase as any)
+        .from('ordens_servico')
+        .select('valor_total, clientes!inner(vendedor_id)')
+        .eq('clientes.vendedor_id', vendedor.id)
+        .gte('criado_em', inicio.toISOString());
+
+      if (error) throw error;
+      return (data || []).reduce((acc: number, o: any) => acc + Number(o.valor_total || 0), 0);
+    }
+  });
+
   const custoBase = useMemo(() => itens.reduce((acc, item) => acc + item.total, 0), [itens]);
-  
+
+  const { custoPecas, custoTerceiros } = useMemo(() => {
+    let pecas = 0;
+    let terceiros = 0;
+    for (const c of custosOS) {
+      const valor = Number(c.custo_interno || 0);
+      if (c.is_terceirizado || String(c.categoria || '').toLowerCase().includes('terceir')) {
+        terceiros += valor;
+      } else if (String(c.categoria || '').toLowerCase().includes('pec')) {
+        pecas += valor;
+      }
+    }
+    return { custoPecas: pecas, custoTerceiros: terceiros };
+  }, [custosOS]);
+
   const calculos = useMemo(() => {
     const valorImposto = custoBase * (imposto / 100);
     const custoComImposto = custoBase + valorImposto;
-    
+
     let valorFinal = valorFinalManual !== null ? valorFinalManual : custoComImposto * (1 + (margem / 100));
-    
+
     // Se o valor final foi definido manualmente, recalcula a margem efetiva
-    const margemEfetiva = valorFinalManual !== null 
-      ? ((valorFinalManual / custoComImposto) - 1) * 100 
+    const margemEfetiva = valorFinalManual !== null
+      ? ((valorFinalManual / custoComImposto) - 1) * 100
       : margem;
 
     const lucroEstimado = valorFinal - custoComImposto;
-    const valorComissao = valorFinal * (comissao / 100);
+    const resultadoComissao = calcularComissao(vendedor, {
+      valorOS: valorFinal,
+      custoPecas,
+      custoTerceiros,
+      faturamentoMes: Number(faturamentoMes) + valorFinal,
+    });
 
     return {
       valorImposto,
       valorFinal,
       lucroEstimado,
-      valorComissao,
+      valorComissao: resultadoComissao.valor,
+      descricaoComissao: resultadoComissao.descricao,
       margemEfetiva
     };
-  }, [custoBase, imposto, margem, comissao, valorFinalManual]);
+  }, [custoBase, imposto, margem, valorFinalManual, vendedor, custoPecas, custoTerceiros, faturamentoMes]);
+
 
   const addItem = () => {
     const newItem: ItemOrcamento = {
@@ -257,15 +324,20 @@ function OrcamentoOSPage() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase text-slate-500">Comissão (%)</Label>
-                <Input 
-                  type="number"
-                  value={comissao}
-                  onChange={(e) => setComissao(Number(e.target.value))}
-                  className="border-slate-200 font-bold"
-                />
+              <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+                <Label className="text-[10px] font-bold uppercase text-slate-500">Comissão do vendedor</Label>
+                {vendedor ? (
+                  <>
+                    <p className="text-xs font-bold text-slate-900">{vendedor.apelido || vendedor.nome}</p>
+                    <p className="text-[10px] font-medium text-slate-500">{calculos.descricaoComissao}</p>
+                  </>
+                ) : (
+                  <p className="text-[10px] font-medium text-slate-400">
+                    Nenhum vendedor vinculado ao cliente desta OS.
+                  </p>
+                )}
               </div>
+
 
               <div className="pt-4 border-t border-dashed border-slate-200 space-y-2">
                 <div className="flex justify-between text-[10px] font-bold uppercase">
