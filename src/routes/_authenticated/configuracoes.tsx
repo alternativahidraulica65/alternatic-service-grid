@@ -870,10 +870,13 @@ function AbaUsuarios() {
                           Resetar senha
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="cursor-pointer text-[10px] font-bold uppercase tracking-widest hover:bg-white/10"
-                          onClick={() => alterarStatus(user.user_id, !user.ativo)}
+                          className="cursor-pointer text-[10px] font-bold uppercase tracking-widest text-red-400 hover:bg-white/10 focus:text-red-400"
+                          onClick={() =>
+                            setExcluirAlvo({ userId: user.user_id, nome: user.nome })
+                          }
                         >
-                          {user.ativo ? "Desativar acesso" : "Reativar acesso"}
+                          <Trash2 className="mr-2 h-3.5 w-3.5" />
+                          Excluir usuário
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
