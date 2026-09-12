@@ -20,7 +20,6 @@ import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedAdminAuditoriaRouteImport } from './routes/_authenticated/admin/auditoria'
 import { Route as AuthenticatedAdminChecklistTemplatesRouteImport } from './routes/_authenticated/admin/checklist-templates'
-import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedAdminVendedoresRouteImport } from './routes/_authenticated/admin/vendedores'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedClientesIdRouteImport } from './routes/_authenticated/clientes/$id'
@@ -92,12 +91,6 @@ const AuthenticatedAdminChecklistTemplatesRoute =
   AuthenticatedAdminChecklistTemplatesRouteImport.update({
     id: '/admin/checklist-templates',
     path: '/admin/checklist-templates',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminUsuariosRoute =
-  AuthenticatedAdminUsuariosRouteImport.update({
-    id: '/admin/usuarios',
-    path: '/admin/usuarios',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminVendedoresRoute =
@@ -199,7 +192,6 @@ export interface FileRoutesByFullPath {
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
-  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
   '/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
@@ -226,7 +218,6 @@ export interface FileRoutesByTo {
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
-  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
   '/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
@@ -256,7 +247,6 @@ export interface FileRoutesById {
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/_authenticated/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
-  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
   '/_authenticated/clientes/$id': typeof AuthenticatedClientesIdRoute
   '/_authenticated/dashboard/diretor': typeof AuthenticatedDashboardDiretorRoute
@@ -286,7 +276,6 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/admin/auditoria'
     | '/admin/checklist-templates'
-    | '/admin/usuarios'
     | '/admin/vendedores'
     | '/clientes/$id'
     | '/dashboard/diretor'
@@ -313,7 +302,6 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/admin/auditoria'
     | '/admin/checklist-templates'
-    | '/admin/usuarios'
     | '/admin/vendedores'
     | '/clientes/$id'
     | '/dashboard/diretor'
@@ -342,7 +330,6 @@ export interface FileRouteTypes {
     | '/_authenticated/relatorios'
     | '/_authenticated/admin/auditoria'
     | '/_authenticated/admin/checklist-templates'
-    | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/vendedores'
     | '/_authenticated/clientes/$id'
     | '/_authenticated/dashboard/diretor'
@@ -443,13 +430,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/checklist-templates'
       fullPath: '/admin/checklist-templates'
       preLoaderRoute: typeof AuthenticatedAdminChecklistTemplatesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/usuarios': {
-      id: '/_authenticated/admin/usuarios'
-      path: '/admin/usuarios'
-      fullPath: '/admin/usuarios'
-      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/vendedores': {
@@ -620,7 +600,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedAdminAuditoriaRoute: typeof AuthenticatedAdminAuditoriaRoute
   AuthenticatedAdminChecklistTemplatesRoute: typeof AuthenticatedAdminChecklistTemplatesRoute
-  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminVendedoresRoute: typeof AuthenticatedAdminVendedoresRoute
   AuthenticatedClientesIdRoute: typeof AuthenticatedClientesIdRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
@@ -640,7 +619,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAuditoriaRoute: AuthenticatedAdminAuditoriaRoute,
   AuthenticatedAdminChecklistTemplatesRoute:
     AuthenticatedAdminChecklistTemplatesRoute,
-  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminVendedoresRoute: AuthenticatedAdminVendedoresRoute,
   AuthenticatedClientesIdRoute: AuthenticatedClientesIdRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
