@@ -321,15 +321,20 @@ function OrcamentoOSPage() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase text-slate-500">Comissão (%)</Label>
-                <Input 
-                  type="number"
-                  value={comissao}
-                  onChange={(e) => setComissao(Number(e.target.value))}
-                  className="border-slate-200 font-bold"
-                />
+              <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+                <Label className="text-[10px] font-bold uppercase text-slate-500">Comissão do vendedor</Label>
+                {vendedor ? (
+                  <>
+                    <p className="text-xs font-bold text-slate-900">{vendedor.apelido || vendedor.nome}</p>
+                    <p className="text-[10px] font-medium text-slate-500">{calculos.descricaoComissao}</p>
+                  </>
+                ) : (
+                  <p className="text-[10px] font-medium text-slate-400">
+                    Nenhum vendedor vinculado ao cliente desta OS.
+                  </p>
+                )}
               </div>
+
 
               <div className="pt-4 border-t border-dashed border-slate-200 space-y-2">
                 <div className="flex justify-between text-[10px] font-bold uppercase">
