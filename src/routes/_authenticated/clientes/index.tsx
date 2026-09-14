@@ -27,7 +27,6 @@ import { useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { exportToCSV } from "@/utils/export";
-import { rotuloComissao } from "@/lib/comissao";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -492,7 +491,7 @@ function ClientesPage() {
           <SelectItem value="nenhum">Sem vendedor definido</SelectItem>
           {vendedores.map((v: any) => (
             <SelectItem key={v.id} value={v.id}>
-              {(v.apelido || v.nome)} — {rotuloComissao(v)}
+              {v.apelido || v.nome}
             </SelectItem>
           ))}
         </SelectContent>

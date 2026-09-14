@@ -2,7 +2,6 @@ import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { rotuloComissao } from "@/lib/comissao";
 
 import { 
   ArrowLeft, 
@@ -350,7 +349,7 @@ function ClienteDetalhesPage() {
                       <SelectItem value="nenhum">Sem vendedor definido</SelectItem>
                       {vendedoresAtivos.map((v) => (
                         <SelectItem key={v.id} value={v.id}>
-                          {v.apelido || v.nome} — {rotuloComissao(v)}
+                          {v.apelido || v.nome}
                         </SelectItem>
                       ))}
                     </SelectContent>
