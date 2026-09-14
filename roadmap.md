@@ -27,3 +27,7 @@ O sistema tem **um único banco de dados**: o projeto Supabase
 - [ ] Endurecer políticas de Storage (hoje abertas a qualquer autenticado).
 - [ ] Rever constraints de domínio relaxadas durante a migração
       (campos obrigatórios legados de clientes, OS, peças e custos).
+
+## Alerta de orçamentos (dashboards Diretor/Financeiro)
+- [ ] Card de alerta com totais de orçamentos pendentes e aguardando cliente.
+- [ ] Status "Pendente de Orçamento" só após checklist, laudo e custos preenchidos.

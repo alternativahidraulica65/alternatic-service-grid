@@ -3,7 +3,7 @@
 ## O que será criado
 - Adicionar um card de alerta chamativo nos dashboards do Diretor e Financeiro.
 - Mostrar o total geral e separar os números em:
-  - **Pendentes para fazer**: OS em vistoria, prontas para receber orçamento.
+  - **Pendentes para fazer**: apenas OS marcadas como "Pendente de Orçamento". A OS só entra nesse estado depois que as fases anteriores estiverem completas (checklist técnico, laudo/relatório e custos lançados); quem quiser iniciar um orçamento antes disso será avisado do que ainda falta preencher.
   - **Aguardando cliente**: orçamentos enviados e ainda sem aprovação do cliente.
 - Ao clicar, abrir uma lista com OS, cliente, prazo e situação.
 - Permitir ação direta em cada item:
