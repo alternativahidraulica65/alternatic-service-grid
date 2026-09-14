@@ -169,12 +169,26 @@ function ClientesPage() {
     return v ? (v.apelido || v.nome) : "—";
   };
 
-  const patchVendedor = (valor: string) =>
-    valor === "proprio"
-      ? { vendedor_id: null, venda_propria: true }
-      : valor === "nenhum"
-        ? { vendedor_id: null, venda_propria: false }
-        : { vendedor_id: valor, venda_propria: false };
+  // Alguns bancos ainda não possuem a coluna venda_propria. Detectamos pelo
+  // próprio registro carregado e, quando ausente, gravamos só o vendedor_id.
+  const suportaVendaPropria = useMemo(
+    () =>
+      clientes.length === 0 ||
+      Object.prototype.hasOwnProperty.call(clientes[0] as any, "venda_propria"),
+    [clientes]
+  );
+
+  const patchVendedor = (valor: string) => {
+    const base =
+      valor === "proprio"
+        ? { vendedor_id: null, venda_propria: true }
+        : valor === "nenhum"
+          ? { vendedor_id: null, venda_propria: false }
+          : { vendedor_id: valor, venda_propria: false };
+    if (suportaVendaPropria) return base;
+    const { venda_propria: _ignorado, ...semColuna } = base;
+    return semColuna;
+  };
 
   const createMutation = useMutation({
     mutationFn: async (values: typeof formValues) => {
