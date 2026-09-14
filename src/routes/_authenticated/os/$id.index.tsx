@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { faseDoStatus, indiceFase, type Fase } from "@/lib/os-fluxo";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   ClipboardList, 
@@ -237,14 +238,26 @@ function GestaoOSPage() {
     enabled: osId !== null,
   });
 
-  const steps = [
-    { label: "Triagem", status: os?.status === 'aberta' ? 'current' : 'completed', sla: 'OK' },
-    { label: "Vistoria", status: os?.status === 'vistoria' ? 'current' : (['aberta'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '4h' },
-    { label: "Orçamento", status: os?.status === 'orcamento_pendente' ? 'current' : (['aberta', 'vistoria'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '24h' },
-    { label: "Aprovação", status: os?.status === 'aprovada' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '8h' },
-    { label: "Execução", status: os?.status === 'usinagem' || os?.status === 'montagem' ? 'current' : (['aberta', 'vistoria', 'orcamento_pendente', 'aprovada'].includes(os?.status || '') ? 'pending' : 'completed'), sla: '48h' },
-    { label: "Pronto", status: os?.status === 'pronto' ? 'current' : 'pending', sla: '-' },
+  // Sequência oficial derivada de src/lib/os-fluxo.ts (mesmos rótulos visuais)
+  const faseCorrente = faseDoStatus(os?.status, (os as any)?.status_financeiro);
+  const STEPS_FASES: { label: string; fase: Fase; sla: string }[] = [
+    { label: "Triagem", fase: "criacao", sla: "OK" },
+    { label: "Vistoria", fase: "laudo", sla: "4h" },
+    { label: "Orçamento", fase: "orcamento", sla: "24h" },
+    { label: "Aprovação", fase: "aprovacao", sla: "8h" },
+    { label: "Execução", fase: "execucao", sla: "48h" },
+    { label: "Pronto", fase: "pronto", sla: "-" },
   ];
+  const steps = STEPS_FASES.map((s) => ({
+    label: s.label,
+    sla: s.sla,
+    status:
+      indiceFase(faseCorrente) === indiceFase(s.fase)
+        ? "current"
+        : indiceFase(faseCorrente) > indiceFase(s.fase)
+          ? "completed"
+          : "pending",
+  }));
 
   const SLA_PRIORIDADE: Record<string, { label: string; descricao: string }> = {
     Baixa: { label: "Baixa", descricao: "Orçamento em até 3 dias úteis" },
@@ -806,6 +819,21 @@ function GestaoOSPage() {
   };
 
   const handleFinalizarChecklist = async () => {
+    if (checklistData.length === 0) {
+      toast.error("Checklist vazio", {
+        description: "Nenhum item de checklist carregado para esta OS.",
+      });
+      return;
+    }
+    const naoAvaliados = checklistData.filter(
+      (item: any) => !["Bom", "Ruim", "Danificado", "Substituir"].includes(String(item.status ?? item.estado_atual ?? item.estado ?? "")),
+    );
+    if (naoAvaliados.length > 0) {
+      toast.error("Checklist incompleto", {
+        description: `${naoAvaliados.length} item(ns) ainda sem avaliação. Marque todos como Bom ou Ruim.`,
+      });
+      return;
+    }
     const itemsPendingPhoto = checklistData.filter((item: any) => 
       (item.status === 'Ruim' || item.status === 'Danificado' || item.status === 'Substituir') && !fotoDoItem(item)
     );

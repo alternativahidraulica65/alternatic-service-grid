@@ -31,6 +31,17 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useUserRole } from "@/hooks/useUserRole";
+import { getExecutorEmail } from "@/lib/log-executor";
+import {
+  avaliarFluxo,
+  colunaDoStatus,
+  faseDoStatus,
+  indiceFase,
+  podeAvancar,
+  ROTULO_FASE,
+  type Fase,
+} from "@/lib/os-fluxo";
 
 export const Route = createFileRoute("/_authenticated/kanban")({
   component: KanbanPage,
@@ -38,6 +49,8 @@ export const Route = createFileRoute("/_authenticated/kanban")({
 
 function KanbanPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const { isGestor, isDiretor, isFinanceiro, isDev } = useUserRole();
+  const podeMover = isGestor || isDiretor || isFinanceiro || isDev;
   
   const { data: ordens = [], refetch } = useQuery({
     queryKey: ['kanban_os'],
@@ -51,15 +64,61 @@ function KanbanPage() {
     }
   });
 
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
+  const COLUNA_FASE: Record<string, Fase> = {
+    aberta: "criacao",
+    vistoria: "laudo",
+    orcamento_pendente: "orcamento",
+    usinagem: "execucao",
+    montagem: "execucao",
+    pronto: "pronto",
+  };
+
+  const handleUpdateStatus = async (card: any, novaColuna: string) => {
+    if (!podeMover) {
+      toast.error("Sem permissão", {
+        description: "Apenas Gestor, Diretor ou Administrativo/Financeiro podem mover a OS.",
+      });
+      return;
+    }
     try {
+      const faseAtual = faseDoStatus(card.status, (card as any).status_financeiro);
+      const faseDestino = COLUNA_FASE[novaColuna] ?? "criacao";
+
+      if (indiceFase(faseDestino) > indiceFase(faseAtual)) {
+        const [checklistRes, custosRes, pecasRes] = await Promise.all([
+          supabase.from("os_checklist_tecnico" as any).select("*").eq("os_id", card.id),
+          supabase.from("os_custos" as any).select("*").eq("os_id", card.id),
+          supabase.from("os_pecas_rastreio" as any).select("*").eq("os_id", card.id),
+        ]);
+        const resultado = avaliarFluxo(card, {
+          checklist: (checklistRes.data as any[]) ?? [],
+          custos: (custosRes.data as any[]) ?? [],
+          pecas: (pecasRes.data as any[]) ?? [],
+        });
+        const { ok, pendencias } = podeAvancar(faseAtual, faseDestino, resultado);
+        if (!ok) {
+          toast.error(`Não é possível avançar para ${ROTULO_FASE[faseDestino]}`, {
+            description: pendencias.slice(0, 4).join(" · "),
+          });
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ status: newStatus })
-        .eq('id', id);
-      
+        .update({ status: novaColuna })
+        .eq('id', card.id);
+
       if (error) throw error;
-      
+
+      await supabase.from("historico_status_os" as any).insert({
+        os_id: card.id,
+        status_anterior: card.status ?? null,
+        status_novo: novaColuna,
+        observacao: `Fase alterada de ${ROTULO_FASE[faseAtual]} para ${ROTULO_FASE[faseDestino]} no Kanban`,
+        executor_email: await getExecutorEmail(),
+      });
+
       toast.success("Status atualizado com sucesso");
       refetch();
     } catch (error: any) {
@@ -81,6 +140,12 @@ function KanbanPage() {
     os.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
     os.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const cardsDaColuna = (colId: string) =>
+    filteredCards.filter(
+      (c: any) => colunaDoStatus(c.status, (c as any).status_financeiro) === colId,
+    );
+
 
   return (
     <div className="h-[calc(100vh-160px)] flex flex-col space-y-6 p-6 md:p-10">
@@ -121,7 +186,7 @@ function KanbanPage() {
                 <div className={`h-2 w-2 rounded-full ${col.id === 'vistoria' ? 'bg-amber-500 animate-pulse' : 'bg-slate-300'}`} />
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{col.label}</h3>
                 <Badge variant="secondary" className="text-[9px] font-black h-5 px-2 bg-slate-100 border-border">
-                  {filteredCards.filter(c => c.status === col.id).length}
+                  {cardsDaColuna(col.id).length}
                 </Badge>
               </div>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
@@ -130,7 +195,7 @@ function KanbanPage() {
             </div>
 
             <div className="flex-1 bg-slate-50/50 border border-border/50 rounded-2xl p-3 space-y-3 overflow-y-auto custom-scrollbar shadow-inner">
-              {filteredCards.filter(c => c.status === col.id).map((card: any) => (
+              {cardsDaColuna(col.id).map((card: any) => (
                 <Link key={card.id} to="/os/$id" params={{ id: card.id }}>
                   <Card className="border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer group bg-white">
                     <CardContent className="p-4 space-y-3">
@@ -151,7 +216,7 @@ function KanbanPage() {
                                   className="text-[9px] font-bold uppercase tracking-widest hover:bg-white/10"
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    handleUpdateStatus(card.id, col.id);
+                                    handleUpdateStatus(card, col.id);
                                   }}
                                 >
                                   {col.label}
@@ -198,7 +263,7 @@ function KanbanPage() {
                 </Link>
               ))}
               
-              {filteredCards.filter(c => c.status === col.id).length === 0 && (
+              {cardsDaColuna(col.id).length === 0 && (
                 <div className="h-32 flex flex-col items-center justify-center text-muted-foreground opacity-20">
                   <Trello className="h-8 w-8 mb-2" />
                   <p className="text-[8px] font-bold uppercase tracking-widest">Coluna Vazia</p>

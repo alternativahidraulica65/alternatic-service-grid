@@ -20,6 +20,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { toast } from "sonner";
+import { avaliarFluxo, pendenciasAte } from "@/lib/os-fluxo";
 import { calcularComissao, rotuloComissao } from "@/lib/comissao";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -330,17 +331,9 @@ function OrcamentoOSPage() {
     );
   }
 
-  const checklistPreenchido = checklist.some((c) => c.estado || c.estado_atual);
-  const laudoPreenchido = Boolean(
-    os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios,
-  );
-  const custosLancados = custos.length > 0;
-
-  const pendenciasAnteriores = [
-    !checklistPreenchido ? "Checklist técnico ainda não preenchido" : null,
-    !laudoPreenchido ? "Laudo/relatório técnico ainda não registrado" : null,
-    !custosLancados ? "Nenhum custo lançado para esta OS" : null,
-  ].filter(Boolean) as string[];
+  // Bloqueio derivado da sequência oficial da OS (src/lib/os-fluxo.ts)
+  const resultadoFluxo = avaliarFluxo(os, { checklist, custos });
+  const pendenciasAnteriores = pendenciasAte("orcamento", resultadoFluxo);
 
   if (pendenciasAnteriores.length > 0) {
     return (
