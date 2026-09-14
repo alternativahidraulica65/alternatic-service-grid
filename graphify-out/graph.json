@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T17:41:13.823467+00:00",
+  "generated_at": "2026-09-14T17:46:32.101147+00:00",
   "files": [
     {
       "path": "components.json",
@@ -459,7 +459,7 @@
     },
     {
       "path": "src/lib/os-fluxo.ts",
-      "bytes": 8351
+      "bytes": 9363
     },
     {
       "path": "src/lib/admin-usuarios.functions.ts",
@@ -507,7 +507,7 @@
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
-      "bytes": 35176
+      "bytes": 35089
     },
     {
       "path": "src/components/PecasDialog.tsx",
@@ -1426,6 +1426,10 @@
     {
       "source": "src/components/GuiaExecucaoOs.tsx",
       "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/lib/os-fluxo"
     },
     {
       "source": "src/components/GuiaExecucaoOs.tsx",
