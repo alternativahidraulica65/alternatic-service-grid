@@ -31,6 +31,17 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useUserRole } from "@/hooks/useUserRole";
+import { getExecutorEmail } from "@/lib/log-executor";
+import {
+  avaliarFluxo,
+  colunaDoStatus,
+  faseDoStatus,
+  indiceFase,
+  podeAvancar,
+  ROTULO_FASE,
+  type Fase,
+} from "@/lib/os-fluxo";
 
 export const Route = createFileRoute("/_authenticated/kanban")({
   component: KanbanPage,
@@ -38,6 +49,8 @@ export const Route = createFileRoute("/_authenticated/kanban")({
 
 function KanbanPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const { isGestor, isDiretor, isFinanceiro, isDev } = useUserRole();
+  const podeMover = isGestor || isDiretor || isFinanceiro || isDev;
   
   const { data: ordens = [], refetch } = useQuery({
     queryKey: ['kanban_os'],
@@ -173,7 +186,7 @@ function KanbanPage() {
                 <div className={`h-2 w-2 rounded-full ${col.id === 'vistoria' ? 'bg-amber-500 animate-pulse' : 'bg-slate-300'}`} />
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{col.label}</h3>
                 <Badge variant="secondary" className="text-[9px] font-black h-5 px-2 bg-slate-100 border-border">
-                  {filteredCards.filter(c => c.status === col.id).length}
+                  {cardsDaColuna(col.id).length}
                 </Badge>
               </div>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
@@ -182,7 +195,7 @@ function KanbanPage() {
             </div>
 
             <div className="flex-1 bg-slate-50/50 border border-border/50 rounded-2xl p-3 space-y-3 overflow-y-auto custom-scrollbar shadow-inner">
-              {filteredCards.filter(c => c.status === col.id).map((card: any) => (
+              {cardsDaColuna(col.id).map((card: any) => (
                 <Link key={card.id} to="/os/$id" params={{ id: card.id }}>
                   <Card className="border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer group bg-white">
                     <CardContent className="p-4 space-y-3">
@@ -203,7 +216,7 @@ function KanbanPage() {
                                   className="text-[9px] font-bold uppercase tracking-widest hover:bg-white/10"
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    handleUpdateStatus(card.id, col.id);
+                                    handleUpdateStatus(card, col.id);
                                   }}
                                 >
                                   {col.label}
@@ -250,7 +263,7 @@ function KanbanPage() {
                 </Link>
               ))}
               
-              {filteredCards.filter(c => c.status === col.id).length === 0 && (
+              {cardsDaColuna(col.id).length === 0 && (
                 <div className="h-32 flex flex-col items-center justify-center text-muted-foreground opacity-20">
                   <Trello className="h-8 w-8 mb-2" />
                   <p className="text-[8px] font-bold uppercase tracking-widest">Coluna Vazia</p>
