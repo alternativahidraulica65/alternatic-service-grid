@@ -17,6 +17,7 @@ import {
   Images,
   Sparkles,
   RotateCcw,
+  ChevronDown,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -96,6 +97,16 @@ function OrcamentoOSPage() {
   const [dialogEmpresa, setDialogEmpresa] = useState(false);
   const [dialogVendedor, setDialogVendedor] = useState(false);
   const [fotosSelecionadas, setFotosSelecionadas] = useState<string[]>([]);
+  const [secoesAbertas, setSecoesAbertas] = useState({
+    custos: true,
+    proposta: true,
+    fotos: true,
+    condicoes: true,
+  });
+
+  const alternarSecao = (secao: keyof typeof secoesAbertas) => {
+    setSecoesAbertas((atual) => ({ ...atual, [secao]: !atual[secao] }));
+  };
 
   /* ----------------------------- Dados reais ----------------------------- */
 
@@ -728,12 +739,37 @@ function OrcamentoOSPage() {
         <div className="lg:col-span-8 space-y-8">
           {/* Custos reais */}
           <Card className="border-border shadow-md">
-            <CardHeader className="bg-slate-50 border-b border-border/50">
-              <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                <Receipt className="h-4 w-4 text-primary" /> Custos reais da OS (peças, terceiros e extras)
-              </CardTitle>
+            <CardHeader
+              className="cursor-pointer bg-slate-50 border-b border-border/50"
+              onClick={() => alternarSecao("custos")}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                    <Receipt className="h-4 w-4 shrink-0 text-primary" /> Custos reais da OS (peças, terceiros e extras)
+                  </CardTitle>
+                  <p className="mt-1 text-[10px] font-bold text-slate-500">
+                    Custo: {brl(totais.custoTotal)} · Venda: {brl(totais.vendaItens)}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={secoesAbertas.custos ? "Fechar custos reais" : "Abrir custos reais"}
+                  aria-expanded={secoesAbertas.custos}
+                  title={secoesAbertas.custos ? "Fechar" : "Abrir"}
+                  className="h-8 w-8 shrink-0 text-slate-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alternarSecao("custos");
+                  }}
+                >
+                  <ChevronDown className={`h-4 w-4 transition-transform ${secoesAbertas.custos ? "rotate-180" : ""}`} />
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="p-0">
+            {secoesAbertas.custos && <CardContent className="p-0">
               <Table>
                 <TableHeader className="bg-slate-50/50">
                   <TableRow className="border-border">
@@ -833,20 +869,43 @@ function OrcamentoOSPage() {
                   <Plus className="mr-2 h-4 w-4 text-primary" /> Adicionar
                 </Button>
               </div>
-            </CardContent>
+            </CardContent>}
           </Card>
 
           {/* Itens livres da proposta */}
           <Card className="border-amber-200 shadow-md">
-            <CardHeader className="bg-amber-50 border-b border-amber-200">
-              <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-amber-500" /> Itens da proposta ao cliente
-              </CardTitle>
-              <p className="text-[10px] font-medium text-slate-500">
-                Entram no PDF e no valor apresentado, mas não contam como custo real nem alteram o lucro interno.
-              </p>
+            <CardHeader
+              className="cursor-pointer bg-amber-50 border-b border-amber-200"
+              onClick={() => alternarSecao("proposta")}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 shrink-0 text-amber-500" /> Itens da proposta ao cliente
+                  </CardTitle>
+                  <p className="mt-1 text-[10px] font-black text-amber-700">Total dos itens: {brl(totalLivres)}</p>
+                  <p className="text-[10px] font-medium text-slate-500">
+                    A soma integral destes itens entra no valor final apresentado ao cliente.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={secoesAbertas.proposta ? "Fechar itens da proposta" : "Abrir itens da proposta"}
+                  aria-expanded={secoesAbertas.proposta}
+                  title={secoesAbertas.proposta ? "Fechar" : "Abrir"}
+                  className="h-8 w-8 shrink-0 text-slate-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alternarSecao("proposta");
+                  }}
+                >
+                  <ChevronDown className={`h-4 w-4 transition-transform ${secoesAbertas.proposta ? "rotate-180" : ""}`} />
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="p-0">
+            {secoesAbertas.proposta && <CardContent className="p-0">
               <Table>
                 <TableHeader className="bg-slate-50/50">
                   <TableRow className="border-border">
@@ -953,20 +1012,45 @@ function OrcamentoOSPage() {
                   <Plus className="mr-2 h-4 w-4 text-primary" /> Adicionar
                 </Button>
               </div>
-            </CardContent>
+            </CardContent>}
           </Card>
 
           {/* Fotos do PDF */}
           <Card className="border-border shadow-md">
-            <CardHeader className="bg-slate-50 border-b border-border/50">
-              <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                <Images className="h-4 w-4 text-primary" /> Fotos que entram no PDF
-              </CardTitle>
-              <p className="text-[10px] font-medium text-slate-500">
-                Nenhuma marcada: o PDF sai sem registro fotográfico.
-              </p>
+            <CardHeader
+              className="cursor-pointer bg-slate-50 border-b border-border/50"
+              onClick={() => alternarSecao("fotos")}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                    <Images className="h-4 w-4 shrink-0 text-primary" /> Fotos que entram no PDF
+                  </CardTitle>
+                  <p className="mt-1 text-[10px] font-bold text-slate-500">
+                    {fotosSelecionadas.length} de {fotos.length} selecionadas
+                  </p>
+                  <p className="text-[10px] font-medium text-slate-500">
+                    Nenhuma marcada: o PDF sai sem registro fotográfico.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={secoesAbertas.fotos ? "Fechar fotos do PDF" : "Abrir fotos do PDF"}
+                  aria-expanded={secoesAbertas.fotos}
+                  title={secoesAbertas.fotos ? "Fechar" : "Abrir"}
+                  className="h-8 w-8 shrink-0 text-slate-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alternarSecao("fotos");
+                  }}
+                >
+                  <ChevronDown className={`h-4 w-4 transition-transform ${secoesAbertas.fotos ? "rotate-180" : ""}`} />
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="pt-6">
+            {secoesAbertas.fotos && <CardContent className="pt-6">
               {fotos.length === 0 ? (
                 <p className="text-[10px] font-bold uppercase italic text-slate-400">
                   Esta OS ainda não tem fotos anexadas.
@@ -1001,17 +1085,37 @@ function OrcamentoOSPage() {
                   })}
                 </div>
               )}
-            </CardContent>
+            </CardContent>}
           </Card>
 
           {/* Condições comerciais */}
           <Card className="border-border shadow-md">
-            <CardHeader className="bg-slate-50 border-b border-border/50">
-              <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                <Percent className="h-4 w-4 text-primary" /> Condições comerciais (padrão da empresa)
-              </CardTitle>
+            <CardHeader
+              className="cursor-pointer bg-slate-50 border-b border-border/50"
+              onClick={() => alternarSecao("condicoes")}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                  <Percent className="h-4 w-4 shrink-0 text-primary" /> Condições comerciais (padrão da empresa)
+                </CardTitle>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={secoesAbertas.condicoes ? "Fechar condições comerciais" : "Abrir condições comerciais"}
+                  aria-expanded={secoesAbertas.condicoes}
+                  title={secoesAbertas.condicoes ? "Fechar" : "Abrir"}
+                  className="h-8 w-8 shrink-0 text-slate-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alternarSecao("condicoes");
+                  }}
+                >
+                  <ChevronDown className={`h-4 w-4 transition-transform ${secoesAbertas.condicoes ? "rotate-180" : ""}`} />
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="pt-6 space-y-4">
+            {secoesAbertas.condicoes && <CardContent className="pt-6 space-y-4">
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-1">
                   <Label className="text-[9px] font-black uppercase text-slate-500">Prazo de entrega (dias)</Label>
@@ -1057,7 +1161,7 @@ function OrcamentoOSPage() {
                   className="min-h-24 border-slate-200 text-xs"
                 />
               </div>
-            </CardContent>
+            </CardContent>}
           </Card>
         </div>
 
