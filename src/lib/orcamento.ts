@@ -38,6 +38,8 @@ export type CondicoesProposta = {
   precificacaoModo?: "valor" | "margem";
   /** Margem líquida desejada quando o preço é calculado por margem. */
   margemDesejada?: number | null;
+  /** Valor final digitado manualmente; null usa o valor sugerido pelas linhas. */
+  valorFinalManual?: number | null;
 };
 
 export const EMPRESA_VAZIA: EmpresaSnapshot = {

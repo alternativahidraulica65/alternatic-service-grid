@@ -18,6 +18,7 @@ import {
   Sparkles,
   RotateCcw,
   ChevronDown,
+  PackagePlus,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -27,6 +28,14 @@ import { getExecutorEmail } from "@/lib/log-executor";
 import { toast } from "sonner";
 import { avaliarFluxo, pendenciasAte } from "@/lib/os-fluxo";
 import { calcularComissao, rotuloComissao } from "@/lib/comissao";
+import {
+  calcularResultadoLiquido,
+  custoTotalProduto,
+  encontrarReceitaPorMargem,
+  precoVendaProduto,
+  totalItemProposta,
+  totalProduto,
+} from "@/lib/orcamento-calculos";
 import {
   brl,
   num,
@@ -98,9 +107,13 @@ function OrcamentoOSPage() {
     observacoes: "",
     comissaoManual: null,
     comissaoVisivel: false,
+    precificacaoModo: "valor",
+    margemDesejada: 30,
+    valorFinalManual: null,
   });
   const [novoItem, setNovoItem] = useState({ descricao: "", custo: "" });
   const [novoLivre, setNovoLivre] = useState({ descricao: "", quantidade: "1", valor: "" });
+  const [novoProduto, setNovoProduto] = useState({ descricao: "", quantidade: "1", custo: "", margem: "30" });
 
   const [empresaEdit, setEmpresaEdit] = useState<EmpresaSnapshot | null>(null);
   const [vendedorEdit, setVendedorEdit] = useState<VendedorSnapshot | null>(null);
@@ -109,6 +122,7 @@ function OrcamentoOSPage() {
   const [fotosSelecionadas, setFotosSelecionadas] = useState<string[]>([]);
   const [secoesAbertas, setSecoesAbertas] = useState({
     custos: true,
+    produtos: true,
     proposta: true,
     fotos: true,
     condicoes: true,
@@ -285,7 +299,11 @@ function OrcamentoOSPage() {
     if (dadosOrcamento?.empresa_snapshot) setEmpresaEdit(dadosOrcamento.empresa_snapshot);
     if (dadosOrcamento?.vendedor_snapshot) setVendedorEdit(dadosOrcamento.vendedor_snapshot);
     if (dadosOrcamento?.fotos_selecionadas) setFotosSelecionadas(dadosOrcamento.fotos_selecionadas);
-    if (dadosOrcamento?.condicoes) setCondicoes((a) => ({ ...a, ...dadosOrcamento.condicoes }));
+    if (dadosOrcamento?.condicoes) {
+      setCondicoes((a) => ({ ...a, ...dadosOrcamento.condicoes }));
+      const salvo = dadosOrcamento.condicoes.valorFinalManual;
+      setValorFinalManual(salvo == null ? null : num(salvo));
+    }
     setDadosAplicados(true);
   }, [dadosOrcamento, dadosAplicados]);
 
@@ -301,24 +319,32 @@ function OrcamentoOSPage() {
   /* ------------------------------ Cálculos ------------------------------- */
 
   const linhas = useMemo(
-    () =>
-      custos.map((c) => {
-        const custo = num(c.custo_interno) || num(c.valor_total_custo);
-        const margem = c.margem_lucro_percentual != null ? num(c.margem_lucro_percentual) : margemPadrao;
-        const venda = num(c.preco_venda_final) > 0 ? num(c.preco_venda_final) : custo * (1 + margem / 100);
-        return { ...c, custo, margem, venda };
-      }),
-    [custos, margemPadrao],
+    () => custos.map((c) => ({ ...c, custo: num(c.custo_interno) || num(c.valor_total_custo) })),
+    [custos],
+  );
+
+  const itensProposta = useMemo(
+    () => itensLivres.filter((item) => (item.tipo_item || "proposta") === "proposta"),
+    [itensLivres],
+  );
+  const produtos = useMemo(
+    () => itensLivres.filter((item) => item.tipo_item === "produto"),
+    [itensLivres],
   );
 
   const totalLivres = useMemo(
-    () => itensLivres.reduce((a, l) => a + (num(l.quantidade) || 1) * num(l.valor_unitario), 0),
-    [itensLivres],
+    () => itensProposta.reduce((a, item) => a + totalItemProposta(item), 0),
+    [itensProposta],
+  );
+
+  const totalVendaProdutos = useMemo(() => produtos.reduce((a, item) => a + totalProduto(item), 0), [produtos]);
+  const totalCustoProdutos = useMemo(
+    () => produtos.reduce((a, item) => a + custoTotalProduto(item), 0),
+    [produtos],
   );
 
   const totais = useMemo(() => {
     const custoTotal = linhas.reduce((a, l) => a + l.custo, 0);
-    const vendaItens = linhas.reduce((a, l) => a + l.venda, 0);
     const custoPecas = linhas
       .filter((l) => !l.is_terceirizado && !String(l.categoria || "").toLowerCase().includes("terceir"))
       .reduce((a, l) => a + l.custo, 0);
@@ -326,43 +352,68 @@ function OrcamentoOSPage() {
       .filter((l) => l.is_terceirizado || String(l.categoria || "").toLowerCase().includes("terceir"))
       .reduce((a, l) => a + l.custo, 0);
 
-    const base = vendaItens + totalLivres;
-    const valorImposto = base * (imposto / 100);
-    const sugerido = base + valorImposto;
-    const valorFinal = valorFinalManual !== null ? valorFinalManual : sugerido;
-
-    const comissaoRegra = calcularComissao(vendedor, {
-      valorOS: valorFinal,
-      custoPecas,
-      custoTerceiros,
-      faturamentoMes: num(faturamentoMes) + valorFinal,
-    });
-
     const manual = condicoes.comissaoManual;
     const comissaoAjustada = manual !== null && manual !== undefined;
-    const comissao = comissaoAjustada
-      ? { ...comissaoRegra, valor: num(manual), descricao: "Comissão ajustada manualmente neste orçamento" }
-      : comissaoRegra;
-
-    const lucro = valorFinal - valorImposto - custoTotal - comissao.valor;
-    const margemEfetiva = valorFinal > 0 ? (lucro / valorFinal) * 100 : 0;
+    const comissaoPara = (receita: number) => {
+      const regra = calcularComissao(vendedor, {
+        valorOS: receita,
+        custoPecas: custoTotal + totalCustoProdutos,
+        custoTerceiros: 0,
+        faturamentoMes: num(faturamentoMes) + receita,
+      });
+      return comissaoAjustada
+        ? { ...regra, valor: num(manual), descricao: "Comissão ajustada manualmente neste orçamento" }
+        : regra;
+    };
+    const base = totalLivres + totalVendaProdutos;
+    const resultadoPara = (receita: number) => {
+      const comissaoCalculada = comissaoPara(receita);
+      return {
+        ...calcularResultadoLiquido({
+          receita,
+          custoManutencao: custoTotal,
+          custoProdutos: totalCustoProdutos,
+          impostoPercentual: imposto,
+          comissao: comissaoCalculada.valor,
+        }),
+        comissao: comissaoCalculada,
+      };
+    };
+    const porMargem = condicoes.precificacaoModo === "margem";
+    const margemDesejada = num(condicoes.margemDesejada);
+    const calculadoPorMargem = encontrarReceitaPorMargem(
+      margemDesejada,
+      (receita) => resultadoPara(receita).margem,
+      custoTotal + totalCustoProdutos,
+    );
+    const sugerido = porMargem ? calculadoPorMargem : base;
+    const valorFinal = porMargem ? calculadoPorMargem : valorFinalManual !== null ? valorFinalManual : sugerido;
+    const resultado = resultadoPara(valorFinal);
+    const comissaoRegra = calcularComissao(vendedor, {
+      valorOS: valorFinal,
+      custoPecas: custoTotal + totalCustoProdutos,
+      custoTerceiros: 0,
+      faturamentoMes: num(faturamentoMes) + valorFinal,
+    });
 
     return {
       custoTotal,
       custoPecas,
       custoTerceiros,
-      vendaItens,
+      custoProdutos: totalCustoProdutos,
+      custoDireto: resultado.custoDireto,
+      vendaProdutos: totalVendaProdutos,
       base,
-      valorImposto,
+      valorImposto: resultado.imposto,
       sugerido,
       valorFinal,
-      comissao,
+      comissao: resultado.comissao,
       comissaoRegra,
       comissaoAjustada,
-      lucro,
-      margemEfetiva,
+      lucro: resultado.lucro,
+      margemEfetiva: resultado.margem,
     };
-  }, [linhas, totalLivres, imposto, valorFinalManual, vendedor, faturamentoMes, condicoes.comissaoManual]);
+  }, [linhas, totalLivres, totalCustoProdutos, totalVendaProdutos, imposto, valorFinalManual, vendedor, faturamentoMes, condicoes.comissaoManual, condicoes.precificacaoModo, condicoes.margemDesejada]);
 
   /* ------------------------------- Ações --------------------------------- */
 
@@ -389,7 +440,6 @@ function OrcamentoOSPage() {
       descricao: novoItem.descricao.trim().toUpperCase(),
       categoria: "orcamento",
       custo_interno: custo,
-      margem_lucro_percentual: margemPadrao,
       is_terceirizado: false,
     } as any);
     if (error) {
@@ -421,6 +471,7 @@ function OrcamentoOSPage() {
       descricao: novoLivre.descricao.trim().toUpperCase(),
       quantidade: num(novoLivre.quantidade) || 1,
       valor_unitario: num(novoLivre.valor),
+      tipo_item: "proposta",
       ordem: itensLivres.length,
     } as any);
     if (error) {
@@ -429,6 +480,43 @@ function OrcamentoOSPage() {
     }
     setNovoLivre({ descricao: "", quantidade: "1", valor: "" });
     recarregarLivres();
+  };
+
+  const adicionarProduto = async () => {
+    if (!novoProduto.descricao.trim()) {
+      toast.error("Informe a descrição do produto.");
+      return;
+    }
+    const custo = num(novoProduto.custo);
+    if (custo < 0.5) {
+      toast.error("O custo do produto deve ser de pelo menos R$ 0,50.");
+      return;
+    }
+    const margem = num(novoProduto.margem);
+    const { error } = await supabase.from("orcamento_itens").insert({
+      os_id: id,
+      descricao: novoProduto.descricao.trim().toUpperCase(),
+      quantidade: num(novoProduto.quantidade) || 1,
+      custo_unitario: custo,
+      margem_percentual: margem,
+      valor_unitario: custo * (1 + margem / 100),
+      tipo_item: "produto",
+      ordem: itensLivres.length,
+    });
+    if (error) {
+      toast.error("Erro ao adicionar produto: " + error.message);
+      return;
+    }
+    setNovoProduto({ descricao: "", quantidade: "1", custo: "", margem: String(margemPadrao) });
+    recarregarLivres();
+  };
+
+  const atualizarProduto = async (produto: any, campos: Record<string, any>) => {
+    const atualizado = { ...produto, ...campos };
+    await atualizarLivre(produto, {
+      ...campos,
+      valor_unitario: precoVendaProduto(atualizado),
+    });
   };
 
   const atualizarLivre = async (linha: any, campos: Record<string, any>) => {
@@ -460,7 +548,11 @@ function OrcamentoOSPage() {
       empresa_snapshot: empresaProposta,
       vendedor_snapshot: vendedorProposta,
       fotos_selecionadas: fotosSelecionadas,
-      condicoes: { ...condicoes, comissaoExibida: totais.comissao.valor },
+      condicoes: {
+        ...condicoes,
+        valorFinalManual: condicoes.precificacaoModo === "valor" ? valorFinalManual : null,
+        comissaoExibida: totais.comissao.valor,
+      },
     };
     const { error } = await supabase
       .from("orcamento_dados" as any)
