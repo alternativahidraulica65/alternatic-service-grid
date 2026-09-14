@@ -1725,13 +1725,6 @@ export type Database = {
           tecnico: string
         }[]
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
       log_evento: {
         Args: {
           p_acao: string
