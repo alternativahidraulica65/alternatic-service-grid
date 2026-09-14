@@ -246,6 +246,7 @@ function OrcamentoOSPage() {
     setImposto(num(config.imposto_padrao));
     if (num(config.margem_padrao) > 0) setMargemPadrao(num(config.margem_padrao));
     setCondicoes((atual) => ({
+      ...atual,
       prazoEntrega: num(config.prazo_entrega_padrao) || atual.prazoEntrega,
       garantia: num(config.prazo_garantia_padrao) || atual.garantia,
       validade: num(config.validade_orcamento_dias) || atual.validade,
