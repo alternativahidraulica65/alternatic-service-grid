@@ -34,6 +34,10 @@ export type CondicoesProposta = {
   comissaoVisivel?: boolean;
   /** Valor efetivo da comissão gravado no orçamento (usado no PDF). */
   comissaoExibida?: number | null;
+  /** Modo usado para formar o preço final deste orçamento. */
+  precificacaoModo?: "valor" | "margem";
+  /** Margem líquida desejada quando o preço é calculado por margem. */
+  margemDesejada?: number | null;
 };
 
 export const EMPRESA_VAZIA: EmpresaSnapshot = {
