@@ -30,6 +30,8 @@ const CONDICOES_PADRAO: CondicoesProposta = {
   validade: 15,
   pagamento: "",
   observacoes: "",
+  comissaoManual: null,
+  comissaoVisivel: false,
 };
 
 function PropostaPage() {
