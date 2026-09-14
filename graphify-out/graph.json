@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T17:53:27.921273+00:00",
+  "generated_at": "2026-09-14T18:00:05.022358+00:00",
   "files": [
     {
       "path": "components.json",
@@ -478,6 +478,10 @@
       "bytes": 4152
     },
     {
+      "path": "src/lib/cliente-vendedor.ts",
+      "bytes": 1544
+    },
+    {
       "path": "src/utils/export.ts",
       "bytes": 1249
     },
@@ -591,11 +595,11 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 43139
+      "bytes": 43576
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 25758
+      "bytes": 25511
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
@@ -1146,6 +1150,10 @@
     {
       "source": "src/lib/utils.ts",
       "target": "tailwind-merge"
+    },
+    {
+      "source": "src/lib/cliente-vendedor.ts",
+      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/utils/export.ts",
@@ -2474,6 +2482,10 @@
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "@/lib/cliente-vendedor"
     },
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
