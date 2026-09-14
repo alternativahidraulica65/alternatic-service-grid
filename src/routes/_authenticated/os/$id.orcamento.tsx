@@ -688,7 +688,7 @@ function OrcamentoOSPage() {
               Orçamento <span className="text-primary">Financeiro</span>
             </h1>
             <p className="text-[11px] font-medium text-slate-500 mt-1">
-              {linhas.length} custos reais · {itensLivres.length} itens de proposta ·{" "}
+              {linhas.length} custos de manutenção · {produtos.length} produtos · {itensProposta.length} itens de proposta ·{" "}
               {fotosSelecionadas.length} fotos no PDF
             </p>
           </div>
@@ -1388,24 +1388,28 @@ function OrcamentoOSPage() {
             <CardContent className="pt-6 space-y-5">
               <div className="space-y-2 text-[11px] font-bold uppercase">
                 <div className="flex justify-between text-slate-400">
-                  <span>Custo peças</span>
-                  <span className="text-white">{brl(totais.custoPecas)}</span>
+                  <span>Custo da manutenção</span>
+                  <span className="text-white">{brl(totais.custoTotal)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Custo terceiros</span>
-                  <span className="text-white">{brl(totais.custoTerceiros)}</span>
+                  <span>Custo dos produtos</span>
+                  <span className="text-white">{brl(totais.custoProdutos)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400 border-t border-white/5 pt-2">
-                  <span>Custo total real</span>
-                  <span className="text-red-400">{brl(totais.custoTotal)}</span>
+                  <span>Custo direto total</span>
+                  <span className="text-red-400">{brl(totais.custoDireto)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Venda dos itens reais</span>
-                  <span className="text-white">{brl(totais.vendaItens)}</span>
+                  <span>Itens da proposta</span>
+                  <span className="text-white">{brl(totalLivres)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Itens de proposta</span>
-                  <span className="text-amber-400">{brl(totalLivres)}</span>
+                  <span>Venda de produtos</span>
+                  <span className="text-white">{brl(totais.vendaProdutos)}</span>
+                </div>
+                <div className="flex justify-between border-t border-white/5 pt-2 text-slate-400">
+                  <span>Soma das linhas</span>
+                  <span className="text-amber-400">{brl(totais.base)}</span>
                 </div>
               </div>
 
@@ -1420,7 +1424,7 @@ function OrcamentoOSPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[9px] font-black uppercase text-slate-500">Margem padrão (%)</Label>
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Margem padrão dos produtos (%)</Label>
                   <Input
                     type="number"
                     value={margemPadrao}
@@ -1435,34 +1439,83 @@ function OrcamentoOSPage() {
                 <span className="text-white">{brl(totais.valorImposto)}</span>
               </div>
 
+              <div className="grid grid-cols-2 gap-1 rounded-md border border-white/10 bg-slate-800 p-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setCondicoes({ ...condicoes, precificacaoModo: "valor" })}
+                  className={`h-9 text-[9px] font-black uppercase tracking-widest ${
+                    condicoes.precificacaoModo !== "margem" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  Definir valor
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    setValorFinalManual(null);
+                    setCondicoes({ ...condicoes, precificacaoModo: "margem" });
+                  }}
+                  className={`h-9 text-[9px] font-black uppercase tracking-widest ${
+                    condicoes.precificacaoModo === "margem" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  Definir margem
+                </Button>
+              </div>
+
               <div className="space-y-1">
-                <Label className="text-[9px] font-black uppercase text-slate-500">Valor final ao cliente</Label>
+                <Label className="text-[9px] font-black uppercase text-slate-500">
+                  {condicoes.precificacaoModo === "margem" ? "Margem líquida desejada (%)" : "Valor final ao cliente"}
+                </Label>
                 <Input
                   type="number"
-                  value={valorFinalManual !== null ? valorFinalManual : totais.sugerido.toFixed(2)}
-                  onChange={(e) => setValorFinalManual(num(e.target.value))}
+                  step="0.01"
+                  value={
+                    condicoes.precificacaoModo === "margem"
+                      ? String(condicoes.margemDesejada ?? 0)
+                      : valorFinalManual !== null
+                        ? valorFinalManual
+                        : totais.sugerido.toFixed(2)
+                  }
+                  onChange={(e) => {
+                    if (condicoes.precificacaoModo === "margem") {
+                      setCondicoes({ ...condicoes, margemDesejada: num(e.target.value) });
+                    } else {
+                      setValorFinalManual(num(e.target.value));
+                    }
+                  }}
                   className={`h-12 bg-slate-800 border-white/10 text-white text-lg font-black ${
-                    valorFinalManual !== null ? "ring-1 ring-primary border-primary" : ""
+                    valorFinalManual !== null || condicoes.precificacaoModo === "margem" ? "ring-1 ring-primary border-primary" : ""
                   }`}
                 />
-                {valorFinalManual !== null && (
-                  <button
-                    className="text-[9px] font-black uppercase tracking-widest text-primary"
+                {condicoes.precificacaoModo === "margem" ? (
+                  <p className="text-[10px] font-bold text-slate-400">
+                    Valor final calculado: <span className="text-primary">{brl(totais.valorFinal)}</span>
+                  </p>
+                ) : valorFinalManual !== null ? (
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="h-auto p-0 text-[9px] font-black uppercase tracking-widest text-primary"
                     onClick={() => setValorFinalManual(null)}
                   >
                     Voltar ao valor sugerido ({brl(totais.sugerido)})
-                  </button>
-                )}
+                  </Button>
+                ) : null}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-slate-800 border border-white/5">
                   <p className="text-[9px] font-black uppercase text-slate-500 mb-1">Margem líquida</p>
-                  <p className="text-lg font-black text-emerald-400">{totais.margemEfetiva.toFixed(1)}%</p>
+                  <p className={`text-lg font-black ${totais.margemEfetiva < 0 ? "text-red-400" : "text-emerald-400"}`}>
+                    {totais.margemEfetiva.toFixed(1)}%
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-slate-800 border border-white/5">
                   <p className="text-[9px] font-black uppercase text-slate-500 mb-1">Lucro previsto</p>
-                  <p className="text-lg font-black text-white">{brl(totais.lucro)}</p>
+                  <p className={`text-lg font-black ${totais.lucro < 0 ? "text-red-400" : "text-white"}`}>{brl(totais.lucro)}</p>
                 </div>
               </div>
 

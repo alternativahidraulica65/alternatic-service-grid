@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { precoVendaProduto, totalItemProposta, totalProduto } from "@/lib/orcamento-calculos";
 import {
   brl,
   num,
@@ -42,6 +43,9 @@ const CONDICOES_PADRAO: CondicoesProposta = {
   observacoes: "",
   comissaoManual: null,
   comissaoVisivel: false,
+  precificacaoModo: "valor",
+  margemDesejada: 30,
+  valorFinalManual: null,
 };
 
 function PropostaPage() {
@@ -127,27 +131,25 @@ function PropostaPage() {
     );
   }
 
-  const { os, custos, livres, empresa, vendedor, condicoes, logo, fotos } = data!;
+  const { os, livres, empresa, vendedor, condicoes, logo, fotos } = data!;
   const cliente = os?.clientes;
 
-  const margemPadrao = num(os?.margem_lucro) || 30;
-  const linhasReais = custos.map((c) => {
-    const custo = num(c.custo_interno);
-    const margem = c.margem_lucro_percentual != null ? num(c.margem_lucro_percentual) : margemPadrao;
-    const venda = num(c.preco_venda_final) > 0 ? num(c.preco_venda_final) : custo * (1 + margem / 100);
-    return { descricao: c.descricao as string, quantidade: 1, unitario: venda, total: venda };
-  });
-  const linhasLivres = livres.map((l) => {
+  const linhasServicos = livres.filter((item) => (item.tipo_item || "proposta") === "proposta").map((l) => {
     const q = num(l.quantidade) || 1;
     const u = num(l.valor_unitario);
-    return { descricao: l.descricao as string, quantidade: q, unitario: u, total: q * u };
+    return { id: l.id as string, descricao: l.descricao as string, quantidade: q, unitario: u, total: totalItemProposta(l) };
   });
-  const linhas = [...linhasReais, ...linhasLivres];
+  const linhasProdutos = livres.filter((item) => item.tipo_item === "produto").map((l) => ({
+    id: l.id as string,
+    descricao: l.descricao as string,
+    quantidade: num(l.quantidade) || 1,
+    unitario: precoVendaProduto(l),
+    total: totalProduto(l),
+  }));
 
-  const subtotal = linhas.reduce((a, l) => a + l.total, 0);
-  const imposto = num(os?.imposto_aplicado);
-  const valorImposto = subtotal * (imposto / 100);
-  const total = num(os?.valor_final) > 0 ? num(os.valor_final) : subtotal + valorImposto;
+  const subtotal = [...linhasServicos, ...linhasProdutos].reduce((a, l) => a + l.total, 0);
+  const total = num(os?.valor_final) > 0 ? num(os.valor_final) : subtotal;
+  const ajusteComercial = total - subtotal;
 
   return (
     <div className="bg-slate-100 min-h-screen py-6 print:bg-white print:py-0">
@@ -237,10 +239,10 @@ function PropostaPage() {
           </section>
         )}
 
-        {/* Itens */}
-        <section className="quebra mt-6">
+        {/* Serviços */}
+        {linhasServicos.length > 0 && <section className="quebra mt-6">
           <h2 className="border-l-4 border-amber-400 pl-2 text-[11px] font-black uppercase tracking-widest">
-            Serviços e peças
+            Serviços da proposta
           </h2>
           <table className="mt-3 w-full border-collapse text-[11px]">
             <thead>
@@ -252,8 +254,8 @@ function PropostaPage() {
               </tr>
             </thead>
             <tbody>
-              {linhas.map((l, i) => (
-                <tr key={i} className="border-b border-slate-200">
+               {linhasServicos.map((l) => (
+                 <tr key={l.id} className="border-b border-slate-200">
                   <td className="p-2 uppercase">{l.descricao}</td>
                   <td className="p-2 text-right">{l.quantidade}</td>
                   <td className="p-2 text-right">{brl(l.unitario)}</td>
@@ -263,16 +265,46 @@ function PropostaPage() {
             </tbody>
           </table>
 
-          <div className="mt-4 flex justify-end">
+        </section>}
+
+        {/* Produtos */}
+        {linhasProdutos.length > 0 && <section className="quebra mt-6">
+          <h2 className="border-l-4 border-amber-400 pl-2 text-[11px] font-black uppercase tracking-widest">
+            Produtos
+          </h2>
+          <table className="mt-3 w-full border-collapse text-[11px]">
+            <thead>
+              <tr className="bg-slate-900 text-white">
+                <th className="p-2 text-left font-black uppercase tracking-widest">Descrição</th>
+                <th className="w-16 p-2 text-right font-black uppercase tracking-widest">Qtd</th>
+                <th className="w-28 p-2 text-right font-black uppercase tracking-widest">Unitário</th>
+                <th className="w-28 p-2 text-right font-black uppercase tracking-widest">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {linhasProdutos.map((l) => (
+                <tr key={l.id} className="border-b border-slate-200">
+                  <td className="p-2 uppercase">{l.descricao}</td>
+                  <td className="p-2 text-right">{l.quantidade}</td>
+                  <td className="p-2 text-right">{brl(l.unitario)}</td>
+                  <td className="p-2 text-right font-bold">{brl(l.total)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>}
+
+        <section className="quebra mt-6">
+          <div className="flex justify-end">
             <div className="w-64 space-y-1 text-[11px]">
               <div className="flex justify-between text-slate-600">
                 <span>Subtotal</span>
                 <span className="font-bold">{brl(subtotal)}</span>
               </div>
-              {imposto > 0 && (
+              {Math.abs(ajusteComercial) >= 0.01 && (
                 <div className="flex justify-between text-slate-600">
-                  <span>Impostos ({imposto}%)</span>
-                  <span className="font-bold">{brl(valorImposto)}</span>
+                  <span>Ajuste comercial</span>
+                  <span className="font-bold">{brl(ajusteComercial)}</span>
                 </div>
               )}
               <div className="flex justify-between border-t-2 border-amber-400 pt-2 text-base">
