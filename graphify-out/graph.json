@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T19:08:47.244215+00:00",
+  "generated_at": "2026-09-14T19:26:26.162819+00:00",
   "files": [
     {
       "path": "components.json",
@@ -34,10 +34,6 @@
       "bytes": 820
     },
     {
-      "path": ".lovable/plan.md",
-      "bytes": 3873
-    },
-    {
       "path": ".lovable/project.json",
       "bytes": 124
     },
@@ -47,7 +43,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 28239
+      "bytes": 29224
     },
     {
       "path": "src/start.ts",
@@ -100,6 +96,10 @@
     {
       "path": ".lovable/plan/plan-fase-01-ajuste-da-tela-de-login-2026-08-16.md",
       "bytes": 2460
+    },
+    {
+      "path": ".lovable/plan/reestilizar-a-tela-de-orçamento-e-gerar-pdf-profissional-2026-09-14.md",
+      "bytes": 3873
     },
     {
       "path": ".lovable/plan/plan-rename-equipment-types-table-to-singular-2026-08-23.md",
@@ -310,6 +310,10 @@
       "bytes": 780
     },
     {
+      "path": "supabase/migrations/20260914191950_170bec25-7167-4fa3-8969-8ede7ebcb222.sql",
+      "bytes": 635
+    },
+    {
       "path": "supabase/migrations/20260822125039_37c8ea00-390d-49fe-be96-0f1a2ba00dd4.sql",
       "bytes": 750
     },
@@ -418,6 +422,10 @@
       "bytes": 136
     },
     {
+      "path": "supabase/migrations/20260914191921_6dbde8b9-4e5e-4414-a897-da67b3123bf1.sql",
+      "bytes": 5863
+    },
+    {
       "path": "supabase/migrations/20260819135405_a857afa8-7c4a-4bc2-b3c7-4ec8e4dd9eaa.sql",
       "bytes": 722
     },
@@ -448,6 +456,10 @@
     {
       "path": "src/lib/error-capture.ts",
       "bytes": 2898
+    },
+    {
+      "path": "src/lib/orcamento.ts",
+      "bytes": 3419
     },
     {
       "path": "src/lib/lovable-error-reporting.ts",
@@ -531,7 +543,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 38453
+      "bytes": 41278
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
@@ -619,7 +631,11 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 32403
+      "bytes": 52783
+    },
+    {
+      "path": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "bytes": 14060
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -651,7 +667,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 52224
+      "bytes": 56704
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -985,6 +1001,10 @@
     },
     {
       "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/os/$id.proposta"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
       "target": "./router.tsx"
     },
     {
@@ -1138,6 +1158,10 @@
     {
       "source": "src/hooks/useUserRole.ts",
       "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/lib/orcamento.ts",
+      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/lib/log-executor.ts",
@@ -2725,6 +2749,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/orcamento"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "@/components/ui/card"
     },
     {
@@ -2750,6 +2778,42 @@
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/lib/orcamento"
     },
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
