@@ -13,7 +13,7 @@ Cada fase só abre quando a anterior está concluída de verdade, com base nos d
 | Fase | Concluída quando |
 | --- | --- |
 | Criar OS | OS cadastrada com cliente e equipamento |
-| Checklist | ao menos um item avaliado e fotos obrigatórias nos itens ruins (regra que já existe) |
+| Checklist | todos os itens preenchidos como Bom ou Ruim, fotos obrigatórias nos itens ruins (regra que já existe) e o botão Finalizar Checklist acionado |
 | Laudo técnico | diagnóstico, defeitos ou serviços necessários preenchidos |
 | Custos | nenhum custo pode ficar zerado: todo item lançado precisa ter valor de no mínimo R$ 0,50. A fase só pode ser concluída com valores zerados se não houver nenhum custo lançado |
 | Orçamento | orçamento salvo com valor e enviado para aprovação |
