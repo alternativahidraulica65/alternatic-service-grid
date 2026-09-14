@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T17:36:31.958208+00:00",
+  "generated_at": "2026-09-14T17:41:13.823467+00:00",
   "files": [
     {
       "path": "components.json",
@@ -27,15 +27,11 @@
     },
     {
       "path": "roadmap.md",
-      "bytes": 1864
+      "bytes": 2321
     },
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 4811
     },
     {
       "path": ".lovable/project.json",
@@ -64,6 +60,10 @@
     {
       "path": "src/server.ts",
       "bytes": 2048
+    },
+    {
+      "path": ".lovable/plan/sequência-da-os-organizar-a-lógica-do-fluxo-2026-09-14.md",
+      "bytes": 4811
     },
     {
       "path": ".lovable/plan/plan-gestão-de-vendedores-comissões-2026-08-20.md",
@@ -458,6 +458,10 @@
       "bytes": 356
     },
     {
+      "path": "src/lib/os-fluxo.ts",
+      "bytes": 8351
+    },
+    {
       "path": "src/lib/admin-usuarios.functions.ts",
       "bytes": 7348
     },
@@ -479,7 +483,7 @@
     },
     {
       "path": "src/components/AlertaOrcamentosCard.tsx",
-      "bytes": 10858
+      "bytes": 11105
     },
     {
       "path": "src/components/OsAtrasadasDialog.tsx",
@@ -531,7 +535,7 @@
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
-      "bytes": 10213
+      "bytes": 12472
     },
     {
       "path": "src/routes/_authenticated/relatorios.tsx",
@@ -599,11 +603,11 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 112932
+      "bytes": 113480
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 32668
+      "bytes": 32403
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -1205,6 +1209,10 @@
     },
     {
       "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
       "target": "@/lib/log-executor"
     },
     {
@@ -1786,6 +1794,18 @@
     {
       "source": "src/routes/_authenticated/kanban.tsx",
       "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/lib/os-fluxo"
     },
     {
       "source": "src/routes/_authenticated/relatorios.tsx",
@@ -2545,6 +2565,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/lib/log-executor"
     },
     {
@@ -2666,6 +2690,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/os-fluxo"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
