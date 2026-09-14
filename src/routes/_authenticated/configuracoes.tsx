@@ -535,13 +535,19 @@ function DialogEmpresa({
     setSalvando(true);
     try {
       let empresaId = empresa?.id;
-      const dadosEmpresa = {
+      const dadosEmpresa: Record<string, any> = {
         nome: form.nome.trim(),
         razao_social: form.razao_social.trim() || form.nome.trim(),
         cnpj: form.cnpj.trim(),
         cor_identificacao: form.cor_identificacao,
         ativo: form.ativo,
+        endereco: form.endereco.trim(),
+        telefone: form.telefone.trim(),
+        email: form.email.trim(),
+        site: form.site.trim(),
+        logo_url: form.logo_url || null,
       };
+
 
       if (empresaId) {
         const { error } = await supabase
