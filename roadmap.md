@@ -31,3 +31,10 @@ O sistema tem **um único banco de dados**: o projeto Supabase
 ## Alerta de orçamentos (dashboards Diretor/Financeiro)
 - [x] Card de alerta com totais de orçamentos pendentes e aguardando cliente.
 - [x] Status "Pendente de Orçamento" só após checklist, laudo e custos preenchidos.
+
+## Sequência da OS (fluxo único)
+- [x] src/lib/os-fluxo.ts como fonte única (fases, pendências, bloqueio de avanço)
+- [x] Kanban: coluna derivada da fase, validação de transição + perfil + histórico
+- [x] Detalhe da OS: etapas derivadas do fluxo; checklist exige todos os itens avaliados
+- [x] Orçamento: bloqueio pelas pendências das fases anteriores (custos >= R$ 0,50)
+- [x] Card de alerta: para fazer / aguardando cliente derivados da fase
