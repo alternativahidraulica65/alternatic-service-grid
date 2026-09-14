@@ -47,6 +47,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -84,6 +85,8 @@ function OrcamentoOSPage() {
     validade: 15,
     pagamento: "",
     observacoes: "",
+    comissaoManual: null,
+    comissaoVisivel: false,
   });
   const [novoItem, setNovoItem] = useState({ descricao: "", custo: "" });
   const [novoLivre, setNovoLivre] = useState({ descricao: "", quantidade: "1", valor: "" });
@@ -244,6 +247,7 @@ function OrcamentoOSPage() {
     setImposto(num(config.imposto_padrao));
     if (num(config.margem_padrao) > 0) setMargemPadrao(num(config.margem_padrao));
     setCondicoes((atual) => ({
+      ...atual,
       prazoEntrega: num(config.prazo_entrega_padrao) || atual.prazoEntrega,
       garantia: num(config.prazo_garantia_padrao) || atual.garantia,
       validade: num(config.validade_orcamento_dias) || atual.validade,
@@ -306,12 +310,18 @@ function OrcamentoOSPage() {
     const sugerido = base + valorImposto;
     const valorFinal = valorFinalManual !== null ? valorFinalManual : sugerido;
 
-    const comissao = calcularComissao(vendedor, {
+    const comissaoRegra = calcularComissao(vendedor, {
       valorOS: valorFinal,
       custoPecas,
       custoTerceiros,
       faturamentoMes: num(faturamentoMes) + valorFinal,
     });
+
+    const manual = condicoes.comissaoManual;
+    const comissaoAjustada = manual !== null && manual !== undefined;
+    const comissao = comissaoAjustada
+      ? { ...comissaoRegra, valor: num(manual), descricao: "Comissão ajustada manualmente neste orçamento" }
+      : comissaoRegra;
 
     const lucro = valorFinal - valorImposto - custoTotal - comissao.valor;
     const margemEfetiva = valorFinal > 0 ? (lucro / valorFinal) * 100 : 0;
@@ -326,10 +336,12 @@ function OrcamentoOSPage() {
       sugerido,
       valorFinal,
       comissao,
+      comissaoRegra,
+      comissaoAjustada,
       lucro,
       margemEfetiva,
     };
-  }, [linhas, totalLivres, imposto, valorFinalManual, vendedor, faturamentoMes]);
+  }, [linhas, totalLivres, imposto, valorFinalManual, vendedor, faturamentoMes, condicoes.comissaoManual]);
 
   /* ------------------------------- Ações --------------------------------- */
 
@@ -427,7 +439,7 @@ function OrcamentoOSPage() {
       empresa_snapshot: empresaProposta,
       vendedor_snapshot: vendedorProposta,
       fotos_selecionadas: fotosSelecionadas,
-      condicoes,
+      condicoes: { ...condicoes, comissaoExibida: totais.comissao.valor },
     };
     const { error } = await supabase
       .from("orcamento_dados" as any)
@@ -1138,10 +1150,49 @@ function OrcamentoOSPage() {
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 space-y-1">
+              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 space-y-2">
                 <p className="text-[9px] font-black uppercase tracking-widest text-primary">Comissão do vendedor</p>
-                <p className="text-base font-black text-primary">{brl(totais.comissao.valor)}</p>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={
+                    totais.comissaoAjustada
+                      ? String(condicoes.comissaoManual ?? "")
+                      : totais.comissaoRegra.valor.toFixed(2)
+                  }
+                  onChange={(e) =>
+                    setCondicoes({
+                      ...condicoes,
+                      comissaoManual: e.target.value === "" ? null : num(e.target.value),
+                    })
+                  }
+                  className={`h-10 bg-slate-800 border-white/10 text-white font-black ${
+                    totais.comissaoAjustada ? "ring-1 ring-primary border-primary" : ""
+                  }`}
+                />
                 <p className="text-[10px] font-medium text-slate-400">{totais.comissao.descricao}</p>
+                {totais.comissaoAjustada && (
+                  <button
+                    className="text-[9px] font-black uppercase tracking-widest text-primary"
+                    onClick={() => setCondicoes({ ...condicoes, comissaoManual: null })}
+                  >
+                    Voltar à regra do vendedor ({brl(totais.comissaoRegra.valor)})
+                  </button>
+                )}
+                <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                      Mostrar no orçamento
+                    </p>
+                    <p className="text-[10px] font-medium text-slate-500">
+                      {condicoes.comissaoVisivel ? "Visível no PDF" : "Oculto no PDF"}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={!!condicoes.comissaoVisivel}
+                    onCheckedChange={(v) => setCondicoes({ ...condicoes, comissaoVisivel: v })}
+                  />
+                </div>
               </div>
 
               <Button

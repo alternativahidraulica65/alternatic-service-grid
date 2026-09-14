@@ -30,6 +30,8 @@ const CONDICOES_PADRAO: CondicoesProposta = {
   validade: 15,
   pagamento: "",
   observacoes: "",
+  comissaoManual: null,
+  comissaoVisivel: false,
 };
 
 function PropostaPage() {
@@ -290,6 +292,12 @@ function PropostaPage() {
           {condicoes.observacoes ? (
             <p className="mt-2 whitespace-pre-line text-[11px] leading-relaxed text-slate-600">
               {condicoes.observacoes}
+            </p>
+          ) : null}
+          {condicoes.comissaoVisivel ? (
+            <p className="mt-2 text-[11px] text-slate-700">
+              <strong>Comissão do vendedor: </strong>
+              {brl(num(condicoes.comissaoExibida))}
             </p>
           ) : null}
         </section>
