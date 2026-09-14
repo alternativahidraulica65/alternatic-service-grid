@@ -124,6 +124,32 @@ const estadoDoItem = (item: any) =>
 
 const STATUS_PECA_FINAL = ["concluida", "finalizada", "entregue", "cancelada"];
 
+/** Lê o laudo das colunas oficiais, com fallback para o JSON legado em "observacoes". */
+export function lerLaudo(os: any): { diagnostico: string; defeitos: string; servicos_necessarios: string } {
+  const diag = os?.laudo_diagnostico ?? "";
+  const def = os?.laudo_defeitos ?? "";
+  const serv = os?.laudo_servicos_necessarios ?? "";
+  if (diag || def || serv) return { diagnostico: diag, defeitos: def, servicos_necessarios: serv };
+  const bruto = os?.observacoes ?? os?.observacao ?? "";
+  let legado: any = {};
+  try {
+    legado = bruto ? JSON.parse(bruto) : {};
+  } catch {
+    legado = { diagnostico: bruto };
+  }
+  return {
+    diagnostico: legado?.diagnostico || "",
+    defeitos: legado?.defeitos || "",
+    servicos_necessarios: legado?.servicos_necessarios || "",
+  };
+}
+
+/** Laudo considerado registrado quando há qualquer conteúdo preenchido (fotos não são obrigatórias). */
+export function temLaudo(os: any): boolean {
+  const l = lerLaudo(os);
+  return Boolean(l.diagnostico || l.defeitos || l.servicos_necessarios);
+}
+
 export interface DadosFluxo {
   checklist?: any[];
   custos?: any[];
@@ -177,10 +203,8 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
     pendencias.checklist.push('Checklist ainda não finalizado (botão "Finalizar Checklist")');
   }
 
-  // Laudo técnico
-  const laudoOk = Boolean(
-    os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios,
-  );
+  // Laudo técnico (colunas oficiais ou JSON legado em "observacoes")
+  const laudoOk = temLaudo(os);
   if (!laudoOk) pendencias.laudo.push("Laudo/relatório técnico ainda não registrado");
 
   // Custos: nada abaixo de R$ 0,50; lista vazia é permitida

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
+import { temLaudo } from "@/lib/os-fluxo";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -194,7 +195,7 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     if (!checklistPreenchido) pendencias.push("Vistoria técnica (checklist) não finalizada");
 
     const laudoOk = (() => {
-      if (os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios) return true;
+      if (temLaudo(os)) return true;
       const bruto = String(os?.observacoes ?? "");
       if (!bruto.trim()) return false;
       try {
@@ -403,7 +404,7 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     });
 
     const laudoOk = (() => {
-      if (os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios) return true;
+      if (temLaudo(os)) return true;
       // Fallback: laudos antigos salvos como JSON em "observacoes"
       const bruto = String(os?.observacoes ?? "");
       if (!bruto.trim()) return false;
