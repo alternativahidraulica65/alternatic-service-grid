@@ -574,8 +574,8 @@ function DialogEmpresa({
         margem_padrao: Number(form.margem_padrao) || 0,
         condicoes_pagamento: form.condicoes_pagamento,
         observacoes_orcamento: form.observacoes_orcamento,
-        };
       };
+
 
       const { error: erroCfg } = await supabase
         .from("configuracoes_empresa")
