@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T17:26:28.701712+00:00",
+  "generated_at": "2026-09-14T17:30:35.638895+00:00",
   "files": [
     {
       "path": "components.json",
@@ -35,7 +35,7 @@
     },
     {
       "path": ".lovable/plan.md",
-      "bytes": 4607
+      "bytes": 4754
     },
     {
       "path": ".lovable/project.json",
