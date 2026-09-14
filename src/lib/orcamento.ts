@@ -28,6 +28,10 @@ export type CondicoesProposta = {
   validade: number;
   pagamento: string;
   observacoes: string;
+  /** Comissão ajustada manualmente neste orçamento (null = usa a regra do vendedor). */
+  comissaoManual?: number | null;
+  /** Mostrar a comissão no PDF da proposta. Padrão: oculto. */
+  comissaoVisivel?: boolean;
 };
 
 export const EMPRESA_VAZIA: EmpresaSnapshot = {
