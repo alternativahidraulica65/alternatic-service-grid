@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T19:26:26.162819+00:00",
+  "generated_at": "2026-09-14T22:42:59.016638+00:00",
   "files": [
     {
       "path": "components.json",
@@ -631,7 +631,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 52783
+      "bytes": 53779
     },
     {
       "path": "src/routes/_authenticated/os/$id.proposta.tsx",
@@ -2782,6 +2782,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/select"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
