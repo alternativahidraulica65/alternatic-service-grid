@@ -25,6 +25,7 @@ import {
   UserPlus
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { salvarVendedorCliente } from "@/lib/cliente-vendedor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
