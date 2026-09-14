@@ -294,6 +294,12 @@ function PropostaPage() {
               {condicoes.observacoes}
             </p>
           ) : null}
+          {condicoes.comissaoVisivel && num(condicoes.comissaoManual) >= 0 ? (
+            <p className="mt-2 text-[11px] text-slate-700">
+              <strong>Comissão do vendedor: </strong>
+              {brl(num(condicoes.comissaoManual))}
+            </p>
+          ) : null}
         </section>
 
         {/* Fotos */}
