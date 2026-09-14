@@ -848,10 +848,10 @@ function OrcamentoOSPage() {
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                    <Receipt className="h-4 w-4 shrink-0 text-primary" /> Custos reais da OS (peças, terceiros e extras)
+                    <Receipt className="h-4 w-4 shrink-0 text-primary" /> Custos reais de manutenção
                   </CardTitle>
                   <p className="mt-1 text-[10px] font-bold text-slate-500">
-                    Custo: {brl(totais.custoTotal)} · Venda: {brl(totais.vendaItens)}
+                    Total da manutenção: {brl(totais.custoTotal)}
                   </p>
                 </div>
                 <Button
@@ -878,15 +878,13 @@ function OrcamentoOSPage() {
                     <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Descrição</TableHead>
                     <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-28">Categoria</TableHead>
                     <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-32">Custo (R$)</TableHead>
-                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-24">Margem %</TableHead>
-                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-32 text-right">Venda</TableHead>
                     <TableHead className="w-12" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {linhas.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-10 text-[10px] font-bold text-slate-400 uppercase italic">
+                      <TableCell colSpan={4} className="text-center py-10 text-[10px] font-bold text-slate-400 uppercase italic">
                         Nenhum custo lançado nesta OS.
                       </TableCell>
                     </TableRow>
@@ -916,19 +914,6 @@ function OrcamentoOSPage() {
                             className="h-8 text-xs font-bold border-slate-200"
                           />
                         </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            defaultValue={linha.margem}
-                            onBlur={(e) => {
-                              const v = num(e.target.value);
-                              if (v !== linha.margem)
-                                atualizarLinha(linha, { margem_lucro_percentual: v, preco_venda_final: null });
-                            }}
-                            className="h-8 text-xs font-bold border-slate-200"
-                          />
-                        </TableCell>
-                        <TableCell className="text-right text-xs font-black text-slate-900">{brl(linha.venda)}</TableCell>
                         <TableCell className="text-center">
                           <Button
                             variant="ghost"
@@ -968,6 +953,131 @@ function OrcamentoOSPage() {
                   onClick={adicionarItem}
                   className="h-9 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest"
                 >
+                  <Plus className="mr-2 h-4 w-4 text-primary" /> Adicionar
+                </Button>
+              </div>
+            </CardContent>}
+          </Card>
+
+          {/* Produtos vendidos */}
+          <Card className="border-border shadow-md">
+            <CardHeader
+              className="cursor-pointer bg-slate-50 border-b border-border/50"
+              onClick={() => alternarSecao("produtos")}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                    <PackagePlus className="h-4 w-4 shrink-0 text-primary" /> Produtos para venda
+                  </CardTitle>
+                  <p className="mt-1 text-[10px] font-bold text-slate-500">
+                    Custo: {brl(totais.custoProdutos)} · Venda: {brl(totais.vendaProdutos)} · Lucro: {brl(totais.vendaProdutos - totais.custoProdutos)}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={secoesAbertas.produtos ? "Fechar produtos para venda" : "Abrir produtos para venda"}
+                  aria-expanded={secoesAbertas.produtos}
+                  title={secoesAbertas.produtos ? "Fechar" : "Abrir"}
+                  className="h-8 w-8 shrink-0 text-slate-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alternarSecao("produtos");
+                  }}
+                >
+                  <ChevronDown className={`h-4 w-4 transition-transform ${secoesAbertas.produtos ? "rotate-180" : ""}`} />
+                </Button>
+              </div>
+            </CardHeader>
+            {secoesAbertas.produtos && <CardContent className="p-0">
+              <Table>
+                <TableHeader className="bg-slate-50/50">
+                  <TableRow className="border-border">
+                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Produto</TableHead>
+                    <TableHead className="w-20 text-[9px] font-black uppercase tracking-widest text-slate-500">Qtd</TableHead>
+                    <TableHead className="w-28 text-[9px] font-black uppercase tracking-widest text-slate-500">Custo unit.</TableHead>
+                    <TableHead className="w-24 text-[9px] font-black uppercase tracking-widest text-slate-500">Margem %</TableHead>
+                    <TableHead className="w-32 text-right text-[9px] font-black uppercase tracking-widest text-slate-500">Venda total</TableHead>
+                    <TableHead className="w-12" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {produtos.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center text-[10px] font-bold uppercase italic text-slate-400">
+                        Nenhum produto adicionado à venda.
+                      </TableCell>
+                    </TableRow>
+                  ) : produtos.map((produto) => (
+                    <TableRow key={produto.id} className="border-border">
+                      <TableCell>
+                        <Input
+                          defaultValue={produto.descricao}
+                          onBlur={(e) => {
+                            const descricao = e.target.value.trim().toUpperCase();
+                            if (descricao && descricao !== produto.descricao) atualizarProduto(produto, { descricao });
+                          }}
+                          className="h-8 text-xs font-bold border-slate-200"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min="1"
+                          defaultValue={num(produto.quantidade) || 1}
+                          onBlur={(e) => atualizarProduto(produto, { quantidade: num(e.target.value) || 1 })}
+                          className="h-8 text-xs font-bold border-slate-200"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min="0.5"
+                          step="0.01"
+                          defaultValue={num(produto.custo_unitario)}
+                          onBlur={(e) => atualizarProduto(produto, { custo_unitario: Math.max(0.5, num(e.target.value)) })}
+                          className="h-8 text-xs font-bold border-slate-200"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          defaultValue={num(produto.margem_percentual)}
+                          onBlur={(e) => atualizarProduto(produto, { margem_percentual: num(e.target.value) })}
+                          className="h-8 text-xs font-bold border-slate-200"
+                        />
+                      </TableCell>
+                      <TableCell className="text-right text-xs font-black text-slate-900">{brl(totalProduto(produto))}</TableCell>
+                      <TableCell className="text-center">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => removerLivre(produto)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="flex flex-wrap items-end gap-3 border-t border-border bg-slate-50 p-4">
+                <div className="min-w-[200px] flex-1 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Produto</Label>
+                  <Input value={novoProduto.descricao} onChange={(e) => setNovoProduto({ ...novoProduto, descricao: e.target.value })} placeholder="Ex.: cilindro hidráulico novo" className="h-9 bg-white text-xs" />
+                </div>
+                <div className="w-20 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Qtd</Label>
+                  <Input type="number" value={novoProduto.quantidade} onChange={(e) => setNovoProduto({ ...novoProduto, quantidade: e.target.value })} className="h-9 bg-white text-xs font-bold" />
+                </div>
+                <div className="w-32 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Custo unit.</Label>
+                  <Input type="number" step="0.01" value={novoProduto.custo} onChange={(e) => setNovoProduto({ ...novoProduto, custo: e.target.value })} className="h-9 bg-white text-xs font-bold" />
+                </div>
+                <div className="w-24 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Margem %</Label>
+                  <Input type="number" step="0.01" value={novoProduto.margem} onChange={(e) => setNovoProduto({ ...novoProduto, margem: e.target.value })} className="h-9 bg-white text-xs font-bold" />
+                </div>
+                <Button onClick={adicionarProduto} className="h-9 bg-slate-900 font-black uppercase text-[10px] tracking-widest text-white">
                   <Plus className="mr-2 h-4 w-4 text-primary" /> Adicionar
                 </Button>
               </div>
@@ -1019,14 +1129,14 @@ function OrcamentoOSPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {itensLivres.length === 0 ? (
+                  {itensProposta.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center py-8 text-[10px] font-bold text-slate-400 uppercase italic">
                         Nenhum item de proposta.
                       </TableCell>
                     </TableRow>
                   ) : (
-                    itensLivres.map((l) => (
+                    itensProposta.map((l) => (
                       <TableRow key={l.id} className="border-border">
                         <TableCell>
                           <Input
