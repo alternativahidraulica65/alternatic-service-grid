@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { faseDoStatus } from "@/lib/os-fluxo";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { toast } from "sonner";
 
@@ -17,6 +18,7 @@ type OsOrcamento = {
   prazo_orcamento: string | null;
   valor_total: number | null;
   status_financeiro: string | null;
+  status: string | null;
 };
 
 const AGUARDANDO = "Aguardando Aprovação";
@@ -38,8 +40,8 @@ export function AlertaOrcamentosCard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("ordens_servico")
-        .select("id, numero_os, cliente, prazo_orcamento, valor_total, status_financeiro")
-        .eq("status", "orcamento_pendente")
+        .select("id, numero_os, cliente, prazo_orcamento, valor_total, status_financeiro, status")
+        .in("status", ["aguardando_gestor", "orcamento_pendente"])
         .order("prazo_orcamento", { ascending: true });
       if (error) throw error;
       return (data || []) as unknown as OsOrcamento[];
@@ -48,8 +50,13 @@ export function AlertaOrcamentosCard() {
   });
 
   const { paraFazer, aguardandoCliente } = useMemo(() => {
-    const aguardandoCliente = ordens.filter((o) => o.status_financeiro === AGUARDANDO);
-    const paraFazer = ordens.filter((o) => o.status_financeiro !== AGUARDANDO);
+    const aguardandoCliente = ordens.filter(
+      (o) => faseDoStatus(o.status, o.status_financeiro) === "aprovacao",
+    );
+    const paraFazer = ordens.filter((o) => {
+      const fase = faseDoStatus(o.status, o.status_financeiro);
+      return fase === "custos" || fase === "orcamento";
+    });
     return { paraFazer, aguardandoCliente };
   }, [ordens]);
 
@@ -72,7 +79,7 @@ export function AlertaOrcamentosCard() {
       const email = await getExecutorEmail();
       await supabase.from("historico_status_os").insert({
         os_id: os.id,
-        status_anterior: "orcamento_pendente",
+        status_anterior: os.status ?? "orcamento_pendente",
         status_novo: "aprovada",
         observacao: `Aprovação do cliente registrada — ${brl(os.valor_total)}`,
         executor_email: email,
