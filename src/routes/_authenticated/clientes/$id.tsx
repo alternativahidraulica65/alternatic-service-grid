@@ -64,11 +64,17 @@ function ClienteDetalhesPage() {
     }
   });
 
-  const definirVendedor = async (vendedorId: string) => {
-    const valor = vendedorId === 'nenhum' ? null : vendedorId;
+  const definirVendedor = async (valorSelecionado: string) => {
+    const patch =
+      valorSelecionado === 'proprio'
+        ? { vendedor_id: null, venda_propria: true }
+        : valorSelecionado === 'nenhum'
+          ? { vendedor_id: null, venda_propria: false }
+          : { vendedor_id: valorSelecionado, venda_propria: false };
+
     const { error } = await supabase
       .from('clientes')
-      .update({ vendedor_id: valor } as any)
+      .update(patch as any)
       .eq('id', id);
     if (error) {
       toast.error("Não foi possível salvar o vendedor: " + error.message);
@@ -76,7 +82,9 @@ function ClienteDetalhesPage() {
     }
     toast.success("Vendedor responsável atualizado.");
     queryClient.invalidateQueries({ queryKey: ['cliente', id] });
+    queryClient.invalidateQueries({ queryKey: ['clientes_list'] });
   };
+
 
 
   const { data: cliente, isLoading: isLoadingCliente } = useQuery({
