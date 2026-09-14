@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T02:11:01.251211+00:00",
+  "generated_at": "2026-09-14T02:17:38.400445+00:00",
   "files": [
     {
       "path": "components.json",
@@ -563,11 +563,11 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 43214
+      "bytes": 43139
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 25831
+      "bytes": 25758
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
@@ -2317,10 +2317,6 @@
     },
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/lib/comissao"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/card"
     },
     {
@@ -2370,10 +2366,6 @@
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
       "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/$id.tsx",
-      "target": "@/lib/comissao"
     },
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
