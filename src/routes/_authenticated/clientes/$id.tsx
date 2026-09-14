@@ -335,14 +335,19 @@ function ClienteDetalhesPage() {
                 <div className="md:col-span-2 space-y-2 pt-4 border-t border-dashed border-border">
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Vendedor responsável</p>
                   <Select
-                    value={(cliente as any).vendedor_id || 'nenhum'}
+                    value={
+                      (cliente as any).venda_propria
+                        ? 'proprio'
+                        : (cliente as any).vendedor_id || 'nenhum'
+                    }
                     onValueChange={definirVendedor}
                   >
                     <SelectTrigger className="max-w-md">
                       <SelectValue placeholder="Selecione o vendedor" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="nenhum">Sem vendedor</SelectItem>
+                      <SelectItem value="proprio">Próprio (cliente da empresa, sem comissão)</SelectItem>
+                      <SelectItem value="nenhum">Sem vendedor definido</SelectItem>
                       {vendedoresAtivos.map((v) => (
                         <SelectItem key={v.id} value={v.id}>
                           {v.apelido || v.nome} — {rotuloComissao(v)}
@@ -352,7 +357,9 @@ function ClienteDetalhesPage() {
                   </Select>
                   <p className="text-[11px] text-muted-foreground">
                     A comissão dos orçamentos deste cliente segue a regra cadastrada para o vendedor.
+                    Em "Próprio", nenhuma comissão é gerada.
                   </p>
+
                 </div>
 
              </CardContent>
