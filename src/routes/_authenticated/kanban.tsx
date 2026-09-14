@@ -51,15 +51,61 @@ function KanbanPage() {
     }
   });
 
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
+  const COLUNA_FASE: Record<string, Fase> = {
+    aberta: "criacao",
+    vistoria: "laudo",
+    orcamento_pendente: "orcamento",
+    usinagem: "execucao",
+    montagem: "execucao",
+    pronto: "pronto",
+  };
+
+  const handleUpdateStatus = async (card: any, novaColuna: string) => {
+    if (!podeMover) {
+      toast.error("Sem permissão", {
+        description: "Apenas Gestor, Diretor ou Administrativo/Financeiro podem mover a OS.",
+      });
+      return;
+    }
     try {
+      const faseAtual = faseDoStatus(card.status, (card as any).status_financeiro);
+      const faseDestino = COLUNA_FASE[novaColuna] ?? "criacao";
+
+      if (indiceFase(faseDestino) > indiceFase(faseAtual)) {
+        const [checklistRes, custosRes, pecasRes] = await Promise.all([
+          supabase.from("os_checklist_tecnico" as any).select("*").eq("os_id", card.id),
+          supabase.from("os_custos" as any).select("*").eq("os_id", card.id),
+          supabase.from("os_pecas_rastreio" as any).select("*").eq("os_id", card.id),
+        ]);
+        const resultado = avaliarFluxo(card, {
+          checklist: (checklistRes.data as any[]) ?? [],
+          custos: (custosRes.data as any[]) ?? [],
+          pecas: (pecasRes.data as any[]) ?? [],
+        });
+        const { ok, pendencias } = podeAvancar(faseAtual, faseDestino, resultado);
+        if (!ok) {
+          toast.error(`Não é possível avançar para ${ROTULO_FASE[faseDestino]}`, {
+            description: pendencias.slice(0, 4).join(" · "),
+          });
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ status: newStatus })
-        .eq('id', id);
-      
+        .update({ status: novaColuna })
+        .eq('id', card.id);
+
       if (error) throw error;
-      
+
+      await supabase.from("historico_status_os" as any).insert({
+        os_id: card.id,
+        status_anterior: card.status ?? null,
+        status_novo: novaColuna,
+        observacao: `Fase alterada de ${ROTULO_FASE[faseAtual]} para ${ROTULO_FASE[faseDestino]} no Kanban`,
+        executor_email: await getExecutorEmail(),
+      });
+
       toast.success("Status atualizado com sucesso");
       refetch();
     } catch (error: any) {
@@ -81,6 +127,12 @@ function KanbanPage() {
     os.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
     os.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const cardsDaColuna = (colId: string) =>
+    filteredCards.filter(
+      (c: any) => colunaDoStatus(c.status, (c as any).status_financeiro) === colId,
+    );
+
 
   return (
     <div className="h-[calc(100vh-160px)] flex flex-col space-y-6 p-6 md:p-10">
