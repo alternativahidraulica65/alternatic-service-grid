@@ -42,6 +42,7 @@ import {
   ResponsiveContainer 
 } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   component: DashboardFinanceiro,
@@ -243,6 +244,10 @@ function DashboardFinanceiro() {
           <h2 className="font-display text-3xl font-black text-foreground tracking-tight">DASHBOARD <span className="text-primary">FINANCEIRO</span></h2>
           <p className="text-sm text-muted-foreground font-medium">Controle de orçamentos, aprovações e fluxo de caixa.</p>
         </div>
+      </div>
+
+      <div className="print:hidden">
+        <AlertaOrcamentosCard />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">

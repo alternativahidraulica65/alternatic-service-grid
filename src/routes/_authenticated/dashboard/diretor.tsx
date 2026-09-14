@@ -33,6 +33,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
+import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/diretor")({
   component: DashboardDiretor,
@@ -126,6 +127,8 @@ function DashboardDiretor() {
           </Button>
         </div>
       </div>
+
+      <AlertaOrcamentosCard />
 
       {/* KPIs Operacionais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
