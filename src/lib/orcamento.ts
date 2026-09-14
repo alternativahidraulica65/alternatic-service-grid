@@ -32,6 +32,8 @@ export type CondicoesProposta = {
   comissaoManual?: number | null;
   /** Mostrar a comissão no PDF da proposta. Padrão: oculto. */
   comissaoVisivel?: boolean;
+  /** Valor efetivo da comissão gravado no orçamento (usado no PDF). */
+  comissaoExibida?: number | null;
 };
 
 export const EMPRESA_VAZIA: EmpresaSnapshot = {
