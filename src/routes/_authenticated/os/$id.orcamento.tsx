@@ -280,6 +280,7 @@ function OrcamentoOSPage() {
       if (enviarAprovacao) {
         payload["status"] = "orcamento_pendente";
         payload["status_financeiro"] = "Aguardando Aprovação";
+        payload["orcamento_enviado_em"] = new Date().toISOString();
       }
 
       const { error } = await supabase.from("ordens_servico").update(payload as any).eq("id", id);
@@ -330,17 +331,37 @@ function OrcamentoOSPage() {
   }
 
   const checklistPreenchido = checklist.some((c) => c.estado || c.estado_atual);
+  const laudoPreenchido = Boolean(
+    os?.laudo_diagnostico || os?.laudo_defeitos || os?.laudo_servicos_necessarios,
+  );
+  const custosLancados = custos.length > 0;
 
-  if (!checklistPreenchido) {
+  const pendenciasAnteriores = [
+    !checklistPreenchido ? "Checklist técnico ainda não preenchido" : null,
+    !laudoPreenchido ? "Laudo/relatório técnico ainda não registrado" : null,
+    !custosLancados ? "Nenhum custo lançado para esta OS" : null,
+  ].filter(Boolean) as string[];
+
+  if (pendenciasAnteriores.length > 0) {
     return (
-      <div className="p-10 max-w-xl mx-auto text-center space-y-3">
+      <div className="p-10 max-w-xl mx-auto text-center space-y-4">
         <ClipboardCheck className="h-10 w-10 text-amber-500 mx-auto" />
-        <h1 className="text-xl font-black uppercase text-slate-900">Checklist pendente</h1>
+        <h1 className="text-xl font-black uppercase text-slate-900">Fases anteriores pendentes</h1>
         <p className="text-sm text-slate-500">
-          O orçamento só pode ser gerado depois que o checklist técnico desta OS estiver preenchido.
+          O orçamento só pode ser elaborado depois de concluir as etapas anteriores desta OS.
         </p>
+        <ul className="mx-auto max-w-sm space-y-2 text-left">
+          {pendenciasAnteriores.map((p) => (
+            <li
+              key={p}
+              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] font-bold text-slate-700"
+            >
+              {p}
+            </li>
+          ))}
+        </ul>
         <Button asChild className="bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest">
-          <Link to="/os/$id" params={{ id }}>Ir para o checklist da OS</Link>
+          <Link to="/os/$id" params={{ id }}>Voltar para a OS</Link>
         </Button>
       </div>
     );
