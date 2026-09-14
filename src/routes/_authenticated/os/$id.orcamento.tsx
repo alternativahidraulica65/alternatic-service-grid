@@ -440,6 +440,7 @@ function OrcamentoOSPage() {
     setSalvando(true);
     try {
       const payload: Record<string, any> = {
+        empresa_id: empresa?.id ?? null,
         custo_base: totais.custoTotal,
         valor_final: totais.valorFinal,
         valor_total: totais.valorFinal,
