@@ -632,6 +632,54 @@ function DialogEmpresa({
               className="h-10 p-1"
             />
           </Campo>
+          <Campo label="Telefone">
+            <Input
+              value={form.telefone}
+              onChange={(e) => setForm({ ...form, telefone: e.target.value })}
+            />
+          </Campo>
+          <Campo label="E-mail">
+            <Input
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+          </Campo>
+          <Campo label="Site">
+            <Input
+              value={form.site}
+              onChange={(e) => setForm({ ...form, site: e.target.value })}
+            />
+          </Campo>
+          <div className="sm:col-span-2">
+            <Campo label="Endereço">
+              <Input
+                value={form.endereco}
+                onChange={(e) => setForm({ ...form, endereco: e.target.value })}
+              />
+            </Campo>
+          </div>
+          <div className="sm:col-span-2">
+            <Campo label="Logo usada nos orçamentos">
+              <div className="flex items-center gap-3">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  disabled={subindoLogo}
+                  onChange={(e) => {
+                    const arquivo = e.target.files?.[0];
+                    if (arquivo) enviarLogo(arquivo);
+                  }}
+                  className="text-xs"
+                />
+                {form.logo_url ? (
+                  <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">
+                    Logo enviada
+                  </span>
+                ) : null}
+              </div>
+            </Campo>
+          </div>
+
           <Campo label="Prazo de entrega (dias)">
             <Input
               type="number"
