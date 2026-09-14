@@ -1162,7 +1162,18 @@ function GestaoOSPage() {
               <Badge className="bg-amber-500 text-white font-black uppercase text-[9px] tracking-widest">{os.status}</Badge>
             </div>
             <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-2">
-              Cliente: <span className="text-foreground">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span>
+              Cliente:{" "}
+              {os.clientes?.id ? (
+                <Link
+                  to="/clientes/$id"
+                  params={{ id: os.clientes.id }}
+                  className="text-foreground hover:text-primary hover:underline"
+                >
+                  {os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}
+                </Link>
+              ) : (
+                <span className="text-foreground">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span>
+              )}
               <span className="h-1 w-1 rounded-full bg-border" />
               Técnico: <span className="text-foreground">{os.tecnico?.nome || "Não atribuído"}</span>
             </p>
