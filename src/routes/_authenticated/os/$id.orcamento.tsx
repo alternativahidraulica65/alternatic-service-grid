@@ -619,7 +619,18 @@ function OrcamentoOSPage() {
                 </Button>
               </div>
             </div>
-            <p className="text-sm font-black uppercase text-slate-900">{empresaProposta.nome || "Não definida"}</p>
+            <Select value={empresa?.id || ""} onValueChange={trocarEmpresa}>
+              <SelectTrigger className="h-9 text-xs font-bold uppercase border-slate-300">
+                <SelectValue placeholder="Selecione a empresa" />
+              </SelectTrigger>
+              <SelectContent>
+                {empresas.map((e) => (
+                  <SelectItem key={e.id} value={e.id} className="text-xs font-bold uppercase">
+                    {e.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-[11px] font-medium text-slate-500">{empresaProposta.razao_social}</p>
             <p className="text-[11px] font-bold text-slate-600">CNPJ {empresaProposta.cnpj || "—"}</p>
             <p className="text-[11px] font-medium text-slate-500">{empresaProposta.endereco}</p>
@@ -628,6 +639,7 @@ function OrcamentoOSPage() {
                 Editado só neste orçamento
               </Badge>
             )}
+
           </CardContent>
         </Card>
 
