@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T23:01:39.068890+00:00",
+  "generated_at": "2026-09-14T23:06:20.323803+00:00",
   "files": [
     {
       "path": "components.json",
@@ -32,10 +32,6 @@
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 2446
     },
     {
       "path": ".lovable/project.json",
@@ -164,6 +160,10 @@
     {
       "path": ".lovable/plan/plano-de-informação-de-acesso-2026-08-23.md",
       "bytes": 1207
+    },
+    {
+      "path": ".lovable/plan/plano-cards-recolhíveis-e-totalizadores-do-orçamento-2026-09-14.md",
+      "bytes": 2446
     },
     {
       "path": ".lovable/plan/plano-de-implementação-gestão-de-fornecedores-e-refinamentos-2026-08-19.md",
@@ -635,11 +635,11 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 56117
+      "bytes": 61460
     },
     {
       "path": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "bytes": 14355
+      "bytes": 14875
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
