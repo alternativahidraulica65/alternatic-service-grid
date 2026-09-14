@@ -1149,10 +1149,49 @@ function OrcamentoOSPage() {
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 space-y-1">
+              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 space-y-2">
                 <p className="text-[9px] font-black uppercase tracking-widest text-primary">Comissão do vendedor</p>
-                <p className="text-base font-black text-primary">{brl(totais.comissao.valor)}</p>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={
+                    totais.comissaoAjustada
+                      ? String(condicoes.comissaoManual ?? "")
+                      : totais.comissaoRegra.valor.toFixed(2)
+                  }
+                  onChange={(e) =>
+                    setCondicoes({
+                      ...condicoes,
+                      comissaoManual: e.target.value === "" ? null : num(e.target.value),
+                    })
+                  }
+                  className={`h-10 bg-slate-800 border-white/10 text-white font-black ${
+                    totais.comissaoAjustada ? "ring-1 ring-primary border-primary" : ""
+                  }`}
+                />
                 <p className="text-[10px] font-medium text-slate-400">{totais.comissao.descricao}</p>
+                {totais.comissaoAjustada && (
+                  <button
+                    className="text-[9px] font-black uppercase tracking-widest text-primary"
+                    onClick={() => setCondicoes({ ...condicoes, comissaoManual: null })}
+                  >
+                    Voltar à regra do vendedor ({brl(totais.comissaoRegra.valor)})
+                  </button>
+                )}
+                <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                      Mostrar no orçamento
+                    </p>
+                    <p className="text-[10px] font-medium text-slate-500">
+                      {condicoes.comissaoVisivel ? "Visível no PDF" : "Oculto no PDF"}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={!!condicoes.comissaoVisivel}
+                    onCheckedChange={(v) => setCondicoes({ ...condicoes, comissaoVisivel: v })}
+                  />
+                </div>
               </div>
 
               <Button
