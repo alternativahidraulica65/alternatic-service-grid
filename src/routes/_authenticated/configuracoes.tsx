@@ -461,6 +461,7 @@ function DialogEmpresa({
   onSalvo: () => void;
 }) {
   const [salvando, setSalvando] = useState(false);
+  const [subindoLogo, setSubindoLogo] = useState(false);
   const [form, setForm] = useState(() => estadoInicial());
 
   function estadoInicial() {
@@ -470,6 +471,11 @@ function DialogEmpresa({
       cnpj: "",
       cor_identificacao: "#facc15",
       ativo: true,
+      endereco: "",
+      telefone: "",
+      email: "",
+      site: "",
+      logo_url: "",
       ...REGRAS_PADRAO,
     };
   }
@@ -481,10 +487,15 @@ function DialogEmpresa({
     setChave(chaveAtual);
     setForm({
       nome: empresa?.nome || "",
-      razao_social: empresa?.razao_social || "",
+      razao_social: (empresa as any)?.razao_social || "",
       cnpj: empresa?.cnpj || "",
       cor_identificacao: empresa?.cor_identificacao || "#facc15",
-      ativo: empresa?.ativo !== false,
+      ativo: (empresa as any)?.ativo !== false,
+      endereco: (empresa as any)?.endereco || "",
+      telefone: (empresa as any)?.telefone || "",
+      email: (empresa as any)?.email || "",
+      site: (empresa as any)?.site || "",
+      logo_url: (empresa as any)?.logo_url || "",
       imposto_padrao: Number(config?.imposto_padrao ?? REGRAS_PADRAO.imposto_padrao),
       prazo_entrega_padrao: config?.prazo_entrega_padrao ?? REGRAS_PADRAO.prazo_entrega_padrao,
       prazo_garantia_padrao: config?.prazo_garantia_padrao ?? REGRAS_PADRAO.prazo_garantia_padrao,
@@ -496,6 +507,25 @@ function DialogEmpresa({
         config?.observacoes_orcamento ?? REGRAS_PADRAO.observacoes_orcamento,
     });
   }
+
+  const enviarLogo = async (arquivo: File) => {
+    setSubindoLogo(true);
+    try {
+      const ext = arquivo.name.split(".").pop() || "png";
+      const caminho = `logos/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("empresa-assets")
+        .upload(caminho, arquivo, { upsert: true });
+      if (error) throw error;
+      setForm((f) => ({ ...f, logo_url: caminho }));
+      toast.success("Logo enviada. Salve para aplicar.");
+    } catch (e: any) {
+      toast.error("Erro ao enviar a logo: " + e.message);
+    } finally {
+      setSubindoLogo(false);
+    }
+  };
+
 
   const salvar = async () => {
     if (!form.nome.trim() || !form.cnpj.trim()) {
