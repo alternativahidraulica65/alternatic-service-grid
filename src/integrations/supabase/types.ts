@@ -235,6 +235,8 @@ export type Database = {
           telefone: string | null
           ultimo_numero_orcamento: number | null
           updated_at: string | null
+          venda_propria: boolean
+          vendedor_id: string | null
         }
         Insert: {
           aprovado_em?: string | null
@@ -252,6 +254,8 @@ export type Database = {
           telefone?: string | null
           ultimo_numero_orcamento?: number | null
           updated_at?: string | null
+          venda_propria?: boolean
+          vendedor_id?: string | null
         }
         Update: {
           aprovado_em?: string | null
@@ -269,8 +273,18 @@ export type Database = {
           telefone?: string | null
           ultimo_numero_orcamento?: number | null
           updated_at?: string | null
+          venda_propria?: boolean
+          vendedor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clientes_vendedor_id_fkey"
+            columns: ["vendedor_id"]
+            isOneToOne: false
+            referencedRelation: "vendedores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       configuracoes_vendedores: {
         Row: {
@@ -1430,37 +1444,55 @@ export type Database = {
       }
       vendedores: {
         Row: {
+          apelido: string | null
           ativo: boolean
+          cpf_cnpj: string | null
           created_at: string | null
+          email: string | null
           id: string
           nome: string
           observacao: string | null
           percentual: number
           regra_comissao: Database["public"]["Enums"]["tipo_regra_comissao"]
+          telefone: string | null
           tipo_calculo: Database["public"]["Enums"]["tipo_calculo_comissao"]
+          tipo_comissao: string | null
           updated_at: string | null
+          valor_comissao: number | null
         }
         Insert: {
+          apelido?: string | null
           ativo?: boolean
+          cpf_cnpj?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
           nome: string
           observacao?: string | null
           percentual?: number
           regra_comissao?: Database["public"]["Enums"]["tipo_regra_comissao"]
+          telefone?: string | null
           tipo_calculo?: Database["public"]["Enums"]["tipo_calculo_comissao"]
+          tipo_comissao?: string | null
           updated_at?: string | null
+          valor_comissao?: number | null
         }
         Update: {
+          apelido?: string | null
           ativo?: boolean
+          cpf_cnpj?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
           nome?: string
           observacao?: string | null
           percentual?: number
           regra_comissao?: Database["public"]["Enums"]["tipo_regra_comissao"]
+          telefone?: string | null
           tipo_calculo?: Database["public"]["Enums"]["tipo_calculo_comissao"]
+          tipo_comissao?: string | null
           updated_at?: string | null
+          valor_comissao?: number | null
         }
         Relationships: []
       }
