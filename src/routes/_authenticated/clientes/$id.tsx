@@ -25,6 +25,7 @@ import {
   UserPlus
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { salvarVendedorCliente } from "@/lib/cliente-vendedor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,17 +65,7 @@ function ClienteDetalhesPage() {
   });
 
   const definirVendedor = async (valorSelecionado: string) => {
-    const patch =
-      valorSelecionado === 'proprio'
-        ? { vendedor_id: null, venda_propria: true }
-        : valorSelecionado === 'nenhum'
-          ? { vendedor_id: null, venda_propria: false }
-          : { vendedor_id: valorSelecionado, venda_propria: false };
-
-    const { error } = await supabase
-      .from('clientes')
-      .update(patch as any)
-      .eq('id', id);
+    const { error } = await salvarVendedorCliente(id, valorSelecionado);
     if (error) {
       toast.error("Não foi possível salvar o vendedor: " + error.message);
       return;
