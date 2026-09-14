@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T14:09:40.139759+00:00",
+  "generated_at": "2026-09-14T02:11:01.251211+00:00",
   "files": [
     {
       "path": "components.json",
@@ -350,6 +350,10 @@
       "bytes": 2004
     },
     {
+      "path": "supabase/migrations/20260914020731_33b1b261-d376-4e4b-965a-329901dfed67.sql",
+      "bytes": 1019
+    },
+    {
       "path": "supabase/migrations/20260816195021_c06bf0e4-3b44-4e2d-b470-405f7a9e2b54.sql",
       "bytes": 398
     },
@@ -559,11 +563,11 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 27206
+      "bytes": 43214
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 25243
+      "bytes": 25831
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
@@ -611,7 +615,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 50226
+      "bytes": 51325
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -2310,6 +2314,10 @@
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/utils/export"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/lib/comissao"
     },
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
