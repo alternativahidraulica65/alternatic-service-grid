@@ -841,7 +841,9 @@ export type Database = {
         Row: {
           cliente: string
           cliente_id: string | null
+          comissao_calculada: number | null
           criado_em: string | null
+          custo_base: number | null
           data_abertura: string | null
           data_entrega: string | null
           data_previsao_conclusao: string | null
@@ -849,26 +851,33 @@ export type Database = {
           empresa_id: string | null
           entregue_por: string | null
           id: string
+          imposto_aplicado: number | null
           laudo_defeitos: string | null
           laudo_diagnostico: string | null
           laudo_servicos_necessarios: string | null
           margem_lucro: number | null
+          margem_lucro_aplicada: number | null
           numero_os: string
           observacoes: string | null
           operador_atribuido: string | null
+          orcamento_enviado_em: string | null
           prazo_orcamento: string | null
           prioridade: string | null
           status: string
+          status_financeiro: string | null
           tecnico_id: string | null
           testado: boolean | null
           tipo_equipamento_id: string | null
           updated_at: string | null
+          valor_final: number | null
           valor_total: number | null
         }
         Insert: {
           cliente: string
           cliente_id?: string | null
+          comissao_calculada?: number | null
           criado_em?: string | null
+          custo_base?: number | null
           data_abertura?: string | null
           data_entrega?: string | null
           data_previsao_conclusao?: string | null
@@ -876,26 +885,33 @@ export type Database = {
           empresa_id?: string | null
           entregue_por?: string | null
           id?: string
+          imposto_aplicado?: number | null
           laudo_defeitos?: string | null
           laudo_diagnostico?: string | null
           laudo_servicos_necessarios?: string | null
           margem_lucro?: number | null
+          margem_lucro_aplicada?: number | null
           numero_os: string
           observacoes?: string | null
           operador_atribuido?: string | null
+          orcamento_enviado_em?: string | null
           prazo_orcamento?: string | null
           prioridade?: string | null
           status?: string
+          status_financeiro?: string | null
           tecnico_id?: string | null
           testado?: boolean | null
           tipo_equipamento_id?: string | null
           updated_at?: string | null
+          valor_final?: number | null
           valor_total?: number | null
         }
         Update: {
           cliente?: string
           cliente_id?: string | null
+          comissao_calculada?: number | null
           criado_em?: string | null
+          custo_base?: number | null
           data_abertura?: string | null
           data_entrega?: string | null
           data_previsao_conclusao?: string | null
@@ -903,20 +919,25 @@ export type Database = {
           empresa_id?: string | null
           entregue_por?: string | null
           id?: string
+          imposto_aplicado?: number | null
           laudo_defeitos?: string | null
           laudo_diagnostico?: string | null
           laudo_servicos_necessarios?: string | null
           margem_lucro?: number | null
+          margem_lucro_aplicada?: number | null
           numero_os?: string
           observacoes?: string | null
           operador_atribuido?: string | null
+          orcamento_enviado_em?: string | null
           prazo_orcamento?: string | null
           prioridade?: string | null
           status?: string
+          status_financeiro?: string | null
           tecnico_id?: string | null
           testado?: boolean | null
           tipo_equipamento_id?: string | null
           updated_at?: string | null
+          valor_final?: number | null
           valor_total?: number | null
         }
         Relationships: [
