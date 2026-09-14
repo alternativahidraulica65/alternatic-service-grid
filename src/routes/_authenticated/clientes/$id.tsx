@@ -2,7 +2,6 @@ import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { rotuloComissao } from "@/lib/comissao";
 
 import { 
   ArrowLeft, 
