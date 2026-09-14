@@ -442,11 +442,11 @@ function ClientesPage() {
           return;
         }
         const vendTexto = valor("vendedor");
-        let vendedorPatch: any = { vendedor_id: null, venda_propria: false };
+        let vendedorPatch: any = patchVendedor("nenhum");
         if (vendTexto) {
           const normal = vendTexto.toLowerCase();
           if (normal === "proprio" || normal === "próprio") {
-            vendedorPatch = { vendedor_id: null, venda_propria: true };
+            vendedorPatch = patchVendedor("proprio");
           } else {
             const achado = vendedores.find(
               (v: any) =>
@@ -456,7 +456,7 @@ function ClientesPage() {
               erros.push(`Linha ${i + 2}: vendedor "${vendTexto}" não encontrado.`);
               return;
             }
-            vendedorPatch = { vendedor_id: achado.id, venda_propria: false };
+            vendedorPatch = patchVendedor(achado.id);
           }
         }
         registros.push({
