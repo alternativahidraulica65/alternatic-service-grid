@@ -350,7 +350,7 @@ function ClienteDetalhesPage() {
                       <SelectItem value="nenhum">Sem vendedor definido</SelectItem>
                       {vendedoresAtivos.map((v) => (
                         <SelectItem key={v.id} value={v.id}>
-                          {v.apelido || v.nome} — {rotuloComissao(v)}
+                          {v.apelido || v.nome}
                         </SelectItem>
                       ))}
                     </SelectContent>
