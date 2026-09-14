@@ -461,6 +461,7 @@ function DialogEmpresa({
   onSalvo: () => void;
 }) {
   const [salvando, setSalvando] = useState(false);
+  const [subindoLogo, setSubindoLogo] = useState(false);
   const [form, setForm] = useState(() => estadoInicial());
 
   function estadoInicial() {
@@ -470,6 +471,11 @@ function DialogEmpresa({
       cnpj: "",
       cor_identificacao: "#facc15",
       ativo: true,
+      endereco: "",
+      telefone: "",
+      email: "",
+      site: "",
+      logo_url: "",
       ...REGRAS_PADRAO,
     };
   }
@@ -481,10 +487,15 @@ function DialogEmpresa({
     setChave(chaveAtual);
     setForm({
       nome: empresa?.nome || "",
-      razao_social: empresa?.razao_social || "",
+      razao_social: (empresa as any)?.razao_social || "",
       cnpj: empresa?.cnpj || "",
       cor_identificacao: empresa?.cor_identificacao || "#facc15",
-      ativo: empresa?.ativo !== false,
+      ativo: (empresa as any)?.ativo !== false,
+      endereco: (empresa as any)?.endereco || "",
+      telefone: (empresa as any)?.telefone || "",
+      email: (empresa as any)?.email || "",
+      site: (empresa as any)?.site || "",
+      logo_url: (empresa as any)?.logo_url || "",
       imposto_padrao: Number(config?.imposto_padrao ?? REGRAS_PADRAO.imposto_padrao),
       prazo_entrega_padrao: config?.prazo_entrega_padrao ?? REGRAS_PADRAO.prazo_entrega_padrao,
       prazo_garantia_padrao: config?.prazo_garantia_padrao ?? REGRAS_PADRAO.prazo_garantia_padrao,
@@ -497,6 +508,25 @@ function DialogEmpresa({
     });
   }
 
+  const enviarLogo = async (arquivo: File) => {
+    setSubindoLogo(true);
+    try {
+      const ext = arquivo.name.split(".").pop() || "png";
+      const caminho = `logos/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("empresa-assets")
+        .upload(caminho, arquivo, { upsert: true });
+      if (error) throw error;
+      setForm((f) => ({ ...f, logo_url: caminho }));
+      toast.success("Logo enviada. Salve para aplicar.");
+    } catch (e: any) {
+      toast.error("Erro ao enviar a logo: " + e.message);
+    } finally {
+      setSubindoLogo(false);
+    }
+  };
+
+
   const salvar = async () => {
     if (!form.nome.trim() || !form.cnpj.trim()) {
       toast.error("Informe o nome e o CNPJ da empresa.");
@@ -505,13 +535,19 @@ function DialogEmpresa({
     setSalvando(true);
     try {
       let empresaId = empresa?.id;
-      const dadosEmpresa = {
+      const dadosEmpresa: Record<string, any> = {
         nome: form.nome.trim(),
         razao_social: form.razao_social.trim() || form.nome.trim(),
         cnpj: form.cnpj.trim(),
         cor_identificacao: form.cor_identificacao,
         ativo: form.ativo,
+        endereco: form.endereco.trim(),
+        telefone: form.telefone.trim(),
+        email: form.email.trim(),
+        site: form.site.trim(),
+        logo_url: form.logo_url || null,
       };
+
 
       if (empresaId) {
         const { error } = await supabase
@@ -538,8 +574,8 @@ function DialogEmpresa({
         margem_padrao: Number(form.margem_padrao) || 0,
         condicoes_pagamento: form.condicoes_pagamento,
         observacoes_orcamento: form.observacoes_orcamento,
-        atualizado_em: new Date().toISOString(),
       };
+
 
       const { error: erroCfg } = await supabase
         .from("configuracoes_empresa")
@@ -596,6 +632,54 @@ function DialogEmpresa({
               className="h-10 p-1"
             />
           </Campo>
+          <Campo label="Telefone">
+            <Input
+              value={form.telefone}
+              onChange={(e) => setForm({ ...form, telefone: e.target.value })}
+            />
+          </Campo>
+          <Campo label="E-mail">
+            <Input
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+          </Campo>
+          <Campo label="Site">
+            <Input
+              value={form.site}
+              onChange={(e) => setForm({ ...form, site: e.target.value })}
+            />
+          </Campo>
+          <div className="sm:col-span-2">
+            <Campo label="Endereço">
+              <Input
+                value={form.endereco}
+                onChange={(e) => setForm({ ...form, endereco: e.target.value })}
+              />
+            </Campo>
+          </div>
+          <div className="sm:col-span-2">
+            <Campo label="Logo usada nos orçamentos">
+              <div className="flex items-center gap-3">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  disabled={subindoLogo}
+                  onChange={(e) => {
+                    const arquivo = e.target.files?.[0];
+                    if (arquivo) enviarLogo(arquivo);
+                  }}
+                  className="text-xs"
+                />
+                {form.logo_url ? (
+                  <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">
+                    Logo enviada
+                  </span>
+                ) : null}
+              </div>
+            </Campo>
+          </div>
+
           <Campo label="Prazo de entrega (dias)">
             <Input
               type="number"

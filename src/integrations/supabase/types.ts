@@ -286,6 +286,56 @@ export type Database = {
           },
         ]
       }
+      configuracoes_empresa: {
+        Row: {
+          condicoes_pagamento: string | null
+          created_at: string
+          empresa_id: string
+          id: string
+          imposto_padrao: number
+          margem_padrao: number
+          observacoes_orcamento: string | null
+          prazo_entrega_padrao: number
+          prazo_garantia_padrao: number
+          updated_at: string
+          validade_orcamento_dias: number
+        }
+        Insert: {
+          condicoes_pagamento?: string | null
+          created_at?: string
+          empresa_id: string
+          id?: string
+          imposto_padrao?: number
+          margem_padrao?: number
+          observacoes_orcamento?: string | null
+          prazo_entrega_padrao?: number
+          prazo_garantia_padrao?: number
+          updated_at?: string
+          validade_orcamento_dias?: number
+        }
+        Update: {
+          condicoes_pagamento?: string | null
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          imposto_padrao?: number
+          margem_padrao?: number
+          observacoes_orcamento?: string | null
+          prazo_entrega_padrao?: number
+          prazo_garantia_padrao?: number
+          updated_at?: string
+          validade_orcamento_dias?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "configuracoes_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: true
+            referencedRelation: "empresas_emissoras"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       configuracoes_vendedores: {
         Row: {
           id: string
@@ -347,25 +397,46 @@ export type Database = {
       }
       empresas_emissoras: {
         Row: {
+          ativo: boolean
           cnpj: string
           cor_identificacao: string | null
           criado_em: string | null
+          email: string | null
+          endereco: string | null
           id: string
+          logo_url: string | null
           nome: string
+          razao_social: string | null
+          site: string | null
+          telefone: string | null
         }
         Insert: {
+          ativo?: boolean
           cnpj: string
           cor_identificacao?: string | null
           criado_em?: string | null
+          email?: string | null
+          endereco?: string | null
           id?: string
+          logo_url?: string | null
           nome: string
+          razao_social?: string | null
+          site?: string | null
+          telefone?: string | null
         }
         Update: {
+          ativo?: boolean
           cnpj?: string
           cor_identificacao?: string | null
           criado_em?: string | null
+          email?: string | null
+          endereco?: string | null
           id?: string
+          logo_url?: string | null
           nome?: string
+          razao_social?: string | null
+          site?: string | null
+          telefone?: string | null
         }
         Relationships: []
       }
@@ -742,6 +813,88 @@ export type Database = {
             columns: ["alerta_id"]
             isOneToOne: false
             referencedRelation: "alertas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orcamento_dados: {
+        Row: {
+          condicoes: Json | null
+          created_at: string
+          empresa_snapshot: Json | null
+          fotos_selecionadas: string[]
+          id: string
+          os_id: string
+          updated_at: string
+          vendedor_snapshot: Json | null
+        }
+        Insert: {
+          condicoes?: Json | null
+          created_at?: string
+          empresa_snapshot?: Json | null
+          fotos_selecionadas?: string[]
+          id?: string
+          os_id: string
+          updated_at?: string
+          vendedor_snapshot?: Json | null
+        }
+        Update: {
+          condicoes?: Json | null
+          created_at?: string
+          empresa_snapshot?: Json | null
+          fotos_selecionadas?: string[]
+          id?: string
+          os_id?: string
+          updated_at?: string
+          vendedor_snapshot?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamento_dados_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: true
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orcamento_itens: {
+        Row: {
+          created_at: string
+          descricao: string
+          id: string
+          ordem: number
+          os_id: string
+          quantidade: number
+          updated_at: string
+          valor_unitario: number
+        }
+        Insert: {
+          created_at?: string
+          descricao: string
+          id?: string
+          ordem?: number
+          os_id: string
+          quantidade?: number
+          updated_at?: string
+          valor_unitario?: number
+        }
+        Update: {
+          created_at?: string
+          descricao?: string
+          id?: string
+          ordem?: number
+          os_id?: string
+          quantidade?: number
+          updated_at?: string
+          valor_unitario?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamento_itens_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
             referencedColumns: ["id"]
           },
         ]

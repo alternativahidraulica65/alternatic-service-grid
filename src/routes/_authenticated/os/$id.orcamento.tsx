@@ -4,7 +4,7 @@ import {
   Trash2,
   Calculator,
   Save,
-  Printer,
+  FileText,
   Building2,
   UserCheck,
   ShieldAlert,
@@ -13,6 +13,10 @@ import {
   ClipboardCheck,
   Percent,
   Send,
+  Pencil,
+  Images,
+  Sparkles,
+  RotateCcw,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -22,6 +26,18 @@ import { getExecutorEmail } from "@/lib/log-executor";
 import { toast } from "sonner";
 import { avaliarFluxo, pendenciasAte } from "@/lib/os-fluxo";
 import { calcularComissao, rotuloComissao } from "@/lib/comissao";
+import {
+  brl,
+  num,
+  carregarFotosOs,
+  empresaDoCadastro,
+  vendedorDoCadastro,
+  EMPRESA_VAZIA,
+  VENDEDOR_VAZIO,
+  type EmpresaSnapshot,
+  type VendedorSnapshot,
+  type CondicoesProposta,
+} from "@/lib/orcamento";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,15 +46,19 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/os/$id/orcamento")({
   component: OrcamentoOSPage,
 });
-
-const brl = (v: number) =>
-  `R$ ${Number(v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-const num = (v: unknown) => Number(v ?? 0) || 0;
 
 function OrcamentoOSPage() {
   const { id } = Route.useParams();
@@ -50,7 +70,7 @@ function OrcamentoOSPage() {
   const [valorFinalManual, setValorFinalManual] = useState<number | null>(null);
   const [imposto, setImposto] = useState<number>(0);
   const [margemPadrao, setMargemPadrao] = useState<number>(30);
-  const [condicoes, setCondicoes] = useState({
+  const [condicoes, setCondicoes] = useState<CondicoesProposta>({
     prazoEntrega: 10,
     garantia: 90,
     validade: 15,
@@ -58,6 +78,13 @@ function OrcamentoOSPage() {
     observacoes: "",
   });
   const [novoItem, setNovoItem] = useState({ descricao: "", custo: "" });
+  const [novoLivre, setNovoLivre] = useState({ descricao: "", quantidade: "1", valor: "" });
+
+  const [empresaEdit, setEmpresaEdit] = useState<EmpresaSnapshot | null>(null);
+  const [vendedorEdit, setVendedorEdit] = useState<VendedorSnapshot | null>(null);
+  const [dialogEmpresa, setDialogEmpresa] = useState(false);
+  const [dialogVendedor, setDialogVendedor] = useState(false);
+  const [fotosSelecionadas, setFotosSelecionadas] = useState<string[]>([]);
 
   /* ----------------------------- Dados reais ----------------------------- */
 
@@ -99,6 +126,24 @@ function OrcamentoOSPage() {
     },
   });
 
+  const { data: itensLivres = [] } = useQuery({
+    queryKey: ["orcamento_itens_livres", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orcamento_itens" as any)
+        .select("*")
+        .eq("os_id", id)
+        .order("ordem");
+      if (error) throw error;
+      return (data || []) as any[];
+    },
+  });
+
+  const { data: fotos = [] } = useQuery({
+    queryKey: ["orcamento_fotos", id],
+    queryFn: () => carregarFotosOs(id),
+  });
+
   const { data: empresa } = useQuery({
     queryKey: ["orcamento_empresa", os?.empresa_id],
     enabled: !!os,
@@ -114,7 +159,7 @@ function OrcamentoOSPage() {
     queryKey: ["orcamento_config", empresa?.id],
     enabled: !!empresa,
     queryFn: async () => {
-      const { data, error } = await supabase.from("configuracoes_empresa" as any).select("*").order("id");
+      const { data, error } = await supabase.from("configuracoes_empresa" as any).select("*");
       if (error) throw error;
       const lista = (data || []) as any[];
       return lista.find((c) => c.empresa_id === empresa?.id) || lista[0] || null;
@@ -132,6 +177,19 @@ function OrcamentoOSPage() {
         .maybeSingle();
       if (error) throw error;
       return data as any;
+    },
+  });
+
+  const { data: dadosOrcamento } = useQuery({
+    queryKey: ["orcamento_dados", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orcamento_dados" as any)
+        .select("*")
+        .eq("os_id", id)
+        .maybeSingle();
+      if (error) throw error;
+      return (data || null) as any;
     },
   });
 
@@ -159,15 +217,35 @@ function OrcamentoOSPage() {
     if (!config || regrasAplicadas) return;
     setImposto(num(config.imposto_padrao));
     if (num(config.margem_padrao) > 0) setMargemPadrao(num(config.margem_padrao));
-    setCondicoes({
-      prazoEntrega: num(config.prazo_entrega_padrao) || 10,
-      garantia: num(config.prazo_garantia_padrao) || 90,
-      validade: num(config.validade_orcamento_dias) || 15,
-      pagamento: config.condicoes_pagamento || "",
-      observacoes: config.observacoes_orcamento || "",
-    });
+    setCondicoes((atual) => ({
+      prazoEntrega: num(config.prazo_entrega_padrao) || atual.prazoEntrega,
+      garantia: num(config.prazo_garantia_padrao) || atual.garantia,
+      validade: num(config.validade_orcamento_dias) || atual.validade,
+      pagamento: config.condicoes_pagamento || atual.pagamento,
+      observacoes: config.observacoes_orcamento || atual.observacoes,
+    }));
     setRegrasAplicadas(true);
   }, [config, regrasAplicadas]);
+
+  // Snapshots salvos neste orçamento têm prioridade sobre o cadastro.
+  const [dadosAplicados, setDadosAplicados] = useState(false);
+  useEffect(() => {
+    if (dadosOrcamento === undefined || dadosAplicados) return;
+    if (dadosOrcamento?.empresa_snapshot) setEmpresaEdit(dadosOrcamento.empresa_snapshot);
+    if (dadosOrcamento?.vendedor_snapshot) setVendedorEdit(dadosOrcamento.vendedor_snapshot);
+    if (dadosOrcamento?.fotos_selecionadas) setFotosSelecionadas(dadosOrcamento.fotos_selecionadas);
+    if (dadosOrcamento?.condicoes) setCondicoes((a) => ({ ...a, ...dadosOrcamento.condicoes }));
+    setDadosAplicados(true);
+  }, [dadosOrcamento, dadosAplicados]);
+
+  const empresaCadastro = useMemo(() => empresaDoCadastro(empresa), [empresa]);
+  const vendedorCadastro = useMemo(() => vendedorDoCadastro(vendedor), [vendedor]);
+  const empresaProposta: EmpresaSnapshot = { ...EMPRESA_VAZIA, ...empresaCadastro, ...(empresaEdit || {}) };
+  const vendedorProposta: VendedorSnapshot = {
+    ...VENDEDOR_VAZIO,
+    ...vendedorCadastro,
+    ...(vendedorEdit || {}),
+  };
 
   /* ------------------------------ Cálculos ------------------------------- */
 
@@ -182,6 +260,11 @@ function OrcamentoOSPage() {
     [custos, margemPadrao],
   );
 
+  const totalLivres = useMemo(
+    () => itensLivres.reduce((a, l) => a + (num(l.quantidade) || 1) * num(l.valor_unitario), 0),
+    [itensLivres],
+  );
+
   const totais = useMemo(() => {
     const custoTotal = linhas.reduce((a, l) => a + l.custo, 0);
     const vendaItens = linhas.reduce((a, l) => a + l.venda, 0);
@@ -192,8 +275,9 @@ function OrcamentoOSPage() {
       .filter((l) => l.is_terceirizado || String(l.categoria || "").toLowerCase().includes("terceir"))
       .reduce((a, l) => a + l.custo, 0);
 
-    const valorImposto = vendaItens * (imposto / 100);
-    const sugerido = vendaItens + valorImposto;
+    const base = vendaItens + totalLivres;
+    const valorImposto = base * (imposto / 100);
+    const sugerido = base + valorImposto;
     const valorFinal = valorFinalManual !== null ? valorFinalManual : sugerido;
 
     const comissao = calcularComissao(vendedor, {
@@ -211,6 +295,7 @@ function OrcamentoOSPage() {
       custoPecas,
       custoTerceiros,
       vendaItens,
+      base,
       valorImposto,
       sugerido,
       valorFinal,
@@ -218,11 +303,12 @@ function OrcamentoOSPage() {
       lucro,
       margemEfetiva,
     };
-  }, [linhas, imposto, valorFinalManual, vendedor, faturamentoMes]);
+  }, [linhas, totalLivres, imposto, valorFinalManual, vendedor, faturamentoMes]);
 
   /* ------------------------------- Ações --------------------------------- */
 
   const recarregarCustos = () => queryClient.invalidateQueries({ queryKey: ["orcamento_custos", id] });
+  const recarregarLivres = () => queryClient.invalidateQueries({ queryKey: ["orcamento_itens_livres", id] });
 
   const atualizarLinha = async (linha: any, campos: Record<string, any>) => {
     const { error } = await supabase.from("os_custos").update(campos).eq("id", linha.id);
@@ -266,6 +352,64 @@ function OrcamentoOSPage() {
     recarregarCustos();
   };
 
+  const adicionarLivre = async () => {
+    if (!novoLivre.descricao.trim()) {
+      toast.error("Informe a descrição do item da proposta.");
+      return;
+    }
+    const { error } = await supabase.from("orcamento_itens" as any).insert({
+      os_id: id,
+      descricao: novoLivre.descricao.trim().toUpperCase(),
+      quantidade: num(novoLivre.quantidade) || 1,
+      valor_unitario: num(novoLivre.valor),
+      ordem: itensLivres.length,
+    } as any);
+    if (error) {
+      toast.error("Erro ao adicionar item: " + error.message);
+      return;
+    }
+    setNovoLivre({ descricao: "", quantidade: "1", valor: "" });
+    recarregarLivres();
+  };
+
+  const atualizarLivre = async (linha: any, campos: Record<string, any>) => {
+    const { error } = await supabase.from("orcamento_itens" as any).update(campos).eq("id", linha.id);
+    if (error) {
+      toast.error("Erro ao atualizar item: " + error.message);
+      return;
+    }
+    recarregarLivres();
+  };
+
+  const removerLivre = async (linha: any) => {
+    const { error } = await supabase.from("orcamento_itens" as any).delete().eq("id", linha.id);
+    if (error) {
+      toast.error("Erro ao remover item: " + error.message);
+      return;
+    }
+    recarregarLivres();
+  };
+
+  const alternarFoto = (fotoId: string) =>
+    setFotosSelecionadas((atual) =>
+      atual.includes(fotoId) ? atual.filter((f) => f !== fotoId) : [...atual, fotoId],
+    );
+
+  const persistirDadosProposta = async () => {
+    const payload = {
+      os_id: id,
+      empresa_snapshot: empresaProposta,
+      vendedor_snapshot: vendedorProposta,
+      fotos_selecionadas: fotosSelecionadas,
+      condicoes,
+    };
+    const { error } = await supabase
+      .from("orcamento_dados" as any)
+      .upsert(payload as any, { onConflict: "os_id" });
+    if (error) throw error;
+    queryClient.invalidateQueries({ queryKey: ["orcamento_dados", id] });
+  };
+
   const salvar = async (enviarAprovacao: boolean) => {
     setSalvando(true);
     try {
@@ -287,6 +431,8 @@ function OrcamentoOSPage() {
       const { error } = await supabase.from("ordens_servico").update(payload as any).eq("id", id);
       if (error) throw error;
 
+      await persistirDadosProposta();
+
       const email = await getExecutorEmail();
       await supabase.from("historico_status_os").insert({
         os_id: id,
@@ -299,11 +445,19 @@ function OrcamentoOSPage() {
       queryClient.invalidateQueries({ queryKey: ["orcamento_os", id] });
       queryClient.invalidateQueries({ queryKey: ["os_detail", id] });
       toast.success(enviarAprovacao ? "Orçamento enviado para aprovação." : "Orçamento salvo.");
+      return true;
     } catch (e: any) {
       toast.error("Erro ao salvar orçamento: " + (e?.message || e));
+      return false;
     } finally {
       setSalvando(false);
     }
+  };
+
+  const gerarPdf = async () => {
+    const ok = await salvar(false);
+    if (!ok) return;
+    window.open(`/os/${id}/proposta?print=1`, "_blank");
   };
 
   /* ------------------------------ Bloqueios ------------------------------ */
@@ -382,18 +536,12 @@ function OrcamentoOSPage() {
               Orçamento <span className="text-primary">Financeiro</span>
             </h1>
             <p className="text-[11px] font-medium text-slate-500 mt-1">
-              {checklist.length} itens de checklist analisados · {linhas.length} custos lançados
+              {linhas.length} custos reais · {itensLivres.length} itens de proposta ·{" "}
+              {fotosSelecionadas.length} fotos no PDF
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button
-            variant="outline"
-            className="h-10 font-bold uppercase text-[10px] tracking-widest border-slate-300"
-            onClick={() => window.print()}
-          >
-            <Printer className="mr-2 h-4 w-4" /> Imprimir / PDF
-          </Button>
           <Button
             variant="outline"
             disabled={salvando}
@@ -401,6 +549,14 @@ function OrcamentoOSPage() {
             onClick={() => salvar(false)}
           >
             <Save className="mr-2 h-4 w-4" /> Salvar
+          </Button>
+          <Button
+            variant="outline"
+            disabled={salvando}
+            className="h-10 font-bold uppercase text-[10px] tracking-widest border-slate-900 text-slate-900"
+            onClick={gerarPdf}
+          >
+            <FileText className="mr-2 h-4 w-4" /> Gerar PDF
           </Button>
           <Button
             disabled={salvando}
@@ -412,16 +568,48 @@ function OrcamentoOSPage() {
         </div>
       </div>
 
-      {/* Dados automáticos */}
+      {/* Dados do documento */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-border shadow-sm">
           <CardContent className="pt-5 space-y-1">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
-              <Building2 className="h-3 w-3 text-primary" /> Empresa emissora
-            </p>
-            <p className="text-sm font-black uppercase text-slate-900">{empresa?.nome || "Não definida"}</p>
-            <p className="text-[11px] font-medium text-slate-500">{empresa?.razao_social}</p>
-            <p className="text-[11px] font-bold text-slate-600">CNPJ {empresa?.cnpj || "—"}</p>
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
+                <Building2 className="h-3 w-3 text-primary" /> Empresa emissora
+              </p>
+              <div className="flex items-center gap-1">
+                {empresaEdit && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-slate-400"
+                    title="Restaurar dados do cadastro"
+                    onClick={() => setEmpresaEdit(null)}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-slate-400 hover:text-primary"
+                  onClick={() => {
+                    setEmpresaEdit(empresaProposta);
+                    setDialogEmpresa(true);
+                  }}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+            <p className="text-sm font-black uppercase text-slate-900">{empresaProposta.nome || "Não definida"}</p>
+            <p className="text-[11px] font-medium text-slate-500">{empresaProposta.razao_social}</p>
+            <p className="text-[11px] font-bold text-slate-600">CNPJ {empresaProposta.cnpj || "—"}</p>
+            <p className="text-[11px] font-medium text-slate-500">{empresaProposta.endereco}</p>
+            {empresaEdit && (
+              <Badge variant="outline" className="text-[8px] font-black uppercase text-amber-600 border-amber-300">
+                Editado só neste orçamento
+              </Badge>
+            )}
           </CardContent>
         </Card>
 
@@ -438,33 +626,60 @@ function OrcamentoOSPage() {
 
         <Card className="border-border shadow-sm">
           <CardContent className="pt-5 space-y-1">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
-              <UserCheck className="h-3 w-3 text-primary" /> Vendedor / regra de comissão
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
+                <UserCheck className="h-3 w-3 text-primary" /> Vendedor responsável
+              </p>
+              <div className="flex items-center gap-1">
+                {vendedorEdit && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-slate-400"
+                    title="Restaurar dados do cadastro"
+                    onClick={() => setVendedorEdit(null)}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-slate-400 hover:text-primary"
+                  onClick={() => {
+                    setVendedorEdit(vendedorProposta);
+                    setDialogVendedor(true);
+                  }}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+            <p className="text-sm font-black uppercase text-slate-900">
+              {vendedorProposta.nome || "Sem vendedor vinculado"}
             </p>
-            {vendedor ? (
+            <p className="text-[11px] font-medium text-slate-500">
+              {[vendedorProposta.telefone, vendedorProposta.email].filter(Boolean).join(" · ")}
+            </p>
+            {vendedor && (
               <>
-                <p className="text-sm font-black uppercase text-slate-900">{vendedor.apelido || vendedor.nome}</p>
                 <Badge variant="outline" className="text-[9px] font-black uppercase">
                   {rotuloComissao(vendedor)}
                 </Badge>
                 <p className="text-[11px] font-medium text-slate-500">{totais.comissao.descricao}</p>
               </>
-            ) : (
-              <p className="text-[11px] font-medium text-slate-400">
-                Nenhum vendedor vinculado ao cliente. Comissão zerada.
-              </p>
             )}
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12">
-        {/* Itens de custo */}
         <div className="lg:col-span-8 space-y-8">
+          {/* Custos reais */}
           <Card className="border-border shadow-md">
             <CardHeader className="bg-slate-50 border-b border-border/50">
               <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                <Receipt className="h-4 w-4 text-primary" /> Custos da OS (peças, terceiros e extras)
+                <Receipt className="h-4 w-4 text-primary" /> Custos reais da OS (peças, terceiros e extras)
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -543,7 +758,7 @@ function OrcamentoOSPage() {
 
               <div className="p-4 bg-slate-50 border-t border-border flex flex-wrap items-end gap-3">
                 <div className="flex-1 min-w-[200px] space-y-1">
-                  <Label className="text-[9px] font-black uppercase text-slate-500">Novo item / serviço</Label>
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Novo custo real</Label>
                   <Input
                     value={novoItem.descricao}
                     onChange={(e) => setNovoItem({ ...novoItem, descricao: e.target.value })}
@@ -570,7 +785,175 @@ function OrcamentoOSPage() {
             </CardContent>
           </Card>
 
-          {/* Condições comerciais automáticas */}
+          {/* Itens livres da proposta */}
+          <Card className="border-amber-200 shadow-md">
+            <CardHeader className="bg-amber-50 border-b border-amber-200">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-amber-500" /> Itens da proposta ao cliente
+              </CardTitle>
+              <p className="text-[10px] font-medium text-slate-500">
+                Entram no PDF e no valor apresentado, mas não contam como custo real nem alteram o lucro interno.
+              </p>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader className="bg-slate-50/50">
+                  <TableRow className="border-border">
+                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Descrição</TableHead>
+                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-20">Qtd</TableHead>
+                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-32">Unitário</TableHead>
+                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-32 text-right">Total</TableHead>
+                    <TableHead className="w-12" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {itensLivres.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-[10px] font-bold text-slate-400 uppercase italic">
+                        Nenhum item de proposta.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    itensLivres.map((l) => (
+                      <TableRow key={l.id} className="border-border">
+                        <TableCell>
+                          <Input
+                            defaultValue={l.descricao}
+                            onBlur={(e) => {
+                              const v = e.target.value.trim().toUpperCase();
+                              if (v && v !== l.descricao) atualizarLivre(l, { descricao: v });
+                            }}
+                            className="h-8 text-xs font-bold border-slate-200"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            defaultValue={num(l.quantidade)}
+                            onBlur={(e) => {
+                              const v = num(e.target.value) || 1;
+                              if (v !== num(l.quantidade)) atualizarLivre(l, { quantidade: v });
+                            }}
+                            className="h-8 text-xs font-bold border-slate-200"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            defaultValue={num(l.valor_unitario)}
+                            onBlur={(e) => {
+                              const v = num(e.target.value);
+                              if (v !== num(l.valor_unitario)) atualizarLivre(l, { valor_unitario: v });
+                            }}
+                            className="h-8 text-xs font-bold border-slate-200"
+                          />
+                        </TableCell>
+                        <TableCell className="text-right text-xs font-black text-slate-900">
+                          {brl((num(l.quantidade) || 1) * num(l.valor_unitario))}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50"
+                            onClick={() => removerLivre(l)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+
+              <div className="p-4 bg-amber-50/60 border-t border-amber-200 flex flex-wrap items-end gap-3">
+                <div className="flex-1 min-w-[200px] space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Descrição</Label>
+                  <Input
+                    value={novoLivre.descricao}
+                    onChange={(e) => setNovoLivre({ ...novoLivre, descricao: e.target.value })}
+                    placeholder="Ex.: serviço de inspeção dimensional"
+                    className="h-9 text-xs border-amber-200 bg-white"
+                  />
+                </div>
+                <div className="w-20 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Qtd</Label>
+                  <Input
+                    type="number"
+                    value={novoLivre.quantidade}
+                    onChange={(e) => setNovoLivre({ ...novoLivre, quantidade: e.target.value })}
+                    className="h-9 text-xs border-amber-200 bg-white font-bold"
+                  />
+                </div>
+                <div className="w-36 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Valor unit. (R$)</Label>
+                  <Input
+                    type="number"
+                    value={novoLivre.valor}
+                    onChange={(e) => setNovoLivre({ ...novoLivre, valor: e.target.value })}
+                    className="h-9 text-xs border-amber-200 bg-white font-bold"
+                  />
+                </div>
+                <Button
+                  onClick={adicionarLivre}
+                  className="h-9 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest"
+                >
+                  <Plus className="mr-2 h-4 w-4 text-primary" /> Adicionar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Fotos do PDF */}
+          <Card className="border-border shadow-md">
+            <CardHeader className="bg-slate-50 border-b border-border/50">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                <Images className="h-4 w-4 text-primary" /> Fotos que entram no PDF
+              </CardTitle>
+              <p className="text-[10px] font-medium text-slate-500">
+                Nenhuma marcada: o PDF sai sem registro fotográfico.
+              </p>
+            </CardHeader>
+            <CardContent className="pt-6">
+              {fotos.length === 0 ? (
+                <p className="text-[10px] font-bold uppercase italic text-slate-400">
+                  Esta OS ainda não tem fotos anexadas.
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {fotos.map((f: any) => {
+                    const marcada = fotosSelecionadas.includes(f.id);
+                    return (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => alternarFoto(f.id)}
+                        className={`group relative overflow-hidden rounded-lg border-2 text-left transition-all ${
+                          marcada ? "border-primary ring-2 ring-primary/30" : "border-border"
+                        }`}
+                      >
+                        <img
+                          src={f.url || ""}
+                          alt={f.legenda || "Foto da OS"}
+                          loading="lazy"
+                          className="h-28 w-full object-cover"
+                        />
+                        <span className="absolute left-2 top-2">
+                          <Checkbox checked={marcada} className="bg-white" />
+                        </span>
+                        <span className="block bg-slate-900/80 px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white truncate">
+                          {f.legenda || f.categoria || "Foto"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Condições comerciais */}
           <Card className="border-border shadow-md">
             <CardHeader className="bg-slate-50 border-b border-border/50">
               <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
@@ -623,9 +1006,6 @@ function OrcamentoOSPage() {
                   className="min-h-24 border-slate-200 text-xs"
                 />
               </div>
-              <p className="text-[10px] font-medium text-slate-400">
-                Valores carregados automaticamente das regras cadastradas em Configurações para o CNPJ emissor.
-              </p>
             </CardContent>
           </Card>
         </div>
@@ -649,12 +1029,16 @@ function OrcamentoOSPage() {
                   <span className="text-white">{brl(totais.custoTerceiros)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400 border-t border-white/5 pt-2">
-                  <span>Custo total</span>
+                  <span>Custo total real</span>
                   <span className="text-red-400">{brl(totais.custoTotal)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Venda dos itens</span>
+                  <span>Venda dos itens reais</span>
                   <span className="text-white">{brl(totais.vendaItens)}</span>
+                </div>
+                <div className="flex justify-between text-slate-400">
+                  <span>Itens de proposta</span>
+                  <span className="text-amber-400">{brl(totalLivres)}</span>
                 </div>
               </div>
 
@@ -723,6 +1107,15 @@ function OrcamentoOSPage() {
 
               <Button
                 disabled={salvando}
+                onClick={gerarPdf}
+                variant="outline"
+                className="w-full h-11 border-white/20 bg-transparent text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/10"
+              >
+                <FileText className="mr-2 h-4 w-4 text-primary" /> Gerar PDF da proposta
+              </Button>
+
+              <Button
+                disabled={salvando}
                 onClick={() => salvar(true)}
                 className="w-full h-12 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[11px]"
               >
@@ -732,6 +1125,93 @@ function OrcamentoOSPage() {
           </Card>
         </div>
       </div>
+
+      {/* Edição pontual da empresa */}
+      <Dialog open={dialogEmpresa} onOpenChange={setDialogEmpresa}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display uppercase tracking-tight">Dados da empresa nesta proposta</DialogTitle>
+            <DialogDescription>
+              As alterações valem apenas para este orçamento. O cadastro da empresa não muda.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {(
+              [
+                ["nome", "Nome fantasia"],
+                ["razao_social", "Razão social"],
+                ["cnpj", "CNPJ"],
+                ["telefone", "Telefone"],
+                ["email", "E-mail"],
+                ["site", "Site"],
+              ] as [keyof EmpresaSnapshot, string][]
+            ).map(([campo, label]) => (
+              <div key={campo} className="space-y-1">
+                <Label className="text-[9px] font-black uppercase text-slate-500">{label}</Label>
+                <Input
+                  value={(empresaEdit ?? empresaProposta)[campo] || ""}
+                  onChange={(e) =>
+                    setEmpresaEdit({ ...(empresaEdit ?? empresaProposta), [campo]: e.target.value })
+                  }
+                  className="h-9 text-xs"
+                />
+              </div>
+            ))}
+            <div className="sm:col-span-2 space-y-1">
+              <Label className="text-[9px] font-black uppercase text-slate-500">Endereço</Label>
+              <Input
+                value={(empresaEdit ?? empresaProposta).endereco || ""}
+                onChange={(e) =>
+                  setEmpresaEdit({ ...(empresaEdit ?? empresaProposta), endereco: e.target.value })
+                }
+                className="h-9 text-xs"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDialogEmpresa(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edição pontual do vendedor */}
+      <Dialog open={dialogVendedor} onOpenChange={setDialogVendedor}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display uppercase tracking-tight">Vendedor nesta proposta</DialogTitle>
+            <DialogDescription>
+              As alterações valem apenas para este orçamento. O cadastro do vendedor não muda.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            {(
+              [
+                ["nome", "Nome"],
+                ["telefone", "Telefone"],
+                ["email", "E-mail"],
+              ] as [keyof VendedorSnapshot, string][]
+            ).map(([campo, label]) => (
+              <div key={campo} className="space-y-1">
+                <Label className="text-[9px] font-black uppercase text-slate-500">{label}</Label>
+                <Input
+                  value={(vendedorEdit ?? vendedorProposta)[campo] || ""}
+                  onChange={(e) =>
+                    setVendedorEdit({ ...(vendedorEdit ?? vendedorProposta), [campo]: e.target.value })
+                  }
+                  className="h-9 text-xs"
+                />
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDialogVendedor(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

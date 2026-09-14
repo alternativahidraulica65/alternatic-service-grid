@@ -36,6 +36,7 @@ import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedFinanceiroFornecedoresIndexRouteImport } from './routes/_authenticated/financeiro/fornecedores/index'
 import { Route as AuthenticatedOsIdIndexRouteImport } from './routes/_authenticated/os/$id.index'
 import { Route as AuthenticatedOsIdOrcamentoRouteImport } from './routes/_authenticated/os/$id.orcamento'
+import { Route as AuthenticatedOsIdPropostaRouteImport } from './routes/_authenticated/os/$id.proposta'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -186,6 +187,12 @@ const AuthenticatedOsIdOrcamentoRoute =
     path: '/orcamento',
     getParentRoute: () => AuthenticatedOsIdRoute,
   } as any)
+const AuthenticatedOsIdPropostaRoute =
+  AuthenticatedOsIdPropostaRouteImport.update({
+    id: '/proposta',
+    path: '/proposta',
+    getParentRoute: () => AuthenticatedOsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -212,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
+  '/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
   '/os/$id/': typeof AuthenticatedOsIdIndexRoute
 }
@@ -238,6 +246,7 @@ export interface FileRoutesByTo {
   '/clientes': typeof AuthenticatedClientesIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
+  '/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/financeiro/fornecedores': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
   '/os/$id': typeof AuthenticatedOsIdIndexRoute
 }
@@ -268,6 +277,7 @@ export interface FileRoutesById {
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
+  '/_authenticated/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/_authenticated/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
   '/_authenticated/os/$id/': typeof AuthenticatedOsIdIndexRoute
 }
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/clientes/'
     | '/dashboard/'
     | '/os/$id/orcamento'
+    | '/os/$id/proposta'
     | '/financeiro/fornecedores/'
     | '/os/$id/'
   fileRoutesByTo: FileRoutesByTo
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/dashboard'
     | '/os/$id/orcamento'
+    | '/os/$id/proposta'
     | '/financeiro/fornecedores'
     | '/os/$id'
   id:
@@ -353,6 +365,7 @@ export interface FileRouteTypes {
     | '/_authenticated/clientes/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/os/$id/orcamento'
+    | '/_authenticated/os/$id/proposta'
     | '/_authenticated/financeiro/fornecedores/'
     | '/_authenticated/os/$id/'
   fileRoutesById: FileRoutesById
@@ -554,6 +567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsIdOrcamentoRouteImport
       parentRoute: typeof AuthenticatedOsIdRoute
     }
+    '/_authenticated/os/$id/proposta': {
+      id: '/_authenticated/os/$id/proposta'
+      path: '/proposta'
+      fullPath: '/os/$id/proposta'
+      preLoaderRoute: typeof AuthenticatedOsIdPropostaRouteImport
+      parentRoute: typeof AuthenticatedOsIdRoute
+    }
   }
 }
 
@@ -599,11 +619,13 @@ const AuthenticatedOrcamentoRouteWithChildren =
 
 interface AuthenticatedOsIdRouteChildren {
   AuthenticatedOsIdOrcamentoRoute: typeof AuthenticatedOsIdOrcamentoRoute
+  AuthenticatedOsIdPropostaRoute: typeof AuthenticatedOsIdPropostaRoute
   AuthenticatedOsIdIndexRoute: typeof AuthenticatedOsIdIndexRoute
 }
 
 const AuthenticatedOsIdRouteChildren: AuthenticatedOsIdRouteChildren = {
   AuthenticatedOsIdOrcamentoRoute: AuthenticatedOsIdOrcamentoRoute,
+  AuthenticatedOsIdPropostaRoute: AuthenticatedOsIdPropostaRoute,
   AuthenticatedOsIdIndexRoute: AuthenticatedOsIdIndexRoute,
 }
 
