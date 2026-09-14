@@ -15,7 +15,7 @@ Cada fase só abre quando a anterior está concluída de verdade, com base nos d
 | Criar OS | OS cadastrada com cliente e equipamento |
 | Checklist | ao menos um item avaliado e fotos obrigatórias nos itens ruins (regra que já existe) |
 | Laudo técnico | diagnóstico, defeitos ou serviços necessários preenchidos |
-| Custos | ao menos um custo lançado na OS |
+| Custos | nenhum custo pode ficar zerado: todo item lançado precisa ter valor de no mínimo R$ 0,50. A fase só pode ser concluída com valores zerados se não houver nenhum custo lançado |
 | Orçamento | orçamento salvo com valor e enviado para aprovação |
 | Aprovação | aprovação do cliente registrada |
 | Execução | peças, usinagem e terceiros resolvidos (sem pendências em aberto) |
