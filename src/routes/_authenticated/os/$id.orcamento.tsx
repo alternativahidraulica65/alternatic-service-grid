@@ -18,6 +18,7 @@ import {
   Sparkles,
   RotateCcw,
   ChevronDown,
+  PackagePlus,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -27,6 +28,14 @@ import { getExecutorEmail } from "@/lib/log-executor";
 import { toast } from "sonner";
 import { avaliarFluxo, pendenciasAte } from "@/lib/os-fluxo";
 import { calcularComissao, rotuloComissao } from "@/lib/comissao";
+import {
+  calcularResultadoLiquido,
+  custoTotalProduto,
+  encontrarReceitaPorMargem,
+  precoVendaProduto,
+  totalItemProposta,
+  totalProduto,
+} from "@/lib/orcamento-calculos";
 import {
   brl,
   num,
@@ -98,9 +107,13 @@ function OrcamentoOSPage() {
     observacoes: "",
     comissaoManual: null,
     comissaoVisivel: false,
+    precificacaoModo: "valor",
+    margemDesejada: 30,
+    valorFinalManual: null,
   });
   const [novoItem, setNovoItem] = useState({ descricao: "", custo: "" });
   const [novoLivre, setNovoLivre] = useState({ descricao: "", quantidade: "1", valor: "" });
+  const [novoProduto, setNovoProduto] = useState({ descricao: "", quantidade: "1", custo: "", margem: "30" });
 
   const [empresaEdit, setEmpresaEdit] = useState<EmpresaSnapshot | null>(null);
   const [vendedorEdit, setVendedorEdit] = useState<VendedorSnapshot | null>(null);
@@ -109,6 +122,7 @@ function OrcamentoOSPage() {
   const [fotosSelecionadas, setFotosSelecionadas] = useState<string[]>([]);
   const [secoesAbertas, setSecoesAbertas] = useState({
     custos: true,
+    produtos: true,
     proposta: true,
     fotos: true,
     condicoes: true,
@@ -285,7 +299,11 @@ function OrcamentoOSPage() {
     if (dadosOrcamento?.empresa_snapshot) setEmpresaEdit(dadosOrcamento.empresa_snapshot);
     if (dadosOrcamento?.vendedor_snapshot) setVendedorEdit(dadosOrcamento.vendedor_snapshot);
     if (dadosOrcamento?.fotos_selecionadas) setFotosSelecionadas(dadosOrcamento.fotos_selecionadas);
-    if (dadosOrcamento?.condicoes) setCondicoes((a) => ({ ...a, ...dadosOrcamento.condicoes }));
+    if (dadosOrcamento?.condicoes) {
+      setCondicoes((a) => ({ ...a, ...dadosOrcamento.condicoes }));
+      const salvo = dadosOrcamento.condicoes.valorFinalManual;
+      setValorFinalManual(salvo == null ? null : num(salvo));
+    }
     setDadosAplicados(true);
   }, [dadosOrcamento, dadosAplicados]);
 
@@ -301,24 +319,32 @@ function OrcamentoOSPage() {
   /* ------------------------------ Cálculos ------------------------------- */
 
   const linhas = useMemo(
-    () =>
-      custos.map((c) => {
-        const custo = num(c.custo_interno) || num(c.valor_total_custo);
-        const margem = c.margem_lucro_percentual != null ? num(c.margem_lucro_percentual) : margemPadrao;
-        const venda = num(c.preco_venda_final) > 0 ? num(c.preco_venda_final) : custo * (1 + margem / 100);
-        return { ...c, custo, margem, venda };
-      }),
-    [custos, margemPadrao],
+    () => custos.map((c) => ({ ...c, custo: num(c.custo_interno) || num(c.valor_total_custo) })),
+    [custos],
+  );
+
+  const itensProposta = useMemo(
+    () => itensLivres.filter((item) => (item.tipo_item || "proposta") === "proposta"),
+    [itensLivres],
+  );
+  const produtos = useMemo(
+    () => itensLivres.filter((item) => item.tipo_item === "produto"),
+    [itensLivres],
   );
 
   const totalLivres = useMemo(
-    () => itensLivres.reduce((a, l) => a + (num(l.quantidade) || 1) * num(l.valor_unitario), 0),
-    [itensLivres],
+    () => itensProposta.reduce((a, item) => a + totalItemProposta(item), 0),
+    [itensProposta],
+  );
+
+  const totalVendaProdutos = useMemo(() => produtos.reduce((a, item) => a + totalProduto(item), 0), [produtos]);
+  const totalCustoProdutos = useMemo(
+    () => produtos.reduce((a, item) => a + custoTotalProduto(item), 0),
+    [produtos],
   );
 
   const totais = useMemo(() => {
     const custoTotal = linhas.reduce((a, l) => a + l.custo, 0);
-    const vendaItens = linhas.reduce((a, l) => a + l.venda, 0);
     const custoPecas = linhas
       .filter((l) => !l.is_terceirizado && !String(l.categoria || "").toLowerCase().includes("terceir"))
       .reduce((a, l) => a + l.custo, 0);
@@ -326,43 +352,68 @@ function OrcamentoOSPage() {
       .filter((l) => l.is_terceirizado || String(l.categoria || "").toLowerCase().includes("terceir"))
       .reduce((a, l) => a + l.custo, 0);
 
-    const base = vendaItens + totalLivres;
-    const valorImposto = base * (imposto / 100);
-    const sugerido = base + valorImposto;
-    const valorFinal = valorFinalManual !== null ? valorFinalManual : sugerido;
-
-    const comissaoRegra = calcularComissao(vendedor, {
-      valorOS: valorFinal,
-      custoPecas,
-      custoTerceiros,
-      faturamentoMes: num(faturamentoMes) + valorFinal,
-    });
-
     const manual = condicoes.comissaoManual;
     const comissaoAjustada = manual !== null && manual !== undefined;
-    const comissao = comissaoAjustada
-      ? { ...comissaoRegra, valor: num(manual), descricao: "Comissão ajustada manualmente neste orçamento" }
-      : comissaoRegra;
-
-    const lucro = valorFinal - valorImposto - custoTotal - comissao.valor;
-    const margemEfetiva = valorFinal > 0 ? (lucro / valorFinal) * 100 : 0;
+    const comissaoPara = (receita: number) => {
+      const regra = calcularComissao(vendedor, {
+        valorOS: receita,
+        custoPecas: custoTotal + totalCustoProdutos,
+        custoTerceiros: 0,
+        faturamentoMes: num(faturamentoMes) + receita,
+      });
+      return comissaoAjustada
+        ? { ...regra, valor: num(manual), descricao: "Comissão ajustada manualmente neste orçamento" }
+        : regra;
+    };
+    const base = totalLivres + totalVendaProdutos;
+    const resultadoPara = (receita: number) => {
+      const comissaoCalculada = comissaoPara(receita);
+      return {
+        ...calcularResultadoLiquido({
+          receita,
+          custoManutencao: custoTotal,
+          custoProdutos: totalCustoProdutos,
+          impostoPercentual: imposto,
+          comissao: comissaoCalculada.valor,
+        }),
+        comissao: comissaoCalculada,
+      };
+    };
+    const porMargem = condicoes.precificacaoModo === "margem";
+    const margemDesejada = num(condicoes.margemDesejada);
+    const calculadoPorMargem = encontrarReceitaPorMargem(
+      margemDesejada,
+      (receita) => resultadoPara(receita).margem,
+      custoTotal + totalCustoProdutos,
+    );
+    const sugerido = porMargem ? calculadoPorMargem : base;
+    const valorFinal = porMargem ? calculadoPorMargem : valorFinalManual !== null ? valorFinalManual : sugerido;
+    const resultado = resultadoPara(valorFinal);
+    const comissaoRegra = calcularComissao(vendedor, {
+      valorOS: valorFinal,
+      custoPecas: custoTotal + totalCustoProdutos,
+      custoTerceiros: 0,
+      faturamentoMes: num(faturamentoMes) + valorFinal,
+    });
 
     return {
       custoTotal,
       custoPecas,
       custoTerceiros,
-      vendaItens,
+      custoProdutos: totalCustoProdutos,
+      custoDireto: resultado.custoDireto,
+      vendaProdutos: totalVendaProdutos,
       base,
-      valorImposto,
+      valorImposto: resultado.imposto,
       sugerido,
       valorFinal,
-      comissao,
+      comissao: resultado.comissao,
       comissaoRegra,
       comissaoAjustada,
-      lucro,
-      margemEfetiva,
+      lucro: resultado.lucro,
+      margemEfetiva: resultado.margem,
     };
-  }, [linhas, totalLivres, imposto, valorFinalManual, vendedor, faturamentoMes, condicoes.comissaoManual]);
+  }, [linhas, totalLivres, totalCustoProdutos, totalVendaProdutos, imposto, valorFinalManual, vendedor, faturamentoMes, condicoes.comissaoManual, condicoes.precificacaoModo, condicoes.margemDesejada]);
 
   /* ------------------------------- Ações --------------------------------- */
 
@@ -384,12 +435,15 @@ function OrcamentoOSPage() {
       return;
     }
     const custo = num(novoItem.custo);
+    if (custo < 0.5) {
+      toast.error("O custo de manutenção deve ser de pelo menos R$ 0,50.");
+      return;
+    }
     const { error } = await supabase.from("os_custos").insert({
       os_id: id,
       descricao: novoItem.descricao.trim().toUpperCase(),
       categoria: "orcamento",
       custo_interno: custo,
-      margem_lucro_percentual: margemPadrao,
       is_terceirizado: false,
     } as any);
     if (error) {
@@ -421,6 +475,7 @@ function OrcamentoOSPage() {
       descricao: novoLivre.descricao.trim().toUpperCase(),
       quantidade: num(novoLivre.quantidade) || 1,
       valor_unitario: num(novoLivre.valor),
+      tipo_item: "proposta",
       ordem: itensLivres.length,
     } as any);
     if (error) {
@@ -429,6 +484,43 @@ function OrcamentoOSPage() {
     }
     setNovoLivre({ descricao: "", quantidade: "1", valor: "" });
     recarregarLivres();
+  };
+
+  const adicionarProduto = async () => {
+    if (!novoProduto.descricao.trim()) {
+      toast.error("Informe a descrição do produto.");
+      return;
+    }
+    const custo = num(novoProduto.custo);
+    if (custo < 0.5) {
+      toast.error("O custo do produto deve ser de pelo menos R$ 0,50.");
+      return;
+    }
+    const margem = num(novoProduto.margem);
+    const { error } = await supabase.from("orcamento_itens").insert({
+      os_id: id,
+      descricao: novoProduto.descricao.trim().toUpperCase(),
+      quantidade: num(novoProduto.quantidade) || 1,
+      custo_unitario: custo,
+      margem_percentual: margem,
+      valor_unitario: custo * (1 + margem / 100),
+      tipo_item: "produto",
+      ordem: itensLivres.length,
+    });
+    if (error) {
+      toast.error("Erro ao adicionar produto: " + error.message);
+      return;
+    }
+    setNovoProduto({ descricao: "", quantidade: "1", custo: "", margem: String(margemPadrao) });
+    recarregarLivres();
+  };
+
+  const atualizarProduto = async (produto: any, campos: Record<string, any>) => {
+    const atualizado = { ...produto, ...campos };
+    await atualizarLivre(produto, {
+      ...campos,
+      valor_unitario: precoVendaProduto(atualizado),
+    });
   };
 
   const atualizarLivre = async (linha: any, campos: Record<string, any>) => {
@@ -460,7 +552,11 @@ function OrcamentoOSPage() {
       empresa_snapshot: empresaProposta,
       vendedor_snapshot: vendedorProposta,
       fotos_selecionadas: fotosSelecionadas,
-      condicoes: { ...condicoes, comissaoExibida: totais.comissao.valor },
+      condicoes: {
+        ...condicoes,
+        valorFinalManual: condicoes.precificacaoModo === "valor" ? valorFinalManual : null,
+        comissaoExibida: totais.comissao.valor,
+      },
     };
     const { error } = await supabase
       .from("orcamento_dados" as any)
@@ -596,7 +692,7 @@ function OrcamentoOSPage() {
               Orçamento <span className="text-primary">Financeiro</span>
             </h1>
             <p className="text-[11px] font-medium text-slate-500 mt-1">
-              {linhas.length} custos reais · {itensLivres.length} itens de proposta ·{" "}
+              {linhas.length} custos de manutenção · {produtos.length} produtos · {itensProposta.length} itens de proposta ·{" "}
               {fotosSelecionadas.length} fotos no PDF
             </p>
           </div>
@@ -756,10 +852,10 @@ function OrcamentoOSPage() {
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                    <Receipt className="h-4 w-4 shrink-0 text-primary" /> Custos reais da OS (peças, terceiros e extras)
+                    <Receipt className="h-4 w-4 shrink-0 text-primary" /> Custos reais de manutenção
                   </CardTitle>
                   <p className="mt-1 text-[10px] font-bold text-slate-500">
-                    Custo: {brl(totais.custoTotal)} · Venda: {brl(totais.vendaItens)}
+                    Total da manutenção: {brl(totais.custoTotal)}
                   </p>
                 </div>
                 <Button
@@ -786,15 +882,13 @@ function OrcamentoOSPage() {
                     <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Descrição</TableHead>
                     <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-28">Categoria</TableHead>
                     <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-32">Custo (R$)</TableHead>
-                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-24">Margem %</TableHead>
-                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500 w-32 text-right">Venda</TableHead>
                     <TableHead className="w-12" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {linhas.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-10 text-[10px] font-bold text-slate-400 uppercase italic">
+                      <TableCell colSpan={4} className="text-center py-10 text-[10px] font-bold text-slate-400 uppercase italic">
                         Nenhum custo lançado nesta OS.
                       </TableCell>
                     </TableRow>
@@ -818,25 +912,12 @@ function OrcamentoOSPage() {
                             type="number"
                             defaultValue={linha.custo}
                             onBlur={(e) => {
-                              const v = num(e.target.value);
+                              const v = Math.max(0.5, num(e.target.value));
                               if (v !== linha.custo) atualizarLinha(linha, { custo_interno: v });
                             }}
                             className="h-8 text-xs font-bold border-slate-200"
                           />
                         </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            defaultValue={linha.margem}
-                            onBlur={(e) => {
-                              const v = num(e.target.value);
-                              if (v !== linha.margem)
-                                atualizarLinha(linha, { margem_lucro_percentual: v, preco_venda_final: null });
-                            }}
-                            className="h-8 text-xs font-bold border-slate-200"
-                          />
-                        </TableCell>
-                        <TableCell className="text-right text-xs font-black text-slate-900">{brl(linha.venda)}</TableCell>
                         <TableCell className="text-center">
                           <Button
                             variant="ghost"
@@ -876,6 +957,131 @@ function OrcamentoOSPage() {
                   onClick={adicionarItem}
                   className="h-9 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest"
                 >
+                  <Plus className="mr-2 h-4 w-4 text-primary" /> Adicionar
+                </Button>
+              </div>
+            </CardContent>}
+          </Card>
+
+          {/* Produtos vendidos */}
+          <Card className="border-border shadow-md">
+            <CardHeader
+              className="cursor-pointer bg-slate-50 border-b border-border/50"
+              onClick={() => alternarSecao("produtos")}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                    <PackagePlus className="h-4 w-4 shrink-0 text-primary" /> Produtos para venda
+                  </CardTitle>
+                  <p className="mt-1 text-[10px] font-bold text-slate-500">
+                    Custo: {brl(totais.custoProdutos)} · Venda: {brl(totais.vendaProdutos)} · Lucro: {brl(totais.vendaProdutos - totais.custoProdutos)}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={secoesAbertas.produtos ? "Fechar produtos para venda" : "Abrir produtos para venda"}
+                  aria-expanded={secoesAbertas.produtos}
+                  title={secoesAbertas.produtos ? "Fechar" : "Abrir"}
+                  className="h-8 w-8 shrink-0 text-slate-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alternarSecao("produtos");
+                  }}
+                >
+                  <ChevronDown className={`h-4 w-4 transition-transform ${secoesAbertas.produtos ? "rotate-180" : ""}`} />
+                </Button>
+              </div>
+            </CardHeader>
+            {secoesAbertas.produtos && <CardContent className="p-0">
+              <Table>
+                <TableHeader className="bg-slate-50/50">
+                  <TableRow className="border-border">
+                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-500">Produto</TableHead>
+                    <TableHead className="w-20 text-[9px] font-black uppercase tracking-widest text-slate-500">Qtd</TableHead>
+                    <TableHead className="w-28 text-[9px] font-black uppercase tracking-widest text-slate-500">Custo unit.</TableHead>
+                    <TableHead className="w-24 text-[9px] font-black uppercase tracking-widest text-slate-500">Margem %</TableHead>
+                    <TableHead className="w-32 text-right text-[9px] font-black uppercase tracking-widest text-slate-500">Venda total</TableHead>
+                    <TableHead className="w-12" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {produtos.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center text-[10px] font-bold uppercase italic text-slate-400">
+                        Nenhum produto adicionado à venda.
+                      </TableCell>
+                    </TableRow>
+                  ) : produtos.map((produto) => (
+                    <TableRow key={produto.id} className="border-border">
+                      <TableCell>
+                        <Input
+                          defaultValue={produto.descricao}
+                          onBlur={(e) => {
+                            const descricao = e.target.value.trim().toUpperCase();
+                            if (descricao && descricao !== produto.descricao) atualizarProduto(produto, { descricao });
+                          }}
+                          className="h-8 text-xs font-bold border-slate-200"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min="1"
+                          defaultValue={num(produto.quantidade) || 1}
+                          onBlur={(e) => atualizarProduto(produto, { quantidade: num(e.target.value) || 1 })}
+                          className="h-8 text-xs font-bold border-slate-200"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min="0.5"
+                          step="0.01"
+                          defaultValue={num(produto.custo_unitario)}
+                          onBlur={(e) => atualizarProduto(produto, { custo_unitario: Math.max(0.5, num(e.target.value)) })}
+                          className="h-8 text-xs font-bold border-slate-200"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          defaultValue={num(produto.margem_percentual)}
+                          onBlur={(e) => atualizarProduto(produto, { margem_percentual: num(e.target.value) })}
+                          className="h-8 text-xs font-bold border-slate-200"
+                        />
+                      </TableCell>
+                      <TableCell className="text-right text-xs font-black text-slate-900">{brl(totalProduto(produto))}</TableCell>
+                      <TableCell className="text-center">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => removerLivre(produto)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="flex flex-wrap items-end gap-3 border-t border-border bg-slate-50 p-4">
+                <div className="min-w-[200px] flex-1 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Produto</Label>
+                  <Input value={novoProduto.descricao} onChange={(e) => setNovoProduto({ ...novoProduto, descricao: e.target.value })} placeholder="Ex.: cilindro hidráulico novo" className="h-9 bg-white text-xs" />
+                </div>
+                <div className="w-20 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Qtd</Label>
+                  <Input type="number" value={novoProduto.quantidade} onChange={(e) => setNovoProduto({ ...novoProduto, quantidade: e.target.value })} className="h-9 bg-white text-xs font-bold" />
+                </div>
+                <div className="w-32 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Custo unit.</Label>
+                  <Input type="number" step="0.01" value={novoProduto.custo} onChange={(e) => setNovoProduto({ ...novoProduto, custo: e.target.value })} className="h-9 bg-white text-xs font-bold" />
+                </div>
+                <div className="w-24 space-y-1">
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Margem %</Label>
+                  <Input type="number" step="0.01" value={novoProduto.margem} onChange={(e) => setNovoProduto({ ...novoProduto, margem: e.target.value })} className="h-9 bg-white text-xs font-bold" />
+                </div>
+                <Button onClick={adicionarProduto} className="h-9 bg-slate-900 font-black uppercase text-[10px] tracking-widest text-white">
                   <Plus className="mr-2 h-4 w-4 text-primary" /> Adicionar
                 </Button>
               </div>
@@ -927,14 +1133,14 @@ function OrcamentoOSPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {itensLivres.length === 0 ? (
+                  {itensProposta.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center py-8 text-[10px] font-bold text-slate-400 uppercase italic">
                         Nenhum item de proposta.
                       </TableCell>
                     </TableRow>
                   ) : (
-                    itensLivres.map((l) => (
+                    itensProposta.map((l) => (
                       <TableRow key={l.id} className="border-border">
                         <TableCell>
                           <Input
@@ -1186,24 +1392,28 @@ function OrcamentoOSPage() {
             <CardContent className="pt-6 space-y-5">
               <div className="space-y-2 text-[11px] font-bold uppercase">
                 <div className="flex justify-between text-slate-400">
-                  <span>Custo peças</span>
-                  <span className="text-white">{brl(totais.custoPecas)}</span>
+                  <span>Custo da manutenção</span>
+                  <span className="text-white">{brl(totais.custoTotal)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Custo terceiros</span>
-                  <span className="text-white">{brl(totais.custoTerceiros)}</span>
+                  <span>Custo dos produtos</span>
+                  <span className="text-white">{brl(totais.custoProdutos)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400 border-t border-white/5 pt-2">
-                  <span>Custo total real</span>
-                  <span className="text-red-400">{brl(totais.custoTotal)}</span>
+                  <span>Custo direto total</span>
+                  <span className="text-red-400">{brl(totais.custoDireto)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Venda dos itens reais</span>
-                  <span className="text-white">{brl(totais.vendaItens)}</span>
+                  <span>Itens da proposta</span>
+                  <span className="text-white">{brl(totalLivres)}</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Itens de proposta</span>
-                  <span className="text-amber-400">{brl(totalLivres)}</span>
+                  <span>Venda de produtos</span>
+                  <span className="text-white">{brl(totais.vendaProdutos)}</span>
+                </div>
+                <div className="flex justify-between border-t border-white/5 pt-2 text-slate-400">
+                  <span>Soma das linhas</span>
+                  <span className="text-amber-400">{brl(totais.base)}</span>
                 </div>
               </div>
 
@@ -1218,7 +1428,7 @@ function OrcamentoOSPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[9px] font-black uppercase text-slate-500">Margem padrão (%)</Label>
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Margem padrão dos produtos (%)</Label>
                   <Input
                     type="number"
                     value={margemPadrao}
@@ -1233,34 +1443,83 @@ function OrcamentoOSPage() {
                 <span className="text-white">{brl(totais.valorImposto)}</span>
               </div>
 
+              <div className="grid grid-cols-2 gap-1 rounded-md border border-white/10 bg-slate-800 p-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setCondicoes({ ...condicoes, precificacaoModo: "valor" })}
+                  className={`h-9 text-[9px] font-black uppercase tracking-widest ${
+                    condicoes.precificacaoModo !== "margem" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  Definir valor
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    setValorFinalManual(null);
+                    setCondicoes({ ...condicoes, precificacaoModo: "margem" });
+                  }}
+                  className={`h-9 text-[9px] font-black uppercase tracking-widest ${
+                    condicoes.precificacaoModo === "margem" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  Definir margem
+                </Button>
+              </div>
+
               <div className="space-y-1">
-                <Label className="text-[9px] font-black uppercase text-slate-500">Valor final ao cliente</Label>
+                <Label className="text-[9px] font-black uppercase text-slate-500">
+                  {condicoes.precificacaoModo === "margem" ? "Margem líquida desejada (%)" : "Valor final ao cliente"}
+                </Label>
                 <Input
                   type="number"
-                  value={valorFinalManual !== null ? valorFinalManual : totais.sugerido.toFixed(2)}
-                  onChange={(e) => setValorFinalManual(num(e.target.value))}
+                  step="0.01"
+                  value={
+                    condicoes.precificacaoModo === "margem"
+                      ? String(condicoes.margemDesejada ?? 0)
+                      : valorFinalManual !== null
+                        ? valorFinalManual
+                        : totais.sugerido.toFixed(2)
+                  }
+                  onChange={(e) => {
+                    if (condicoes.precificacaoModo === "margem") {
+                      setCondicoes({ ...condicoes, margemDesejada: num(e.target.value) });
+                    } else {
+                      setValorFinalManual(num(e.target.value));
+                    }
+                  }}
                   className={`h-12 bg-slate-800 border-white/10 text-white text-lg font-black ${
-                    valorFinalManual !== null ? "ring-1 ring-primary border-primary" : ""
+                    valorFinalManual !== null || condicoes.precificacaoModo === "margem" ? "ring-1 ring-primary border-primary" : ""
                   }`}
                 />
-                {valorFinalManual !== null && (
-                  <button
-                    className="text-[9px] font-black uppercase tracking-widest text-primary"
+                {condicoes.precificacaoModo === "margem" ? (
+                  <p className="text-[10px] font-bold text-slate-400">
+                    Valor final calculado: <span className="text-primary">{brl(totais.valorFinal)}</span>
+                  </p>
+                ) : valorFinalManual !== null ? (
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="h-auto p-0 text-[9px] font-black uppercase tracking-widest text-primary"
                     onClick={() => setValorFinalManual(null)}
                   >
                     Voltar ao valor sugerido ({brl(totais.sugerido)})
-                  </button>
-                )}
+                  </Button>
+                ) : null}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-slate-800 border border-white/5">
                   <p className="text-[9px] font-black uppercase text-slate-500 mb-1">Margem líquida</p>
-                  <p className="text-lg font-black text-emerald-400">{totais.margemEfetiva.toFixed(1)}%</p>
+                  <p className={`text-lg font-black ${totais.margemEfetiva < 0 ? "text-red-400" : "text-emerald-400"}`}>
+                    {totais.margemEfetiva.toFixed(1)}%
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-slate-800 border border-white/5">
                   <p className="text-[9px] font-black uppercase text-slate-500 mb-1">Lucro previsto</p>
-                  <p className="text-lg font-black text-white">{brl(totais.lucro)}</p>
+                  <p className={`text-lg font-black ${totais.lucro < 0 ? "text-red-400" : "text-white"}`}>{brl(totais.lucro)}</p>
                 </div>
               </div>
 

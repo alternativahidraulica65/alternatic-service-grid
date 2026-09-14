@@ -38,3 +38,8 @@ O sistema tem **um único banco de dados**: o projeto Supabase
 - [x] Detalhe da OS: etapas derivadas do fluxo; checklist exige todos os itens avaliados
 - [x] Orçamento: bloqueio pelas pendências das fases anteriores (custos >= R$ 0,50)
 - [x] Card de alerta: para fazer / aguardando cliente derivados da fase
+
+## Formação de preço do orçamento
+- [x] Separar custos de manutenção, produtos vendidos e itens da proposta.
+- [x] Calcular preço por valor informado ou margem líquida desejada.
+- [x] Manter tela, OS salva e PDF com o mesmo valor final.

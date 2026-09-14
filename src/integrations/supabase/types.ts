@@ -861,31 +861,40 @@ export type Database = {
       orcamento_itens: {
         Row: {
           created_at: string
+          custo_unitario: number
           descricao: string
           id: string
+          margem_percentual: number
           ordem: number
           os_id: string
           quantidade: number
+          tipo_item: string
           updated_at: string
           valor_unitario: number
         }
         Insert: {
           created_at?: string
+          custo_unitario?: number
           descricao: string
           id?: string
+          margem_percentual?: number
           ordem?: number
           os_id: string
           quantidade?: number
+          tipo_item?: string
           updated_at?: string
           valor_unitario?: number
         }
         Update: {
           created_at?: string
+          custo_unitario?: number
           descricao?: string
           id?: string
+          margem_percentual?: number
           ordem?: number
           os_id?: string
           quantidade?: number
+          tipo_item?: string
           updated_at?: string
           valor_unitario?: number
         }
@@ -1715,13 +1724,6 @@ export type Database = {
           os: number
           tecnico: string
         }[]
-      }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
       }
       log_evento: {
         Args: {
