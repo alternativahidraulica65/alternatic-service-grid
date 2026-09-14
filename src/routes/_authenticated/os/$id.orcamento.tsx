@@ -438,7 +438,7 @@ function OrcamentoOSPage() {
       empresa_snapshot: empresaProposta,
       vendedor_snapshot: vendedorProposta,
       fotos_selecionadas: fotosSelecionadas,
-      condicoes,
+      condicoes: { ...condicoes, comissaoExibida: totais.comissao.valor },
     };
     const { error } = await supabase
       .from("orcamento_dados" as any)
