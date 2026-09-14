@@ -435,6 +435,10 @@ function OrcamentoOSPage() {
       return;
     }
     const custo = num(novoItem.custo);
+    if (custo < 0.5) {
+      toast.error("O custo de manutenção deve ser de pelo menos R$ 0,50.");
+      return;
+    }
     const { error } = await supabase.from("os_custos").insert({
       os_id: id,
       descricao: novoItem.descricao.trim().toUpperCase(),
@@ -908,7 +912,7 @@ function OrcamentoOSPage() {
                             type="number"
                             defaultValue={linha.custo}
                             onBlur={(e) => {
-                              const v = num(e.target.value);
+                              const v = Math.max(0.5, num(e.target.value));
                               if (v !== linha.custo) atualizarLinha(linha, { custo_interno: v });
                             }}
                             className="h-8 text-xs font-bold border-slate-200"
