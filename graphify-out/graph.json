@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T23:15:23.331565+00:00",
+  "generated_at": "2026-09-14T23:22:57.121568+00:00",
   "files": [
     {
       "path": "components.json",
@@ -27,15 +27,11 @@
     },
     {
       "path": "roadmap.md",
-      "bytes": 2321
+      "bytes": 2567
     },
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 4616
     },
     {
       "path": ".lovable/project.json",
@@ -154,6 +150,10 @@
       "bytes": 1823
     },
     {
+      "path": ".lovable/plan/plano-separar-custos-produtos-vendidos-e-preço-da-proposta-2026-09-14.md",
+      "bytes": 4616
+    },
+    {
       "path": ".lovable/plan/plano-implementação-do-dashboard-industrial-dinâmico-tela-2-2026-08-16.md",
       "bytes": 1616
     },
@@ -222,6 +222,10 @@
       "bytes": 30
     },
     {
+      "path": "supabase/migrations/20260914232046_83970fb5-5467-4611-9e41-7cf6411e6316.sql",
+      "bytes": 2368
+    },
+    {
       "path": "supabase/migrations/20260820000000_os_enhancements.sql",
       "bytes": 1667
     },
@@ -272,6 +276,10 @@
     {
       "path": "supabase/migrations/20260911170335_3d388d3b-48cb-425a-9f36-db42d23cf940.sql",
       "bytes": 2123
+    },
+    {
+      "path": "supabase/migrations/20260914232108_1c1ddaed-882d-409d-b0df-6a338aefcd32.sql",
+      "bytes": 404
     },
     {
       "path": "supabase/migrations/20260911180654_f4ac3a4a-3e60-45d9-91f0-667df83c6971.sql",
@@ -336,6 +344,10 @@
     {
       "path": "supabase/migrations/20260819232637_0315354a-c652-4757-a9da-47600ce45eef.sql",
       "bytes": 2098
+    },
+    {
+      "path": "supabase/migrations/20260914231735_e6c6783a-7279-47a1-ab40-39ee581da42d.sql",
+      "bytes": 658
     },
     {
       "path": "supabase/migrations/20260816174158_4eab0c48-cebb-4e14-a182-1ddb3a7977f7.sql",
@@ -467,7 +479,7 @@
     },
     {
       "path": "src/lib/orcamento.ts",
-      "bytes": 3748
+      "bytes": 4082
     },
     {
       "path": "src/lib/lovable-error-reporting.ts",
@@ -484,6 +496,10 @@
     {
       "path": "src/lib/log-executor.ts",
       "bytes": 356
+    },
+    {
+      "path": "src/lib/orcamento-calculos.ts",
+      "bytes": 1989
     },
     {
       "path": "src/lib/os-fluxo.ts",
@@ -639,11 +655,11 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 61460
+      "bytes": 74112
     },
     {
       "path": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "bytes": 14875
+      "bytes": 16355
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -675,7 +691,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 56704
+      "bytes": 56840
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -2757,6 +2773,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/orcamento-calculos"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "@/lib/orcamento"
     },
     {
@@ -2826,6 +2846,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.proposta.tsx",
       "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/lib/orcamento-calculos"
     },
     {
       "source": "src/routes/_authenticated/os/$id.proposta.tsx",
