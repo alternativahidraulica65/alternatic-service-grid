@@ -22,6 +22,16 @@ import {
 
 export const Route = createFileRoute("/_authenticated/os/$id/proposta")({
   component: PropostaPage,
+  head: () => ({
+    meta: [
+      { title: "Proposta Comercial | Alternativa Hidráulica" },
+      { name: "description", content: "Proposta comercial da ordem de serviço pronta para impressão." },
+      { property: "og:title", content: "Proposta Comercial | Alternativa Hidráulica" },
+      { property: "og:description", content: "Proposta comercial da ordem de serviço pronta para impressão." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
 });
 
 const CONDICOES_PADRAO: CondicoesProposta = {

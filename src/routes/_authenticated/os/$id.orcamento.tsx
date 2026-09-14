@@ -68,6 +68,16 @@ import {
 
 export const Route = createFileRoute("/_authenticated/os/$id/orcamento")({
   component: OrcamentoOSPage,
+  head: () => ({
+    meta: [
+      { title: "Orçamento da OS | Alternativa Hidráulica" },
+      { name: "description", content: "Elaboração e controle financeiro do orçamento da ordem de serviço." },
+      { property: "og:title", content: "Orçamento da OS | Alternativa Hidráulica" },
+      { property: "og:description", content: "Elaboração e controle financeiro do orçamento da ordem de serviço." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
 });
 
 function OrcamentoOSPage() {
