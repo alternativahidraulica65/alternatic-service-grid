@@ -48,6 +48,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -144,16 +152,34 @@ function OrcamentoOSPage() {
     queryFn: () => carregarFotosOs(id),
   });
 
-  const { data: empresa } = useQuery({
-    queryKey: ["orcamento_empresa", os?.empresa_id],
-    enabled: !!os,
+  const { data: empresas = [] } = useQuery({
+    queryKey: ["orcamento_empresas"],
     queryFn: async () => {
       const { data, error } = await supabase.from("empresas_emissoras").select("*").order("criado_em");
       if (error) throw error;
-      const lista = (data || []) as any[];
-      return lista.find((e) => e.id === os?.empresa_id) || lista.find((e) => e.ativo) || lista[0] || null;
+      return (data || []) as any[];
     },
   });
+
+  const [empresaIdSel, setEmpresaIdSel] = useState<string | null>(null);
+
+  const empresa = useMemo(() => {
+    if (!empresas.length) return null;
+    return (
+      empresas.find((e) => e.id === empresaIdSel) ||
+      empresas.find((e) => e.id === os?.empresa_id) ||
+      empresas.find((e) => e.ativo) ||
+      empresas[0] ||
+      null
+    );
+  }, [empresas, empresaIdSel, os?.empresa_id]);
+
+  const trocarEmpresa = (novoId: string) => {
+    setEmpresaIdSel(novoId);
+    setEmpresaEdit(null);
+    setRegrasAplicadas(false);
+  };
+
 
   const { data: config } = useQuery({
     queryKey: ["orcamento_config", empresa?.id],
@@ -414,6 +440,7 @@ function OrcamentoOSPage() {
     setSalvando(true);
     try {
       const payload: Record<string, any> = {
+        empresa_id: empresa?.id ?? null,
         custo_base: totais.custoTotal,
         valor_final: totais.valorFinal,
         valor_total: totais.valorFinal,
@@ -601,7 +628,18 @@ function OrcamentoOSPage() {
                 </Button>
               </div>
             </div>
-            <p className="text-sm font-black uppercase text-slate-900">{empresaProposta.nome || "Não definida"}</p>
+            <Select value={empresa?.id || ""} onValueChange={trocarEmpresa}>
+              <SelectTrigger className="h-9 text-xs font-bold uppercase border-slate-300">
+                <SelectValue placeholder="Selecione a empresa" />
+              </SelectTrigger>
+              <SelectContent>
+                {empresas.map((e) => (
+                  <SelectItem key={e.id} value={e.id} className="text-xs font-bold uppercase">
+                    {e.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-[11px] font-medium text-slate-500">{empresaProposta.razao_social}</p>
             <p className="text-[11px] font-bold text-slate-600">CNPJ {empresaProposta.cnpj || "—"}</p>
             <p className="text-[11px] font-medium text-slate-500">{empresaProposta.endereco}</p>
@@ -610,6 +648,7 @@ function OrcamentoOSPage() {
                 Editado só neste orçamento
               </Badge>
             )}
+
           </CardContent>
         </Card>
 
