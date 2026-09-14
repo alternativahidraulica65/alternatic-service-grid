@@ -309,12 +309,18 @@ function OrcamentoOSPage() {
     const sugerido = base + valorImposto;
     const valorFinal = valorFinalManual !== null ? valorFinalManual : sugerido;
 
-    const comissao = calcularComissao(vendedor, {
+    const comissaoRegra = calcularComissao(vendedor, {
       valorOS: valorFinal,
       custoPecas,
       custoTerceiros,
       faturamentoMes: num(faturamentoMes) + valorFinal,
     });
+
+    const manual = condicoes.comissaoManual;
+    const comissaoAjustada = manual !== null && manual !== undefined;
+    const comissao = comissaoAjustada
+      ? { ...comissaoRegra, valor: num(manual), descricao: "Comissão ajustada manualmente neste orçamento" }
+      : comissaoRegra;
 
     const lucro = valorFinal - valorImposto - custoTotal - comissao.valor;
     const margemEfetiva = valorFinal > 0 ? (lucro / valorFinal) * 100 : 0;
@@ -329,10 +335,12 @@ function OrcamentoOSPage() {
       sugerido,
       valorFinal,
       comissao,
+      comissaoRegra,
+      comissaoAjustada,
       lucro,
       margemEfetiva,
     };
-  }, [linhas, totalLivres, imposto, valorFinalManual, vendedor, faturamentoMes]);
+  }, [linhas, totalLivres, imposto, valorFinalManual, vendedor, faturamentoMes, condicoes.comissaoManual]);
 
   /* ------------------------------- Ações --------------------------------- */
 
