@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T17:02:19.105474+00:00",
+  "generated_at": "2026-09-14T17:05:46.815771+00:00",
   "files": [
     {
       "path": "components.json",
@@ -32,10 +32,6 @@
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 1409
     },
     {
       "path": ".lovable/project.json",
@@ -148,6 +144,10 @@
     {
       "path": ".lovable/plan/plano-implementação-do-dashboard-industrial-dinâmico-tela-2-2026-08-16.md",
       "bytes": 1616
+    },
+    {
+      "path": ".lovable/plan/alerta-de-orçamentos-nos-dashboards-2026-09-14.md",
+      "bytes": 1409
     },
     {
       "path": ".lovable/plan/plano-de-informação-de-acesso-2026-08-23.md",
@@ -318,6 +318,10 @@
       "bytes": 330
     },
     {
+      "path": "supabase/migrations/20260914170335_90c0335a-fa3a-4a11-9ec3-2f4c16401773.sql",
+      "bytes": 406
+    },
+    {
       "path": "supabase/migrations/20260823202734_3ffd8d13-eff2-4372-b758-bc3f3c975ace.sql",
       "bytes": 702
     },
@@ -470,6 +474,10 @@
       "bytes": 4637
     },
     {
+      "path": "src/components/AlertaOrcamentosCard.tsx",
+      "bytes": 10858
+    },
+    {
       "path": "src/components/OsAtrasadasDialog.tsx",
       "bytes": 3762
     },
@@ -539,7 +547,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
-      "bytes": 10759
+      "bytes": 10865
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
@@ -551,7 +559,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "bytes": 24921
+      "bytes": 25079
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
@@ -591,7 +599,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 31795
+      "bytes": 32668
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -623,7 +631,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 51325
+      "bytes": 52224
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -1154,6 +1162,50 @@
     {
       "source": "src/components/FotoThumb.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "sonner"
     },
     {
       "source": "src/components/OsAtrasadasDialog.tsx",
@@ -1904,6 +1956,10 @@
       "target": "react"
     },
     {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/components/AlertaOrcamentosCard"
+    },
+    {
       "source": "src/routes/_authenticated/dashboard/operador.tsx",
       "target": "@tanstack/react-router"
     },
@@ -2070,6 +2126,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/ui/chart"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/AlertaOrcamentosCard"
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
