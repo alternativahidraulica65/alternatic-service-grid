@@ -84,6 +84,8 @@ function OrcamentoOSPage() {
     validade: 15,
     pagamento: "",
     observacoes: "",
+    comissaoManual: null,
+    comissaoVisivel: false,
   });
   const [novoItem, setNovoItem] = useState({ descricao: "", custo: "" });
   const [novoLivre, setNovoLivre] = useState({ descricao: "", quantidade: "1", valor: "" });
