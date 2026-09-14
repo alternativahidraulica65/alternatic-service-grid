@@ -144,16 +144,34 @@ function OrcamentoOSPage() {
     queryFn: () => carregarFotosOs(id),
   });
 
-  const { data: empresa } = useQuery({
-    queryKey: ["orcamento_empresa", os?.empresa_id],
-    enabled: !!os,
+  const { data: empresas = [] } = useQuery({
+    queryKey: ["orcamento_empresas"],
     queryFn: async () => {
       const { data, error } = await supabase.from("empresas_emissoras").select("*").order("criado_em");
       if (error) throw error;
-      const lista = (data || []) as any[];
-      return lista.find((e) => e.id === os?.empresa_id) || lista.find((e) => e.ativo) || lista[0] || null;
+      return (data || []) as any[];
     },
   });
+
+  const [empresaIdSel, setEmpresaIdSel] = useState<string | null>(null);
+
+  const empresa = useMemo(() => {
+    if (!empresas.length) return null;
+    return (
+      empresas.find((e) => e.id === empresaIdSel) ||
+      empresas.find((e) => e.id === os?.empresa_id) ||
+      empresas.find((e) => e.ativo) ||
+      empresas[0] ||
+      null
+    );
+  }, [empresas, empresaIdSel, os?.empresa_id]);
+
+  const trocarEmpresa = (novoId: string) => {
+    setEmpresaIdSel(novoId);
+    setEmpresaEdit(null);
+    setRegrasAplicadas(false);
+  };
+
 
   const { data: config } = useQuery({
     queryKey: ["orcamento_config", empresa?.id],
