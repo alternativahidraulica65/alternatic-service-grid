@@ -724,6 +724,54 @@ function NovaOSPage() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={tipoOpen} onOpenChange={setTipoOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">
+              NOVO TIPO DE <span className="text-primary">EQUIPAMENTO</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs font-medium">
+              O tipo será cadastrado na base e selecionado automaticamente nesta OS.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nome *</Label>
+              <Input
+                className="h-11 border-border"
+                placeholder="Ex.: Cilindro hidráulico"
+                value={tipoForm.nome}
+                onChange={(e) => setTipoForm({ ...tipoForm, nome: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Categoria principal</Label>
+              <Input
+                className="h-11 border-border"
+                placeholder="Ex.: Hidráulica"
+                value={tipoForm.categoria_principal}
+                onChange={(e) => setTipoForm({ ...tipoForm, categoria_principal: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Descrição</Label>
+              <Textarea
+                className="border-border"
+                rows={3}
+                value={tipoForm.descricao}
+                onChange={(e) => setTipoForm({ ...tipoForm, descricao: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTipoOpen(false)} className="h-11 text-[10px] font-bold uppercase tracking-widest">Cancelar</Button>
+            <Button onClick={handleCriarTipoEquipamento} disabled={tipoLoading || !tipoForm.nome.trim()} className="h-11 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-8">
+              {tipoLoading ? "Salvando..." : "Cadastrar tipo"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
