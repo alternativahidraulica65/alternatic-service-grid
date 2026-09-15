@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ClipboardList, Users, Box, Search } from "lucide-react";
 import {
-  CommandDialog,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Resultado {
@@ -110,7 +111,10 @@ export function BuscaGlobal() {
   const porTipo = (tipo: Resultado["tipo"]) => resultados.filter((r) => r.tipo === tipo);
 
   return (
-    <CommandDialog open={aberto} onOpenChange={setAberto}>
+    <Dialog open={aberto} onOpenChange={setAberto}>
+      <DialogContent className="overflow-hidden p-0">
+        <DialogTitle className="sr-only">Busca global</DialogTitle>
+        <Command shouldFilter={false} className="[&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5">
       <CommandInput
         placeholder="Buscar OS, cliente, equipamento ou peça..."
         value={termo}
@@ -164,6 +168,8 @@ export function BuscaGlobal() {
           </>
         )}
       </CommandList>
-    </CommandDialog>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }
