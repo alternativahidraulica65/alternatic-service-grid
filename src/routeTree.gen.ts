@@ -18,6 +18,7 @@ import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
+import { Route as AuthenticatedTerceirosRouteImport } from './routes/_authenticated/terceiros'
 import { Route as AuthenticatedAdminAuditoriaRouteImport } from './routes/_authenticated/admin/auditoria'
 import { Route as AuthenticatedAdminChecklistTemplatesRouteImport } from './routes/_authenticated/admin/checklist-templates'
 import { Route as AuthenticatedAdminVendedoresRouteImport } from './routes/_authenticated/admin/vendedores'
@@ -29,8 +30,10 @@ import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_
 import { Route as AuthenticatedDashboardGestorRouteImport } from './routes/_authenticated/dashboard/gestor'
 import { Route as AuthenticatedDashboardOperadorRouteImport } from './routes/_authenticated/dashboard/operador'
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
+import { Route as AuthenticatedFinanceiroLancamentosRouteImport } from './routes/_authenticated/financeiro/lancamentos'
 import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
+import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated/os/index'
 import { Route as AuthenticatedOsIdRouteImport } from './routes/_authenticated/os/$id'
 import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
 import { Route as AuthenticatedFinanceiroFornecedoresIndexRouteImport } from './routes/_authenticated/financeiro/fornecedores/index'
@@ -81,6 +84,11 @@ const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
 const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   id: '/relatorios',
   path: '/relatorios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTerceirosRoute = AuthenticatedTerceirosRouteImport.update({
+  id: '/terceiros',
+  path: '/terceiros',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminAuditoriaRoute =
@@ -148,6 +156,12 @@ const AuthenticatedEngenhariaMateriaisRoute =
     path: '/engenharia/materiais',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFinanceiroLancamentosRoute =
+  AuthenticatedFinanceiroLancamentosRouteImport.update({
+    id: '/financeiro/lancamentos',
+    path: '/financeiro/lancamentos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrcamentoPdfRoute =
   AuthenticatedOrcamentoPdfRouteImport.update({
     id: '/pdf',
@@ -160,6 +174,11 @@ const AuthenticatedOrcamentoPrecificacaoRoute =
     path: '/precificacao',
     getParentRoute: () => AuthenticatedOrcamentoRoute,
   } as any)
+const AuthenticatedOsIndexRoute = AuthenticatedOsIndexRouteImport.update({
+  id: '/os/',
+  path: '/os/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOsIdRoute = AuthenticatedOsIdRouteImport.update({
   id: '/os/$id',
   path: '/os/$id',
@@ -203,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/terceiros': typeof AuthenticatedTerceirosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -212,12 +232,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
   '/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/os/': typeof AuthenticatedOsIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -231,6 +253,7 @@ export interface FileRoutesByTo {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/terceiros': typeof AuthenticatedTerceirosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -240,11 +263,13 @@ export interface FileRoutesByTo {
   '/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
   '/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/os': typeof AuthenticatedOsIndexRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/financeiro/fornecedores': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -261,6 +286,7 @@ export interface FileRoutesById {
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/_authenticated/terceiros': typeof AuthenticatedTerceirosRoute
   '/_authenticated/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/_authenticated/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/_authenticated/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -270,12 +296,14 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
   '/_authenticated/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/_authenticated/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
   '/_authenticated/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/_authenticated/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/_authenticated/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -292,6 +320,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/orcamento'
     | '/relatorios'
+    | '/terceiros'
     | '/admin/auditoria'
     | '/admin/checklist-templates'
     | '/admin/vendedores'
@@ -301,12 +330,14 @@ export interface FileRouteTypes {
     | '/dashboard/gestor'
     | '/dashboard/operador'
     | '/engenharia/materiais'
+    | '/financeiro/lancamentos'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/os/$id'
     | '/os/nova'
     | '/clientes/'
     | '/dashboard/'
+    | '/os/'
     | '/os/$id/orcamento'
     | '/os/$id/proposta'
     | '/financeiro/fornecedores/'
@@ -320,6 +351,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/orcamento'
     | '/relatorios'
+    | '/terceiros'
     | '/admin/auditoria'
     | '/admin/checklist-templates'
     | '/admin/vendedores'
@@ -329,11 +361,13 @@ export interface FileRouteTypes {
     | '/dashboard/gestor'
     | '/dashboard/operador'
     | '/engenharia/materiais'
+    | '/financeiro/lancamentos'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/os/nova'
     | '/clientes'
     | '/dashboard'
+    | '/os'
     | '/os/$id/orcamento'
     | '/os/$id/proposta'
     | '/financeiro/fornecedores'
@@ -349,6 +383,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kanban'
     | '/_authenticated/orcamento'
     | '/_authenticated/relatorios'
+    | '/_authenticated/terceiros'
     | '/_authenticated/admin/auditoria'
     | '/_authenticated/admin/checklist-templates'
     | '/_authenticated/admin/vendedores'
@@ -358,12 +393,14 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/gestor'
     | '/_authenticated/dashboard/operador'
     | '/_authenticated/engenharia/materiais'
+    | '/_authenticated/financeiro/lancamentos'
     | '/_authenticated/orcamento/pdf'
     | '/_authenticated/orcamento/precificacao'
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
     | '/_authenticated/clientes/'
     | '/_authenticated/dashboard/'
+    | '/_authenticated/os/'
     | '/_authenticated/os/$id/orcamento'
     | '/_authenticated/os/$id/proposta'
     | '/_authenticated/financeiro/fornecedores/'
@@ -439,6 +476,13 @@ declare module '@tanstack/react-router' {
       path: '/relatorios'
       fullPath: '/relatorios'
       preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/terceiros': {
+      id: '/_authenticated/terceiros'
+      path: '/terceiros'
+      fullPath: '/terceiros'
+      preLoaderRoute: typeof AuthenticatedTerceirosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/auditoria': {
@@ -518,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEngenhariaMateriaisRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/financeiro/lancamentos': {
+      id: '/_authenticated/financeiro/lancamentos'
+      path: '/financeiro/lancamentos'
+      fullPath: '/financeiro/lancamentos'
+      preLoaderRoute: typeof AuthenticatedFinanceiroLancamentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/orcamento/pdf': {
       id: '/_authenticated/orcamento/pdf'
       path: '/pdf'
@@ -531,6 +582,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/orcamento/precificacao'
       preLoaderRoute: typeof AuthenticatedOrcamentoPrecificacaoRouteImport
       parentRoute: typeof AuthenticatedOrcamentoRoute
+    }
+    '/_authenticated/os/': {
+      id: '/_authenticated/os/'
+      path: '/os'
+      fullPath: '/os/'
+      preLoaderRoute: typeof AuthenticatedOsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/os/$id': {
       id: '/_authenticated/os/$id'
@@ -639,14 +697,17 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
+  AuthenticatedTerceirosRoute: typeof AuthenticatedTerceirosRoute
   AuthenticatedAdminAuditoriaRoute: typeof AuthenticatedAdminAuditoriaRoute
   AuthenticatedAdminChecklistTemplatesRoute: typeof AuthenticatedAdminChecklistTemplatesRoute
   AuthenticatedAdminVendedoresRoute: typeof AuthenticatedAdminVendedoresRoute
   AuthenticatedClientesIdRoute: typeof AuthenticatedClientesIdRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
+  AuthenticatedFinanceiroLancamentosRoute: typeof AuthenticatedFinanceiroLancamentosRoute
   AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRouteWithChildren
   AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
+  AuthenticatedOsIndexRoute: typeof AuthenticatedOsIndexRoute
   AuthenticatedFinanceiroFornecedoresIndexRoute: typeof AuthenticatedFinanceiroFornecedoresIndexRoute
 }
 
@@ -657,15 +718,19 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
+  AuthenticatedTerceirosRoute: AuthenticatedTerceirosRoute,
   AuthenticatedAdminAuditoriaRoute: AuthenticatedAdminAuditoriaRoute,
   AuthenticatedAdminChecklistTemplatesRoute:
     AuthenticatedAdminChecklistTemplatesRoute,
   AuthenticatedAdminVendedoresRoute: AuthenticatedAdminVendedoresRoute,
   AuthenticatedClientesIdRoute: AuthenticatedClientesIdRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
+  AuthenticatedFinanceiroLancamentosRoute:
+    AuthenticatedFinanceiroLancamentosRoute,
   AuthenticatedOsIdRoute: AuthenticatedOsIdRouteWithChildren,
   AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
+  AuthenticatedOsIndexRoute: AuthenticatedOsIndexRoute,
   AuthenticatedFinanceiroFornecedoresIndexRoute:
     AuthenticatedFinanceiroFornecedoresIndexRoute,
 }

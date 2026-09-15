@@ -50,6 +50,12 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { BarChart, Bar, Cell, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { ClientOnly } from "@/components/ClientOnly";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FiltrosSalvos } from "@/components/FiltrosSalvos";
+import { exportToCSV } from "@/utils/export";
+import { Download } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/financeiro/fornecedores/")({
   component: FornecedoresPage,
@@ -92,6 +98,9 @@ function FornecedoresPage() {
   const [importStatus, setImportStatus] = useState<{total: number, processed: number, errors: string[]} | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [visao, setVisao] = useState<"cards" | "tabela">("cards");
+  const [filtroStatus, setFiltroStatus] = useState("todos");
+  const [selecionados, setSelecionados] = useState<string[]>([]);
+
 
 
   // Validação de CNPJ
@@ -262,10 +271,37 @@ function FornecedoresPage() {
     setIsModalOpen(true);
   };
 
-  const filteredFornecedores = fornecedores?.filter(f => 
-    f.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.cnpj?.includes(searchTerm)
+  const filteredFornecedores = fornecedores?.filter(f =>
+    (f.nome.toLowerCase().includes(searchTerm.toLowerCase()) || f.cnpj?.includes(searchTerm)) &&
+    (filtroStatus === "todos" ||
+      (filtroStatus === "ativos" ? f.ativo !== false : f.ativo === false))
   );
+
+  const idsVisiveis = (filteredFornecedores ?? []).map((f: any) => String(f.id));
+  const selecionadosVisiveis = selecionados.filter((id) => idsVisiveis.includes(id));
+  const todosSelecionados = idsVisiveis.length > 0 && selecionadosVisiveis.length === idsVisiveis.length;
+
+  const exportarFornecedores = () => {
+    const alvo = selecionadosVisiveis.length > 0
+      ? (filteredFornecedores ?? []).filter((f: any) => selecionadosVisiveis.includes(String(f.id)))
+      : (filteredFornecedores ?? []);
+    if (alvo.length === 0) {
+      toast.error("Nenhum fornecedor para exportar.");
+      return;
+    }
+    exportToCSV(
+      alvo.map((f: any) => ({
+        nome: f.nome ?? "",
+        cnpj: f.cnpj ?? "",
+        contato: f.contato ?? "",
+        status: f.ativo === false ? "Inativo" : "Ativo",
+        limite_mensal: Number(f.limite_mensal || 0),
+        observacoes: f.observacoes ?? "",
+      })),
+      "fornecedores.csv",
+    );
+  };
+
 
   const meses = useMemo(() => ultimosSeisMeses(), []);
   const inicioPeriodo = useMemo(() => {
@@ -456,7 +492,39 @@ function FornecedoresPage() {
               </Button>
             </div>
           </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                <SelectTrigger className="h-9 w-[150px] bg-card text-xs font-bold">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="ativos">Somente ativos</SelectItem>
+                  <SelectItem value="inativos">Somente inativos</SelectItem>
+                </SelectContent>
+              </Select>
+              <FiltrosSalvos
+                lista="fornecedores"
+                filtros={{ status: filtroStatus, busca: searchTerm, visao }}
+                onAplicar={(f) => {
+                  setFiltroStatus(f.status ?? "todos");
+                  setSearchTerm(f.busca ?? "");
+                  if (f.visao === "cards" || f.visao === "tabela") setVisao(f.visao);
+                }}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 font-bold uppercase text-[10px] tracking-widest"
+                onClick={exportarFornecedores}
+              >
+                <Download className="mr-2 h-3.5 w-3.5" />
+                {selecionadosVisiveis.length > 0 ? `Exportar (${selecionadosVisiveis.length})` : "Exportar"}
+              </Button>
+            </div>
         </CardHeader>
+
+
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
@@ -592,7 +660,15 @@ function FornecedoresPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-border">
+                    <th className="px-4 py-4 w-10">
+                      <Checkbox
+                        aria-label="Selecionar todos os fornecedores filtrados"
+                        checked={todosSelecionados}
+                        onCheckedChange={() => setSelecionados(todosSelecionados ? [] : idsVisiveis)}
+                      />
+                    </th>
                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Fornecedor</th>
+
                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ</th>
                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contato</th>
                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</th>
@@ -603,6 +679,20 @@ function FornecedoresPage() {
                 <tbody className="divide-y divide-border">
                   {filteredFornecedores.map((f) => (
                     <tr key={f.id} className="hover:bg-muted/30 transition-colors group">
+                      <td className="px-4 py-4">
+                        <Checkbox
+                          aria-label={`Selecionar ${f.nome}`}
+                          checked={selecionados.includes(String(f.id))}
+                          onCheckedChange={() =>
+                            setSelecionados((atual) =>
+                              atual.includes(String(f.id))
+                                ? atual.filter((i) => i !== String(f.id))
+                                : [...atual, String(f.id)],
+                            )
+                          }
+                        />
+                      </td>
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-lg bg-slate-100 flex items-center justify-center border border-border group-hover:border-primary/30 transition-colors">
