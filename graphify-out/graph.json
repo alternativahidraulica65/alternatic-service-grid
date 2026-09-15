@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T23:31:24.292978+00:00",
+  "generated_at": "2026-09-15T23:36:27.357557+00:00",
   "files": [
     {
       "path": "components.json",
@@ -32,10 +32,6 @@
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 3543
     },
     {
       "path": ".lovable/project.json",
@@ -176,6 +172,10 @@
     {
       "path": ".lovable/plan/plano-cards-recolhíveis-e-totalizadores-do-orçamento-2026-09-14.md",
       "bytes": 2446
+    },
+    {
+      "path": ".lovable/plan/melhorias-de-eficiência-e-experiência-2026-09-15.md",
+      "bytes": 3543
     },
     {
       "path": ".lovable/plan/plano-de-implementação-gestão-de-fornecedores-e-refinamentos-2026-08-19.md",
@@ -534,6 +534,10 @@
       "bytes": 1249
     },
     {
+      "path": "src/components/PendenciasOsCard.tsx",
+      "bytes": 3441
+    },
+    {
       "path": "src/components/FotoThumb.tsx",
       "bytes": 4637
     },
@@ -591,7 +595,7 @@
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
-      "bytes": 12472
+      "bytes": 13158
     },
     {
       "path": "src/routes/_authenticated/relatorios.tsx",
@@ -659,7 +663,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 113893
+      "bytes": 114122
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -1218,6 +1222,22 @@
     {
       "source": "src/utils/export.ts",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/PendenciasOsCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/PendenciasOsCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/PendenciasOsCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/PendenciasOsCard.tsx",
+      "target": "@/lib/os-fluxo"
     },
     {
       "source": "src/components/FotoThumb.tsx",
@@ -2650,6 +2670,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/PendenciasOsCard"
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",

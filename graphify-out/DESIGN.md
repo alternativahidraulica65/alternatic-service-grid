@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-09-15T23:31:24.292978+00:00
+Generated: 2026-09-15T23:36:27.357557+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -156,6 +156,7 @@ Generated: 2026-09-15T23:31:24.292978+00:00
 - src/components/GuiaExecucaoOs.tsx
 - src/components/OsAtrasadasDialog.tsx
 - src/components/PecasDialog.tsx
+- src/components/PendenciasOsCard.tsx
 - src/components/TerceirosDialog.tsx
 - src/components/ui/accordion.tsx
 - src/components/ui/alert-dialog.tsx
