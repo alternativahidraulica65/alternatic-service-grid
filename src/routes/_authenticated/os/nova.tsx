@@ -410,7 +410,18 @@ function NovaOSPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tipo de Equipamento</Label>
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tipo de Equipamento</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 px-2 text-[10px] font-black uppercase tracking-widest"
+                    onClick={() => setTipoOpen(true)}
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Novo tipo
+                  </Button>
+                </div>
                 <Select value={tipoEquipamento} onValueChange={setTipoEquipamento}>
                   <SelectTrigger className="h-11 border-border">
                     <SelectValue placeholder="Selecione o tipo..." />
