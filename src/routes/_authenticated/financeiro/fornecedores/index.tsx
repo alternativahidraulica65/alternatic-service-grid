@@ -9,7 +9,7 @@ import {
   MoreVertical,
   ChevronLeft,
   AlertCircle,
-  AlertCircle,
+
   Upload,
   History,
   Info,
