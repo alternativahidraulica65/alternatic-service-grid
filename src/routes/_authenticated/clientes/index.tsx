@@ -838,7 +838,7 @@ function ClientesPage() {
             <TableBody>
               {filteredClientes.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-12 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  <TableCell colSpan={8} className="py-12 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
                     Nenhum cliente encontrado com os filtros atuais.
                   </TableCell>
                 </TableRow>
@@ -846,6 +846,13 @@ function ClientesPage() {
               {filteredClientes.map((cliente: any) => (
                 <TableRow key={cliente.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
                   <TableCell className="py-4 pl-6">
+                    <Checkbox
+                      checked={selecionados.includes(cliente.id)}
+                      onCheckedChange={() => alternarSelecao(cliente.id)}
+                      aria-label={`Selecionar ${cliente.nome ?? "cliente"}`}
+                    />
+                  </TableCell>
+                  <TableCell className="py-4">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border group-hover:border-primary/50 transition-colors">
                         <Building2 className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
