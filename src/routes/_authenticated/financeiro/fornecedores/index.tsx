@@ -660,7 +660,15 @@ function FornecedoresPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-border">
+                    <th className="px-4 py-4 w-10">
+                      <Checkbox
+                        aria-label="Selecionar todos os fornecedores filtrados"
+                        checked={todosSelecionados}
+                        onCheckedChange={() => setSelecionados(todosSelecionados ? [] : idsVisiveis)}
+                      />
+                    </th>
                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Fornecedor</th>
+
                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ</th>
                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contato</th>
                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</th>
