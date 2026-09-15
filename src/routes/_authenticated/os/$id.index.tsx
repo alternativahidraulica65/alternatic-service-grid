@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { faseDoStatus, indiceFase, type Fase } from "@/lib/os-fluxo";
+import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { 
@@ -1259,6 +1259,40 @@ function GestaoOSPage() {
               <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 cursor-pointer text-red-400">Cancelar OS</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Barra de ação rápida */}
+      <div className="sticky top-0 z-30 -mx-6 md:-mx-10 border-b border-border bg-background/95 px-6 md:px-10 py-2 backdrop-blur">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            onClick={handleAvancarFase}
+            disabled={avancando || !podeGerenciarOS}
+            className="h-9 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] px-4"
+          >
+            {avancando ? "Avançando..." : "Próxima fase"}
+            <CheckCircle2 className="ml-2 h-4 w-4" />
+          </Button>
+          <Button variant="outline" className="h-9 border-border font-bold uppercase text-[10px] tracking-widest" onClick={() => setActiveTab("laudo-técnico")}>
+            <Camera className="mr-2 h-4 w-4 text-primary" /> Anexar foto
+          </Button>
+          <Button variant="outline" className="h-9 border-border font-bold uppercase text-[10px] tracking-widest" onClick={() => setActiveTab("custos")}>
+            <DollarSign className="mr-2 h-4 w-4 text-primary" /> Lançar custo
+          </Button>
+          {podeVerValoresFinanceiros && (
+            <Button variant="outline" className="h-9 border-border font-bold uppercase text-[10px] tracking-widest" asChild>
+              <Link to="/os/$id/orcamento" params={{ id: String(osId) }}>
+                <Receipt className="mr-2 h-4 w-4 text-primary" /> Orçamento
+              </Link>
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            className="h-9 border-border font-bold uppercase text-[10px] tracking-widest"
+            onClick={() => window.open(`/os/${osId}/proposta?print=1`, "_blank")}
+          >
+            <FileText className="mr-2 h-4 w-4 text-primary" /> Imprimir
+          </Button>
         </div>
       </div>
 
