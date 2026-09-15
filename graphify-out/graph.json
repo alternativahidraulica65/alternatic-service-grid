@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T23:36:27.357557+00:00",
+  "generated_at": "2026-09-15T23:42:43.255323+00:00",
   "files": [
     {
       "path": "components.json",
@@ -463,7 +463,7 @@
     },
     {
       "path": "src/routes/__root.tsx",
-      "bytes": 4931
+      "bytes": 5009
     },
     {
       "path": "src/routes/index.tsx",
@@ -552,6 +552,10 @@
     {
       "path": "src/components/BancadasDialog.tsx",
       "bytes": 16351
+    },
+    {
+      "path": "src/components/BuscaGlobal.tsx",
+      "bytes": 6285
     },
     {
       "path": "src/components/CustosOsPanel.tsx",
@@ -663,7 +667,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 114122
+      "bytes": 117775
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -1140,6 +1144,10 @@
       "target": "@/integrations/supabase/client"
     },
     {
+      "source": "src/routes/__root.tsx",
+      "target": "@/components/BuscaGlobal"
+    },
+    {
       "source": "src/routes/index.tsx",
       "target": "react"
     },
@@ -1386,6 +1394,30 @@
     {
       "source": "src/components/BancadasDialog.tsx",
       "target": "@/components/PecasDialog"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "@/components/ui/command"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/components/CustosOsPanel.tsx",
