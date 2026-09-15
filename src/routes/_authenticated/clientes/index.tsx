@@ -54,6 +54,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/clientes/")({
@@ -129,6 +130,7 @@ function ClientesPage() {
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroVendedor, setFiltroVendedor] = useState("todos");
   const [filtroPeriodo, setFiltroPeriodo] = useState("todos");
+  const [selecionados, setSelecionados] = useState<string[]>([]);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "nome", dir: "asc" });
   const [importando, setImportando] = useState(false);
   const inputArquivo = useRef<HTMLInputElement>(null);
@@ -405,9 +407,32 @@ function ClientesPage() {
     toast.success("Modelo baixado. Preencha e use o botão Importar.");
   };
 
+  const alternarSelecao = (id: string) => {
+    setSelecionados((atual) =>
+      atual.includes(id) ? atual.filter((i) => i !== id) : [...atual, id]
+    );
+  };
+
+  const idsVisiveis = filteredClientes.map((c: any) => c.id as string);
+  const selecionadosVisiveis = selecionados.filter((id) => idsVisiveis.includes(id));
+  const todosSelecionados = idsVisiveis.length > 0 && selecionadosVisiveis.length === idsVisiveis.length;
+
+  const alternarTodos = () => {
+    setSelecionados(todosSelecionados ? [] : idsVisiveis);
+  };
+
   const exportarClientes = () => {
+    const alvo = selecionadosVisiveis.length > 0
+      ? filteredClientes.filter((c: any) => selecionadosVisiveis.includes(c.id))
+      : filteredClientes;
+
+    if (alvo.length === 0) {
+      toast.error("Nenhum cliente para exportar.");
+      return;
+    }
+
     exportToCSV(
-      filteredClientes.map((c: any) => ({
+      alvo.map((c: any) => ({
         nome: c.nome ?? "",
         cnpj: c.cnpj ?? "",
         email: c.email ?? "",
@@ -710,6 +735,22 @@ function ClientesPage() {
                   />
                 </>
               )}
+              {selecionadosVisiveis.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest">
+                    {selecionadosVisiveis.length} selecionado{selecionadosVisiveis.length > 1 ? "s" : ""}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelecionados([])}
+                    className="h-10 text-[10px] font-black uppercase tracking-widest text-muted-foreground"
+                  >
+                    <X className="mr-2 h-3.5 w-3.5" />
+                    Limpar seleção
+                  </Button>
+                </div>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -717,7 +758,7 @@ function ClientesPage() {
                 className="h-10 text-[10px] font-black uppercase tracking-widest text-muted-foreground"
               >
                 <Download className="mr-2 h-3.5 w-3.5" />
-                Exportar
+                {selecionadosVisiveis.length > 0 ? `Exportar (${selecionadosVisiveis.length})` : "Exportar"}
               </Button>
             </div>
           </div>
@@ -779,7 +820,14 @@ function ClientesPage() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow className="hover:bg-transparent border-b border-border">
-                <CabecalhoOrdenavel chave="nome" label="Cliente / Razão Social" className="pl-6" />
+                <TableHead className="w-10 py-4 pl-6">
+                  <Checkbox
+                    checked={todosSelecionados}
+                    onCheckedChange={alternarTodos}
+                    aria-label="Selecionar todos os clientes filtrados"
+                  />
+                </TableHead>
+                <CabecalhoOrdenavel chave="nome" label="Cliente / Razão Social" />
                 <CabecalhoOrdenavel chave="cnpj" label="CNPJ" />
                 <CabecalhoOrdenavel chave="vendedor" label="Vendedor" />
                 <CabecalhoOrdenavel chave="cidade" label="Cidade/UF" />
@@ -791,7 +839,7 @@ function ClientesPage() {
             <TableBody>
               {filteredClientes.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-12 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  <TableCell colSpan={8} className="py-12 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
                     Nenhum cliente encontrado com os filtros atuais.
                   </TableCell>
                 </TableRow>
@@ -799,6 +847,13 @@ function ClientesPage() {
               {filteredClientes.map((cliente: any) => (
                 <TableRow key={cliente.id} className="group border-b border-border/50 hover:bg-slate-50 transition-colors">
                   <TableCell className="py-4 pl-6">
+                    <Checkbox
+                      checked={selecionados.includes(cliente.id)}
+                      onCheckedChange={() => alternarSelecao(cliente.id)}
+                      aria-label={`Selecionar ${cliente.nome ?? "cliente"}`}
+                    />
+                  </TableCell>
+                  <TableCell className="py-4">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border group-hover:border-primary/50 transition-colors">
                         <Building2 className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
