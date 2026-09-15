@@ -91,6 +91,8 @@ function FornecedoresPage() {
   const [editingFornecedor, setEditingFornecedor] = useState<any>(null);
   const [importStatus, setImportStatus] = useState<{total: number, processed: number, errors: string[]} | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+  const [visao, setVisao] = useState<"cards" | "tabela">("cards");
+
 
   // Validação de CNPJ
   const isValidCNPJ = (cnpj: string) => {
