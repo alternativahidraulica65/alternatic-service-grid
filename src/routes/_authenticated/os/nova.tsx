@@ -74,6 +74,9 @@ function NovaOSPage() {
   const [preOpen, setPreOpen] = useState(false);
   const [preLoading, setPreLoading] = useState(false);
   const [preForm, setPreForm] = useState({ nome: "", cnpj: "", telefone: "", email: "" });
+  const [tipoOpen, setTipoOpen] = useState(false);
+  const [tipoLoading, setTipoLoading] = useState(false);
+  const [tipoForm, setTipoForm] = useState({ nome: "", categoria_principal: "", descricao: "" });
 
   const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_lookup'],
@@ -162,6 +165,44 @@ function NovaOSPage() {
       return data;
     }
   });
+
+  const handleCriarTipoEquipamento = async () => {
+    const nome = tipoForm.nome.trim();
+    if (!nome) {
+      toast.error("Informe o nome do tipo de equipamento.");
+      return;
+    }
+    const jaExiste = (tiposEquipamento as any[])?.some(
+      (t: any) => (t.nome ?? "").trim().toLowerCase() === nome.toLowerCase()
+    );
+    if (jaExiste) {
+      toast.error("Já existe um tipo de equipamento com esse nome.");
+      return;
+    }
+    setTipoLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('tipos_equipamento')
+        .insert({
+          nome,
+          categoria_principal: tipoForm.categoria_principal.trim() || null,
+          descricao: tipoForm.descricao.trim() || null,
+        } as any)
+        .select('id, nome')
+        .single();
+      if (error) throw error;
+
+      await queryClient.invalidateQueries({ queryKey: ['tipos_equipamento'] });
+      setTipoEquipamento((data as any).id);
+      setTipoOpen(false);
+      setTipoForm({ nome: "", categoria_principal: "", descricao: "" });
+      toast.success("Tipo de equipamento cadastrado", { description: nome });
+    } catch (e: any) {
+      toast.error("Erro ao cadastrar tipo: " + e.message);
+    } finally {
+      setTipoLoading(false);
+    }
+  };
 
   const handleAddPeca = () => {
     setPecas([...pecas, { id: Date.now(), nome: "", local: "" }]);
@@ -369,7 +410,18 @@ function NovaOSPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tipo de Equipamento</Label>
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tipo de Equipamento</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 px-2 text-[10px] font-black uppercase tracking-widest"
+                    onClick={() => setTipoOpen(true)}
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Novo tipo
+                  </Button>
+                </div>
                 <Select value={tipoEquipamento} onValueChange={setTipoEquipamento}>
                   <SelectTrigger className="h-11 border-border">
                     <SelectValue placeholder="Selecione o tipo..." />
@@ -667,6 +719,54 @@ function NovaOSPage() {
             <Button variant="outline" onClick={() => setPreOpen(false)} className="h-11 text-[10px] font-bold uppercase tracking-widest">Cancelar</Button>
             <Button onClick={handlePreCadastro} disabled={preLoading || !preForm.nome.trim()} className="h-11 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-8">
               {preLoading ? "Enviando..." : "Enviar Pré-Cadastro"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={tipoOpen} onOpenChange={setTipoOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">
+              NOVO TIPO DE <span className="text-primary">EQUIPAMENTO</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs font-medium">
+              O tipo será cadastrado na base e selecionado automaticamente nesta OS.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nome *</Label>
+              <Input
+                className="h-11 border-border"
+                placeholder="Ex.: Cilindro hidráulico"
+                value={tipoForm.nome}
+                onChange={(e) => setTipoForm({ ...tipoForm, nome: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Categoria principal</Label>
+              <Input
+                className="h-11 border-border"
+                placeholder="Ex.: Hidráulica"
+                value={tipoForm.categoria_principal}
+                onChange={(e) => setTipoForm({ ...tipoForm, categoria_principal: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Descrição</Label>
+              <Textarea
+                className="border-border"
+                rows={3}
+                value={tipoForm.descricao}
+                onChange={(e) => setTipoForm({ ...tipoForm, descricao: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTipoOpen(false)} className="h-11 text-[10px] font-bold uppercase tracking-widest">Cancelar</Button>
+            <Button onClick={handleCriarTipoEquipamento} disabled={tipoLoading || !tipoForm.nome.trim()} className="h-11 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-8">
+              {tipoLoading ? "Salvando..." : "Cadastrar tipo"}
             </Button>
           </DialogFooter>
         </DialogContent>
