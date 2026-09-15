@@ -1245,6 +1245,15 @@ function GestaoOSPage() {
         ))}
       </div>
 
+      <PendenciasOsCard
+        os={os}
+        checklist={checklistData}
+        custos={custos}
+        pecas={pecas}
+        onIrPara={setActiveTab}
+      />
+
+
       {(() => {
         const TAB_LIST = [
           "Resumo", "Checklist", "Laudo Técnico", "Peças", "Terceiros",
