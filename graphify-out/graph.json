@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T23:22:57.121568+00:00",
+  "generated_at": "2026-09-15T17:38:18.723581+00:00",
   "files": [
     {
       "path": "components.json",
@@ -635,7 +635,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 43576
+      "bytes": 45987
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
@@ -2506,6 +2506,10 @@
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/ui/checkbox"
     },
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
