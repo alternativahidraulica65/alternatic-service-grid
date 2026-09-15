@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-09-15T23:42:43.255323+00:00
+Generated: 2026-09-15T23:55:29.846658+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -153,6 +153,7 @@ Generated: 2026-09-15T23:42:43.255323+00:00
 - src/components/BuscaGlobal.tsx
 - src/components/ClientOnly.tsx
 - src/components/CustosOsPanel.tsx
+- src/components/FiltrosSalvos.tsx
 - src/components/FotoThumb.tsx
 - src/components/GuiaExecucaoOs.tsx
 - src/components/OsAtrasadasDialog.tsx

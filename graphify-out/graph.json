@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T23:42:43.255323+00:00",
+  "generated_at": "2026-09-15T23:55:29.846658+00:00",
   "files": [
     {
       "path": "components.json",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 29224
+      "bytes": 32102
     },
     {
       "path": "src/start.ts",
@@ -414,6 +414,10 @@
       "bytes": 428
     },
     {
+      "path": "supabase/migrations/20260915234848_b390d049-e0d8-4dc6-bda5-72450d0b7343.sql",
+      "bytes": 1028
+    },
+    {
       "path": "supabase/migrations/20260823203213_a4778f6d-aa62-4da8-89b4-a25b2c1cfa7f.sql",
       "bytes": 770
     },
@@ -558,6 +562,10 @@
       "bytes": 6285
     },
     {
+      "path": "src/components/FiltrosSalvos.tsx",
+      "bytes": 5133
+    },
+    {
       "path": "src/components/CustosOsPanel.tsx",
       "bytes": 26704
     },
@@ -579,7 +587,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11199
+      "bytes": 11586
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -596,6 +604,10 @@
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
       "bytes": 17082
+    },
+    {
+      "path": "src/routes/_authenticated/terceiros.tsx",
+      "bytes": 18697
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
@@ -658,6 +670,14 @@
       "bytes": 25511
     },
     {
+      "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "bytes": 14501
+    },
+    {
+      "path": "src/routes/_authenticated/os/index.tsx",
+      "bytes": 18473
+    },
+    {
       "path": "src/routes/_authenticated/os/nova.tsx",
       "bytes": 36805
     },
@@ -679,7 +699,7 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
-      "bytes": 43225
+      "bytes": 47145
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -707,7 +727,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 56840
+      "bytes": 57515
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -969,6 +989,10 @@
     },
     {
       "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/terceiros"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/admin/auditoria"
     },
     {
@@ -1013,11 +1037,19 @@
     },
     {
       "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/financeiro/lancamentos"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/orcamento/pdf"
     },
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/orcamento/precificacao"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/os/index"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -1418,6 +1450,38 @@
     {
       "source": "src/components/BuscaGlobal.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/components/CustosOsPanel.tsx",
@@ -1874,6 +1938,70 @@
     {
       "source": "src/routes/_authenticated/orcamento.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/utils/export"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/FiltrosSalvos"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/routes/_authenticated/kanban.tsx",
@@ -2632,6 +2760,130 @@
       "target": "date-fns/locale"
     },
     {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/utils/export"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/FiltrosSalvos"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/utils/export"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/FiltrosSalvos"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
       "source": "src/routes/_authenticated/os/nova.tsx",
       "target": "@tanstack/react-router"
     },
@@ -3002,6 +3254,26 @@
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
       "target": "@/components/ClientOnly"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/components/FiltrosSalvos"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/utils/export"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/integrations/supabase/client.ts",
