@@ -1228,14 +1228,9 @@ function GestaoOSPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="h-10 border-border font-bold uppercase text-[10px] tracking-widest">
-            <Camera className="mr-2 h-4 w-4 text-primary" />
-            Anexar Foto
-          </Button>
-          <Button className="h-10 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] px-6">
-            Avançar Status
-            <CheckCircle2 className="ml-2 h-4 w-4" />
-          </Button>
+          <Badge variant="outline" className="hidden lg:inline-flex text-[9px] font-black uppercase tracking-widest">
+            Fase: {ROTULO_FASE[faseCorrente]}
+          </Badge>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-10 w-10 border border-border">
