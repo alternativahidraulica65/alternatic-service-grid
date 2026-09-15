@@ -18,6 +18,7 @@ import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
+import { Route as AuthenticatedTerceirosRouteImport } from './routes/_authenticated/terceiros'
 import { Route as AuthenticatedAdminAuditoriaRouteImport } from './routes/_authenticated/admin/auditoria'
 import { Route as AuthenticatedAdminChecklistTemplatesRouteImport } from './routes/_authenticated/admin/checklist-templates'
 import { Route as AuthenticatedAdminVendedoresRouteImport } from './routes/_authenticated/admin/vendedores'
@@ -81,6 +82,11 @@ const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
 const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   id: '/relatorios',
   path: '/relatorios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTerceirosRoute = AuthenticatedTerceirosRouteImport.update({
+  id: '/terceiros',
+  path: '/terceiros',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminAuditoriaRoute =
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/terceiros': typeof AuthenticatedTerceirosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByTo {
   '/kanban': typeof AuthenticatedKanbanRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/terceiros': typeof AuthenticatedTerceirosRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -261,6 +269,7 @@ export interface FileRoutesById {
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/_authenticated/terceiros': typeof AuthenticatedTerceirosRoute
   '/_authenticated/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/_authenticated/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/_authenticated/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/orcamento'
     | '/relatorios'
+    | '/terceiros'
     | '/admin/auditoria'
     | '/admin/checklist-templates'
     | '/admin/vendedores'
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/orcamento'
     | '/relatorios'
+    | '/terceiros'
     | '/admin/auditoria'
     | '/admin/checklist-templates'
     | '/admin/vendedores'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/_authenticated/kanban'
     | '/_authenticated/orcamento'
     | '/_authenticated/relatorios'
+    | '/_authenticated/terceiros'
     | '/_authenticated/admin/auditoria'
     | '/_authenticated/admin/checklist-templates'
     | '/_authenticated/admin/vendedores'
@@ -439,6 +451,13 @@ declare module '@tanstack/react-router' {
       path: '/relatorios'
       fullPath: '/relatorios'
       preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/terceiros': {
+      id: '/_authenticated/terceiros'
+      path: '/terceiros'
+      fullPath: '/terceiros'
+      preLoaderRoute: typeof AuthenticatedTerceirosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/auditoria': {
@@ -639,6 +658,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
+  AuthenticatedTerceirosRoute: typeof AuthenticatedTerceirosRoute
   AuthenticatedAdminAuditoriaRoute: typeof AuthenticatedAdminAuditoriaRoute
   AuthenticatedAdminChecklistTemplatesRoute: typeof AuthenticatedAdminChecklistTemplatesRoute
   AuthenticatedAdminVendedoresRoute: typeof AuthenticatedAdminVendedoresRoute
@@ -657,6 +677,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
+  AuthenticatedTerceirosRoute: AuthenticatedTerceirosRoute,
   AuthenticatedAdminAuditoriaRoute: AuthenticatedAdminAuditoriaRoute,
   AuthenticatedAdminChecklistTemplatesRoute:
     AuthenticatedAdminChecklistTemplatesRoute,
