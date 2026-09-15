@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T18:48:40.114392+00:00",
+  "generated_at": "2026-09-15T18:56:58.575366+00:00",
   "files": [
     {
       "path": "components.json",
@@ -32,10 +32,6 @@
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 2553
     },
     {
       "path": ".lovable/project.json",
@@ -100,6 +96,10 @@
     {
       "path": ".lovable/plan/plan-fase-01-ajuste-da-tela-de-login-2026-08-16.md",
       "bytes": 2460
+    },
+    {
+      "path": ".lovable/plan/reestilização-da-tela-de-fornecedores-com-mini-dashboards-me-2026-09-15.md",
+      "bytes": 2553
     },
     {
       "path": ".lovable/plan/reestilizar-a-tela-de-orçamento-e-gerar-pdf-profissional-2026-09-14.md",
@@ -667,7 +667,7 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
-      "bytes": 26936
+      "bytes": 43225
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -2934,6 +2934,14 @@
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
       "target": "date-fns/locale"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "recharts"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/components/ClientOnly"
     },
     {
       "source": "src/integrations/supabase/client.ts",
