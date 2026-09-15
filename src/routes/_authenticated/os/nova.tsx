@@ -166,6 +166,44 @@ function NovaOSPage() {
     }
   });
 
+  const handleCriarTipoEquipamento = async () => {
+    const nome = tipoForm.nome.trim();
+    if (!nome) {
+      toast.error("Informe o nome do tipo de equipamento.");
+      return;
+    }
+    const jaExiste = (tiposEquipamento as any[])?.some(
+      (t: any) => (t.nome ?? "").trim().toLowerCase() === nome.toLowerCase()
+    );
+    if (jaExiste) {
+      toast.error("Já existe um tipo de equipamento com esse nome.");
+      return;
+    }
+    setTipoLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('tipos_equipamento')
+        .insert({
+          nome,
+          categoria_principal: tipoForm.categoria_principal.trim() || null,
+          descricao: tipoForm.descricao.trim() || null,
+        } as any)
+        .select('id, nome')
+        .single();
+      if (error) throw error;
+
+      await queryClient.invalidateQueries({ queryKey: ['tipos_equipamento'] });
+      setTipoEquipamento((data as any).id);
+      setTipoOpen(false);
+      setTipoForm({ nome: "", categoria_principal: "", descricao: "" });
+      toast.success("Tipo de equipamento cadastrado", { description: nome });
+    } catch (e: any) {
+      toast.error("Erro ao cadastrar tipo: " + e.message);
+    } finally {
+      setTipoLoading(false);
+    }
+  };
+
   const handleAddPeca = () => {
     setPecas([...pecas, { id: Date.now(), nome: "", local: "" }]);
   };
