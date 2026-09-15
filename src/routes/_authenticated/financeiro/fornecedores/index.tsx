@@ -50,6 +50,12 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { BarChart, Bar, Cell, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { ClientOnly } from "@/components/ClientOnly";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FiltrosSalvos } from "@/components/FiltrosSalvos";
+import { exportToCSV } from "@/utils/export";
+import { Download } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/financeiro/fornecedores/")({
   component: FornecedoresPage,
