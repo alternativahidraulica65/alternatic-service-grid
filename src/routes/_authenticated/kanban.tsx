@@ -260,17 +260,18 @@ function KanbanPage() {
                       </div>
 
                       <div className="flex items-center gap-2 pt-1">
-                         <div className="flex items-center gap-1 text-[8px] font-bold text-muted-foreground uppercase">
-                           <Camera className="h-2.5 w-2.5" /> 4
-                         </div>
-                         <div className="flex items-center gap-1 text-[8px] font-bold text-muted-foreground uppercase">
-                           <MessageSquare className="h-2.5 w-2.5" /> 2
-                         </div>
+                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                          alerta === "critico" ? "bg-red-100 text-red-700" :
+                          alerta === "atencao" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"
+                        }`}>
+                          Parado há {paradoDias}d
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
                 </Link>
-              ))}
+                );
+              })}
               
               {cardsDaColuna(col.id).length === 0 && (
                 <div className="h-32 flex flex-col items-center justify-center text-muted-foreground opacity-20">
