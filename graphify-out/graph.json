@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T18:56:58.575366+00:00",
+  "generated_at": "2026-09-15T23:31:24.292978+00:00",
   "files": [
     {
       "path": "components.json",
@@ -32,6 +32,10 @@
     {
       "path": "tsconfig.json",
       "bytes": 820
+    },
+    {
+      "path": ".lovable/plan.md",
+      "bytes": 3543
     },
     {
       "path": ".lovable/project.json",
