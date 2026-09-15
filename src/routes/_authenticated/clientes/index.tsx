@@ -734,6 +734,22 @@ function ClientesPage() {
                   />
                 </>
               )}
+              {selecionadosVisiveis.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest">
+                    {selecionadosVisiveis.length} selecionado{selecionadosVisiveis.length > 1 ? "s" : ""}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelecionados([])}
+                    className="h-10 text-[10px] font-black uppercase tracking-widest text-muted-foreground"
+                  >
+                    <X className="mr-2 h-3.5 w-3.5" />
+                    Limpar seleção
+                  </Button>
+                </div>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -741,7 +757,7 @@ function ClientesPage() {
                 className="h-10 text-[10px] font-black uppercase tracking-widest text-muted-foreground"
               >
                 <Download className="mr-2 h-3.5 w-3.5" />
-                Exportar
+                {selecionadosVisiveis.length > 0 ? `Exportar (${selecionadosVisiveis.length})` : "Exportar"}
               </Button>
             </div>
           </div>
