@@ -195,9 +195,18 @@ function KanbanPage() {
             </div>
 
             <div className="flex-1 bg-slate-50/50 border border-border/50 rounded-2xl p-3 space-y-3 overflow-y-auto custom-scrollbar shadow-inner">
-              {cardsDaColuna(col.id).map((card: any) => (
+              {cardsDaColuna(col.id).map((card: any) => {
+                const referencia = card.updated_at || card.data_abertura || card.criado_em;
+                const paradoDias = referencia
+                  ? Math.floor((Date.now() - new Date(referencia).getTime()) / 86400000)
+                  : 0;
+                const alerta = paradoDias >= LIMITE_CRITICO ? "critico" : paradoDias >= LIMITE_ATENCAO ? "atencao" : "ok";
+                return (
                 <Link key={card.id} to="/os/$id" params={{ id: card.id }}>
-                  <Card className="border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer group bg-white">
+                  <Card className={`shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer group bg-white ${
+                    alerta === "critico" ? "border-red-400 border-l-4" :
+                    alerta === "atencao" ? "border-amber-400 border-l-4" : "border-border"
+                  }`}>
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-primary group-hover:scale-110 transition-transform">{card.numero_os}</span>
