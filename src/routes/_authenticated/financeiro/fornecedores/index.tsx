@@ -486,7 +486,39 @@ function FornecedoresPage() {
               </Button>
             </div>
           </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                <SelectTrigger className="h-9 w-[150px] bg-card text-xs font-bold">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="ativos">Somente ativos</SelectItem>
+                  <SelectItem value="inativos">Somente inativos</SelectItem>
+                </SelectContent>
+              </Select>
+              <FiltrosSalvos
+                lista="fornecedores"
+                filtros={{ status: filtroStatus, busca: searchTerm, visao }}
+                onAplicar={(f) => {
+                  setFiltroStatus(f.status ?? "todos");
+                  setSearchTerm(f.busca ?? "");
+                  if (f.visao === "cards" || f.visao === "tabela") setVisao(f.visao);
+                }}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 font-bold uppercase text-[10px] tracking-widest"
+                onClick={exportarFornecedores}
+              >
+                <Download className="mr-2 h-3.5 w-3.5" />
+                {selecionadosVisiveis.length > 0 ? `Exportar (${selecionadosVisiveis.length})` : "Exportar"}
+              </Button>
+            </div>
+          </div>
         </CardHeader>
+
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
