@@ -292,6 +292,43 @@ function FornecedoresPage() {
         </div>
       </div>
 
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card className="border-border shadow-sm border-t-4 border-t-primary">
+          <CardContent className="pt-6">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Gasto no mês</p>
+            <p className="text-2xl font-black text-foreground">{brl(resumo.totalMes)}</p>
+            <p className="text-[9px] font-medium text-muted-foreground mt-2 uppercase">{resumo.rotuloMesAtual} · todos os fornecedores</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border shadow-sm border-t-4 border-t-emerald-500">
+          <CardContent className="pt-6">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Fornecedores ativos</p>
+            <p className="text-2xl font-black text-foreground">{resumo.ativos}</p>
+            <p className="text-[9px] font-medium text-muted-foreground mt-2 uppercase">De {fornecedores?.length || 0} cadastrados</p>
+          </CardContent>
+        </Card>
+        <Card className={`border-border shadow-sm border-t-4 ${resumo.estourados > 0 ? "border-t-red-500" : "border-t-slate-300"}`}>
+          <CardContent className="pt-6">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Limite estourado</p>
+            <div className="flex items-center gap-2">
+              <p className={`text-2xl font-black ${resumo.estourados > 0 ? "text-red-500" : "text-foreground"}`}>{resumo.estourados}</p>
+              {resumo.estourados > 0 && <AlertTriangle className="h-4 w-4 text-red-500" />}
+            </div>
+            <p className="text-[9px] font-medium text-muted-foreground mt-2 uppercase">Acima do limite mensal</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border shadow-sm border-t-4 border-t-slate-900">
+          <CardContent className="pt-6">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Maior gasto do mês</p>
+            <div className="flex items-center gap-2">
+              <Crown className="h-4 w-4 text-primary shrink-0" />
+              <p className="text-base font-black text-foreground truncate">{resumo.maior ? resumo.maior.nome : "—"}</p>
+            </div>
+            <p className="text-[9px] font-medium text-muted-foreground mt-2 uppercase">{resumo.maior ? brl(resumo.maior.valor) : "Sem lançamentos no mês"}</p>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card className="border-border shadow-md">
         <CardHeader className="bg-muted/10 border-b border-border/50">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -304,6 +341,24 @@ function FornecedoresPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1">
+              <Button
+                variant={visao === "cards" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setVisao("cards")}
+                className={`h-8 text-[10px] font-black uppercase tracking-widest ${visao === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+              >
+                <LayoutGrid className="mr-2 h-3.5 w-3.5" /> Cards
+              </Button>
+              <Button
+                variant={visao === "tabela" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setVisao("tabela")}
+                className={`h-8 text-[10px] font-black uppercase tracking-widest ${visao === "tabela" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+              >
+                <Rows3 className="mr-2 h-3.5 w-3.5" /> Tabela
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -311,7 +366,132 @@ function FornecedoresPage() {
             <div className="flex items-center justify-center py-20">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             </div>
-          ) : filteredFornecedores && filteredFornecedores.length > 0 ? (
+          ) : !filteredFornecedores || filteredFornecedores.length === 0 ? (
+            <div className="text-center py-20">
+              <Truck className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+              <p className="text-sm font-medium text-muted-foreground">Nenhum fornecedor encontrado.</p>
+            </div>
+          ) : visao === "cards" ? (
+            <div className="grid gap-5 p-6 md:grid-cols-2 xl:grid-cols-3">
+              {filteredFornecedores.map((f) => {
+                const painel = painelPorFornecedor.get(f.id);
+                const serie = painel?.serie || meses.map((m) => ({ ...m, valor: 0 }));
+                const mesAtual = painel?.mesAtual || 0;
+                const mesAnterior = painel?.mesAnterior || 0;
+                const totalPeriodo = painel?.total || 0;
+                const lancamentos = painel?.lancamentos || 0;
+                const variacao = mesAnterior > 0 ? ((mesAtual - mesAnterior) / mesAnterior) * 100 : null;
+                const limite = Number(f.limite_mensal || 0);
+                const percentual = limite > 0 ? (mesAtual / limite) * 100 : null;
+                const corBarra = percentual === null ? "" : percentual > 100 ? "bg-red-500" : percentual > 80 ? "bg-amber-500" : "bg-primary";
+                return (
+                  <div
+                    key={f.id}
+                    className={`rounded-xl border bg-card p-5 shadow-sm transition-all hover:shadow-md ${percentual !== null && percentual > 100 ? "border-red-500/40" : "border-border"}`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <div className="h-9 w-9 rounded-lg bg-slate-100 flex items-center justify-center border border-border shrink-0">
+                          <Truck className="h-4 w-4 text-slate-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-foreground truncate">{f.nome}</p>
+                          <p className="text-[10px] font-mono text-muted-foreground truncate">{f.cnpj || "Sem CNPJ"}</p>
+                          <p className="text-[10px] text-muted-foreground font-medium truncate">{f.contato || "Sem contato"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        {f.ativo ? (
+                          <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[9px] uppercase font-bold">Ativo</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-muted-foreground text-[9px] uppercase font-bold">Inativo</Badge>
+                        )}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-slate-900 text-white border-white/10">
+                            <DropdownMenuItem onClick={() => handleEdit(f)} className="hover:bg-white/10 cursor-pointer text-xs font-bold uppercase tracking-wider">
+                              <Edit className="mr-2 h-3.5 w-3.5" /> Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                if (confirm("Deseja realmente excluir este fornecedor?")) {
+                                  deleteMutation.mutate(f.id);
+                                }
+                              }}
+                              className="text-red-400 hover:bg-red-500/10 cursor-pointer text-xs font-bold uppercase tracking-wider"
+                            >
+                              <Trash2 className="mr-2 h-3.5 w-3.5" /> Excluir
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex items-end justify-between">
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Gasto em {resumo.rotuloMesAtual}</p>
+                        <p className="text-2xl font-black text-foreground">{brl(mesAtual)}</p>
+                      </div>
+                      {variacao !== null && (
+                        <span className={`flex items-center text-[10px] font-bold ${variacao > 0 ? "text-red-500" : "text-emerald-500"}`}>
+                          {variacao > 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+                          {Math.abs(variacao).toFixed(0)}% vs. mês anterior
+                        </span>
+                      )}
+                    </div>
+
+                    {limite > 0 && (
+                      <div className="mt-4">
+                        <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                          <span>Limite {brl(limite)}</span>
+                          <span className={percentual! > 100 ? "text-red-500" : percentual! > 80 ? "text-amber-500" : ""}>{percentual!.toFixed(0)}%</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                          <div className={`h-full rounded-full ${corBarra}`} style={{ width: `${Math.min(percentual!, 100)}%` }} />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-4 border-t border-border/60 pt-3">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">Últimos 6 meses</p>
+                      {totalPeriodo > 0 ? (
+                        <ClientOnly>
+                          <div className="h-16">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={serie} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
+                                <XAxis dataKey="rotulo" axisLine={false} tickLine={false} tick={{ fontSize: 8, fontWeight: 700, fill: "#94a3b8" }} />
+                                <Tooltip
+                                  cursor={{ fill: "#f8fafc" }}
+                                  formatter={(value: any) => [brl(Number(value)), "Gasto"]}
+                                  contentStyle={{ borderRadius: "10px", border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", fontSize: "10px", fontWeight: "bold" }}
+                                />
+                                <Bar dataKey="valor" radius={[3, 3, 0, 0]}>
+                                  {serie.map((item, idx) => (
+                                    <Cell key={idx} fill={limite > 0 && item.valor > limite ? "#ef4444" : idx === serie.length - 1 ? "#FFD700" : "#cbd5e1"} />
+                                  ))}
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </ClientOnly>
+                      ) : (
+                        <p className="text-[10px] font-medium text-muted-foreground py-4 text-center">Sem lançamentos no período.</p>
+                      )}
+                      <div className="mt-2 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        <span className="flex items-center gap-1"><Wallet className="h-3 w-3 text-primary" /> Acumulado {brl(totalPeriodo)}</span>
+                        <span>{lancamentos} lançamento{lancamentos === 1 ? "" : "s"}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
