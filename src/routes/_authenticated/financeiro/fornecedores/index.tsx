@@ -516,8 +516,8 @@ function FornecedoresPage() {
                 {selecionadosVisiveis.length > 0 ? `Exportar (${selecionadosVisiveis.length})` : "Exportar"}
               </Button>
             </div>
-          </div>
         </CardHeader>
+
 
         <CardContent className="p-0">
           {isLoading ? (
