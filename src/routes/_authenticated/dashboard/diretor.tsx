@@ -106,7 +106,31 @@ function DashboardDiretor() {
       { name: "Total", value: faturamento, color: "#FFD700" }
     ];
 
-    return { faturamento, abertas, atrasadas, statusData, revenueData };
+    // MTTR: tempo médio (em dias) entre abertura e entrega das OS já entregues.
+    const entregues = ordens.filter((os: any) => os.data_entrega && (os.data_abertura || os.criado_em));
+    const somaDias = entregues.reduce((acc: number, os: any) => {
+      const ini = new Date(os.data_abertura || os.criado_em).getTime();
+      const fim = new Date(os.data_entrega).getTime();
+      return acc + Math.max(0, (fim - ini) / 86400000);
+    }, 0);
+    const mttr = entregues.length > 0 ? somaDias / entregues.length : null;
+
+    // Produtividade: % de OS entregues dentro do prazo previsto de conclusão.
+    const comPrazo = entregues.filter((os: any) => os.data_previsao_conclusao);
+    const noPrazo = comPrazo.filter((os: any) => new Date(os.data_entrega) <= new Date(os.data_previsao_conclusao)).length;
+    const produtividade = comPrazo.length > 0 ? (noPrazo / comPrazo.length) * 100 : null;
+
+    return {
+      faturamento,
+      abertas,
+      atrasadas,
+      statusData,
+      revenueData,
+      mttr,
+      entreguesCount: entregues.length,
+      produtividade,
+      comPrazoCount: comPrazo.length,
+    };
   }, [ordens]);
 
   return (
