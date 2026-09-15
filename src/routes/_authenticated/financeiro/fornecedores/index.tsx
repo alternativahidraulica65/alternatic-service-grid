@@ -265,6 +265,100 @@ function FornecedoresPage() {
     f.cnpj?.includes(searchTerm)
   );
 
+  const meses = useMemo(() => ultimosSeisMeses(), []);
+  const inicioPeriodo = useMemo(() => {
+    const hoje = new Date();
+    return new Date(hoje.getFullYear(), hoje.getMonth() - 5, 1).toISOString();
+  }, []);
+
+  const { data: gastos } = useQuery({
+    queryKey: ['fornecedores-gastos', inicioPeriodo],
+    queryFn: async () => {
+      const [lanc, custos] = await Promise.all([
+        supabase
+          .from('lancamentos_financeiros')
+          .select('fornecedor_id, valor, data_competencia')
+          .not('fornecedor_id', 'is', null)
+          .gte('data_competencia', inicioPeriodo.slice(0, 10)),
+        supabase
+          .from('os_custos')
+          .select('fornecedor_id, custo_interno, criado_em')
+          .not('fornecedor_id', 'is', null)
+          .gte('criado_em', inicioPeriodo),
+      ]);
+      if (lanc.error) throw lanc.error;
+      if (custos.error) throw custos.error;
+      const registros: { fornecedor_id: string; valor: number; data: string }[] = [];
+      (lanc.data || []).forEach((l) => {
+        if (l.fornecedor_id && l.data_competencia) {
+          registros.push({ fornecedor_id: l.fornecedor_id, valor: Number(l.valor || 0), data: l.data_competencia });
+        }
+      });
+      (custos.data || []).forEach((c) => {
+        if (c.fornecedor_id && c.criado_em) {
+          registros.push({ fornecedor_id: c.fornecedor_id, valor: Number(c.custo_interno || 0), data: c.criado_em });
+        }
+      });
+      return registros;
+    },
+  });
+
+  const painelPorFornecedor = useMemo(() => {
+    const mapa = new Map<string, {
+      serie: { chave: string; rotulo: string; valor: number }[];
+      mesAtual: number;
+      mesAnterior: number;
+      total: number;
+      lancamentos: number;
+    }>();
+    (fornecedores || []).forEach((f) => {
+      mapa.set(f.id, {
+        serie: meses.map((m) => ({ ...m, valor: 0 })),
+        mesAtual: 0,
+        mesAnterior: 0,
+        total: 0,
+        lancamentos: 0,
+      });
+    });
+    (gastos || []).forEach((r) => {
+      const painel = mapa.get(r.fornecedor_id);
+      if (!painel) return;
+      const chave = chaveMes(new Date(r.data));
+      const item = painel.serie.find((s) => s.chave === chave);
+      if (!item) return;
+      item.valor += r.valor;
+      painel.total += r.valor;
+      painel.lancamentos += 1;
+    });
+    mapa.forEach((painel) => {
+      painel.mesAtual = painel.serie[painel.serie.length - 1]?.valor || 0;
+      painel.mesAnterior = painel.serie[painel.serie.length - 2]?.valor || 0;
+    });
+    return mapa;
+  }, [fornecedores, gastos, meses]);
+
+  const resumo = useMemo(() => {
+    let totalMes = 0;
+    let estourados = 0;
+    let maior: { nome: string; valor: number } | null = null;
+    (fornecedores || []).forEach((f) => {
+      const painel = painelPorFornecedor.get(f.id);
+      const mesAtual = painel?.mesAtual || 0;
+      totalMes += mesAtual;
+      const limite = Number(f.limite_mensal || 0);
+      if (limite > 0 && mesAtual > limite) estourados += 1;
+      if (mesAtual > 0 && (!maior || mesAtual > maior.valor)) maior = { nome: f.nome, valor: mesAtual };
+    });
+    return {
+      totalMes,
+      estourados,
+      maior: maior as { nome: string; valor: number } | null,
+      ativos: (fornecedores || []).filter((f) => f.ativo).length,
+      rotuloMesAtual: meses[meses.length - 1]?.rotulo || "",
+    };
+  }, [fornecedores, painelPorFornecedor, meses]);
+
+
   return (
     <div className="p-6 md:p-10 space-y-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
