@@ -74,6 +74,9 @@ function NovaOSPage() {
   const [preOpen, setPreOpen] = useState(false);
   const [preLoading, setPreLoading] = useState(false);
   const [preForm, setPreForm] = useState({ nome: "", cnpj: "", telefone: "", email: "" });
+  const [tipoOpen, setTipoOpen] = useState(false);
+  const [tipoLoading, setTipoLoading] = useState(false);
+  const [tipoForm, setTipoForm] = useState({ nome: "", categoria_principal: "", descricao: "" });
 
   const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_lookup'],
