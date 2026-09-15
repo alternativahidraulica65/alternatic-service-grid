@@ -262,10 +262,37 @@ function FornecedoresPage() {
     setIsModalOpen(true);
   };
 
-  const filteredFornecedores = fornecedores?.filter(f => 
-    f.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.cnpj?.includes(searchTerm)
+  const filteredFornecedores = fornecedores?.filter(f =>
+    (f.nome.toLowerCase().includes(searchTerm.toLowerCase()) || f.cnpj?.includes(searchTerm)) &&
+    (filtroStatus === "todos" ||
+      (filtroStatus === "ativos" ? f.ativo !== false : f.ativo === false))
   );
+
+  const idsVisiveis = (filteredFornecedores ?? []).map((f: any) => String(f.id));
+  const selecionadosVisiveis = selecionados.filter((id) => idsVisiveis.includes(id));
+  const todosSelecionados = idsVisiveis.length > 0 && selecionadosVisiveis.length === idsVisiveis.length;
+
+  const exportarFornecedores = () => {
+    const alvo = selecionadosVisiveis.length > 0
+      ? (filteredFornecedores ?? []).filter((f: any) => selecionadosVisiveis.includes(String(f.id)))
+      : (filteredFornecedores ?? []);
+    if (alvo.length === 0) {
+      toast.error("Nenhum fornecedor para exportar.");
+      return;
+    }
+    exportToCSV(
+      alvo.map((f: any) => ({
+        nome: f.nome ?? "",
+        cnpj: f.cnpj ?? "",
+        contato: f.contato ?? "",
+        status: f.ativo === false ? "Inativo" : "Ativo",
+        limite_mensal: Number(f.limite_mensal || 0),
+        observacoes: f.observacoes ?? "",
+      })),
+      "fornecedores.csv",
+    );
+  };
+
 
   const meses = useMemo(() => ultimosSeisMeses(), []);
   const inicioPeriodo = useMemo(() => {
