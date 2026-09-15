@@ -406,9 +406,32 @@ function ClientesPage() {
     toast.success("Modelo baixado. Preencha e use o botão Importar.");
   };
 
+  const alternarSelecao = (id: string) => {
+    setSelecionados((atual) =>
+      atual.includes(id) ? atual.filter((i) => i !== id) : [...atual, id]
+    );
+  };
+
+  const idsVisiveis = filteredClientes.map((c: any) => c.id as string);
+  const selecionadosVisiveis = selecionados.filter((id) => idsVisiveis.includes(id));
+  const todosSelecionados = idsVisiveis.length > 0 && selecionadosVisiveis.length === idsVisiveis.length;
+
+  const alternarTodos = () => {
+    setSelecionados(todosSelecionados ? [] : idsVisiveis);
+  };
+
   const exportarClientes = () => {
+    const alvo = selecionadosVisiveis.length > 0
+      ? filteredClientes.filter((c: any) => selecionadosVisiveis.includes(c.id))
+      : filteredClientes;
+
+    if (alvo.length === 0) {
+      toast.error("Nenhum cliente para exportar.");
+      return;
+    }
+
     exportToCSV(
-      filteredClientes.map((c: any) => ({
+      alvo.map((c: any) => ({
         nome: c.nome ?? "",
         cnpj: c.cnpj ?? "",
         email: c.email ?? "",
