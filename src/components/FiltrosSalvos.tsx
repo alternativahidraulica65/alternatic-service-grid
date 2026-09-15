@@ -20,7 +20,7 @@ interface FiltrosSalvosProps {
   /** Filtros atualmente aplicados na tela. */
   filtros: Record<string, any>;
   /** Chamado quando o usuário escolhe um filtro salvo. */
-  onAplicar: (filtros: Record<string, any>) => void;
+  onAplicar: (filtros: any) => void;
 }
 
 /**

@@ -137,7 +137,7 @@ function ListaLancamentos() {
     );
   };
 
-  const aplicarFiltrosSalvos = (f: Record<string, any>) => {
+  const aplicarFiltrosSalvos = (f: any) => {
     setPeriodo(f.periodo ?? "90");
     setTipo(f.tipo ?? "todos");
     setFornecedor(f.fornecedor ?? "todos");

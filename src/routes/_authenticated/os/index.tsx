@@ -188,7 +188,7 @@ function ListaOs() {
     return alvo.reduce((s: number, o: any) => s + Number(o.valor_final || o.valor_total || 0), 0);
   }, [filtradas, selecionadosVisiveis]);
 
-  const aplicarFiltrosSalvos = (f: Record<string, any>) => {
+  const aplicarFiltrosSalvos = (f: any) => {
     setPeriodo(f.periodo ?? "todos");
     setStatus(f.status ?? "todos");
     setVendedor(f.vendedor ?? "todos");
@@ -226,7 +226,7 @@ function ListaOs() {
           previsao: fmtData(os.data_previsao_conclusao),
           entrega: fmtData(os.data_entrega),
         };
-        if (podeVerValores) base.valor = Number(os.valor_final || os.valor_total || 0);
+        if (podeVerValores) base["valor"] = Number(os.valor_final || os.valor_total || 0);
         return base;
       }),
       "ordens-servico.csv",

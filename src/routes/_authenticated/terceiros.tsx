@@ -139,7 +139,7 @@ function PainelTerceiros() {
     };
   }, [linhas]);
 
-  const aplicarFiltrosSalvos = (f: Record<string, any>) => {
+  const aplicarFiltrosSalvos = (f: any) => {
     setSituacao(f.situacao ?? FILTROS_PADRAO.situacao);
     setTerceiro(f.terceiro ?? FILTROS_PADRAO.terceiro);
     setBusca(f.busca ?? "");
