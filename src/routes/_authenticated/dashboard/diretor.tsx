@@ -196,8 +196,8 @@ function DashboardDiretor() {
           />
           <KPICard 
             title="Produtividade" 
-            value="92%" 
-            subtext="Eficiência da equipe técnica" 
+            value={stats.produtividade === null ? "—" : `${stats.produtividade.toFixed(0)}%`} 
+            subtext={stats.produtividade === null ? "Sem OS com prazo e entrega" : `Entregas no prazo · ${stats.comPrazoCount} OS`} 
             icon={Factory} 
           />
         </div>
