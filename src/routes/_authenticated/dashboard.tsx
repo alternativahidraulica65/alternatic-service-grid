@@ -79,7 +79,11 @@ function DashboardLayout() {
     { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
     { label: "Clientes", icon: Users, to: "/clientes", roles: ["diretor", "administrativo_financeiro", "gestor"] },
     { label: "Nova OS / Triagem", icon: Wrench, to: "/os/nova", roles: ["diretor", "gestor", "operador"] },
+    { label: "Ordens de Serviço", icon: ClipboardList, to: "/os", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
+    { label: "Terceiros", icon: Package, to: "/terceiros", roles: ["diretor", "administrativo_financeiro", "gestor"] },
     { label: "Produção (Kanban)", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
+    { label: "Lançamentos", icon: Receipt, to: "/financeiro/lancamentos", roles: ["diretor", "administrativo_financeiro"] },
+
     { label: "Materiais", icon: Factory, to: "/engenharia/materiais", roles: ["diretor", "gestor"] },
     { label: "Fornecedores", icon: Truck, to: "/financeiro/fornecedores", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Vendedores", icon: Users, to: "/admin/vendedores", roles: ["diretor", "administrativo_financeiro"] },
