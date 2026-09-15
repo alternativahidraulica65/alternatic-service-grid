@@ -178,8 +178,8 @@ function DashboardDiretor() {
         />
         <KPICard 
           title="MTTR Médio" 
-          value="4.2 dias" 
-          subtext="Tempo Médio de Reparo" 
+          value={stats.mttr === null ? "—" : `${stats.mttr.toFixed(1)} dias`} 
+          subtext={stats.mttr === null ? "Sem OS entregues registradas" : `Abertura até entrega · ${stats.entreguesCount} OS`} 
           icon={Clock} 
         />
       </div>
