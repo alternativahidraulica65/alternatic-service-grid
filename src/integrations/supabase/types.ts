@@ -440,6 +440,36 @@ export type Database = {
         }
         Relationships: []
       }
+      filtros_salvos: {
+        Row: {
+          criado_em: string
+          filtros: Json
+          id: string
+          lista: string
+          nome: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          filtros?: Json
+          id?: string
+          lista: string
+          nome: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          criado_em?: string
+          filtros?: Json
+          id?: string
+          lista?: string
+          nome?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       fornecedores: {
         Row: {
           aprovado_em: string | null
