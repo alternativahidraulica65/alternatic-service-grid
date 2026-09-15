@@ -30,6 +30,7 @@ import { Route as AuthenticatedDashboardFinanceiroRouteImport } from './routes/_
 import { Route as AuthenticatedDashboardGestorRouteImport } from './routes/_authenticated/dashboard/gestor'
 import { Route as AuthenticatedDashboardOperadorRouteImport } from './routes/_authenticated/dashboard/operador'
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
+import { Route as AuthenticatedFinanceiroLancamentosRouteImport } from './routes/_authenticated/financeiro/lancamentos'
 import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
 import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated/os/index'
@@ -155,6 +156,12 @@ const AuthenticatedEngenhariaMateriaisRoute =
     path: '/engenharia/materiais',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFinanceiroLancamentosRoute =
+  AuthenticatedFinanceiroLancamentosRouteImport.update({
+    id: '/financeiro/lancamentos',
+    path: '/financeiro/lancamentos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrcamentoPdfRoute =
   AuthenticatedOrcamentoPdfRouteImport.update({
     id: '/pdf',
@@ -225,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
   '/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
@@ -255,6 +263,7 @@ export interface FileRoutesByTo {
   '/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
   '/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/os/nova': typeof AuthenticatedOsNovaRoute
@@ -287,6 +296,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/gestor': typeof AuthenticatedDashboardGestorRoute
   '/_authenticated/dashboard/operador': typeof AuthenticatedDashboardOperadorRoute
   '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
+  '/_authenticated/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/dashboard/gestor'
     | '/dashboard/operador'
     | '/engenharia/materiais'
+    | '/financeiro/lancamentos'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/os/$id'
@@ -350,6 +361,7 @@ export interface FileRouteTypes {
     | '/dashboard/gestor'
     | '/dashboard/operador'
     | '/engenharia/materiais'
+    | '/financeiro/lancamentos'
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/os/nova'
@@ -381,6 +393,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/gestor'
     | '/_authenticated/dashboard/operador'
     | '/_authenticated/engenharia/materiais'
+    | '/_authenticated/financeiro/lancamentos'
     | '/_authenticated/orcamento/pdf'
     | '/_authenticated/orcamento/precificacao'
     | '/_authenticated/os/$id'
@@ -549,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEngenhariaMateriaisRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/financeiro/lancamentos': {
+      id: '/_authenticated/financeiro/lancamentos'
+      path: '/financeiro/lancamentos'
+      fullPath: '/financeiro/lancamentos'
+      preLoaderRoute: typeof AuthenticatedFinanceiroLancamentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/orcamento/pdf': {
       id: '/_authenticated/orcamento/pdf'
       path: '/pdf'
@@ -683,6 +703,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminVendedoresRoute: typeof AuthenticatedAdminVendedoresRoute
   AuthenticatedClientesIdRoute: typeof AuthenticatedClientesIdRoute
   AuthenticatedEngenhariaMateriaisRoute: typeof AuthenticatedEngenhariaMateriaisRoute
+  AuthenticatedFinanceiroLancamentosRoute: typeof AuthenticatedFinanceiroLancamentosRoute
   AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRouteWithChildren
   AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
@@ -704,6 +725,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminVendedoresRoute: AuthenticatedAdminVendedoresRoute,
   AuthenticatedClientesIdRoute: AuthenticatedClientesIdRoute,
   AuthenticatedEngenhariaMateriaisRoute: AuthenticatedEngenhariaMateriaisRoute,
+  AuthenticatedFinanceiroLancamentosRoute:
+    AuthenticatedFinanceiroLancamentosRoute,
   AuthenticatedOsIdRoute: AuthenticatedOsIdRouteWithChildren,
   AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
