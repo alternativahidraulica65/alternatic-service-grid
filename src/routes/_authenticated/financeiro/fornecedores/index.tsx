@@ -385,12 +385,8 @@ function FornecedoresPage() {
                 </tbody>
               </table>
             </div>
-          ) : (
-            <div className="text-center py-20">
-              <Truck className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-              <p className="text-sm font-medium text-muted-foreground">Nenhum fornecedor encontrado.</p>
-            </div>
           )}
+
         </CardContent>
       </Card>
 
