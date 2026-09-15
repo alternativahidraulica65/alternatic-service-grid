@@ -8,7 +8,7 @@ import {
   Trash2, 
   MoreVertical,
   ChevronLeft,
-  XCircle,
+  AlertCircle,
   AlertCircle,
   Upload,
   History,
