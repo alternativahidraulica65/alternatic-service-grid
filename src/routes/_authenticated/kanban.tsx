@@ -11,8 +11,6 @@ import {
   Factory,
   CheckCircle2,
   MoreHorizontal,
-  Camera,
-  MessageSquare,
   ArrowLeft
 } from "lucide-react";
 import { useState } from "react";
@@ -42,6 +40,10 @@ import {
   ROTULO_FASE,
   type Fase,
 } from "@/lib/os-fluxo";
+
+/** Dias parado numa mesma etapa antes de sinalizar atenção / situação crítica. */
+const LIMITE_ATENCAO = 5;
+const LIMITE_CRITICO = 10;
 
 export const Route = createFileRoute("/_authenticated/kanban")({
   component: KanbanPage,
