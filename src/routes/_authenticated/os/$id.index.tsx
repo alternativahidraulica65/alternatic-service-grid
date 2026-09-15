@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { faseDoStatus, indiceFase, type Fase } from "@/lib/os-fluxo";
+import { PendenciasOsCard } from "@/components/PendenciasOsCard";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   ClipboardList, 
@@ -1243,6 +1244,15 @@ function GestaoOSPage() {
           </div>
         ))}
       </div>
+
+      <PendenciasOsCard
+        os={os}
+        checklist={checklistData}
+        custos={custos}
+        pecas={pecas}
+        onIrPara={setActiveTab}
+      />
+
 
       {(() => {
         const TAB_LIST = [

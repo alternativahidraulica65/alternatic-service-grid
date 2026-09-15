@@ -11,8 +11,6 @@ import {
   Factory,
   CheckCircle2,
   MoreHorizontal,
-  Camera,
-  MessageSquare,
   ArrowLeft
 } from "lucide-react";
 import { useState } from "react";
@@ -42,6 +40,10 @@ import {
   ROTULO_FASE,
   type Fase,
 } from "@/lib/os-fluxo";
+
+/** Dias parado numa mesma etapa antes de sinalizar atenção / situação crítica. */
+const LIMITE_ATENCAO = 5;
+const LIMITE_CRITICO = 10;
 
 export const Route = createFileRoute("/_authenticated/kanban")({
   component: KanbanPage,
@@ -195,9 +197,18 @@ function KanbanPage() {
             </div>
 
             <div className="flex-1 bg-slate-50/50 border border-border/50 rounded-2xl p-3 space-y-3 overflow-y-auto custom-scrollbar shadow-inner">
-              {cardsDaColuna(col.id).map((card: any) => (
+              {cardsDaColuna(col.id).map((card: any) => {
+                const referencia = card.updated_at || card.data_abertura || card.criado_em;
+                const paradoDias = referencia
+                  ? Math.floor((Date.now() - new Date(referencia).getTime()) / 86400000)
+                  : 0;
+                const alerta = paradoDias >= LIMITE_CRITICO ? "critico" : paradoDias >= LIMITE_ATENCAO ? "atencao" : "ok";
+                return (
                 <Link key={card.id} to="/os/$id" params={{ id: card.id }}>
-                  <Card className="border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer group bg-white">
+                  <Card className={`shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer group bg-white ${
+                    alerta === "critico" ? "border-red-400 border-l-4" :
+                    alerta === "atencao" ? "border-amber-400 border-l-4" : "border-border"
+                  }`}>
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-primary group-hover:scale-110 transition-transform">{card.numero_os}</span>
@@ -251,17 +262,18 @@ function KanbanPage() {
                       </div>
 
                       <div className="flex items-center gap-2 pt-1">
-                         <div className="flex items-center gap-1 text-[8px] font-bold text-muted-foreground uppercase">
-                           <Camera className="h-2.5 w-2.5" /> 4
-                         </div>
-                         <div className="flex items-center gap-1 text-[8px] font-bold text-muted-foreground uppercase">
-                           <MessageSquare className="h-2.5 w-2.5" /> 2
-                         </div>
+                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                          alerta === "critico" ? "bg-red-100 text-red-700" :
+                          alerta === "atencao" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"
+                        }`}>
+                          Parado há {paradoDias}d
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
                 </Link>
-              ))}
+                );
+              })}
               
               {cardsDaColuna(col.id).length === 0 && (
                 <div className="h-32 flex flex-col items-center justify-center text-muted-foreground opacity-20">
