@@ -679,6 +679,20 @@ function FornecedoresPage() {
                 <tbody className="divide-y divide-border">
                   {filteredFornecedores.map((f) => (
                     <tr key={f.id} className="hover:bg-muted/30 transition-colors group">
+                      <td className="px-4 py-4">
+                        <Checkbox
+                          aria-label={`Selecionar ${f.nome}`}
+                          checked={selecionados.includes(String(f.id))}
+                          onCheckedChange={() =>
+                            setSelecionados((atual) =>
+                              atual.includes(String(f.id))
+                                ? atual.filter((i) => i !== String(f.id))
+                                : [...atual, String(f.id)],
+                            )
+                          }
+                        />
+                      </td>
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-lg bg-slate-100 flex items-center justify-center border border-border group-hover:border-primary/30 transition-colors">
