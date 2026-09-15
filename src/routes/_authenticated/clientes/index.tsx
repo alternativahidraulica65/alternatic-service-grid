@@ -129,6 +129,7 @@ function ClientesPage() {
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroVendedor, setFiltroVendedor] = useState("todos");
   const [filtroPeriodo, setFiltroPeriodo] = useState("todos");
+  const [selecionados, setSelecionados] = useState<string[]>([]);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "nome", dir: "asc" });
   const [importando, setImportando] = useState(false);
   const inputArquivo = useRef<HTMLInputElement>(null);
