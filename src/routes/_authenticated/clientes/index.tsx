@@ -819,7 +819,14 @@ function ClientesPage() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow className="hover:bg-transparent border-b border-border">
-                <CabecalhoOrdenavel chave="nome" label="Cliente / Razão Social" className="pl-6" />
+                <TableHead className="w-10 py-4 pl-6">
+                  <Checkbox
+                    checked={todosSelecionados}
+                    onCheckedChange={alternarTodos}
+                    aria-label="Selecionar todos os clientes filtrados"
+                  />
+                </TableHead>
+                <CabecalhoOrdenavel chave="nome" label="Cliente / Razão Social" />
                 <CabecalhoOrdenavel chave="cnpj" label="CNPJ" />
                 <CabecalhoOrdenavel chave="vendedor" label="Vendedor" />
                 <CabecalhoOrdenavel chave="cidade" label="Cidade/UF" />
