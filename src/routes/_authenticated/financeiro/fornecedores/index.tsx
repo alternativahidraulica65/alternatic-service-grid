@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { 
   Truck, 
   Plus, 
@@ -8,12 +8,18 @@ import {
   Trash2, 
   MoreVertical,
   ChevronLeft,
-  CheckCircle2,
   XCircle,
   AlertCircle,
   Upload,
   History,
-  Info
+  Info,
+  TrendingUp,
+  TrendingDown,
+  LayoutGrid,
+  Rows3,
+  Wallet,
+  AlertTriangle,
+  Crown
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,10 +48,38 @@ import { Link } from "@tanstack/react-router";
 import Papa from "papaparse";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { BarChart, Bar, Cell, ResponsiveContainer, Tooltip, XAxis } from "recharts";
+import { ClientOnly } from "@/components/ClientOnly";
 
 export const Route = createFileRoute("/_authenticated/financeiro/fornecedores/")({
   component: FornecedoresPage,
+  head: () => ({
+    meta: [
+      { title: "Fornecedores | Alternativa Hidráulica" },
+      { name: "description", content: "Cadastro de fornecedores com painéis mensais de gastos reais, limites e evolução dos últimos seis meses." },
+      { property: "og:title", content: "Fornecedores | Alternativa Hidráulica" },
+      { property: "og:description", content: "Gastos mensais por fornecedor, limites e evolução em um só painel." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
 });
+
+const brl = (v: number) =>
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0);
+
+const chaveMes = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+
+function ultimosSeisMeses() {
+  const hoje = new Date();
+  const meses: { chave: string; rotulo: string }[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+    meses.push({ chave: chaveMes(d), rotulo: format(d, "MMM", { locale: ptBR }).toUpperCase() });
+  }
+  return meses;
+}
+
 
 function FornecedoresPage() {
   const queryClient = useQueryClient();
