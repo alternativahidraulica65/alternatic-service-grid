@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T00:51:24.351022+00:00",
+  "generated_at": "2026-09-16T00:55:39.260470+00:00",
   "files": [
     {
       "path": "components.json",
@@ -27,15 +27,11 @@
     },
     {
       "path": "roadmap.md",
-      "bytes": 2567
+      "bytes": 2958
     },
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 2874
     },
     {
       "path": ".lovable/project.json",
@@ -104,6 +100,10 @@
     {
       "path": ".lovable/plan/reestilização-da-tela-de-fornecedores-com-mini-dashboards-me-2026-09-15.md",
       "bytes": 2553
+    },
+    {
+      "path": ".lovable/plan/sistema-de-notificações-app-e-mail-por-perfil-2026-09-16.md",
+      "bytes": 2874
     },
     {
       "path": ".lovable/plan/reestilizar-a-tela-de-orçamento-e-gerar-pdf-profissional-2026-09-14.md",
@@ -590,6 +590,10 @@
       "bytes": 5133
     },
     {
+      "path": "src/components/NotificacoesSino.tsx",
+      "bytes": 6055
+    },
+    {
       "path": "src/components/CustosOsPanel.tsx",
       "bytes": 26704
     },
@@ -619,7 +623,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11586
+      "bytes": 11390
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -1648,6 +1652,38 @@
       "target": "lucide-react"
     },
     {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/components/ui/popover"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "sonner"
+    },
+    {
       "source": "src/components/CustosOsPanel.tsx",
       "target": "react"
     },
@@ -1938,6 +1974,10 @@
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/components/NotificacoesSino"
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
