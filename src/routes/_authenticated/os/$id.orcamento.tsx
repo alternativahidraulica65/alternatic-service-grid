@@ -58,6 +58,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import { OrcamentoEnvioCard } from "@/components/OrcamentoEnvioCard";
 import {
   Select,
   SelectContent,
@@ -1379,6 +1380,8 @@ function OrcamentoOSPage() {
               </div>
             </CardContent>}
           </Card>
+
+          <OrcamentoEnvioCard os={os} osId={String(id)} />
         </div>
 
         {/* Resumo financeiro */}

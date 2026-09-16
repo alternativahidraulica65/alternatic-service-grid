@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";
+import { NotasInternasOs } from "@/components/NotasInternasOs";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   ClipboardList, 
@@ -1276,6 +1277,11 @@ function GestaoOSPage() {
           <Button variant="outline" className="h-9 border-border font-bold uppercase text-[10px] tracking-widest" onClick={() => setActiveTab("laudo-técnico")}>
             <Camera className="mr-2 h-4 w-4 text-primary" /> Anexar foto
           </Button>
+          <Button variant="outline" className="h-9 border-border font-bold uppercase text-[10px] tracking-widest" asChild>
+            <Link to="/os/$id/oficina" params={{ id: String(osId) }}>
+              <Wrench className="mr-2 h-4 w-4 text-primary" /> Modo oficina
+            </Link>
+          </Button>
           <Button variant="outline" className="h-9 border-border font-bold uppercase text-[10px] tracking-widest" onClick={() => setActiveTab("custos")}>
             <DollarSign className="mr-2 h-4 w-4 text-primary" /> Lançar custo
           </Button>
@@ -1397,6 +1403,7 @@ function GestaoOSPage() {
         </TabsList>
 
         <TabsContent value="resumo" className="space-y-6">
+          <NotasInternasOs osId={String(osId)} />
           <div className="grid gap-6 md:grid-cols-3">
             <div className="md:col-span-2 space-y-6">
               <Card className="border-border shadow-md">

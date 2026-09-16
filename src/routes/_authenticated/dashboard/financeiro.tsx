@@ -43,6 +43,7 @@ import {
 } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
+import { LembretesCard } from "@/components/LembretesCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   component: DashboardFinanceiro,
@@ -246,8 +247,9 @@ function DashboardFinanceiro() {
         </div>
       </div>
 
-      <div className="print:hidden">
+      <div className="print:hidden space-y-4">
         <AlertaOrcamentosCard />
+        <LembretesCard />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
