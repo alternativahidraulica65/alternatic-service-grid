@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { NotificacoesSino } from "@/components/NotificacoesSino";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -234,10 +235,7 @@ function DashboardLayout() {
 
           <div className="flex items-center gap-4">
             <ViewSwitcher />
-            <Button variant="ghost" size="icon" className="relative text-slate-400 hover:text-primary transition-colors">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
-            </Button>
+            <NotificacoesSino />
             <div className="h-8 w-1px bg-border hidden sm:block" />
             <div className="hidden sm:flex items-center gap-3 ml-2">
               <div className="text-right">
