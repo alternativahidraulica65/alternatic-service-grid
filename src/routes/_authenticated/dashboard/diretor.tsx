@@ -34,6 +34,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
 import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
+import { LembretesCard } from "@/components/LembretesCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/diretor")({
   component: DashboardDiretor,
@@ -153,6 +154,8 @@ function DashboardDiretor() {
       </div>
 
       <AlertaOrcamentosCard />
+
+      <LembretesCard />
 
       {/* KPIs Operacionais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

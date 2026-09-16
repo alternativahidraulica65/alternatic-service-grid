@@ -19,6 +19,7 @@ import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedTerceirosRouteImport } from './routes/_authenticated/terceiros'
+import { Route as PropostaTokenRouteImport } from './routes/proposta.$token'
 import { Route as AuthenticatedAdminAuditoriaRouteImport } from './routes/_authenticated/admin/auditoria'
 import { Route as AuthenticatedAdminChecklistTemplatesRouteImport } from './routes/_authenticated/admin/checklist-templates'
 import { Route as AuthenticatedAdminVendedoresRouteImport } from './routes/_authenticated/admin/vendedores'
@@ -38,6 +39,7 @@ import { Route as AuthenticatedOsIdRouteImport } from './routes/_authenticated/o
 import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
 import { Route as AuthenticatedFinanceiroFornecedoresIndexRouteImport } from './routes/_authenticated/financeiro/fornecedores/index'
 import { Route as AuthenticatedOsIdIndexRouteImport } from './routes/_authenticated/os/$id.index'
+import { Route as AuthenticatedOsIdOficinaRouteImport } from './routes/_authenticated/os/$id.oficina'
 import { Route as AuthenticatedOsIdOrcamentoRouteImport } from './routes/_authenticated/os/$id.orcamento'
 import { Route as AuthenticatedOsIdPropostaRouteImport } from './routes/_authenticated/os/$id.proposta'
 
@@ -90,6 +92,11 @@ const AuthenticatedTerceirosRoute = AuthenticatedTerceirosRouteImport.update({
   id: '/terceiros',
   path: '/terceiros',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const PropostaTokenRoute = PropostaTokenRouteImport.update({
+  id: '/proposta/$token',
+  path: '/proposta/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminAuditoriaRoute =
   AuthenticatedAdminAuditoriaRouteImport.update({
@@ -200,6 +207,12 @@ const AuthenticatedOsIdIndexRoute = AuthenticatedOsIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedOsIdRoute,
 } as any)
+const AuthenticatedOsIdOficinaRoute =
+  AuthenticatedOsIdOficinaRouteImport.update({
+    id: '/oficina',
+    path: '/oficina',
+    getParentRoute: () => AuthenticatedOsIdRoute,
+  } as any)
 const AuthenticatedOsIdOrcamentoRoute =
   AuthenticatedOsIdOrcamentoRouteImport.update({
     id: '/orcamento',
@@ -223,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/terceiros': typeof AuthenticatedTerceirosRoute
+  '/proposta/$token': typeof PropostaTokenRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -240,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/os/': typeof AuthenticatedOsIndexRoute
+  '/os/$id/oficina': typeof AuthenticatedOsIdOficinaRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -254,6 +269,7 @@ export interface FileRoutesByTo {
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/terceiros': typeof AuthenticatedTerceirosRoute
+  '/proposta/$token': typeof PropostaTokenRoute
   '/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -270,6 +286,7 @@ export interface FileRoutesByTo {
   '/clientes': typeof AuthenticatedClientesIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/os': typeof AuthenticatedOsIndexRoute
+  '/os/$id/oficina': typeof AuthenticatedOsIdOficinaRoute
   '/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/financeiro/fornecedores': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -287,6 +304,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/terceiros': typeof AuthenticatedTerceirosRoute
+  '/proposta/$token': typeof PropostaTokenRoute
   '/_authenticated/admin/auditoria': typeof AuthenticatedAdminAuditoriaRoute
   '/_authenticated/admin/checklist-templates': typeof AuthenticatedAdminChecklistTemplatesRoute
   '/_authenticated/admin/vendedores': typeof AuthenticatedAdminVendedoresRoute
@@ -304,6 +322,7 @@ export interface FileRoutesById {
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
+  '/_authenticated/os/$id/oficina': typeof AuthenticatedOsIdOficinaRoute
   '/_authenticated/os/$id/orcamento': typeof AuthenticatedOsIdOrcamentoRoute
   '/_authenticated/os/$id/proposta': typeof AuthenticatedOsIdPropostaRoute
   '/_authenticated/financeiro/fornecedores/': typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -321,6 +340,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/relatorios'
     | '/terceiros'
+    | '/proposta/$token'
     | '/admin/auditoria'
     | '/admin/checklist-templates'
     | '/admin/vendedores'
@@ -338,6 +358,7 @@ export interface FileRouteTypes {
     | '/clientes/'
     | '/dashboard/'
     | '/os/'
+    | '/os/$id/oficina'
     | '/os/$id/orcamento'
     | '/os/$id/proposta'
     | '/financeiro/fornecedores/'
@@ -352,6 +373,7 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/relatorios'
     | '/terceiros'
+    | '/proposta/$token'
     | '/admin/auditoria'
     | '/admin/checklist-templates'
     | '/admin/vendedores'
@@ -368,6 +390,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/dashboard'
     | '/os'
+    | '/os/$id/oficina'
     | '/os/$id/orcamento'
     | '/os/$id/proposta'
     | '/financeiro/fornecedores'
@@ -384,6 +407,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamento'
     | '/_authenticated/relatorios'
     | '/_authenticated/terceiros'
+    | '/proposta/$token'
     | '/_authenticated/admin/auditoria'
     | '/_authenticated/admin/checklist-templates'
     | '/_authenticated/admin/vendedores'
@@ -401,6 +425,7 @@ export interface FileRouteTypes {
     | '/_authenticated/clientes/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/os/'
+    | '/_authenticated/os/$id/oficina'
     | '/_authenticated/os/$id/orcamento'
     | '/_authenticated/os/$id/proposta'
     | '/_authenticated/financeiro/fornecedores/'
@@ -411,6 +436,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
+  PropostaTokenRoute: typeof PropostaTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -484,6 +510,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/terceiros'
       preLoaderRoute: typeof AuthenticatedTerceirosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/proposta/$token': {
+      id: '/proposta/$token'
+      path: '/proposta/$token'
+      fullPath: '/proposta/$token'
+      preLoaderRoute: typeof PropostaTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/auditoria': {
       id: '/_authenticated/admin/auditoria'
@@ -618,6 +651,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsIdIndexRouteImport
       parentRoute: typeof AuthenticatedOsIdRoute
     }
+    '/_authenticated/os/$id/oficina': {
+      id: '/_authenticated/os/$id/oficina'
+      path: '/oficina'
+      fullPath: '/os/$id/oficina'
+      preLoaderRoute: typeof AuthenticatedOsIdOficinaRouteImport
+      parentRoute: typeof AuthenticatedOsIdRoute
+    }
     '/_authenticated/os/$id/orcamento': {
       id: '/_authenticated/os/$id/orcamento'
       path: '/orcamento'
@@ -676,12 +716,14 @@ const AuthenticatedOrcamentoRouteWithChildren =
   )
 
 interface AuthenticatedOsIdRouteChildren {
+  AuthenticatedOsIdOficinaRoute: typeof AuthenticatedOsIdOficinaRoute
   AuthenticatedOsIdOrcamentoRoute: typeof AuthenticatedOsIdOrcamentoRoute
   AuthenticatedOsIdPropostaRoute: typeof AuthenticatedOsIdPropostaRoute
   AuthenticatedOsIdIndexRoute: typeof AuthenticatedOsIdIndexRoute
 }
 
 const AuthenticatedOsIdRouteChildren: AuthenticatedOsIdRouteChildren = {
+  AuthenticatedOsIdOficinaRoute: AuthenticatedOsIdOficinaRoute,
   AuthenticatedOsIdOrcamentoRoute: AuthenticatedOsIdOrcamentoRoute,
   AuthenticatedOsIdPropostaRoute: AuthenticatedOsIdPropostaRoute,
   AuthenticatedOsIdIndexRoute: AuthenticatedOsIdIndexRoute,
@@ -742,6 +784,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
+  PropostaTokenRoute: PropostaTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
