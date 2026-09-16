@@ -43,3 +43,8 @@ O sistema tem **um único banco de dados**: o projeto Supabase
 - [x] Separar custos de manutenção, produtos vendidos e itens da proposta.
 - [x] Calcular preço por valor informado ou margem líquida desejada.
 - [x] Manter tela, OS salva e PDF com o mesmo valor final.
+
+## Sistema de notificações (16/09/2026)
+- [x] Sino com central de avisos no topo (contador, marcar lidas, link para a OS)
+- [x] Regras prontas por perfil: OS atribuída, orçamento respondido (imediatas) + sem resposta, OS parada, terceiro atrasado, limite de fornecedor (verificação diária 08h)
+- [ ] E-mails dos avisos importantes — aguardando configuração do domínio de e-mail
