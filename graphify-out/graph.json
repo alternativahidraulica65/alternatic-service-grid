@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T23:55:29.846658+00:00",
+  "generated_at": "2026-09-16T00:11:40.684338+00:00",
   "files": [
     {
       "path": "components.json",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 32102
+      "bytes": 33838
     },
     {
       "path": "src/start.ts",
@@ -474,6 +474,10 @@
       "bytes": 19582
     },
     {
+      "path": "src/routes/proposta.$token.tsx",
+      "bytes": 2570
+    },
+    {
       "path": "src/routes/README.md",
       "bytes": 835
     },
@@ -502,8 +506,16 @@
       "bytes": 475
     },
     {
+      "path": "src/lib/fila-offline.ts",
+      "bytes": 1886
+    },
+    {
       "path": "src/lib/error-page.ts",
       "bytes": 1371
+    },
+    {
+      "path": "src/lib/proposta-publica.functions.ts",
+      "bytes": 4198
     },
     {
       "path": "src/lib/log-executor.ts",
@@ -554,6 +566,14 @@
       "bytes": 3762
     },
     {
+      "path": "src/components/OrcamentoEnvioCard.tsx",
+      "bytes": 9239
+    },
+    {
+      "path": "src/components/NotasInternasOs.tsx",
+      "bytes": 6863
+    },
+    {
       "path": "src/components/BancadasDialog.tsx",
       "bytes": 16351
     },
@@ -572,6 +592,14 @@
     {
       "path": "src/components/ClientOnly.tsx",
       "bytes": 370
+    },
+    {
+      "path": "src/components/LembretesCard.tsx",
+      "bytes": 5473
+    },
+    {
+      "path": "src/components/PropostaDocumento.tsx",
+      "bytes": 11351
     },
     {
       "path": "src/components/TerceirosDialog.tsx",
@@ -631,7 +659,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
-      "bytes": 12202
+      "bytes": 12287
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
@@ -643,7 +671,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "bytes": 25079
+      "bytes": 25175
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
@@ -687,15 +715,19 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 117775
+      "bytes": 118198
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 74112
+      "bytes": 74242
     },
     {
       "path": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "bytes": 16355
+      "bytes": 4566
+    },
+    {
+      "path": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "bytes": 11183
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -993,6 +1025,10 @@
     },
     {
       "source": "src/routeTree.gen.ts",
+      "target": "./routes/proposta.$token"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/admin/auditoria"
     },
     {
@@ -1066,6 +1102,10 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/os/$id.index"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/os/$id.oficina"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -1228,6 +1268,38 @@
       "target": "@/components/ui/select"
     },
     {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@/components/PropostaDocumento"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@/lib/proposta-publica.functions"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@/lib/orcamento"
+    },
+    {
       "source": "src/hooks/use-mobile.tsx",
       "target": "react"
     },
@@ -1238,6 +1310,14 @@
     {
       "source": "src/lib/orcamento.ts",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/lib/proposta-publica.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/proposta-publica.functions.ts",
+      "target": "zod"
     },
     {
       "source": "src/lib/log-executor.ts",
@@ -1374,6 +1454,86 @@
     {
       "source": "src/components/OsAtrasadasDialog.tsx",
       "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/components/ui/badge"
     },
     {
       "source": "src/components/BancadasDialog.tsx",
@@ -1554,6 +1714,54 @@
     {
       "source": "src/components/ClientOnly.tsx",
       "target": "react"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/PropostaDocumento.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/PropostaDocumento.tsx",
+      "target": "@/lib/orcamento-calculos"
+    },
+    {
+      "source": "src/components/PropostaDocumento.tsx",
+      "target": "@/lib/orcamento"
     },
     {
       "source": "src/components/TerceirosDialog.tsx",
@@ -2240,6 +2448,10 @@
       "target": "@/components/AlertaOrcamentosCard"
     },
     {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/components/LembretesCard"
+    },
+    {
       "source": "src/routes/_authenticated/dashboard/operador.tsx",
       "target": "@tanstack/react-router"
     },
@@ -2410,6 +2622,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/AlertaOrcamentosCard"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/LembretesCard"
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
@@ -2961,6 +3177,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/NotasInternasOs"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/lib/log-executor"
     },
     {
@@ -3137,6 +3357,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/OrcamentoEnvioCard"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "@/components/ui/select"
     },
     {
@@ -3169,11 +3393,47 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "@/lib/orcamento-calculos"
+      "target": "@/components/PropostaDocumento"
     },
     {
       "source": "src/routes/_authenticated/os/$id.proposta.tsx",
       "target": "@/lib/orcamento"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/lib/fila-offline"
     },
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
