@@ -265,6 +265,8 @@ function DashboardGestor() {
         <p className="text-sm text-muted-foreground font-medium">Controle de fluxo operacional e gargalos da oficina.</p>
       </div>
 
+      <PainelGestorOs ordens={ordens as any[]} />
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <Card className="col-span-2 lg:col-span-1 bg-primary text-primary-foreground border-none shadow-lg">
           <CardHeader className="p-4">
