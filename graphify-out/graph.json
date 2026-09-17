@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T18:56:48.467172+00:00",
+  "generated_at": "2026-09-17T18:59:16.879960+00:00",
   "files": [
     {
       "path": "components.json",
@@ -32,10 +32,6 @@
     {
       "path": "tsconfig.json",
       "bytes": 820
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 2762
     },
     {
       "path": ".lovable/project.json",
@@ -128,6 +124,10 @@
     {
       "path": ".lovable/plan/plano-de-refatoração-do-checklist-da-os-2026-08-19.md",
       "bytes": 1811
+    },
+    {
+      "path": ".lovable/plan/painel-do-gestor-o-que-precisa-ser-feito-e-onde-está-cada-co-2026-09-17.md",
+      "bytes": 2762
     },
     {
       "path": ".lovable/plan/plano-de-implementação-telas-financeiras-e-administrativas-e-2026-08-16.md",
@@ -606,6 +606,10 @@
       "bytes": 370
     },
     {
+      "path": "src/components/PainelGestorOs.tsx",
+      "bytes": 12954
+    },
+    {
       "path": "src/components/LembretesCard.tsx",
       "bytes": 5473
     },
@@ -679,7 +683,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 17844
+      "bytes": 17957
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -1760,6 +1764,58 @@
       "target": "react"
     },
     {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
       "source": "src/components/LembretesCard.tsx",
       "target": "react"
     },
@@ -2598,6 +2654,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/gestor.tsx",
       "target": "@/components/TerceirosDialog"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/gestor.tsx",
+      "target": "@/components/PainelGestorOs"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
