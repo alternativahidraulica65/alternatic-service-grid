@@ -26,6 +26,7 @@ import { BancadasDialog } from "@/components/BancadasDialog";
 import { PecasDialog, STATUS_FINALIZADOS } from "@/components/PecasDialog";
 import { OsAtrasadasDialog, isOsAtrasada } from "@/components/OsAtrasadasDialog";
 import { TerceirosDialog } from "@/components/TerceirosDialog";
+import { PainelGestorOs } from "@/components/PainelGestorOs";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
