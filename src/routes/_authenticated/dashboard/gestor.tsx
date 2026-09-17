@@ -26,6 +26,7 @@ import { BancadasDialog } from "@/components/BancadasDialog";
 import { PecasDialog, STATUS_FINALIZADOS } from "@/components/PecasDialog";
 import { OsAtrasadasDialog, isOsAtrasada } from "@/components/OsAtrasadasDialog";
 import { TerceirosDialog } from "@/components/TerceirosDialog";
+import { PainelGestorOs } from "@/components/PainelGestorOs";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
@@ -263,6 +264,8 @@ function DashboardGestor() {
         <h2 className="font-display text-3xl font-black text-foreground tracking-tight">DASHBOARD <span className="text-primary">GESTÃO</span></h2>
         <p className="text-sm text-muted-foreground font-medium">Controle de fluxo operacional e gargalos da oficina.</p>
       </div>
+
+      <PainelGestorOs ordens={ordens as any[]} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <Card className="col-span-2 lg:col-span-1 bg-primary text-primary-foreground border-none shadow-lg">
