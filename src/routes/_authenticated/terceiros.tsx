@@ -30,7 +30,17 @@ import {
   CalendarClock,
   Loader2,
   X,
+  Plus,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/terceiros")({
   head: () => ({
@@ -68,6 +78,82 @@ function PainelTerceiros() {
   const [terceiro, setTerceiro] = useState("todos");
   const [selecionados, setSelecionados] = useState<string[]>([]);
   const [salvandoId, setSalvandoId] = useState<string | null>(null);
+  const [novoOpen, setNovoOpen] = useState(false);
+  const [novoSalvando, setNovoSalvando] = useState(false);
+  const [novoForm, setNovoForm] = useState({
+    os_id: "",
+    nome: "",
+    terceiro_nome: "",
+    terceiro_prazo_entrega: "",
+    terceiro_observacao: "",
+  });
+
+  const { data: ordensAbertas = [] } = useQuery({
+    queryKey: ["painel_terceiros_os_abertas"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("ordens_servico")
+        .select("id, numero_os, cliente, status")
+        .order("numero_os", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+    enabled: novoOpen,
+  });
+
+  const adicionarTerceiro = async () => {
+    if (!novoForm.os_id) {
+      toast.error("Selecione a OS.");
+      return;
+    }
+    if (!novoForm.nome.trim()) {
+      toast.error("Informe o nome da peça.");
+      return;
+    }
+    if (!novoForm.terceiro_nome.trim()) {
+      toast.error("Informe o terceiro responsável.");
+      return;
+    }
+    setNovoSalvando(true);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const userId = auth?.user?.id ?? null;
+      const { error } = await (supabase as any).from("os_pecas_rastreio").insert({
+        os_id: novoForm.os_id,
+        nome: novoForm.nome.trim(),
+        terceiro_nome: novoForm.terceiro_nome.trim(),
+        terceiro_prazo_entrega: novoForm.terceiro_prazo_entrega || null,
+        terceiro_enviado_em: new Date().toISOString(),
+        terceiro_observacao: novoForm.terceiro_observacao.trim() || null,
+        status_peca: "Terceiros",
+        criado_por: userId,
+      });
+      if (error) throw error;
+
+      const os = (ordensAbertas as any[]).find((o) => String(o.id) === novoForm.os_id);
+      await (supabase as any).from("historico_status_os").insert({
+        os_id: novoForm.os_id,
+        status_anterior: String(os?.status ?? "") || null,
+        status_novo: String(os?.status ?? "") || "em_andamento",
+        observacao: `Peça "${novoForm.nome.trim()}" enviada para terceiro ${
+          novoForm.terceiro_nome.trim()
+        }${novoForm.terceiro_prazo_entrega ? `, prazo prometido: ${novoForm.terceiro_prazo_entrega}` : ""}.`,
+        executor_id: userId,
+        executor_email: await getExecutorEmail(),
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["painel_terceiros"] });
+      queryClient.invalidateQueries({ queryKey: ["gestor_terceiros_pecas"] });
+      toast.success("Peça enviada para terceiro e registrada na OS.");
+      setNovoForm({ os_id: "", nome: "", terceiro_nome: "", terceiro_prazo_entrega: "", terceiro_observacao: "" });
+      setNovoOpen(false);
+    } catch (e: any) {
+      toast.error("Erro ao adicionar: " + e.message);
+    } finally {
+      setNovoSalvando(false);
+    }
+  };
 
   const { data: pecas = [], isLoading } = useQuery({
     queryKey: ["painel_terceiros"],
@@ -304,6 +390,13 @@ function PainelTerceiros() {
                 filtros={{ situacao, terceiro, busca }}
                 onAplicar={aplicarFiltrosSalvos}
               />
+              <Button
+                size="sm"
+                className="h-10 font-black uppercase text-[10px] tracking-widest"
+                onClick={() => setNovoOpen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Novo terceiro
+              </Button>
               {selecionadosVisiveis.length > 0 && (
                 <Button
                   variant="ghost"
@@ -426,6 +519,99 @@ function PainelTerceiros() {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={novoOpen} onOpenChange={setNovoOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight flex items-center gap-2">
+              <Truck className="h-5 w-5 text-primary" /> Enviar peça para terceiro
+            </DialogTitle>
+            <DialogDescription className="text-xs font-medium">
+              Escolha a OS, a peça e o terceiro. O envio fica gravado na OS e aparece aqui no painel.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Ordem de Serviço *</Label>
+              <Select
+                value={novoForm.os_id}
+                onValueChange={(v) => setNovoForm((f) => ({ ...f, os_id: v }))}
+              >
+                <SelectTrigger className="h-10 text-xs">
+                  <SelectValue placeholder="Selecione a OS" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(ordensAbertas as any[]).map((o) => (
+                    <SelectItem key={o.id} value={String(o.id)}>
+                      {o.numero_os} — {o.cliente}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Peça enviada *</Label>
+              <Input
+                className="h-10 text-xs"
+                placeholder="Ex.: Bloco hidráulico da bomba"
+                value={novoForm.nome}
+                onChange={(e) => setNovoForm((f) => ({ ...f, nome: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Terceiro responsável *</Label>
+                <Input
+                  className="h-10 text-xs"
+                  placeholder="Nome do terceiro"
+                  value={novoForm.terceiro_nome}
+                  onChange={(e) => setNovoForm((f) => ({ ...f, terceiro_nome: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Prazo prometido</Label>
+                <Input
+                  type="date"
+                  className="h-10 text-xs"
+                  value={novoForm.terceiro_prazo_entrega}
+                  onChange={(e) =>
+                    setNovoForm((f) => ({ ...f, terceiro_prazo_entrega: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Observação</Label>
+              <Textarea
+                className="text-xs"
+                rows={3}
+                placeholder="Serviço contratado, contato, referência..."
+                value={novoForm.terceiro_observacao}
+                onChange={(e) => setNovoForm((f) => ({ ...f, terceiro_observacao: e.target.value }))}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setNovoOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                size="sm"
+                className="font-black uppercase text-[10px] tracking-widest"
+                disabled={novoSalvando}
+                onClick={adicionarTerceiro}
+              >
+                {novoSalvando ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="mr-2 h-4 w-4" />
+                )}
+                Registrar envio
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
