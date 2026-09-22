@@ -519,6 +519,99 @@ function PainelTerceiros() {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={novoOpen} onOpenChange={setNovoOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight flex items-center gap-2">
+              <Truck className="h-5 w-5 text-primary" /> Enviar peça para terceiro
+            </DialogTitle>
+            <DialogDescription className="text-xs font-medium">
+              Escolha a OS, a peça e o terceiro. O envio fica gravado na OS e aparece aqui no painel.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Ordem de Serviço *</Label>
+              <Select
+                value={novoForm.os_id}
+                onValueChange={(v) => setNovoForm((f) => ({ ...f, os_id: v }))}
+              >
+                <SelectTrigger className="h-10 text-xs">
+                  <SelectValue placeholder="Selecione a OS" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(ordensAbertas as any[]).map((o) => (
+                    <SelectItem key={o.id} value={String(o.id)}>
+                      {o.numero_os} — {o.cliente}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Peça enviada *</Label>
+              <Input
+                className="h-10 text-xs"
+                placeholder="Ex.: Bloco hidráulico da bomba"
+                value={novoForm.nome}
+                onChange={(e) => setNovoForm((f) => ({ ...f, nome: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Terceiro responsável *</Label>
+                <Input
+                  className="h-10 text-xs"
+                  placeholder="Nome do terceiro"
+                  value={novoForm.terceiro_nome}
+                  onChange={(e) => setNovoForm((f) => ({ ...f, terceiro_nome: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Prazo prometido</Label>
+                <Input
+                  type="date"
+                  className="h-10 text-xs"
+                  value={novoForm.terceiro_prazo_entrega}
+                  onChange={(e) =>
+                    setNovoForm((f) => ({ ...f, terceiro_prazo_entrega: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Observação</Label>
+              <Textarea
+                className="text-xs"
+                rows={3}
+                placeholder="Serviço contratado, contato, referência..."
+                value={novoForm.terceiro_observacao}
+                onChange={(e) => setNovoForm((f) => ({ ...f, terceiro_observacao: e.target.value }))}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setNovoOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                size="sm"
+                className="font-black uppercase text-[10px] tracking-widest"
+                disabled={novoSalvando}
+                onClick={adicionarTerceiro}
+              >
+                {novoSalvando ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="mr-2 h-4 w-4" />
+                )}
+                Registrar envio
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
