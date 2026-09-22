@@ -145,6 +145,17 @@ function VendedoresPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Vendedor | null>(null);
   const [form, setForm] = useState<FormState>(FORM_VAZIO);
+
+  // Completa o cadastro do vendedor (pessoa jurídica) com os dados públicos do CNPJ.
+  const preencherVendedorComCnpj = (dados: DadosCnpj) => {
+    setForm((atual) => ({
+      ...atual,
+      cpf_cnpj: dados.cnpjFormatado,
+      nome: atual.nome?.trim() ? atual.nome : dados.nome,
+      email: atual.email?.trim() ? atual.email : dados.email,
+      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
+    }));
+  };
   const [erros, setErros] = useState<Record<string, string>>({});
   const [excluindo, setExcluindo] = useState<Vendedor | null>(null);
   const [removendo, setRemovendo] = useState(false);
