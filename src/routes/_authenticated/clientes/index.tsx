@@ -574,13 +574,17 @@ function ClientesPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
-                  <Input
-                    id="cnpj"
-                    value={formValues.cnpj}
-                    onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
-                    className="h-11 border-border font-mono"
-                    placeholder="00.000.000/0000-00"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="cnpj"
+                      value={formValues.cnpj}
+                      onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
+                      className="h-11 border-border font-mono"
+                      placeholder="00.000.000/0000-00"
+                    />
+                    <BotaoConsultaCnpj cnpj={formValues.cnpj} onDados={preencherComCnpj} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">Digite o CNPJ e clique em buscar para preencher nome, endereço, telefone e e-mail automaticamente.</p>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
