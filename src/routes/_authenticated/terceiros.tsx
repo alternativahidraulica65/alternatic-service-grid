@@ -30,7 +30,17 @@ import {
   CalendarClock,
   Loader2,
   X,
+  Plus,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/terceiros")({
   head: () => ({
@@ -68,6 +78,82 @@ function PainelTerceiros() {
   const [terceiro, setTerceiro] = useState("todos");
   const [selecionados, setSelecionados] = useState<string[]>([]);
   const [salvandoId, setSalvandoId] = useState<string | null>(null);
+  const [novoOpen, setNovoOpen] = useState(false);
+  const [novoSalvando, setNovoSalvando] = useState(false);
+  const [novoForm, setNovoForm] = useState({
+    os_id: "",
+    nome: "",
+    terceiro_nome: "",
+    terceiro_prazo_entrega: "",
+    terceiro_observacao: "",
+  });
+
+  const { data: ordensAbertas = [] } = useQuery({
+    queryKey: ["painel_terceiros_os_abertas"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("ordens_servico")
+        .select("id, numero_os, cliente, status")
+        .order("numero_os", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+    enabled: novoOpen,
+  });
+
+  const adicionarTerceiro = async () => {
+    if (!novoForm.os_id) {
+      toast.error("Selecione a OS.");
+      return;
+    }
+    if (!novoForm.nome.trim()) {
+      toast.error("Informe o nome da peça.");
+      return;
+    }
+    if (!novoForm.terceiro_nome.trim()) {
+      toast.error("Informe o terceiro responsável.");
+      return;
+    }
+    setNovoSalvando(true);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const userId = auth?.user?.id ?? null;
+      const { error } = await (supabase as any).from("os_pecas_rastreio").insert({
+        os_id: novoForm.os_id,
+        nome: novoForm.nome.trim(),
+        terceiro_nome: novoForm.terceiro_nome.trim(),
+        terceiro_prazo_entrega: novoForm.terceiro_prazo_entrega || null,
+        terceiro_enviado_em: new Date().toISOString(),
+        terceiro_observacao: novoForm.terceiro_observacao.trim() || null,
+        status_peca: "Terceiros",
+        criado_por: userId,
+      });
+      if (error) throw error;
+
+      const os = (ordensAbertas as any[]).find((o) => String(o.id) === novoForm.os_id);
+      await (supabase as any).from("historico_status_os").insert({
+        os_id: novoForm.os_id,
+        status_anterior: String(os?.status ?? "") || null,
+        status_novo: String(os?.status ?? "") || "em_andamento",
+        observacao: `Peça "${novoForm.nome.trim()}" enviada para terceiro ${
+          novoForm.terceiro_nome.trim()
+        }${novoForm.terceiro_prazo_entrega ? `, prazo prometido: ${novoForm.terceiro_prazo_entrega}` : ""}.`,
+        executor_id: userId,
+        executor_email: await getExecutorEmail(),
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["painel_terceiros"] });
+      queryClient.invalidateQueries({ queryKey: ["gestor_terceiros_pecas"] });
+      toast.success("Peça enviada para terceiro e registrada na OS.");
+      setNovoForm({ os_id: "", nome: "", terceiro_nome: "", terceiro_prazo_entrega: "", terceiro_observacao: "" });
+      setNovoOpen(false);
+    } catch (e: any) {
+      toast.error("Erro ao adicionar: " + e.message);
+    } finally {
+      setNovoSalvando(false);
+    }
+  };
 
   const { data: pecas = [], isLoading } = useQuery({
     queryKey: ["painel_terceiros"],
