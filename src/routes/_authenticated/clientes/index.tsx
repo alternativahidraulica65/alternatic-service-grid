@@ -139,6 +139,18 @@ function ClientesPage() {
 
   const [formValues, setFormValues] = useState({ ...FORM_VAZIO });
 
+  // Preenche o cadastro com os dados públicos do CNPJ (BrasilAPI), sem apagar o que já foi digitado.
+  const preencherComCnpj = (dados: DadosCnpj) => {
+    setFormValues((atual) => ({
+      ...atual,
+      cnpj: dados.cnpjFormatado,
+      nome: atual.nome?.trim() ? atual.nome : dados.nome,
+      endereco: atual.endereco?.trim() ? atual.endereco : dados.endereco,
+      email: atual.email?.trim() ? atual.email : dados.email,
+      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
+    }));
+  };
+
   const { data: clientes = [] } = useSuspenseQuery({
     queryKey: ['clientes_list'],
     queryFn: async () => {
