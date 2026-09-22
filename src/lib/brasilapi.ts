@@ -1,0 +1,98 @@
+/**
+ * Consulta pública de CNPJ pela BrasilAPI (gratuita, sem chave de acesso).
+ * Docs: https://brasilapi.com.br/docs#tag/CNPJ
+ */
+
+export type DadosCnpj = {
+  cnpj: string;
+  cnpjFormatado: string;
+  razaoSocial: string;
+  nomeFantasia: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  cidade: string;
+  uf: string;
+  cep: string;
+  situacao: string;
+  atividade: string;
+};
+
+export const somenteDigitos = (valor: string) => (valor || "").replace(/\D+/g, "");
+
+export const formatarCnpj = (valor: string) => {
+  const d = somenteDigitos(valor).slice(0, 14);
+  if (d.length !== 14) return valor;
+  return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
+};
+
+export const cnpjValido = (valor: string) => somenteDigitos(valor).length === 14;
+
+const montarTelefone = (raw: any) => {
+  const ddd = String(raw?.ddd_telefone_1 ?? "").trim();
+  if (ddd) {
+    const d = somenteDigitos(ddd);
+    if (d.length >= 10) {
+      const num = d.slice(2);
+      return `(${d.slice(0, 2)}) ${num.slice(0, num.length - 4)}-${num.slice(-4)}`;
+    }
+    return ddd;
+  }
+  return "";
+};
+
+const montarEndereco = (raw: any) => {
+  const partes = [
+    [raw?.descricao_tipo_de_logradouro, raw?.logradouro].filter(Boolean).join(" ").trim(),
+    raw?.numero ? String(raw.numero) : "",
+    raw?.complemento || "",
+    raw?.bairro || "",
+    [raw?.municipio, raw?.uf].filter(Boolean).join(" - "),
+    raw?.cep ? `CEP ${formatarCep(String(raw.cep))}` : "",
+  ].filter((p) => p && String(p).trim().length > 0);
+  return partes.join(", ");
+};
+
+export const formatarCep = (valor: string) => {
+  const d = somenteDigitos(valor).slice(0, 8);
+  return d.length === 8 ? `${d.slice(0, 5)}-${d.slice(5)}` : valor;
+};
+
+const normalizar = (texto: unknown) => String(texto ?? "").trim();
+
+export async function consultarCnpj(valor: string): Promise<DadosCnpj> {
+  const digitos = somenteDigitos(valor);
+  if (digitos.length !== 14) {
+    throw new Error("Informe um CNPJ com 14 dígitos.");
+  }
+
+  const resposta = await fetch(`https://brasilapi.com.br/api/v1/cnpj/${digitos}`);
+
+  if (resposta.status === 404) {
+    throw new Error("CNPJ não encontrado na base da Receita Federal.");
+  }
+  if (!resposta.ok) {
+    throw new Error("Não foi possível consultar o CNPJ agora. Tente novamente em instantes.");
+  }
+
+  const raw = await resposta.json();
+  const razaoSocial = normalizar(raw?.razao_social);
+  const nomeFantasia = normalizar(raw?.nome_fantasia);
+
+  return {
+    cnpj: digitos,
+    cnpjFormatado: formatarCnpj(digitos),
+    razaoSocial,
+    nomeFantasia,
+    nome: nomeFantasia || razaoSocial,
+    email: normalizar(raw?.email).toLowerCase(),
+    telefone: montarTelefone(raw),
+    endereco: montarEndereco(raw),
+    cidade: normalizar(raw?.municipio),
+    uf: normalizar(raw?.uf),
+    cep: raw?.cep ? formatarCep(String(raw.cep)) : "",
+    situacao: normalizar(raw?.descricao_situacao_cadastral),
+    atividade: normalizar(raw?.cnae_fiscal_descricao),
+  };
+}
