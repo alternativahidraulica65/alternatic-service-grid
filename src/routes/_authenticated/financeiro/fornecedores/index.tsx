@@ -812,7 +812,10 @@ function FornecedoresPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ</Label>
-                <Input id="cnpj" name="cnpj" defaultValue={editingFornecedor?.cnpj} placeholder="00.000.000/0000-00" className="border-border shadow-sm h-11 font-mono" />
+                <div className="flex gap-2">
+                  <Input id="cnpj" name="cnpj" value={formCnpj} onChange={(e) => setFormCnpj(e.target.value)} placeholder="00.000.000/0000-00" className="border-border shadow-sm h-11 font-mono" />
+                  <BotaoConsultaCnpj cnpj={formCnpj} onDados={preencherFornecedorComCnpj} rotulo="Buscar" />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="contato" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contato / Telefone</Label>
