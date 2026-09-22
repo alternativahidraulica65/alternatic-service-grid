@@ -464,6 +464,19 @@ function DialogEmpresa({
   const [subindoLogo, setSubindoLogo] = useState(false);
   const [form, setForm] = useState(() => estadoInicial());
 
+  // Completa o cadastro da empresa emissora com os dados públicos do CNPJ.
+  const preencherEmpresaComCnpj = (dados: DadosCnpj) => {
+    setForm((atual) => ({
+      ...atual,
+      cnpj: dados.cnpjFormatado,
+      nome: atual.nome?.trim() ? atual.nome : dados.nome,
+      razao_social: atual.razao_social?.trim() ? atual.razao_social : dados.razaoSocial,
+      endereco: atual.endereco?.trim() ? atual.endereco : dados.endereco,
+      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
+      email: atual.email?.trim() ? atual.email : dados.email,
+    }));
+  };
+
   function estadoInicial() {
     return {
       nome: "",
