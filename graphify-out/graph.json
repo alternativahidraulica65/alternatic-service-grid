@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T01:03:40.382329+00:00",
+  "generated_at": "2026-09-22T01:12:51.371581+00:00",
   "files": [
     {
       "path": "components.json",
@@ -534,6 +534,10 @@
       "bytes": 1989
     },
     {
+      "path": "src/lib/brasilapi.ts",
+      "bytes": 3005
+    },
+    {
       "path": "src/lib/os-fluxo.ts",
       "bytes": 9363
     },
@@ -610,6 +614,10 @@
       "bytes": 12954
     },
     {
+      "path": "src/components/BotaoConsultaCnpj.tsx",
+      "bytes": 1810
+    },
+    {
       "path": "src/components/LembretesCard.tsx",
       "bytes": 5473
     },
@@ -635,7 +643,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 41278
+      "bytes": 42296
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
@@ -699,7 +707,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 31167
+      "bytes": 32077
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
@@ -707,7 +715,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 45987
+      "bytes": 47139
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
@@ -747,7 +755,7 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
-      "bytes": 47145
+      "bytes": 48410
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -1816,6 +1824,26 @@
       "target": "@/lib/os-fluxo"
     },
     {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "@/lib/brasilapi"
+    },
+    {
       "source": "src/components/LembretesCard.tsx",
       "target": "react"
     },
@@ -2074,6 +2102,14 @@
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/BotaoConsultaCnpj"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/lib/brasilapi"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
@@ -2865,6 +2901,14 @@
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/BotaoConsultaCnpj"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/lib/brasilapi"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/components/ui/card"
     },
     {
@@ -2998,6 +3042,14 @@
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/utils/export"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/BotaoConsultaCnpj"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/lib/brasilapi"
     },
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
@@ -3574,6 +3626,14 @@
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/components/BotaoConsultaCnpj"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/lib/brasilapi"
     },
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
