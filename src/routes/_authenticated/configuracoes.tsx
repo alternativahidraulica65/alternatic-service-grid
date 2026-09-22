@@ -19,6 +19,8 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
+import type { DadosCnpj } from "@/lib/brasilapi";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   criarUsuario,
