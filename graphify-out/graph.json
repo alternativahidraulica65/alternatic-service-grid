@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T18:59:16.879960+00:00",
+  "generated_at": "2026-09-22T01:03:40.382329+00:00",
   "files": [
     {
       "path": "components.json",
@@ -15,7 +15,7 @@
     },
     {
       "path": "package.json",
-      "bytes": 2998
+      "bytes": 2997
     },
     {
       "path": "README.md",
@@ -651,7 +651,7 @@
     },
     {
       "path": "src/routes/_authenticated/terceiros.tsx",
-      "bytes": 18697
+      "bytes": 26165
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
@@ -2314,6 +2314,18 @@
     {
       "source": "src/routes/_authenticated/terceiros.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/ui/textarea"
     },
     {
       "source": "src/routes/_authenticated/kanban.tsx",
