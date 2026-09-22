@@ -95,6 +95,8 @@ function FornecedoresPage() {
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [editingFornecedor, setEditingFornecedor] = useState<any>(null);
+  const [formCnpj, setFormCnpj] = useState("");
+  const formFornecedorRef = useRef<HTMLFormElement>(null);
   const [importStatus, setImportStatus] = useState<{total: number, processed: number, errors: string[]} | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [visao, setVisao] = useState<"cards" | "tabela">("cards");
