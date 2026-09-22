@@ -263,12 +263,30 @@ function FornecedoresPage() {
 
   const handleEdit = (fornecedor: any) => {
     setEditingFornecedor(fornecedor);
+    setFormCnpj(fornecedor?.cnpj || "");
     setIsModalOpen(true);
   };
 
   const handleAddNew = () => {
     setEditingFornecedor(null);
+    setFormCnpj("");
     setIsModalOpen(true);
+  };
+
+  // Completa o cadastro do fornecedor com os dados públicos do CNPJ (BrasilAPI).
+  const preencherFornecedorComCnpj = (dados: DadosCnpj) => {
+    setFormCnpj(dados.cnpjFormatado);
+    const form = formFornecedorRef.current;
+    if (!form) return;
+    const campo = (nome: string) => form.elements.namedItem(nome) as HTMLInputElement | HTMLTextAreaElement | null;
+    const nome = campo("nome");
+    if (nome && !nome.value.trim()) nome.value = dados.nome;
+    const contato = campo("contato");
+    if (contato && !contato.value.trim()) contato.value = dados.telefone;
+    const obs = campo("observacoes");
+    if (obs && !obs.value.trim()) {
+      obs.value = [dados.endereco, dados.email, dados.atividade].filter(Boolean).join(" · ");
+    }
   };
 
   const filteredFornecedores = fornecedores?.filter(f =>
