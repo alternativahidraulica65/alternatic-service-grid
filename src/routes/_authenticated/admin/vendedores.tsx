@@ -566,12 +566,20 @@ function VendedoresPage() {
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">CPF ou CNPJ</Label>
-                <Input
-                  value={form.cpf_cnpj}
-                  onChange={(e) => setForm({ ...form, cpf_cnpj: e.target.value })}
-                  placeholder="000.000.000-00 ou 00.000.000/0001-00"
-                  className="bg-slate-50 border-slate-200"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    value={form.cpf_cnpj}
+                    onChange={(e) => setForm({ ...form, cpf_cnpj: e.target.value })}
+                    placeholder="000.000.000-00 ou 00.000.000/0001-00"
+                    className="bg-slate-50 border-slate-200"
+                  />
+                  <BotaoConsultaCnpj
+                    cnpj={form.cpf_cnpj}
+                    onDados={preencherVendedorComCnpj}
+                    rotulo="Buscar"
+                    className="h-10 shrink-0 gap-2 font-bold uppercase tracking-wider"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">WhatsApp / Telefone</Label>
