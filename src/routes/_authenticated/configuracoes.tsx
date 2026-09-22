@@ -618,11 +618,19 @@ function DialogEmpresa({
             />
           </Campo>
           <Campo label="CNPJ">
-            <Input
-              value={form.cnpj}
-              onChange={(e) => setForm({ ...form, cnpj: e.target.value })}
-              className="font-mono"
-            />
+            <div className="flex gap-2">
+              <Input
+                value={form.cnpj}
+                onChange={(e) => setForm({ ...form, cnpj: e.target.value })}
+                className="font-mono"
+              />
+              <BotaoConsultaCnpj
+                cnpj={form.cnpj}
+                onDados={preencherEmpresaComCnpj}
+                rotulo="Buscar"
+                className="h-10 shrink-0 gap-2 font-bold uppercase tracking-wider"
+              />
+            </div>
           </Campo>
           <Campo label="Cor de identificação">
             <Input
