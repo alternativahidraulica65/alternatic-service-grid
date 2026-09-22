@@ -987,13 +987,16 @@ function ClientesPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
-              <Input
-                id="edit-cnpj"
-                value={formValues.cnpj}
-                onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
-                className="h-11 border-border font-mono"
-                placeholder="00.000.000/0000-00"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="edit-cnpj"
+                  value={formValues.cnpj}
+                  onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
+                  className="h-11 border-border font-mono"
+                  placeholder="00.000.000/0000-00"
+                />
+                <BotaoConsultaCnpj cnpj={formValues.cnpj} onDados={preencherComCnpj} />
+              </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
