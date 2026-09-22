@@ -803,7 +803,7 @@ function FornecedoresPage() {
             };
             if (editingFornecedor) data.id = editingFornecedor.id;
             upsertMutation.mutate(data);
-          }} className="space-y-4 pt-2">
+          }} ref={formFornecedorRef} className="space-y-4 pt-2">
             <div className="grid gap-2">
               <Label htmlFor="nome" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nome Fantasia / Razão Social</Label>
               <Input id="nome" name="nome" defaultValue={editingFornecedor?.nome} required className="border-border shadow-sm h-11" />
