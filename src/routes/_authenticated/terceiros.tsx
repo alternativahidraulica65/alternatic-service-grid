@@ -390,6 +390,13 @@ function PainelTerceiros() {
                 filtros={{ situacao, terceiro, busca }}
                 onAplicar={aplicarFiltrosSalvos}
               />
+              <Button
+                size="sm"
+                className="h-10 font-black uppercase text-[10px] tracking-widest"
+                onClick={() => setNovoOpen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Novo terceiro
+              </Button>
               {selecionadosVisiveis.length > 0 && (
                 <Button
                   variant="ghost"
