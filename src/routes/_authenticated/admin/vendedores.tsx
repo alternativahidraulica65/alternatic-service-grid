@@ -17,6 +17,8 @@ import {
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
+import type { DadosCnpj } from "@/lib/brasilapi";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -143,6 +145,17 @@ function VendedoresPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Vendedor | null>(null);
   const [form, setForm] = useState<FormState>(FORM_VAZIO);
+
+  // Completa o cadastro do vendedor (pessoa jurídica) com os dados públicos do CNPJ.
+  const preencherVendedorComCnpj = (dados: DadosCnpj) => {
+    setForm((atual) => ({
+      ...atual,
+      cpf_cnpj: dados.cnpjFormatado,
+      nome: atual.nome?.trim() ? atual.nome : dados.nome,
+      email: atual.email?.trim() ? atual.email : dados.email,
+      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
+    }));
+  };
   const [erros, setErros] = useState<Record<string, string>>({});
   const [excluindo, setExcluindo] = useState<Vendedor | null>(null);
   const [removendo, setRemovendo] = useState(false);
@@ -564,12 +577,20 @@ function VendedoresPage() {
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">CPF ou CNPJ</Label>
-                <Input
-                  value={form.cpf_cnpj}
-                  onChange={(e) => setForm({ ...form, cpf_cnpj: e.target.value })}
-                  placeholder="000.000.000-00 ou 00.000.000/0001-00"
-                  className="bg-slate-50 border-slate-200"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    value={form.cpf_cnpj}
+                    onChange={(e) => setForm({ ...form, cpf_cnpj: e.target.value })}
+                    placeholder="000.000.000-00 ou 00.000.000/0001-00"
+                    className="bg-slate-50 border-slate-200"
+                  />
+                  <BotaoConsultaCnpj
+                    cnpj={form.cpf_cnpj}
+                    onDados={preencherVendedorComCnpj}
+                    rotulo="Buscar"
+                    className="h-10 shrink-0 gap-2 font-bold uppercase tracking-wider"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">WhatsApp / Telefone</Label>

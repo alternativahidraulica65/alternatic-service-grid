@@ -27,6 +27,8 @@ import { useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { exportToCSV } from "@/utils/export";
+import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
+import type { DadosCnpj } from "@/lib/brasilapi";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,6 +138,18 @@ function ClientesPage() {
   const inputArquivo = useRef<HTMLInputElement>(null);
 
   const [formValues, setFormValues] = useState({ ...FORM_VAZIO });
+
+  // Preenche o cadastro com os dados públicos do CNPJ (BrasilAPI), sem apagar o que já foi digitado.
+  const preencherComCnpj = (dados: DadosCnpj) => {
+    setFormValues((atual) => ({
+      ...atual,
+      cnpj: dados.cnpjFormatado,
+      nome: atual.nome?.trim() ? atual.nome : dados.nome,
+      endereco: atual.endereco?.trim() ? atual.endereco : dados.endereco,
+      email: atual.email?.trim() ? atual.email : dados.email,
+      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
+    }));
+  };
 
   const { data: clientes = [] } = useSuspenseQuery({
     queryKey: ['clientes_list'],
@@ -574,13 +588,17 @@ function ClientesPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
-                  <Input
-                    id="cnpj"
-                    value={formValues.cnpj}
-                    onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
-                    className="h-11 border-border font-mono"
-                    placeholder="00.000.000/0000-00"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="cnpj"
+                      value={formValues.cnpj}
+                      onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
+                      className="h-11 border-border font-mono"
+                      placeholder="00.000.000/0000-00"
+                    />
+                    <BotaoConsultaCnpj cnpj={formValues.cnpj} onDados={preencherComCnpj} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">Digite o CNPJ e clique em buscar para preencher nome, endereço, telefone e e-mail automaticamente.</p>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
@@ -983,13 +1001,16 @@ function ClientesPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ / CPF</Label>
-              <Input
-                id="edit-cnpj"
-                value={formValues.cnpj}
-                onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
-                className="h-11 border-border font-mono"
-                placeholder="00.000.000/0000-00"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="edit-cnpj"
+                  value={formValues.cnpj}
+                  onChange={(e) => setFormValues({...formValues, cnpj: e.target.value})}
+                  className="h-11 border-border font-mono"
+                  placeholder="00.000.000/0000-00"
+                />
+                <BotaoConsultaCnpj cnpj={formValues.cnpj} onDados={preencherComCnpj} />
+              </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>

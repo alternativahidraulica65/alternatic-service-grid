@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
+import type { DadosCnpj } from "@/lib/brasilapi";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,6 +97,8 @@ function FornecedoresPage() {
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [editingFornecedor, setEditingFornecedor] = useState<any>(null);
+  const [formCnpj, setFormCnpj] = useState("");
+  const formFornecedorRef = useRef<HTMLFormElement>(null);
   const [importStatus, setImportStatus] = useState<{total: number, processed: number, errors: string[]} | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [visao, setVisao] = useState<"cards" | "tabela">("cards");
@@ -263,12 +267,30 @@ function FornecedoresPage() {
 
   const handleEdit = (fornecedor: any) => {
     setEditingFornecedor(fornecedor);
+    setFormCnpj(fornecedor?.cnpj || "");
     setIsModalOpen(true);
   };
 
   const handleAddNew = () => {
     setEditingFornecedor(null);
+    setFormCnpj("");
     setIsModalOpen(true);
+  };
+
+  // Completa o cadastro do fornecedor com os dados públicos do CNPJ (BrasilAPI).
+  const preencherFornecedorComCnpj = (dados: DadosCnpj) => {
+    setFormCnpj(dados.cnpjFormatado);
+    const form = formFornecedorRef.current;
+    if (!form) return;
+    const campo = (nome: string) => form.elements.namedItem(nome) as HTMLInputElement | HTMLTextAreaElement | null;
+    const nome = campo("nome");
+    if (nome && !nome.value.trim()) nome.value = dados.nome;
+    const contato = campo("contato");
+    if (contato && !contato.value.trim()) contato.value = dados.telefone;
+    const obs = campo("observacoes");
+    if (obs && !obs.value.trim()) {
+      obs.value = [dados.endereco, dados.email, dados.atividade].filter(Boolean).join(" · ");
+    }
   };
 
   const filteredFornecedores = fornecedores?.filter(f =>
@@ -785,7 +807,7 @@ function FornecedoresPage() {
             };
             if (editingFornecedor) data.id = editingFornecedor.id;
             upsertMutation.mutate(data);
-          }} className="space-y-4 pt-2">
+          }} ref={formFornecedorRef} className="space-y-4 pt-2">
             <div className="grid gap-2">
               <Label htmlFor="nome" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nome Fantasia / Razão Social</Label>
               <Input id="nome" name="nome" defaultValue={editingFornecedor?.nome} required className="border-border shadow-sm h-11" />
@@ -794,7 +816,10 @@ function FornecedoresPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="cnpj" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">CNPJ</Label>
-                <Input id="cnpj" name="cnpj" defaultValue={editingFornecedor?.cnpj} placeholder="00.000.000/0000-00" className="border-border shadow-sm h-11 font-mono" />
+                <div className="flex gap-2">
+                  <Input id="cnpj" name="cnpj" value={formCnpj} onChange={(e) => setFormCnpj(e.target.value)} placeholder="00.000.000/0000-00" className="border-border shadow-sm h-11 font-mono" />
+                  <BotaoConsultaCnpj cnpj={formCnpj} onDados={preencherFornecedorComCnpj} rotulo="Buscar" />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="contato" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contato / Telefone</Label>

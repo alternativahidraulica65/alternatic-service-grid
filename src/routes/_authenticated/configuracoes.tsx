@@ -19,6 +19,8 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
+import type { DadosCnpj } from "@/lib/brasilapi";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   criarUsuario,
@@ -464,6 +466,19 @@ function DialogEmpresa({
   const [subindoLogo, setSubindoLogo] = useState(false);
   const [form, setForm] = useState(() => estadoInicial());
 
+  // Completa o cadastro da empresa emissora com os dados públicos do CNPJ.
+  const preencherEmpresaComCnpj = (dados: DadosCnpj) => {
+    setForm((atual) => ({
+      ...atual,
+      cnpj: dados.cnpjFormatado,
+      nome: atual.nome?.trim() ? atual.nome : dados.nome,
+      razao_social: atual.razao_social?.trim() ? atual.razao_social : dados.razaoSocial,
+      endereco: atual.endereco?.trim() ? atual.endereco : dados.endereco,
+      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
+      email: atual.email?.trim() ? atual.email : dados.email,
+    }));
+  };
+
   function estadoInicial() {
     return {
       nome: "",
@@ -618,11 +633,19 @@ function DialogEmpresa({
             />
           </Campo>
           <Campo label="CNPJ">
-            <Input
-              value={form.cnpj}
-              onChange={(e) => setForm({ ...form, cnpj: e.target.value })}
-              className="font-mono"
-            />
+            <div className="flex gap-2">
+              <Input
+                value={form.cnpj}
+                onChange={(e) => setForm({ ...form, cnpj: e.target.value })}
+                className="font-mono"
+              />
+              <BotaoConsultaCnpj
+                cnpj={form.cnpj}
+                onDados={preencherEmpresaComCnpj}
+                rotulo="Buscar"
+                className="h-10 shrink-0 gap-2 font-bold uppercase tracking-wider"
+              />
+            </div>
           </Campo>
           <Campo label="Cor de identificação">
             <Input
