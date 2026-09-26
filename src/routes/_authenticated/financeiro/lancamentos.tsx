@@ -1,3 +1,4 @@
+import { RemoverSelecionados } from "@/components/RemoverSelecionados";
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -194,6 +195,7 @@ function ListaLancamentos() {
                   <X className="mr-1 h-3.5 w-3.5" /> Limpar seleção
                 </Button>
               )}
+              <RemoverSelecionados tabela="lancamentos_financeiros" ids={selecionadosVisiveis} rotulo="lançamento(s)" onRemovidos={() => setSelecionados([])} />
               <Button
                 variant="outline"
                 size="sm"

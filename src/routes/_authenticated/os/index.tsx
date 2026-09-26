@@ -1,3 +1,4 @@
+import { RemoverSelecionados } from "@/components/RemoverSelecionados";
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -289,6 +290,7 @@ function ListaOs() {
               >
                 <X className="mr-1 h-3.5 w-3.5" /> Limpar filtros
               </Button>
+              <RemoverSelecionados tabela="ordens_servico" ids={selecionadosVisiveis} rotulo="OS" onRemovidos={() => setSelecionados([])} />
               <Button
                 variant="outline"
                 size="sm"
