@@ -41,6 +41,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
+import { cnpjValido, formatarCnpj, somenteDigitos, type DadosCnpj } from "@/lib/brasilapi";
 
 export const Route = createFileRoute("/_authenticated/terceiros")({
   head: () => ({
@@ -87,6 +89,93 @@ function PainelTerceiros() {
     terceiro_prazo_entrega: "",
     terceiro_observacao: "",
   });
+  const [cadOpen, setCadOpen] = useState(false);
+  const [cadSalvando, setCadSalvando] = useState(false);
+  const [cadForm, setCadForm] = useState({
+    nome: "",
+    cnpj: "",
+    contato: "",
+    telefone: "",
+    email: "",
+    endereco: "",
+    observacao: "",
+  });
+
+  const { data: terceirosCadastrados = [] } = useQuery({
+    queryKey: ["terceiros_cadastro"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("terceiros")
+        .select("id, nome, cnpj, telefone, email, endereco, contato")
+        .eq("ativo", true)
+        .order("nome");
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+  });
+
+  const preencherTerceiroComCnpj = (dados: DadosCnpj) => {
+    setCadForm((atual) => ({
+      ...atual,
+      cnpj: dados.cnpjFormatado,
+      nome: atual.nome || dados.nome,
+      telefone: atual.telefone || dados.telefone,
+      email: atual.email || dados.email,
+      endereco: atual.endereco || dados.endereco,
+    }));
+  };
+
+  const salvarTerceiro = async () => {
+    if (!cadForm.nome.trim()) {
+      toast.error("Informe o nome do terceiro.");
+      return;
+    }
+    const cnpjDigitos = somenteDigitos(cadForm.cnpj);
+    if (cnpjDigitos) {
+      if (!cnpjValido(cadForm.cnpj)) {
+        toast.error("CNPJ inválido. Confira os dígitos informados.");
+        return;
+      }
+      const { data: existente } = await (supabase as any)
+        .from("terceiros")
+        .select("id, nome")
+        .eq("cnpj", formatarCnpj(cnpjDigitos))
+        .maybeSingle();
+      if (existente) {
+        toast.error(`Este CNPJ já está cadastrado para "${existente.nome}".`);
+        return;
+      }
+    }
+    setCadSalvando(true);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const { error } = await (supabase as any).from("terceiros").insert({
+        nome: cadForm.nome.trim(),
+        cnpj: cnpjDigitos ? formatarCnpj(cnpjDigitos) : null,
+        contato: cadForm.contato.trim() || null,
+        telefone: cadForm.telefone.trim() || null,
+        email: cadForm.email.trim() || null,
+        endereco: cadForm.endereco.trim() || null,
+        observacao: cadForm.observacao.trim() || null,
+        criado_por: auth?.user?.id ?? null,
+      });
+      if (error) {
+        if (String(error.message).includes("duplicate") || String(error.code) === "23505") {
+          toast.error("Este CNPJ já está cadastrado.");
+          return;
+        }
+        throw error;
+      }
+      queryClient.invalidateQueries({ queryKey: ["terceiros_cadastro"] });
+      toast.success("Terceiro cadastrado com sucesso.");
+      setCadForm({ nome: "", cnpj: "", contato: "", telefone: "", email: "", endereco: "", observacao: "" });
+      setCadOpen(false);
+    } catch (e: any) {
+      toast.error("Erro ao cadastrar: " + e.message);
+    } finally {
+      setCadSalvando(false);
+    }
+  };
 
   const { data: ordensAbertas = [] } = useQuery({
     queryKey: ["painel_terceiros_os_abertas"],
@@ -391,11 +480,19 @@ function PainelTerceiros() {
                 onAplicar={aplicarFiltrosSalvos}
               />
               <Button
+                variant="outline"
+                size="sm"
+                className="h-10 font-black uppercase text-[10px] tracking-widest"
+                onClick={() => setCadOpen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Cadastrar terceiro
+              </Button>
+              <Button
                 size="sm"
                 className="h-10 font-black uppercase text-[10px] tracking-widest"
                 onClick={() => setNovoOpen(true)}
               >
-                <Plus className="mr-2 h-4 w-4" /> Novo terceiro
+                <Truck className="mr-2 h-4 w-4" /> Enviar peça
               </Button>
               {selecionadosVisiveis.length > 0 && (
                 <Button
@@ -565,9 +662,15 @@ function PainelTerceiros() {
                 <Input
                   className="h-10 text-xs"
                   placeholder="Nome do terceiro"
+                  list="terceiros-cadastrados"
                   value={novoForm.terceiro_nome}
                   onChange={(e) => setNovoForm((f) => ({ ...f, terceiro_nome: e.target.value }))}
                 />
+                <datalist id="terceiros-cadastrados">
+                  {(terceirosCadastrados as any[]).map((t) => (
+                    <option key={t.id} value={t.nome} />
+                  ))}
+                </datalist>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-widest">Prazo prometido</Label>
@@ -607,6 +710,109 @@ function PainelTerceiros() {
                   <Plus className="mr-2 h-4 w-4" />
                 )}
                 Registrar envio
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={cadOpen} onOpenChange={setCadOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight flex items-center gap-2">
+              <Plus className="h-5 w-5 text-primary" /> Cadastrar terceiro
+            </DialogTitle>
+            <DialogDescription className="text-xs font-medium">
+              Informe o CNPJ e use "Buscar" para preencher os dados automaticamente. Revise e ajuste antes de salvar.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">CNPJ</Label>
+              <div className="flex gap-2">
+                <Input
+                  className="h-10 text-xs"
+                  placeholder="00.000.000/0000-00"
+                  value={cadForm.cnpj}
+                  onChange={(e) => setCadForm((f) => ({ ...f, cnpj: e.target.value }))}
+                />
+                <BotaoConsultaCnpj cnpj={cadForm.cnpj} onDados={preencherTerceiroComCnpj} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Nome / Razão social *</Label>
+              <Input
+                className="h-10 text-xs"
+                placeholder="Nome do terceiro"
+                value={cadForm.nome}
+                onChange={(e) => setCadForm((f) => ({ ...f, nome: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Contato</Label>
+                <Input
+                  className="h-10 text-xs"
+                  placeholder="Pessoa de contato"
+                  value={cadForm.contato}
+                  onChange={(e) => setCadForm((f) => ({ ...f, contato: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Telefone</Label>
+                <Input
+                  className="h-10 text-xs"
+                  placeholder="(00) 00000-0000"
+                  value={cadForm.telefone}
+                  onChange={(e) => setCadForm((f) => ({ ...f, telefone: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">E-mail</Label>
+              <Input
+                className="h-10 text-xs"
+                placeholder="contato@empresa.com.br"
+                value={cadForm.email}
+                onChange={(e) => setCadForm((f) => ({ ...f, email: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Endereço</Label>
+              <Input
+                className="h-10 text-xs"
+                placeholder="Rua, número, bairro, cidade - UF"
+                value={cadForm.endereco}
+                onChange={(e) => setCadForm((f) => ({ ...f, endereco: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Observação</Label>
+              <Textarea
+                className="text-xs"
+                rows={2}
+                placeholder="Especialidade, condições, referência..."
+                value={cadForm.observacao}
+                onChange={(e) => setCadForm((f) => ({ ...f, observacao: e.target.value }))}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setCadOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                size="sm"
+                className="font-black uppercase text-[10px] tracking-widest"
+                disabled={cadSalvando}
+                onClick={salvarTerceiro}
+              >
+                {cadSalvando ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="mr-2 h-4 w-4" />
+                )}
+                Salvar terceiro
               </Button>
             </div>
           </div>

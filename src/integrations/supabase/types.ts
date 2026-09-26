@@ -1541,6 +1541,51 @@ export type Database = {
         }
         Relationships: []
       }
+      terceiros: {
+        Row: {
+          ativo: boolean
+          cnpj: string | null
+          contato: string | null
+          created_at: string
+          criado_por: string | null
+          email: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          observacao: string | null
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          cnpj?: string | null
+          contato?: string | null
+          created_at?: string
+          criado_por?: string | null
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          observacao?: string | null
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          cnpj?: string | null
+          contato?: string | null
+          created_at?: string
+          criado_por?: string | null
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          observacao?: string | null
+          telefone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tipos_equipamento: {
         Row: {
           categoria_principal: string | null
