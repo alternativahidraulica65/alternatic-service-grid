@@ -480,11 +480,19 @@ function PainelTerceiros() {
                 onAplicar={aplicarFiltrosSalvos}
               />
               <Button
+                variant="outline"
+                size="sm"
+                className="h-10 font-black uppercase text-[10px] tracking-widest"
+                onClick={() => setCadOpen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Cadastrar terceiro
+              </Button>
+              <Button
                 size="sm"
                 className="h-10 font-black uppercase text-[10px] tracking-widest"
                 onClick={() => setNovoOpen(true)}
               >
-                <Plus className="mr-2 h-4 w-4" /> Novo terceiro
+                <Truck className="mr-2 h-4 w-4" /> Enviar peça
               </Button>
               {selecionadosVisiveis.length > 0 && (
                 <Button
@@ -654,9 +662,15 @@ function PainelTerceiros() {
                 <Input
                   className="h-10 text-xs"
                   placeholder="Nome do terceiro"
+                  list="terceiros-cadastrados"
                   value={novoForm.terceiro_nome}
                   onChange={(e) => setNovoForm((f) => ({ ...f, terceiro_nome: e.target.value }))}
                 />
+                <datalist id="terceiros-cadastrados">
+                  {(terceirosCadastrados as any[]).map((t) => (
+                    <option key={t.id} value={t.nome} />
+                  ))}
+                </datalist>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-widest">Prazo prometido</Label>
