@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T19:50:55.494101+00:00",
+  "generated_at": "2026-09-26T19:54:06.095436+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -915,7 +915,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 25511
+      "bytes": 26881
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
@@ -3550,6 +3550,22 @@
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
       "target": "date-fns"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "@/components/ui/label"
     },
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
