@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-09-26T19:07:39.959132+00:00
+Generated: 2026-09-26T19:41:42.412697+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
