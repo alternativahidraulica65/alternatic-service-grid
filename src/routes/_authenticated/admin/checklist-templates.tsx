@@ -49,6 +49,9 @@ function ChecklistTemplatesPage() {
   const [itens, setItens] = useState<{ label: string; obrigatorio: boolean }[]>([]);
   const [newItem, setNewItem] = useState("");
   const [saving, setSaving] = useState(false);
+  const [tipoOpen, setTipoOpen] = useState(false);
+  const [tipoLoading, setTipoLoading] = useState(false);
+  const [tipoForm, setTipoForm] = useState({ nome: "", categoria_principal: "", descricao: "" });
 
   const { data: tipos = [] } = useQuery({
     queryKey: ['tipos_equipamento'],
@@ -58,6 +61,45 @@ function ChecklistTemplatesPage() {
       return data ?? [];
     }
   });
+
+  const handleCriarTipoEquipamento = async () => {
+    const nome = tipoForm.nome.trim();
+    if (!nome) {
+      toast.error("Informe o nome do equipamento.");
+      return;
+    }
+    const duplicado = (tipos as any[]).some(
+      (t: any) => (t.nome || "").trim().toLowerCase() === nome.toLowerCase()
+    );
+    if (duplicado) {
+      toast.error("Já existe um equipamento com esse nome.");
+      return;
+    }
+
+    setTipoLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('tipos_equipamento')
+        .insert({
+          nome,
+          categoria_principal: tipoForm.categoria_principal.trim() || null,
+          descricao: tipoForm.descricao.trim() || null,
+        })
+        .select('id, nome')
+        .single();
+      if (error) throw error;
+
+      toast.success("Equipamento cadastrado com sucesso!");
+      await queryClient.invalidateQueries({ queryKey: ['tipos_equipamento'] });
+      if (data?.id) setSelectedTipo(data.id);
+      setTipoForm({ nome: "", categoria_principal: "", descricao: "" });
+      setTipoOpen(false);
+    } catch (error: any) {
+      toast.error("Erro ao cadastrar equipamento: " + error.message);
+    } finally {
+      setTipoLoading(false);
+    }
+  };
 
   const { data: templates = [], refetch: refetchTemplates } = useQuery({
     queryKey: ['checklist_templates'],
@@ -143,7 +185,19 @@ function ChecklistTemplatesPage() {
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Tipo de Equipamento</Label>
+              <div className="flex items-center justify-between gap-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Tipo de Equipamento</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary"
+                  onClick={() => setTipoOpen(true)}
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Novo equipamento
+                </Button>
+              </div>
               <Select value={selectedTipo} onValueChange={setSelectedTipo}>
                 <SelectTrigger className="border-slate-200 bg-white font-bold text-xs uppercase">
                   <SelectValue placeholder="Selecione..." />
