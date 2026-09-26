@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T19:41:42.412697+00:00",
+  "generated_at": "2026-09-26T19:50:55.494101+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -538,6 +538,10 @@
       "bytes": 12954
     },
     {
+      "path": "src/components/RemoverSelecionados.tsx",
+      "bytes": 3142
+    },
+    {
       "path": "src/components/PendenciasOsCard.tsx",
       "bytes": 3441
     },
@@ -883,7 +887,7 @@
     },
     {
       "path": "src/routes/_authenticated/terceiros.tsx",
-      "bytes": 34433
+      "bytes": 34655
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
@@ -915,7 +919,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 47139
+      "bytes": 47354
     },
     {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
@@ -947,7 +951,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/index.tsx",
-      "bytes": 18473
+      "bytes": 18686
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
@@ -967,11 +971,11 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "bytes": 14501
+      "bytes": 14735
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
-      "bytes": 48410
+      "bytes": 48633
     }
   ],
   "dependencies": [
@@ -1794,6 +1798,34 @@
     {
       "source": "src/components/PainelGestorOs.tsx",
       "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/components/RemoverSelecionados.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/RemoverSelecionados.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/RemoverSelecionados.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/RemoverSelecionados.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/RemoverSelecionados.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/RemoverSelecionados.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/RemoverSelecionados.tsx",
+      "target": "@/components/ui/alert-dialog"
     },
     {
       "source": "src/components/PendenciasOsCard.tsx",
@@ -3093,6 +3125,10 @@
     },
     {
       "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/RemoverSelecionados"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -3521,6 +3557,10 @@
     },
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/RemoverSelecionados"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -3909,6 +3949,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/RemoverSelecionados"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4273,6 +4317,10 @@
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/RemoverSelecionados"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4330,6 +4378,10 @@
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/components/RemoverSelecionados"
     },
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
