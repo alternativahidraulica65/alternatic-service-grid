@@ -1,9 +1,17 @@
 {
-  "generated_at": "2026-09-22T01:12:51.371581+00:00",
+  "generated_at": "2026-09-26T19:07:39.959132+00:00",
   "files": [
     {
-      "path": "components.json",
-      "bytes": 443
+      "path": "roadmap.md",
+      "bytes": 2958
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 480
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 820
     },
     {
       "path": "vite.config.ts",
@@ -14,24 +22,16 @@
       "bytes": 1250
     },
     {
-      "path": "package.json",
-      "bytes": 2997
-    },
-    {
       "path": "README.md",
       "bytes": 3388
     },
     {
-      "path": "AGENTS.md",
-      "bytes": 480
+      "path": "package.json",
+      "bytes": 2997
     },
     {
-      "path": "roadmap.md",
-      "bytes": 2958
-    },
-    {
-      "path": "tsconfig.json",
-      "bytes": 820
+      "path": "components.json",
+      "bytes": 443
     },
     {
       "path": ".lovable/project.json",
@@ -46,14 +46,6 @@
       "bytes": 33838
     },
     {
-      "path": "src/start.ts",
-      "bytes": 1064
-    },
-    {
-      "path": "src/router.tsx",
-      "bytes": 394
-    },
-    {
       "path": "src/styles.css",
       "bytes": 5784
     },
@@ -62,340 +54,68 @@
       "bytes": 2048
     },
     {
-      "path": ".lovable/plan/sequência-da-os-organizar-a-lógica-do-fluxo-2026-09-14.md",
-      "bytes": 4811
+      "path": "src/router.tsx",
+      "bytes": 394
     },
     {
-      "path": ".lovable/plan/plan-gestão-de-vendedores-comissões-2026-08-20.md",
-      "bytes": 1467
-    },
-    {
-      "path": ".lovable/plan/plano-de-ajustes-remoção-de-módulos-e-refinamento-de-ui-2026-08-18.md",
-      "bytes": 1998
-    },
-    {
-      "path": ".lovable/plan/plan-fix-os-creation-foreign-key-error-2026-08-23.md",
-      "bytes": 1605
-    },
-    {
-      "path": ".lovable/plan/plano-de-refatoração-e-diagnóstico-alternativa-hidráulica-2026-08-23.md",
-      "bytes": 2273
-    },
-    {
-      "path": ".lovable/plan/plano-de-implementação-rbac-e-detalhes-do-cliente-2026-08-19.md",
-      "bytes": 2075
-    },
-    {
-      "path": ".lovable/plan/plano-de-refatoração-tela-de-detalhes-do-cliente-2026-08-19.md",
-      "bytes": 1756
-    },
-    {
-      "path": ".lovable/plan/diagnóstico-de-conexão-e-dados-2026-08-23.md",
-      "bytes": 1819
-    },
-    {
-      "path": ".lovable/plan/plan-fase-01-ajuste-da-tela-de-login-2026-08-16.md",
-      "bytes": 2460
-    },
-    {
-      "path": ".lovable/plan/reestilização-da-tela-de-fornecedores-com-mini-dashboards-me-2026-09-15.md",
-      "bytes": 2553
-    },
-    {
-      "path": ".lovable/plan/sistema-de-notificações-app-e-mail-por-perfil-2026-09-16.md",
-      "bytes": 2874
-    },
-    {
-      "path": ".lovable/plan/reestilizar-a-tela-de-orçamento-e-gerar-pdf-profissional-2026-09-14.md",
-      "bytes": 3873
-    },
-    {
-      "path": ".lovable/plan/plan-rename-equipment-types-table-to-singular-2026-08-23.md",
-      "bytes": 1299
-    },
-    {
-      "path": ".lovable/plan/plano-de-sincronização-do-backend-com-supabase-2026-08-23.md",
-      "bytes": 2210
-    },
-    {
-      "path": ".lovable/plan/plano-de-implementação-tela-de-nova-os-e-triagem-2026-08-16.md",
-      "bytes": 1907
-    },
-    {
-      "path": ".lovable/plan/plano-de-refatoração-do-checklist-da-os-2026-08-19.md",
-      "bytes": 1811
-    },
-    {
-      "path": ".lovable/plan/painel-do-gestor-o-que-precisa-ser-feito-e-onde-está-cada-co-2026-09-17.md",
-      "bytes": 2762
-    },
-    {
-      "path": ".lovable/plan/plano-de-implementação-telas-financeiras-e-administrativas-e-2026-08-16.md",
-      "bytes": 2566
-    },
-    {
-      "path": ".lovable/plan/refatoração-para-integração-nativa-supabase-2026-08-22.md",
-      "bytes": 1590
-    },
-    {
-      "path": ".lovable/plan/guia-de-execução-da-os-próximos-passos-2026-09-11.md",
-      "bytes": 3469
-    },
-    {
-      "path": ".lovable/plan/vendedores-conectados-ao-banco-real-2026-09-12.md",
-      "bytes": 3316
-    },
-    {
-      "path": ".lovable/plan/plano-de-implementação-módulo-financeiro-avançado-alternativ-2026-08-19.md",
-      "bytes": 2064
-    },
-    {
-      "path": ".lovable/plan/plan-database-sync-and-schema-update-2026-08-23.md",
-      "bytes": 1550
-    },
-    {
-      "path": ".lovable/plan/unificar-em-um-único-banco-de-dados-2026-09-11.md",
-      "bytes": 2958
-    },
-    {
-      "path": ".lovable/plan/plano-de-refatoração-autenticação-direta-por-e-mail-e-senha-2026-08-17.md",
-      "bytes": 1823
-    },
-    {
-      "path": ".lovable/plan/plano-separar-custos-produtos-vendidos-e-preço-da-proposta-2026-09-14.md",
-      "bytes": 4616
-    },
-    {
-      "path": ".lovable/plan/plano-implementação-do-dashboard-industrial-dinâmico-tela-2-2026-08-16.md",
-      "bytes": 1616
-    },
-    {
-      "path": ".lovable/plan/alerta-de-orçamentos-nos-dashboards-2026-09-14.md",
-      "bytes": 1409
-    },
-    {
-      "path": ".lovable/plan/plano-de-informação-de-acesso-2026-08-23.md",
-      "bytes": 1207
-    },
-    {
-      "path": ".lovable/plan/plano-cards-recolhíveis-e-totalizadores-do-orçamento-2026-09-14.md",
-      "bytes": 2446
-    },
-    {
-      "path": ".lovable/plan/melhorias-de-eficiência-e-experiência-2026-09-15.md",
-      "bytes": 3543
-    },
-    {
-      "path": ".lovable/plan/plano-de-implementação-gestão-de-fornecedores-e-refinamentos-2026-08-19.md",
-      "bytes": 2421
-    },
-    {
-      "path": ".lovable/plan/plano-de-implementação-módulo-de-orçamento-e-precificação-os-2026-08-20.md",
-      "bytes": 1753
-    },
-    {
-      "path": ".lovable/plan/plano-de-implementação-formulários-dashboard-dinâmico-e-expo-2026-08-18.md",
-      "bytes": 2222
-    },
-    {
-      "path": ".lovable/plan/plan-supabase-crud-integration-for-alternativa-hidráulica-2026-08-18.md",
-      "bytes": 2688
-    },
-    {
-      "path": ".lovable/plan/plano-de-implementação-frontend-completo-da-alternativa-hidr-2026-08-18.md",
-      "bytes": 2686
-    },
-    {
-      "path": ".lovable/plan/plano-tela-1-login-do-erp-alternativa-hidráulica-2026-08-16.md",
-      "bytes": 1850
-    },
-    {
-      "path": ".lovable/plan/plan-fix-hydration-and-refactor-login-2026-08-22.md",
-      "bytes": 1274
-    },
-    {
-      "path": ".lovable/plan/plan-agricultural-login-screen-implementation-2026-08-16.md",
-      "bytes": 1284
-    },
-    {
-      "path": "supabase/migrations/20260816174700_8627feed-49e2-4258-a849-063cb083b771.sql",
-      "bytes": 481
-    },
-    {
-      "path": "supabase/migrations/20260822130040_2b1112b9-f42f-4a28-99dc-5bb57737ba25.sql",
-      "bytes": 1737
-    },
-    {
-      "path": "supabase/migrations/20260816180849_55893156-dbc5-4764-a2ff-dc80ef991e21.sql",
-      "bytes": 787
-    },
-    {
-      "path": "supabase/migrations/20260822125052_c3fd2c13-a17a-4318-ae0b-77f954966170.sql",
-      "bytes": 466
-    },
-    {
-      "path": "supabase/migrations/20260914175301_c5c13dc5-a9a5-4022-84b1-0ede848c8728.sql",
-      "bytes": 30
-    },
-    {
-      "path": "supabase/migrations/20260914232046_83970fb5-5467-4611-9e41-7cf6411e6316.sql",
-      "bytes": 2368
-    },
-    {
-      "path": "supabase/migrations/20260820000000_os_enhancements.sql",
-      "bytes": 1667
-    },
-    {
-      "path": "supabase/migrations/20260819151047_e28f0c7e-3d98-425a-9ff0-c130d85d49fe.sql",
-      "bytes": 501
-    },
-    {
-      "path": "supabase/migrations/20260816175839_bb47e219-9c3c-4d8a-9b82-9393b997e66f.sql",
-      "bytes": 2794
-    },
-    {
-      "path": "supabase/migrations/20260910194424_575a1fe0-821e-45c0-b63b-04273fe0a3b5.sql",
-      "bytes": 1560
-    },
-    {
-      "path": "supabase/migrations/20260819142028_96122685-68cd-47be-8492-767ea97f83c1.sql",
-      "bytes": 1837
-    },
-    {
-      "path": "supabase/migrations/20260816170947_ca5c944f-037d-46c3-a6a3-0d66441e17a4.sql",
-      "bytes": 2621
-    },
-    {
-      "path": "supabase/migrations/20260911171517_39adc852-9895-4aff-b424-8ec9470c862c.sql",
-      "bytes": 319
-    },
-    {
-      "path": "supabase/migrations/20260816194804_e71a4819-984e-4ce8-926d-5d5147dcbbcf.sql",
-      "bytes": 379
-    },
-    {
-      "path": "supabase/migrations/20260820004318_97709e5c-1205-413d-86eb-143fbf27bebe.sql",
-      "bytes": 2069
+      "path": "src/start.ts",
+      "bytes": 1064
     },
     {
       "path": "supabase/migrations/20260910164733_2d41e8e8-b0ba-4ef3-aeba-bcabbeb425b3.sql",
       "bytes": 1258
     },
     {
-      "path": "supabase/migrations/20260816194837_f1262daf-e8d1-429f-b15e-6b7c9dfe2e6c.sql",
-      "bytes": 778
+      "path": "supabase/migrations/20260819151047_e28f0c7e-3d98-425a-9ff0-c130d85d49fe.sql",
+      "bytes": 501
     },
     {
-      "path": "supabase/migrations/20260823214354_36030fec-e93a-44ad-9c1e-252448b1301e.sql",
-      "bytes": 610
-    },
-    {
-      "path": "supabase/migrations/20260911170335_3d388d3b-48cb-425a-9f36-db42d23cf940.sql",
-      "bytes": 2123
-    },
-    {
-      "path": "supabase/migrations/20260914232108_1c1ddaed-882d-409d-b0df-6a338aefcd32.sql",
-      "bytes": 404
-    },
-    {
-      "path": "supabase/migrations/20260911180654_f4ac3a4a-3e60-45d9-91f0-667df83c6971.sql",
-      "bytes": 1154
-    },
-    {
-      "path": "supabase/migrations/20260816194148_8f669713-d64a-4861-a648-a894901bbbef.sql",
-      "bytes": 353
-    },
-    {
-      "path": "supabase/migrations/20260909133650_8f13c00a-4606-4fc7-8dcc-bce14397ac2f.sql",
-      "bytes": 77
+      "path": "supabase/migrations/20260816171012_b1dab003-675f-452c-8561-39d03b57f618.sql",
+      "bytes": 136
     },
     {
       "path": "supabase/migrations/20260819232812_264f4c26-fba8-421a-b449-5e2b98e40db6.sql",
       "bytes": 666
     },
     {
-      "path": "supabase/migrations/20260911134122_cce69471-d54c-4908-9266-e0e0791c0eb5.sql",
-      "bytes": 903
+      "path": "supabase/migrations/20260816195021_c06bf0e4-3b44-4e2d-b470-405f7a9e2b54.sql",
+      "bytes": 398
     },
     {
-      "path": "supabase/migrations/20260819232440_d0831b9d-5d1a-40a1-9401-3ef90d24eddd.sql",
-      "bytes": 1786
-    },
-    {
-      "path": "supabase/migrations/20260816174141_32c99dca-47c6-45a9-a38a-568d96d0fec4.sql",
-      "bytes": 2316
-    },
-    {
-      "path": "supabase/migrations/20260819150935_2d74a8f0-ca33-4931-8a3f-d04ca3896d7d.sql",
-      "bytes": 2531
-    },
-    {
-      "path": "supabase/migrations/20260909164854_d78f2b4b-4f16-47f2-8fa1-25a44e5d6d42.sql",
-      "bytes": 2812
-    },
-    {
-      "path": "supabase/migrations/20260823203008_5687f433-2186-4a80-9f18-c053d9552adf.sql",
-      "bytes": 427
-    },
-    {
-      "path": "supabase/migrations/20260911173431_76ed07a9-1215-4cc1-9475-84d00ce1a2d5.sql",
-      "bytes": 780
-    },
-    {
-      "path": "supabase/migrations/20260914191950_170bec25-7167-4fa3-8969-8ede7ebcb222.sql",
-      "bytes": 635
-    },
-    {
-      "path": "supabase/migrations/20260822125039_37c8ea00-390d-49fe-be96-0f1a2ba00dd4.sql",
-      "bytes": 750
-    },
-    {
-      "path": "supabase/migrations/20260911181928_9caaa017-a1c8-476d-bb39-a32a79d5148f.sql",
-      "bytes": 143
-    },
-    {
-      "path": "supabase/migrations/20260911144018_7b9d2200-fccb-46ff-9c93-cf727437505a.sql",
-      "bytes": 521
-    },
-    {
-      "path": "supabase/migrations/20260819232637_0315354a-c652-4757-a9da-47600ce45eef.sql",
-      "bytes": 2098
-    },
-    {
-      "path": "supabase/migrations/20260914231735_e6c6783a-7279-47a1-ab40-39ee581da42d.sql",
-      "bytes": 658
-    },
-    {
-      "path": "supabase/migrations/20260816174158_4eab0c48-cebb-4e14-a182-1ddb3a7977f7.sql",
-      "bytes": 330
-    },
-    {
-      "path": "supabase/migrations/20260914170335_90c0335a-fa3a-4a11-9ec3-2f4c16401773.sql",
-      "bytes": 406
+      "path": "supabase/migrations/20260816170947_ca5c944f-037d-46c3-a6a3-0d66441e17a4.sql",
+      "bytes": 2621
     },
     {
       "path": "supabase/migrations/20260823202734_3ffd8d13-eff2-4372-b758-bc3f3c975ace.sql",
       "bytes": 702
     },
     {
-      "path": "supabase/migrations/20260819135344_db764171-04a1-4fba-8d3e-859f754ddc7e.sql",
-      "bytes": 1594
+      "path": "supabase/migrations/20260914175301_c5c13dc5-a9a5-4022-84b1-0ede848c8728.sql",
+      "bytes": 30
     },
     {
-      "path": "supabase/migrations/20260816194822_26bcf6a1-7bbd-4ce7-86cb-ddec0a21b66e.sql",
-      "bytes": 2643
+      "path": "supabase/migrations/20260914022341_80dcb6da-31df-49e3-bf71-b1e1fc44515c.sql",
+      "bytes": 112
     },
     {
-      "path": "supabase/migrations/20260816174636_de232d03-9903-4c14-93f9-f24b14a1a31d.sql",
-      "bytes": 1457
+      "path": "supabase/migrations/20260914232046_83970fb5-5467-4611-9e41-7cf6411e6316.sql",
+      "bytes": 2368
     },
     {
-      "path": "supabase/migrations/20260818011627_71c153a0-4249-4864-8ef5-993a172a9de1.sql",
-      "bytes": 2099
+      "path": "supabase/migrations/20260909164854_d78f2b4b-4f16-47f2-8fa1-25a44e5d6d42.sql",
+      "bytes": 2812
     },
     {
-      "path": "supabase/migrations/20260823203136_4a132f77-6372-424e-b5a4-7b56a309cb1c.sql",
-      "bytes": 799
+      "path": "supabase/migrations/20260910194424_575a1fe0-821e-45c0-b63b-04273fe0a3b5.sql",
+      "bytes": 1560
+    },
+    {
+      "path": "supabase/migrations/20260914191921_6dbde8b9-4e5e-4414-a897-da67b3123bf1.sql",
+      "bytes": 5863
+    },
+    {
+      "path": "supabase/migrations/20260823203008_5687f433-2186-4a80-9f18-c053d9552adf.sql",
+      "bytes": 427
     },
     {
       "path": "supabase/migrations/20260819131327_3084e43b-3db2-49a4-a9e4-5ffa98e994da.sql",
@@ -406,40 +126,148 @@
       "bytes": 2159
     },
     {
-      "path": "supabase/migrations/20260816184753_fef33ee7-752d-4ab1-aba4-dc1077052426.sql",
-      "bytes": 2004
-    },
-    {
       "path": "supabase/migrations/20260914020731_33b1b261-d376-4e4b-965a-329901dfed67.sql",
       "bytes": 1019
     },
     {
-      "path": "supabase/migrations/20260816195021_c06bf0e4-3b44-4e2d-b470-405f7a9e2b54.sql",
-      "bytes": 398
+      "path": "supabase/migrations/20260822130040_2b1112b9-f42f-4a28-99dc-5bb57737ba25.sql",
+      "bytes": 1737
     },
     {
-      "path": "supabase/migrations/20260816194958_facd11ff-19f2-44f1-9762-1ff82d6cbac1.sql",
-      "bytes": 428
+      "path": "supabase/migrations/20260911181928_9caaa017-a1c8-476d-bb39-a32a79d5148f.sql",
+      "bytes": 143
+    },
+    {
+      "path": "supabase/migrations/20260819232440_d0831b9d-5d1a-40a1-9401-3ef90d24eddd.sql",
+      "bytes": 1786
+    },
+    {
+      "path": "supabase/migrations/20260816180849_55893156-dbc5-4764-a2ff-dc80ef991e21.sql",
+      "bytes": 787
+    },
+    {
+      "path": "supabase/migrations/20260816194837_f1262daf-e8d1-429f-b15e-6b7c9dfe2e6c.sql",
+      "bytes": 778
+    },
+    {
+      "path": "supabase/migrations/20260816194822_26bcf6a1-7bbd-4ce7-86cb-ddec0a21b66e.sql",
+      "bytes": 2643
+    },
+    {
+      "path": "supabase/migrations/20260914191950_170bec25-7167-4fa3-8969-8ede7ebcb222.sql",
+      "bytes": 635
+    },
+    {
+      "path": "supabase/migrations/20260819150935_2d74a8f0-ca33-4931-8a3f-d04ca3896d7d.sql",
+      "bytes": 2531
+    },
+    {
+      "path": "supabase/migrations/20260823214354_36030fec-e93a-44ad-9c1e-252448b1301e.sql",
+      "bytes": 610
     },
     {
       "path": "supabase/migrations/20260915234848_b390d049-e0d8-4dc6-bda5-72450d0b7343.sql",
       "bytes": 1028
     },
     {
+      "path": "supabase/migrations/20260816174141_32c99dca-47c6-45a9-a38a-568d96d0fec4.sql",
+      "bytes": 2316
+    },
+    {
+      "path": "supabase/migrations/20260818011627_71c153a0-4249-4864-8ef5-993a172a9de1.sql",
+      "bytes": 2099
+    },
+    {
+      "path": "supabase/migrations/20260816184753_fef33ee7-752d-4ab1-aba4-dc1077052426.sql",
+      "bytes": 2004
+    },
+    {
+      "path": "supabase/migrations/20260822125039_37c8ea00-390d-49fe-be96-0f1a2ba00dd4.sql",
+      "bytes": 750
+    },
+    {
+      "path": "supabase/migrations/20260914231735_e6c6783a-7279-47a1-ab40-39ee581da42d.sql",
+      "bytes": 658
+    },
+    {
+      "path": "supabase/migrations/20260816175839_bb47e219-9c3c-4d8a-9b82-9393b997e66f.sql",
+      "bytes": 2794
+    },
+    {
+      "path": "supabase/migrations/20260926190534_d9e2fb50-eb79-43f5-a5f8-cdd3d9cea8f0.sql",
+      "bytes": 1566
+    },
+    {
       "path": "supabase/migrations/20260823203213_a4778f6d-aa62-4da8-89b4-a25b2c1cfa7f.sql",
       "bytes": 770
+    },
+    {
+      "path": "supabase/migrations/20260819142028_96122685-68cd-47be-8492-767ea97f83c1.sql",
+      "bytes": 1837
+    },
+    {
+      "path": "supabase/migrations/20260911144018_7b9d2200-fccb-46ff-9c93-cf727437505a.sql",
+      "bytes": 521
     },
     {
       "path": "supabase/migrations/20260819235157_1dcdb1df-5385-4c0e-b51c-d34499f1d29d.sql",
       "bytes": 316
     },
     {
+      "path": "supabase/migrations/20260819135344_db764171-04a1-4fba-8d3e-859f754ddc7e.sql",
+      "bytes": 1594
+    },
+    {
+      "path": "supabase/migrations/20260816174636_de232d03-9903-4c14-93f9-f24b14a1a31d.sql",
+      "bytes": 1457
+    },
+    {
+      "path": "supabase/migrations/20260911180654_f4ac3a4a-3e60-45d9-91f0-667df83c6971.sql",
+      "bytes": 1154
+    },
+    {
+      "path": "supabase/migrations/20260909133650_8f13c00a-4606-4fc7-8dcc-bce14397ac2f.sql",
+      "bytes": 77
+    },
+    {
+      "path": "supabase/migrations/20260816174700_8627feed-49e2-4258-a849-063cb083b771.sql",
+      "bytes": 481
+    },
+    {
+      "path": "supabase/migrations/20260823203136_4a132f77-6372-424e-b5a4-7b56a309cb1c.sql",
+      "bytes": 799
+    },
+    {
+      "path": "supabase/migrations/20260911171517_39adc852-9895-4aff-b424-8ec9470c862c.sql",
+      "bytes": 319
+    },
+    {
+      "path": "supabase/migrations/20260820004318_97709e5c-1205-413d-86eb-143fbf27bebe.sql",
+      "bytes": 2069
+    },
+    {
+      "path": "supabase/migrations/20260820000000_os_enhancements.sql",
+      "bytes": 1667
+    },
+    {
+      "path": "supabase/migrations/20260816194958_facd11ff-19f2-44f1-9762-1ff82d6cbac1.sql",
+      "bytes": 428
+    },
+    {
+      "path": "supabase/migrations/20260816174158_4eab0c48-cebb-4e14-a182-1ddb3a7977f7.sql",
+      "bytes": 330
+    },
+    {
       "path": "supabase/migrations/20260819150946_a9981bf4-f369-4236-b81a-0c7072224baf.sql",
       "bytes": 483
     },
     {
-      "path": "supabase/migrations/20260914022341_80dcb6da-31df-49e3-bf71-b1e1fc44515c.sql",
-      "bytes": 112
+      "path": "supabase/migrations/20260819232637_0315354a-c652-4757-a9da-47600ce45eef.sql",
+      "bytes": 2098
+    },
+    {
+      "path": "supabase/migrations/20260819135405_a857afa8-7c4a-4bc2-b3c7-4ec8e4dd9eaa.sql",
+      "bytes": 722
     },
     {
       "path": "supabase/migrations/20260819122103_fix_clientes_grants.sql",
@@ -450,172 +278,252 @@
       "bytes": 378
     },
     {
-      "path": "supabase/migrations/20260816171001_10388a0f-40ff-434f-8a03-031d97394e04.sql",
-      "bytes": 450
+      "path": "supabase/migrations/20260816194148_8f669713-d64a-4861-a648-a894901bbbef.sql",
+      "bytes": 353
+    },
+    {
+      "path": "supabase/migrations/20260911170335_3d388d3b-48cb-425a-9f36-db42d23cf940.sql",
+      "bytes": 2123
+    },
+    {
+      "path": "supabase/migrations/20260911134122_cce69471-d54c-4908-9266-e0e0791c0eb5.sql",
+      "bytes": 903
+    },
+    {
+      "path": "supabase/migrations/20260914232108_1c1ddaed-882d-409d-b0df-6a338aefcd32.sql",
+      "bytes": 404
+    },
+    {
+      "path": "supabase/migrations/20260822125052_c3fd2c13-a17a-4318-ae0b-77f954966170.sql",
+      "bytes": 466
+    },
+    {
+      "path": "supabase/migrations/20260914170335_90c0335a-fa3a-4a11-9ec3-2f4c16401773.sql",
+      "bytes": 406
+    },
+    {
+      "path": "supabase/migrations/20260911173431_76ed07a9-1215-4cc1-9475-84d00ce1a2d5.sql",
+      "bytes": 780
     },
     {
       "path": "supabase/migrations/20260910164435_7641bc50-c12b-46ee-9fa3-8ba50007d335.sql",
       "bytes": 337
     },
     {
-      "path": "supabase/migrations/20260816171012_b1dab003-675f-452c-8561-39d03b57f618.sql",
-      "bytes": 136
+      "path": "supabase/migrations/20260816194804_e71a4819-984e-4ce8-926d-5d5147dcbbcf.sql",
+      "bytes": 379
     },
     {
-      "path": "supabase/migrations/20260914191921_6dbde8b9-4e5e-4414-a897-da67b3123bf1.sql",
-      "bytes": 5863
+      "path": "supabase/migrations/20260816171001_10388a0f-40ff-434f-8a03-031d97394e04.sql",
+      "bytes": 450
     },
     {
-      "path": "supabase/migrations/20260819135405_a857afa8-7c4a-4bc2-b3c7-4ec8e4dd9eaa.sql",
-      "bytes": 722
+      "path": ".lovable/plan/refatoração-para-integração-nativa-supabase-2026-08-22.md",
+      "bytes": 1590
     },
     {
-      "path": "src/routes/reset-password.tsx",
-      "bytes": 5898
+      "path": ".lovable/plan/plan-fix-hydration-and-refactor-login-2026-08-22.md",
+      "bytes": 1274
     },
     {
-      "path": "src/routes/__root.tsx",
-      "bytes": 5009
+      "path": ".lovable/plan/plano-cards-recolhíveis-e-totalizadores-do-orçamento-2026-09-14.md",
+      "bytes": 2446
     },
     {
-      "path": "src/routes/index.tsx",
-      "bytes": 19582
+      "path": ".lovable/plan/plano-de-implementação-frontend-completo-da-alternativa-hidr-2026-08-18.md",
+      "bytes": 2686
     },
     {
-      "path": "src/routes/proposta.$token.tsx",
-      "bytes": 2570
+      "path": ".lovable/plan/plano-de-implementação-gestão-de-fornecedores-e-refinamentos-2026-08-19.md",
+      "bytes": 2421
     },
     {
-      "path": "src/routes/README.md",
-      "bytes": 835
+      "path": ".lovable/plan/guia-de-execução-da-os-próximos-passos-2026-09-11.md",
+      "bytes": 3469
     },
     {
-      "path": "src/hooks/use-mobile.tsx",
-      "bytes": 576
+      "path": ".lovable/plan/plano-de-implementação-telas-financeiras-e-administrativas-e-2026-08-16.md",
+      "bytes": 2566
     },
     {
-      "path": "src/hooks/useUserRole.ts",
-      "bytes": 1132
+      "path": ".lovable/plan/reestilizar-a-tela-de-orçamento-e-gerar-pdf-profissional-2026-09-14.md",
+      "bytes": 3873
     },
     {
-      "path": "src/lib/error-capture.ts",
-      "bytes": 2898
+      "path": ".lovable/plan/plano-separar-custos-produtos-vendidos-e-preço-da-proposta-2026-09-14.md",
+      "bytes": 4616
     },
     {
-      "path": "src/lib/orcamento.ts",
-      "bytes": 4082
+      "path": ".lovable/plan/plano-de-implementação-módulo-de-orçamento-e-precificação-os-2026-08-20.md",
+      "bytes": 1753
     },
     {
-      "path": "src/lib/lovable-error-reporting.ts",
-      "bytes": 1739
+      "path": ".lovable/plan/sequência-da-os-organizar-a-lógica-do-fluxo-2026-09-14.md",
+      "bytes": 4811
     },
     {
-      "path": "src/lib/os-id.ts",
-      "bytes": 475
+      "path": ".lovable/plan/vendedores-conectados-ao-banco-real-2026-09-12.md",
+      "bytes": 3316
     },
     {
-      "path": "src/lib/fila-offline.ts",
-      "bytes": 1886
+      "path": ".lovable/plan/plano-tela-1-login-do-erp-alternativa-hidráulica-2026-08-16.md",
+      "bytes": 1850
     },
     {
-      "path": "src/lib/error-page.ts",
-      "bytes": 1371
+      "path": ".lovable/plan/melhorias-de-eficiência-e-experiência-2026-09-15.md",
+      "bytes": 3543
     },
     {
-      "path": "src/lib/proposta-publica.functions.ts",
-      "bytes": 4198
+      "path": ".lovable/plan/plano-implementação-do-dashboard-industrial-dinâmico-tela-2-2026-08-16.md",
+      "bytes": 1616
     },
     {
-      "path": "src/lib/log-executor.ts",
-      "bytes": 356
+      "path": ".lovable/plan/plan-database-sync-and-schema-update-2026-08-23.md",
+      "bytes": 1550
     },
     {
-      "path": "src/lib/orcamento-calculos.ts",
-      "bytes": 1989
+      "path": ".lovable/plan/sistema-de-notificações-app-e-mail-por-perfil-2026-09-16.md",
+      "bytes": 2874
     },
     {
-      "path": "src/lib/brasilapi.ts",
-      "bytes": 3005
+      "path": ".lovable/plan/plan-fix-os-creation-foreign-key-error-2026-08-23.md",
+      "bytes": 1605
     },
     {
-      "path": "src/lib/os-fluxo.ts",
-      "bytes": 9363
+      "path": ".lovable/plan/plano-de-refatoração-e-diagnóstico-alternativa-hidráulica-2026-08-23.md",
+      "bytes": 2273
     },
     {
-      "path": "src/lib/admin-usuarios.functions.ts",
-      "bytes": 7348
+      "path": ".lovable/plan/plano-de-implementação-tela-de-nova-os-e-triagem-2026-08-16.md",
+      "bytes": 1907
     },
     {
-      "path": "src/lib/utils.ts",
-      "bytes": 169
+      "path": ".lovable/plan/plano-de-ajustes-remoção-de-módulos-e-refinamento-de-ui-2026-08-18.md",
+      "bytes": 1998
     },
     {
-      "path": "src/lib/comissao.ts",
-      "bytes": 4152
+      "path": ".lovable/plan/unificar-em-um-único-banco-de-dados-2026-09-11.md",
+      "bytes": 2958
     },
     {
-      "path": "src/lib/cliente-vendedor.ts",
-      "bytes": 1544
+      "path": ".lovable/plan/plan-fase-01-ajuste-da-tela-de-login-2026-08-16.md",
+      "bytes": 2460
     },
     {
-      "path": "src/utils/export.ts",
-      "bytes": 1249
+      "path": ".lovable/plan/diagnóstico-de-conexão-e-dados-2026-08-23.md",
+      "bytes": 1819
     },
     {
-      "path": "src/components/PendenciasOsCard.tsx",
-      "bytes": 3441
+      "path": ".lovable/plan/plan-supabase-crud-integration-for-alternativa-hidráulica-2026-08-18.md",
+      "bytes": 2688
     },
     {
-      "path": "src/components/FotoThumb.tsx",
-      "bytes": 4637
+      "path": ".lovable/plan/plano-de-refatoração-tela-de-detalhes-do-cliente-2026-08-19.md",
+      "bytes": 1756
     },
     {
-      "path": "src/components/AlertaOrcamentosCard.tsx",
-      "bytes": 11105
+      "path": ".lovable/plan/plano-de-implementação-módulo-financeiro-avançado-alternativ-2026-08-19.md",
+      "bytes": 2064
     },
     {
-      "path": "src/components/OsAtrasadasDialog.tsx",
-      "bytes": 3762
+      "path": ".lovable/plan/plano-de-refatoração-do-checklist-da-os-2026-08-19.md",
+      "bytes": 1811
     },
     {
-      "path": "src/components/OrcamentoEnvioCard.tsx",
-      "bytes": 9239
+      "path": ".lovable/plan/plano-de-informação-de-acesso-2026-08-23.md",
+      "bytes": 1207
     },
     {
-      "path": "src/components/NotasInternasOs.tsx",
-      "bytes": 6863
+      "path": ".lovable/plan/reestilização-da-tela-de-fornecedores-com-mini-dashboards-me-2026-09-15.md",
+      "bytes": 2553
     },
     {
-      "path": "src/components/BancadasDialog.tsx",
-      "bytes": 16351
+      "path": ".lovable/plan/painel-do-gestor-o-que-precisa-ser-feito-e-onde-está-cada-co-2026-09-17.md",
+      "bytes": 2762
     },
     {
-      "path": "src/components/BuscaGlobal.tsx",
-      "bytes": 6285
+      "path": ".lovable/plan/plan-gestão-de-vendedores-comissões-2026-08-20.md",
+      "bytes": 1467
     },
     {
-      "path": "src/components/FiltrosSalvos.tsx",
-      "bytes": 5133
+      "path": ".lovable/plan/plan-rename-equipment-types-table-to-singular-2026-08-23.md",
+      "bytes": 1299
     },
     {
-      "path": "src/components/NotificacoesSino.tsx",
-      "bytes": 6055
+      "path": ".lovable/plan/plano-de-sincronização-do-backend-com-supabase-2026-08-23.md",
+      "bytes": 2210
+    },
+    {
+      "path": ".lovable/plan/plano-de-refatoração-autenticação-direta-por-e-mail-e-senha-2026-08-17.md",
+      "bytes": 1823
+    },
+    {
+      "path": ".lovable/plan/plan-agricultural-login-screen-implementation-2026-08-16.md",
+      "bytes": 1284
+    },
+    {
+      "path": ".lovable/plan/plano-de-implementação-rbac-e-detalhes-do-cliente-2026-08-19.md",
+      "bytes": 2075
+    },
+    {
+      "path": ".lovable/plan/plano-de-implementação-formulários-dashboard-dinâmico-e-expo-2026-08-18.md",
+      "bytes": 2222
+    },
+    {
+      "path": ".lovable/plan/alerta-de-orçamentos-nos-dashboards-2026-09-14.md",
+      "bytes": 1409
+    },
+    {
+      "path": "src/components/PecasDialog.tsx",
+      "bytes": 8694
     },
     {
       "path": "src/components/CustosOsPanel.tsx",
       "bytes": 26704
     },
     {
-      "path": "src/components/ClientOnly.tsx",
-      "bytes": 370
+      "path": "src/components/AlertaOrcamentosCard.tsx",
+      "bytes": 11105
     },
     {
-      "path": "src/components/PainelGestorOs.tsx",
-      "bytes": 12954
+      "path": "src/components/NotificacoesSino.tsx",
+      "bytes": 6055
+    },
+    {
+      "path": "src/components/NotasInternasOs.tsx",
+      "bytes": 6863
+    },
+    {
+      "path": "src/components/FotoThumb.tsx",
+      "bytes": 4637
+    },
+    {
+      "path": "src/components/GuiaExecucaoOs.tsx",
+      "bytes": 35089
     },
     {
       "path": "src/components/BotaoConsultaCnpj.tsx",
       "bytes": 1810
+    },
+    {
+      "path": "src/components/BancadasDialog.tsx",
+      "bytes": 16351
+    },
+    {
+      "path": "src/components/FiltrosSalvos.tsx",
+      "bytes": 5133
+    },
+    {
+      "path": "src/components/OsAtrasadasDialog.tsx",
+      "bytes": 3762
+    },
+    {
+      "path": "src/components/BuscaGlobal.tsx",
+      "bytes": 6285
+    },
+    {
+      "path": "src/components/OrcamentoEnvioCard.tsx",
+      "bytes": 9239
     },
     {
       "path": "src/components/LembretesCard.tsx",
@@ -626,40 +534,328 @@
       "bytes": 11351
     },
     {
+      "path": "src/components/PainelGestorOs.tsx",
+      "bytes": 12954
+    },
+    {
+      "path": "src/components/PendenciasOsCard.tsx",
+      "bytes": 3441
+    },
+    {
       "path": "src/components/TerceirosDialog.tsx",
       "bytes": 12047
     },
     {
-      "path": "src/components/GuiaExecucaoOs.tsx",
-      "bytes": 35089
+      "path": "src/components/ClientOnly.tsx",
+      "bytes": 370
     },
     {
-      "path": "src/components/PecasDialog.tsx",
-      "bytes": 8694
+      "path": "src/lib/orcamento-calculos.ts",
+      "bytes": 1989
     },
     {
-      "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11390
+      "path": "src/lib/log-executor.ts",
+      "bytes": 356
     },
     {
-      "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 42296
+      "path": "src/lib/proposta-publica.functions.ts",
+      "bytes": 4198
     },
     {
-      "path": "src/routes/_authenticated/route.tsx",
-      "bytes": 3334
+      "path": "src/lib/error-page.ts",
+      "bytes": 1371
+    },
+    {
+      "path": "src/lib/orcamento.ts",
+      "bytes": 4082
+    },
+    {
+      "path": "src/lib/comissao.ts",
+      "bytes": 4152
+    },
+    {
+      "path": "src/lib/brasilapi.ts",
+      "bytes": 3524
+    },
+    {
+      "path": "src/lib/os-id.ts",
+      "bytes": 475
+    },
+    {
+      "path": "src/lib/lovable-error-reporting.ts",
+      "bytes": 1739
+    },
+    {
+      "path": "src/lib/admin-usuarios.functions.ts",
+      "bytes": 7348
+    },
+    {
+      "path": "src/lib/fila-offline.ts",
+      "bytes": 1886
+    },
+    {
+      "path": "src/lib/cliente-vendedor.ts",
+      "bytes": 1544
+    },
+    {
+      "path": "src/lib/error-capture.ts",
+      "bytes": 2898
+    },
+    {
+      "path": "src/lib/os-fluxo.ts",
+      "bytes": 9363
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "bytes": 169
+    },
+    {
+      "path": "src/utils/export.ts",
+      "bytes": 1249
+    },
+    {
+      "path": "src/routes/proposta.$token.tsx",
+      "bytes": 2570
+    },
+    {
+      "path": "src/routes/reset-password.tsx",
+      "bytes": 5898
+    },
+    {
+      "path": "src/routes/__root.tsx",
+      "bytes": 5009
+    },
+    {
+      "path": "src/routes/README.md",
+      "bytes": 835
+    },
+    {
+      "path": "src/routes/index.tsx",
+      "bytes": 19582
+    },
+    {
+      "path": "src/hooks/useUserRole.ts",
+      "bytes": 1132
+    },
+    {
+      "path": "src/hooks/use-mobile.tsx",
+      "bytes": 576
+    },
+    {
+      "path": "src/integrations/supabase/app-client.ts",
+      "bytes": 1354
+    },
+    {
+      "path": "src/integrations/supabase/auth-middleware.ts",
+      "bytes": 3234
+    },
+    {
+      "path": "src/integrations/supabase/previewAuthStorage.ts",
+      "bytes": 4336
+    },
+    {
+      "path": "src/integrations/supabase/types.ts",
+      "bytes": 58755
+    },
+    {
+      "path": "src/integrations/supabase/client.ts",
+      "bytes": 960
+    },
+    {
+      "path": "src/integrations/supabase/auth-attacher.ts",
+      "bytes": 611
+    },
+    {
+      "path": "src/integrations/supabase/client.server.ts",
+      "bytes": 480
+    },
+    {
+      "path": "src/components/ui/dropdown-menu.tsx",
+      "bytes": 7565
+    },
+    {
+      "path": "src/components/ui/input-otp.tsx",
+      "bytes": 2232
+    },
+    {
+      "path": "src/components/ui/command.tsx",
+      "bytes": 4876
+    },
+    {
+      "path": "src/components/ui/context-menu.tsx",
+      "bytes": 7360
+    },
+    {
+      "path": "src/components/ui/checkbox.tsx",
+      "bytes": 1043
+    },
+    {
+      "path": "src/components/ui/resizable.tsx",
+      "bytes": 1552
+    },
+    {
+      "path": "src/components/ui/separator.tsx",
+      "bytes": 723
+    },
+    {
+      "path": "src/components/ui/table.tsx",
+      "bytes": 2820
+    },
+    {
+      "path": "src/components/ui/textarea.tsx",
+      "bytes": 677
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "bytes": 1894
+    },
+    {
+      "path": "src/components/ui/pagination.tsx",
+      "bytes": 2739
+    },
+    {
+      "path": "src/components/ui/calendar.tsx",
+      "bytes": 7226
+    },
+    {
+      "path": "src/components/ui/toggle.tsx",
+      "bytes": 1534
+    },
+    {
+      "path": "src/components/ui/alert.tsx",
+      "bytes": 1589
+    },
+    {
+      "path": "src/components/ui/sidebar.tsx",
+      "bytes": 23975
+    },
+    {
+      "path": "src/components/ui/toggle-group.tsx",
+      "bytes": 1752
+    },
+    {
+      "path": "src/components/ui/sonner.tsx",
+      "bytes": 734
+    },
+    {
+      "path": "src/components/ui/select.tsx",
+      "bytes": 5749
+    },
+    {
+      "path": "src/components/ui/switch.tsx",
+      "bytes": 1156
+    },
+    {
+      "path": "src/components/ui/navigation-menu.tsx",
+      "bytes": 5152
+    },
+    {
+      "path": "src/components/ui/collapsible.tsx",
+      "bytes": 335
+    },
+    {
+      "path": "src/components/ui/popover.tsx",
+      "bytes": 1352
+    },
+    {
+      "path": "src/components/ui/slider.tsx",
+      "bytes": 1025
+    },
+    {
+      "path": "src/components/ui/sheet.tsx",
+      "bytes": 4248
+    },
+    {
+      "path": "src/components/ui/label.tsx",
+      "bytes": 716
+    },
+    {
+      "path": "src/components/ui/card.tsx",
+      "bytes": 1817
+    },
+    {
+      "path": "src/components/ui/avatar.tsx",
+      "bytes": 1413
+    },
+    {
+      "path": "src/components/ui/breadcrumb.tsx",
+      "bytes": 2749
+    },
+    {
+      "path": "src/components/ui/aspect-ratio.tsx",
+      "bytes": 143
+    },
+    {
+      "path": "src/components/ui/menubar.tsx",
+      "bytes": 8515
+    },
+    {
+      "path": "src/components/ui/hover-card.tsx",
+      "bytes": 1246
+    },
+    {
+      "path": "src/components/ui/chart.tsx",
+      "bytes": 10051
+    },
+    {
+      "path": "src/components/ui/carousel.tsx",
+      "bytes": 6200
+    },
+    {
+      "path": "src/components/ui/badge.tsx",
+      "bytes": 1123
+    },
+    {
+      "path": "src/components/ui/form.tsx",
+      "bytes": 4201
+    },
+    {
+      "path": "src/components/ui/skeleton.tsx",
+      "bytes": 239
+    },
+    {
+      "path": "src/components/ui/drawer.tsx",
+      "bytes": 2973
+    },
+    {
+      "path": "src/components/ui/radio-group.tsx",
+      "bytes": 1405
+    },
+    {
+      "path": "src/components/ui/progress.tsx",
+      "bytes": 781
+    },
+    {
+      "path": "src/components/ui/input.tsx",
+      "bytes": 776
+    },
+    {
+      "path": "src/components/ui/dialog.tsx",
+      "bytes": 3648
+    },
+    {
+      "path": "src/components/ui/alert-dialog.tsx",
+      "bytes": 4183
+    },
+    {
+      "path": "src/components/ui/accordion.tsx",
+      "bytes": 2015
+    },
+    {
+      "path": "src/components/ui/tooltip.tsx",
+      "bytes": 1278
+    },
+    {
+      "path": "src/components/ui/tabs.tsx",
+      "bytes": 1934
+    },
+    {
+      "path": "src/components/ui/scroll-area.tsx",
+      "bytes": 1635
     },
     {
       "path": "src/routes/_authenticated/historico.tsx",
       "bytes": 11420
-    },
-    {
-      "path": "src/routes/_authenticated/orcamento.tsx",
-      "bytes": 17082
-    },
-    {
-      "path": "src/routes/_authenticated/terceiros.tsx",
-      "bytes": 26165
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
@@ -670,20 +866,32 @@
       "bytes": 13372
     },
     {
-      "path": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "bytes": 7824
+      "path": "src/routes/_authenticated/configuracoes.tsx",
+      "bytes": 42296
     },
     {
-      "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "bytes": 11228
+      "path": "src/routes/_authenticated/orcamento.tsx",
+      "bytes": 17082
     },
     {
-      "path": "src/routes/_authenticated/dashboard/index.tsx",
-      "bytes": 901
+      "path": "src/routes/_authenticated/route.tsx",
+      "bytes": 3334
     },
     {
-      "path": "src/routes/_authenticated/dashboard/diretor.tsx",
-      "bytes": 12287
+      "path": "src/routes/_authenticated/dashboard.tsx",
+      "bytes": 11390
+    },
+    {
+      "path": "src/routes/_authenticated/terceiros.tsx",
+      "bytes": 34433
+    },
+    {
+      "path": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "bytes": 9865
+    },
+    {
+      "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "bytes": 25175
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
@@ -694,280 +902,76 @@
       "bytes": 17957
     },
     {
-      "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "bytes": 25175
+      "path": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "bytes": 12287
     },
     {
-      "path": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "bytes": 9865
-    },
-    {
-      "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "bytes": 9933
-    },
-    {
-      "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 32077
-    },
-    {
-      "path": "src/routes/_authenticated/admin/auditoria.tsx",
-      "bytes": 23759
-    },
-    {
-      "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 47139
+      "path": "src/routes/_authenticated/dashboard/index.tsx",
+      "bytes": 901
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
       "bytes": 25511
     },
     {
-      "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "bytes": 14501
+      "path": "src/routes/_authenticated/clientes/index.tsx",
+      "bytes": 47139
     },
     {
-      "path": "src/routes/_authenticated/os/index.tsx",
-      "bytes": 18473
+      "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "bytes": 11228
     },
     {
-      "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 36805
-    },
-    {
-      "path": "src/routes/_authenticated/os/$id.tsx",
-      "bytes": 167
-    },
-    {
-      "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 118198
-    },
-    {
-      "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 74242
-    },
-    {
-      "path": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "bytes": 4566
+      "path": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "bytes": 7824
     },
     {
       "path": "src/routes/_authenticated/os/$id.oficina.tsx",
       "bytes": 11183
     },
     {
+      "path": "src/routes/_authenticated/os/$id.tsx",
+      "bytes": 167
+    },
+    {
+      "path": "src/routes/_authenticated/os/nova.tsx",
+      "bytes": 36805
+    },
+    {
+      "path": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "bytes": 4566
+    },
+    {
+      "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "bytes": 74242
+    },
+    {
+      "path": "src/routes/_authenticated/os/index.tsx",
+      "bytes": 18473
+    },
+    {
+      "path": "src/routes/_authenticated/os/$id.index.tsx",
+      "bytes": 118198
+    },
+    {
+      "path": "src/routes/_authenticated/admin/vendedores.tsx",
+      "bytes": 32077
+    },
+    {
+      "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "bytes": 9933
+    },
+    {
+      "path": "src/routes/_authenticated/admin/auditoria.tsx",
+      "bytes": 23759
+    },
+    {
+      "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "bytes": 14501
+    },
+    {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
       "bytes": 48410
-    },
-    {
-      "path": "src/integrations/supabase/client.ts",
-      "bytes": 960
-    },
-    {
-      "path": "src/integrations/supabase/client.server.ts",
-      "bytes": 480
-    },
-    {
-      "path": "src/integrations/supabase/auth-attacher.ts",
-      "bytes": 611
-    },
-    {
-      "path": "src/integrations/supabase/auth-middleware.ts",
-      "bytes": 3234
-    },
-    {
-      "path": "src/integrations/supabase/app-client.ts",
-      "bytes": 1354
-    },
-    {
-      "path": "src/integrations/supabase/previewAuthStorage.ts",
-      "bytes": 4336
-    },
-    {
-      "path": "src/integrations/supabase/types.ts",
-      "bytes": 57515
-    },
-    {
-      "path": "src/components/ui/alert.tsx",
-      "bytes": 1589
-    },
-    {
-      "path": "src/components/ui/progress.tsx",
-      "bytes": 781
-    },
-    {
-      "path": "src/components/ui/resizable.tsx",
-      "bytes": 1552
-    },
-    {
-      "path": "src/components/ui/calendar.tsx",
-      "bytes": 7226
-    },
-    {
-      "path": "src/components/ui/tooltip.tsx",
-      "bytes": 1278
-    },
-    {
-      "path": "src/components/ui/scroll-area.tsx",
-      "bytes": 1635
-    },
-    {
-      "path": "src/components/ui/breadcrumb.tsx",
-      "bytes": 2749
-    },
-    {
-      "path": "src/components/ui/command.tsx",
-      "bytes": 4876
-    },
-    {
-      "path": "src/components/ui/input.tsx",
-      "bytes": 776
-    },
-    {
-      "path": "src/components/ui/badge.tsx",
-      "bytes": 1123
-    },
-    {
-      "path": "src/components/ui/toggle.tsx",
-      "bytes": 1534
-    },
-    {
-      "path": "src/components/ui/navigation-menu.tsx",
-      "bytes": 5152
-    },
-    {
-      "path": "src/components/ui/checkbox.tsx",
-      "bytes": 1043
-    },
-    {
-      "path": "src/components/ui/table.tsx",
-      "bytes": 2820
-    },
-    {
-      "path": "src/components/ui/skeleton.tsx",
-      "bytes": 239
-    },
-    {
-      "path": "src/components/ui/label.tsx",
-      "bytes": 716
-    },
-    {
-      "path": "src/components/ui/drawer.tsx",
-      "bytes": 2973
-    },
-    {
-      "path": "src/components/ui/avatar.tsx",
-      "bytes": 1413
-    },
-    {
-      "path": "src/components/ui/hover-card.tsx",
-      "bytes": 1246
-    },
-    {
-      "path": "src/components/ui/switch.tsx",
-      "bytes": 1156
-    },
-    {
-      "path": "src/components/ui/radio-group.tsx",
-      "bytes": 1405
-    },
-    {
-      "path": "src/components/ui/sidebar.tsx",
-      "bytes": 23975
-    },
-    {
-      "path": "src/components/ui/popover.tsx",
-      "bytes": 1352
-    },
-    {
-      "path": "src/components/ui/carousel.tsx",
-      "bytes": 6200
-    },
-    {
-      "path": "src/components/ui/toggle-group.tsx",
-      "bytes": 1752
-    },
-    {
-      "path": "src/components/ui/context-menu.tsx",
-      "bytes": 7360
-    },
-    {
-      "path": "src/components/ui/button.tsx",
-      "bytes": 1894
-    },
-    {
-      "path": "src/components/ui/dropdown-menu.tsx",
-      "bytes": 7565
-    },
-    {
-      "path": "src/components/ui/collapsible.tsx",
-      "bytes": 335
-    },
-    {
-      "path": "src/components/ui/dialog.tsx",
-      "bytes": 3648
-    },
-    {
-      "path": "src/components/ui/form.tsx",
-      "bytes": 4201
-    },
-    {
-      "path": "src/components/ui/slider.tsx",
-      "bytes": 1025
-    },
-    {
-      "path": "src/components/ui/select.tsx",
-      "bytes": 5749
-    },
-    {
-      "path": "src/components/ui/menubar.tsx",
-      "bytes": 8515
-    },
-    {
-      "path": "src/components/ui/aspect-ratio.tsx",
-      "bytes": 143
-    },
-    {
-      "path": "src/components/ui/sheet.tsx",
-      "bytes": 4248
-    },
-    {
-      "path": "src/components/ui/card.tsx",
-      "bytes": 1817
-    },
-    {
-      "path": "src/components/ui/alert-dialog.tsx",
-      "bytes": 4183
-    },
-    {
-      "path": "src/components/ui/pagination.tsx",
-      "bytes": 2739
-    },
-    {
-      "path": "src/components/ui/separator.tsx",
-      "bytes": 723
-    },
-    {
-      "path": "src/components/ui/tabs.tsx",
-      "bytes": 1934
-    },
-    {
-      "path": "src/components/ui/chart.tsx",
-      "bytes": 10051
-    },
-    {
-      "path": "src/components/ui/textarea.tsx",
-      "bytes": 677
-    },
-    {
-      "path": "src/components/ui/accordion.tsx",
-      "bytes": 2015
-    },
-    {
-      "path": "src/components/ui/sonner.tsx",
-      "bytes": 734
-    },
-    {
-      "path": "src/components/ui/input-otp.tsx",
-      "bytes": 2232
     }
   ],
   "dependencies": [
@@ -1148,16 +1152,16 @@
       "target": "./start.ts"
     },
     {
-      "source": "src/start.ts",
-      "target": "@tanstack/react-start"
+      "source": "src/server.ts",
+      "target": "./lib/error-capture"
     },
     {
-      "source": "src/start.ts",
+      "source": "src/server.ts",
       "target": "./lib/error-page"
     },
     {
-      "source": "src/start.ts",
-      "target": "@/integrations/supabase/auth-attacher"
+      "source": "src/server.ts",
+      "target": "@tanstack/react-start/server-entry"
     },
     {
       "source": "src/router.tsx",
@@ -1172,16 +1176,756 @@
       "target": "./routeTree.gen"
     },
     {
-      "source": "src/server.ts",
-      "target": "./lib/error-capture"
+      "source": "src/start.ts",
+      "target": "@tanstack/react-start"
     },
     {
-      "source": "src/server.ts",
+      "source": "src/start.ts",
       "target": "./lib/error-page"
     },
     {
-      "source": "src/server.ts",
-      "target": "@tanstack/react-start/server-entry"
+      "source": "src/start.ts",
+      "target": "@/integrations/supabase/auth-attacher"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/PecasDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/FotoThumb"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/components/ui/popover"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/NotasInternasOs.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/FotoThumb.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/progress"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/GuiaExecucaoOs.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/BotaoConsultaCnpj.tsx",
+      "target": "@/lib/brasilapi"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/BancadasDialog.tsx",
+      "target": "@/components/PecasDialog"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/components/FiltrosSalvos.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/OsAtrasadasDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "@/components/ui/command"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/BuscaGlobal.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/OrcamentoEnvioCard.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/PropostaDocumento.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/PropostaDocumento.tsx",
+      "target": "@/lib/orcamento-calculos"
+    },
+    {
+      "source": "src/components/PropostaDocumento.tsx",
+      "target": "@/lib/orcamento"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/components/PainelGestorOs.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/components/PendenciasOsCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/PendenciasOsCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/PendenciasOsCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/PendenciasOsCard.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/TerceirosDialog.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ClientOnly.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/lib/log-executor.ts",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/lib/proposta-publica.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/proposta-publica.functions.ts",
+      "target": "zod"
+    },
+    {
+      "source": "src/lib/orcamento.ts",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/lib/admin-usuarios.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/cliente-vendedor.ts",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/lib/utils.ts",
+      "target": "clsx"
+    },
+    {
+      "source": "src/lib/utils.ts",
+      "target": "tailwind-merge"
+    },
+    {
+      "source": "src/utils/export.ts",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@/components/PropostaDocumento"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@/lib/proposta-publica.functions"
+    },
+    {
+      "source": "src/routes/proposta.$token.tsx",
+      "target": "@/lib/orcamento"
     },
     {
       "source": "src/routes/reset-password.tsx",
@@ -1292,792 +2036,860 @@
       "target": "@/components/ui/select"
     },
     {
-      "source": "src/routes/proposta.$token.tsx",
+      "source": "src/hooks/useUserRole.ts",
       "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/proposta.$token.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/proposta.$token.tsx",
-      "target": "@tanstack/react-start"
-    },
-    {
-      "source": "src/routes/proposta.$token.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/proposta.$token.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/proposta.$token.tsx",
-      "target": "@/components/PropostaDocumento"
-    },
-    {
-      "source": "src/routes/proposta.$token.tsx",
-      "target": "@/lib/proposta-publica.functions"
-    },
-    {
-      "source": "src/routes/proposta.$token.tsx",
-      "target": "@/lib/orcamento"
     },
     {
       "source": "src/hooks/use-mobile.tsx",
       "target": "react"
     },
     {
-      "source": "src/hooks/useUserRole.ts",
-      "target": "@tanstack/react-router"
+      "source": "src/integrations/supabase/app-client.ts",
+      "target": "@supabase/supabase-js"
     },
     {
-      "source": "src/lib/orcamento.ts",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/lib/proposta-publica.functions.ts",
+      "source": "src/integrations/supabase/auth-middleware.ts",
       "target": "@tanstack/react-start"
     },
     {
-      "source": "src/lib/proposta-publica.functions.ts",
-      "target": "zod"
+      "source": "src/integrations/supabase/auth-middleware.ts",
+      "target": "@tanstack/react-start/server"
     },
     {
-      "source": "src/lib/log-executor.ts",
-      "target": "@/integrations/supabase/client"
+      "source": "src/integrations/supabase/auth-middleware.ts",
+      "target": "@supabase/supabase-js"
     },
     {
-      "source": "src/lib/admin-usuarios.functions.ts",
+      "source": "src/integrations/supabase/auth-middleware.ts",
+      "target": "./types"
+    },
+    {
+      "source": "src/integrations/supabase/client.ts",
+      "target": "@supabase/supabase-js"
+    },
+    {
+      "source": "src/integrations/supabase/auth-attacher.ts",
       "target": "@tanstack/react-start"
     },
     {
-      "source": "src/lib/utils.ts",
-      "target": "clsx"
+      "source": "src/integrations/supabase/auth-attacher.ts",
+      "target": "./client"
     },
     {
-      "source": "src/lib/utils.ts",
-      "target": "tailwind-merge"
+      "source": "src/integrations/supabase/client.server.ts",
+      "target": "@supabase/supabase-js"
     },
     {
-      "source": "src/lib/cliente-vendedor.ts",
-      "target": "@/integrations/supabase/client"
+      "source": "src/integrations/supabase/client.server.ts",
+      "target": "./types"
     },
     {
-      "source": "src/utils/export.ts",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/PendenciasOsCard.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/PendenciasOsCard.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/components/PendenciasOsCard.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/PendenciasOsCard.tsx",
-      "target": "@/lib/os-fluxo"
-    },
-    {
-      "source": "src/components/FotoThumb.tsx",
+      "source": "src/components/ui/dropdown-menu.tsx",
       "target": "react"
     },
     {
-      "source": "src/components/FotoThumb.tsx",
-      "target": "@tanstack/react-query"
+      "source": "src/components/ui/dropdown-menu.tsx",
+      "target": "@radix-ui/react-dropdown-menu"
     },
     {
-      "source": "src/components/FotoThumb.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/FotoThumb.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/FotoThumb.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/FotoThumb.tsx",
+      "source": "src/components/ui/dropdown-menu.tsx",
       "target": "lucide-react"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "source": "src/components/ui/dropdown-menu.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/input-otp.tsx",
       "target": "react"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "@tanstack/react-router"
+      "source": "src/components/ui/input-otp.tsx",
+      "target": "input-otp"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "source": "src/components/ui/input-otp.tsx",
       "target": "lucide-react"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "@/components/ui/card"
+      "source": "src/components/ui/input-otp.tsx",
+      "target": "@/lib/utils"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "@/components/ui/button"
+      "source": "src/components/ui/command.tsx",
+      "target": "react"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "@/components/ui/badge"
+      "source": "src/components/ui/command.tsx",
+      "target": "@radix-ui/react-dialog"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
+      "source": "src/components/ui/command.tsx",
+      "target": "cmdk"
+    },
+    {
+      "source": "src/components/ui/command.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/command.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/command.tsx",
       "target": "@/components/ui/dialog"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "@/integrations/supabase/client"
+      "source": "src/components/ui/context-menu.tsx",
+      "target": "react"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "@/lib/os-fluxo"
+      "source": "src/components/ui/context-menu.tsx",
+      "target": "@radix-ui/react-context-menu"
     },
     {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/components/AlertaOrcamentosCard.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/OsAtrasadasDialog.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/components/OsAtrasadasDialog.tsx",
+      "source": "src/components/ui/context-menu.tsx",
       "target": "lucide-react"
     },
     {
-      "source": "src/components/OsAtrasadasDialog.tsx",
-      "target": "@/components/ui/badge"
+      "source": "src/components/ui/context-menu.tsx",
+      "target": "@/lib/utils"
     },
     {
-      "source": "src/components/OsAtrasadasDialog.tsx",
+      "source": "src/components/ui/checkbox.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/checkbox.tsx",
+      "target": "@radix-ui/react-checkbox"
+    },
+    {
+      "source": "src/components/ui/checkbox.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/checkbox.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/resizable.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/resizable.tsx",
+      "target": "react-resizable-panels"
+    },
+    {
+      "source": "src/components/ui/resizable.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/separator.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/separator.tsx",
+      "target": "@radix-ui/react-separator"
+    },
+    {
+      "source": "src/components/ui/separator.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/table.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/table.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/textarea.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/textarea.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/button.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/button.tsx",
+      "target": "@radix-ui/react-slot"
+    },
+    {
+      "source": "src/components/ui/button.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/button.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/pagination.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/pagination.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/pagination.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/pagination.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/ui/calendar.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/calendar.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/calendar.tsx",
+      "target": "react-day-picker"
+    },
+    {
+      "source": "src/components/ui/calendar.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/calendar.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/ui/toggle.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/toggle.tsx",
+      "target": "@radix-ui/react-toggle"
+    },
+    {
+      "source": "src/components/ui/toggle.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/toggle.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/alert.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/alert.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/alert.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "@radix-ui/react-slot"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "@/hooks/use-mobile"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
       "target": "@/components/ui/input"
     },
     {
-      "source": "src/components/OsAtrasadasDialog.tsx",
-      "target": "react"
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "@/components/ui/separator"
     },
     {
-      "source": "src/components/OsAtrasadasDialog.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "@/components/ui/textarea"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/OrcamentoEnvioCard.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "@/components/ui/textarea"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/NotasInternasOs.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/BancadasDialog.tsx",
-      "target": "@/components/PecasDialog"
-    },
-    {
-      "source": "src/components/BuscaGlobal.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/BuscaGlobal.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/components/BuscaGlobal.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/BuscaGlobal.tsx",
-      "target": "@/components/ui/command"
-    },
-    {
-      "source": "src/components/BuscaGlobal.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/BuscaGlobal.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/FiltrosSalvos.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/FiltrosSalvos.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/FiltrosSalvos.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/FiltrosSalvos.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/FiltrosSalvos.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/FiltrosSalvos.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/components/FiltrosSalvos.tsx",
-      "target": "@/components/ui/dropdown-menu"
-    },
-    {
-      "source": "src/components/FiltrosSalvos.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/NotificacoesSino.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/NotificacoesSino.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/components/NotificacoesSino.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/NotificacoesSino.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/NotificacoesSino.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/NotificacoesSino.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/NotificacoesSino.tsx",
-      "target": "@/components/ui/popover"
-    },
-    {
-      "source": "src/components/NotificacoesSino.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/hooks/useUserRole"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/textarea"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/skeleton"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/checkbox"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "@/components/FotoThumb"
-    },
-    {
-      "source": "src/components/CustosOsPanel.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ClientOnly.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@/hooks/useUserRole"
-    },
-    {
-      "source": "src/components/PainelGestorOs.tsx",
-      "target": "@/lib/os-fluxo"
-    },
-    {
-      "source": "src/components/BotaoConsultaCnpj.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/BotaoConsultaCnpj.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/BotaoConsultaCnpj.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/BotaoConsultaCnpj.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/BotaoConsultaCnpj.tsx",
-      "target": "@/lib/brasilapi"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/LembretesCard.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/components/PropostaDocumento.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/PropostaDocumento.tsx",
-      "target": "@/lib/orcamento-calculos"
-    },
-    {
-      "source": "src/components/PropostaDocumento.tsx",
-      "target": "@/lib/orcamento"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/TerceirosDialog.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/hooks/useUserRole"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/lib/os-fluxo"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/textarea"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/skeleton"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/progress"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/checkbox"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/GuiaExecucaoOs.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/components/PecasDialog.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/NotificacoesSino"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/ui/dropdown-menu"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
+      "source": "src/components/ui/sidebar.tsx",
       "target": "@/components/ui/sheet"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/components/ui/sidebar.tsx",
+      "target": "@/components/ui/tooltip"
+    },
+    {
+      "source": "src/components/ui/toggle-group.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/toggle-group.tsx",
+      "target": "@radix-ui/react-toggle-group"
+    },
+    {
+      "source": "src/components/ui/toggle-group.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/toggle-group.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/toggle-group.tsx",
+      "target": "@/components/ui/toggle"
+    },
+    {
+      "source": "src/components/ui/sonner.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/ui/select.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/select.tsx",
+      "target": "@radix-ui/react-select"
+    },
+    {
+      "source": "src/components/ui/select.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/select.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/switch.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/switch.tsx",
+      "target": "@radix-ui/react-switch"
+    },
+    {
+      "source": "src/components/ui/switch.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/navigation-menu.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/navigation-menu.tsx",
+      "target": "@radix-ui/react-navigation-menu"
+    },
+    {
+      "source": "src/components/ui/navigation-menu.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/navigation-menu.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/navigation-menu.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/collapsible.tsx",
+      "target": "@radix-ui/react-collapsible"
+    },
+    {
+      "source": "src/components/ui/popover.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/popover.tsx",
+      "target": "@radix-ui/react-popover"
+    },
+    {
+      "source": "src/components/ui/popover.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/slider.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/slider.tsx",
+      "target": "@radix-ui/react-slider"
+    },
+    {
+      "source": "src/components/ui/slider.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/sheet.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/sheet.tsx",
+      "target": "@radix-ui/react-dialog"
+    },
+    {
+      "source": "src/components/ui/sheet.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/sheet.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/sheet.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/label.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/label.tsx",
+      "target": "@radix-ui/react-label"
+    },
+    {
+      "source": "src/components/ui/label.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/label.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/card.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/card.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/avatar.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/avatar.tsx",
+      "target": "@radix-ui/react-avatar"
+    },
+    {
+      "source": "src/components/ui/avatar.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/breadcrumb.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/breadcrumb.tsx",
+      "target": "@radix-ui/react-slot"
+    },
+    {
+      "source": "src/components/ui/breadcrumb.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/breadcrumb.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/aspect-ratio.tsx",
+      "target": "@radix-ui/react-aspect-ratio"
+    },
+    {
+      "source": "src/components/ui/menubar.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/menubar.tsx",
+      "target": "@radix-ui/react-menubar"
+    },
+    {
+      "source": "src/components/ui/menubar.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/menubar.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/hover-card.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/hover-card.tsx",
+      "target": "@radix-ui/react-hover-card"
+    },
+    {
+      "source": "src/components/ui/hover-card.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/chart.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/chart.tsx",
+      "target": "recharts"
+    },
+    {
+      "source": "src/components/ui/chart.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/carousel.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/carousel.tsx",
+      "target": "embla-carousel-react"
+    },
+    {
+      "source": "src/components/ui/carousel.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/carousel.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/carousel.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/ui/badge.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/badge.tsx",
+      "target": "class-variance-authority"
+    },
+    {
+      "source": "src/components/ui/badge.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/form.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/form.tsx",
+      "target": "@radix-ui/react-label"
+    },
+    {
+      "source": "src/components/ui/form.tsx",
+      "target": "@radix-ui/react-slot"
+    },
+    {
+      "source": "src/components/ui/form.tsx",
+      "target": "react-hook-form"
+    },
+    {
+      "source": "src/components/ui/form.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/form.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/components/ui/skeleton.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/drawer.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/drawer.tsx",
+      "target": "vaul"
+    },
+    {
+      "source": "src/components/ui/drawer.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/radio-group.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/radio-group.tsx",
+      "target": "@radix-ui/react-radio-group"
+    },
+    {
+      "source": "src/components/ui/radio-group.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/radio-group.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/progress.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/progress.tsx",
+      "target": "@radix-ui/react-progress"
+    },
+    {
+      "source": "src/components/ui/progress.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/input.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/input.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/dialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/dialog.tsx",
+      "target": "@radix-ui/react-dialog"
+    },
+    {
+      "source": "src/components/ui/dialog.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/dialog.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/alert-dialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/alert-dialog.tsx",
+      "target": "@radix-ui/react-alert-dialog"
+    },
+    {
+      "source": "src/components/ui/alert-dialog.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/alert-dialog.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/ui/accordion.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/accordion.tsx",
+      "target": "@radix-ui/react-accordion"
+    },
+    {
+      "source": "src/components/ui/accordion.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ui/accordion.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/tooltip.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/tooltip.tsx",
+      "target": "@radix-ui/react-tooltip"
+    },
+    {
+      "source": "src/components/ui/tooltip.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/tabs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/tabs.tsx",
+      "target": "@radix-ui/react-tabs"
+    },
+    {
+      "source": "src/components/ui/tabs.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/components/ui/scroll-area.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ui/scroll-area.tsx",
+      "target": "@radix-ui/react-scroll-area"
+    },
+    {
+      "source": "src/components/ui/scroll-area.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/routes/_authenticated/kanban.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "recharts"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/relatorios.tsx",
+      "target": "@/components/ClientOnly"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
@@ -2172,66 +2984,6 @@
       "target": "@/components/ui/alert-dialog"
     },
     {
-      "source": "src/routes/_authenticated/route.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/route.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/route.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/table"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/dropdown-menu"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
       "source": "src/routes/_authenticated/orcamento.tsx",
       "target": "@tanstack/react-router"
     },
@@ -2286,6 +3038,58 @@
     {
       "source": "src/routes/_authenticated/orcamento.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/route.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/route.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/route.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/components/NotificacoesSino"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/components/ui/sheet"
     },
     {
       "source": "src/routes/_authenticated/terceiros.tsx",
@@ -2364,243 +3168,135 @@
       "target": "@/components/ui/textarea"
     },
     {
-      "source": "src/routes/_authenticated/kanban.tsx",
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/BotaoConsultaCnpj"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/lib/brasilapi"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@tanstack/react-router"
     },
     {
-      "source": "src/routes/_authenticated/kanban.tsx",
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "lucide-react"
     },
     {
-      "source": "src/routes/_authenticated/kanban.tsx",
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "react"
     },
     {
-      "source": "src/routes/_authenticated/kanban.tsx",
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@/components/ui/card"
     },
     {
-      "source": "src/routes/_authenticated/kanban.tsx",
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@/components/ui/button"
     },
     {
-      "source": "src/routes/_authenticated/kanban.tsx",
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@/components/ui/input"
     },
     {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "@/components/ui/dropdown-menu"
-    },
-    {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "@/hooks/useUserRole"
-    },
-    {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/routes/_authenticated/kanban.tsx",
-      "target": "@/lib/os-fluxo"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "recharts"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ClientOnly"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/components/ui/separator"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@/components/ui/label"
     },
     {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@/components/ui/select"
     },
     {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@/components/ui/badge"
     },
     {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/separator"
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "sonner"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/index.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@tanstack/react-router"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/index.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "lucide-react"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
-      "target": "recharts"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/ui/card"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/ui/button"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/ui/badge"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
-      "target": "@/components/ClientOnly"
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/progress"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@tanstack/react-query"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/hooks/useUserRole"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/integrations/supabase/client"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "date-fns"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "date-fns/locale"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "react"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "recharts"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/chart"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/AlertaOrcamentosCard"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/LembretesCard"
     },
     {
@@ -2708,388 +3404,64 @@
       "target": "@/components/PainelGestorOs"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
       "target": "@tanstack/react-router"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
       "target": "lucide-react"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/skeleton"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/progress"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/hooks/useUserRole"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "date-fns"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "date-fns/locale"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
       "target": "recharts"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/chart"
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/components/ui/card"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/components/ClientOnly"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
       "target": "@/components/AlertaOrcamentosCard"
     },
     {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
       "target": "@/components/LembretesCard"
     },
     {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "source": "src/routes/_authenticated/dashboard/index.tsx",
       "target": "@tanstack/react-router"
     },
     {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "source": "src/routes/_authenticated/dashboard/index.tsx",
       "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/BotaoConsultaCnpj"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/lib/brasilapi"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/switch"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/table"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/dropdown-menu"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/alert-dialog"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/textarea"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/components/ui/checkbox"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/vendedores.tsx",
-      "target": "@/lib/comissao"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@/components/ui/table"
-    },
-    {
-      "source": "src/routes/_authenticated/admin/auditoria.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/utils/export"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/BotaoConsultaCnpj"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/lib/brasilapi"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/table"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/dropdown-menu"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/checkbox"
-    },
-    {
-      "source": "src/routes/_authenticated/clientes/index.tsx",
-      "target": "@/components/ui/select"
     },
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
@@ -3148,64 +3520,392 @@
       "target": "date-fns/locale"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@tanstack/react-router"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@tanstack/react-query"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/integrations/supabase/client"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "sonner"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/utils/export"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "target": "@/components/FiltrosSalvos"
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/BotaoConsultaCnpj"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/lib/brasilapi"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/card"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/button"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/input"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/badge"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "target": "@/components/ui/checkbox"
-    },
-    {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/table"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/select"
     },
     {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/components/ui/separator"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
+      "target": "@/components/ui/separator"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/lib/fila-offline"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/ui/alert-dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/components/PropostaDocumento"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/lib/orcamento"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/comissao"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/orcamento-calculos"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/lib/orcamento"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/switch"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/OrcamentoEnvioCard"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/ui/dialog"
     },
     {
       "source": "src/routes/_authenticated/os/index.tsx",
@@ -3270,70 +3970,6 @@
     {
       "source": "src/routes/_authenticated/os/index.tsx",
       "target": "@/lib/os-fluxo"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/lib/log-executor"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/components/ui/textarea"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/components/ui/alert-dialog"
-    },
-    {
-      "source": "src/routes/_authenticated/os/nova.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.tsx",
-      "target": "@tanstack/react-router"
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
@@ -3444,168 +4080,248 @@
       "target": "@/components/GuiaExecucaoOs"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@tanstack/react-router"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "lucide-react"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "react"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@tanstack/react-query"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/hooks/useUserRole"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/integrations/supabase/client"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/lib/log-executor"
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/BotaoConsultaCnpj"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "sonner"
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/lib/brasilapi"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/lib/os-fluxo"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/lib/comissao"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/lib/orcamento-calculos"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/lib/orcamento"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/components/ui/card"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/components/ui/button"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/components/ui/input"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/textarea"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/table"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/checkbox"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/switch"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/OrcamentoEnvioCard"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/components/ui/select"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "@/components/PropostaDocumento"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "target": "@/lib/orcamento"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/components/ui/badge"
     },
     {
-      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "target": "@/lib/fila-offline"
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/switch"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/alert-dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/textarea"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/lib/comissao"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/utils/export"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/FiltrosSalvos"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/table"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -3714,710 +4430,6 @@
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
       "target": "lucide-react"
-    },
-    {
-      "source": "src/integrations/supabase/client.ts",
-      "target": "@supabase/supabase-js"
-    },
-    {
-      "source": "src/integrations/supabase/client.server.ts",
-      "target": "@supabase/supabase-js"
-    },
-    {
-      "source": "src/integrations/supabase/client.server.ts",
-      "target": "./types"
-    },
-    {
-      "source": "src/integrations/supabase/auth-attacher.ts",
-      "target": "@tanstack/react-start"
-    },
-    {
-      "source": "src/integrations/supabase/auth-attacher.ts",
-      "target": "./client"
-    },
-    {
-      "source": "src/integrations/supabase/auth-middleware.ts",
-      "target": "@tanstack/react-start"
-    },
-    {
-      "source": "src/integrations/supabase/auth-middleware.ts",
-      "target": "@tanstack/react-start/server"
-    },
-    {
-      "source": "src/integrations/supabase/auth-middleware.ts",
-      "target": "@supabase/supabase-js"
-    },
-    {
-      "source": "src/integrations/supabase/auth-middleware.ts",
-      "target": "./types"
-    },
-    {
-      "source": "src/integrations/supabase/app-client.ts",
-      "target": "@supabase/supabase-js"
-    },
-    {
-      "source": "src/components/ui/alert.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/alert.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/alert.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/progress.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/progress.tsx",
-      "target": "@radix-ui/react-progress"
-    },
-    {
-      "source": "src/components/ui/progress.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/resizable.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/resizable.tsx",
-      "target": "react-resizable-panels"
-    },
-    {
-      "source": "src/components/ui/resizable.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/calendar.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/calendar.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/calendar.tsx",
-      "target": "react-day-picker"
-    },
-    {
-      "source": "src/components/ui/calendar.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/calendar.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/ui/tooltip.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/tooltip.tsx",
-      "target": "@radix-ui/react-tooltip"
-    },
-    {
-      "source": "src/components/ui/tooltip.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/scroll-area.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/scroll-area.tsx",
-      "target": "@radix-ui/react-scroll-area"
-    },
-    {
-      "source": "src/components/ui/scroll-area.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/breadcrumb.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/breadcrumb.tsx",
-      "target": "@radix-ui/react-slot"
-    },
-    {
-      "source": "src/components/ui/breadcrumb.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/breadcrumb.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/command.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/command.tsx",
-      "target": "@radix-ui/react-dialog"
-    },
-    {
-      "source": "src/components/ui/command.tsx",
-      "target": "cmdk"
-    },
-    {
-      "source": "src/components/ui/command.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/command.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/command.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/components/ui/input.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/input.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/badge.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/badge.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/badge.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/toggle.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/toggle.tsx",
-      "target": "@radix-ui/react-toggle"
-    },
-    {
-      "source": "src/components/ui/toggle.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/toggle.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/navigation-menu.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/navigation-menu.tsx",
-      "target": "@radix-ui/react-navigation-menu"
-    },
-    {
-      "source": "src/components/ui/navigation-menu.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/navigation-menu.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/navigation-menu.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/checkbox.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/checkbox.tsx",
-      "target": "@radix-ui/react-checkbox"
-    },
-    {
-      "source": "src/components/ui/checkbox.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/checkbox.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/table.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/table.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/skeleton.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/label.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/label.tsx",
-      "target": "@radix-ui/react-label"
-    },
-    {
-      "source": "src/components/ui/label.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/label.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/drawer.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/drawer.tsx",
-      "target": "vaul"
-    },
-    {
-      "source": "src/components/ui/drawer.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/avatar.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/avatar.tsx",
-      "target": "@radix-ui/react-avatar"
-    },
-    {
-      "source": "src/components/ui/avatar.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/hover-card.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/hover-card.tsx",
-      "target": "@radix-ui/react-hover-card"
-    },
-    {
-      "source": "src/components/ui/hover-card.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/switch.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/switch.tsx",
-      "target": "@radix-ui/react-switch"
-    },
-    {
-      "source": "src/components/ui/switch.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/radio-group.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/radio-group.tsx",
-      "target": "@radix-ui/react-radio-group"
-    },
-    {
-      "source": "src/components/ui/radio-group.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/radio-group.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@radix-ui/react-slot"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@/hooks/use-mobile"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@/components/ui/separator"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@/components/ui/sheet"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@/components/ui/skeleton"
-    },
-    {
-      "source": "src/components/ui/sidebar.tsx",
-      "target": "@/components/ui/tooltip"
-    },
-    {
-      "source": "src/components/ui/popover.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/popover.tsx",
-      "target": "@radix-ui/react-popover"
-    },
-    {
-      "source": "src/components/ui/popover.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/carousel.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/carousel.tsx",
-      "target": "embla-carousel-react"
-    },
-    {
-      "source": "src/components/ui/carousel.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/carousel.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/carousel.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/ui/toggle-group.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/toggle-group.tsx",
-      "target": "@radix-ui/react-toggle-group"
-    },
-    {
-      "source": "src/components/ui/toggle-group.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/toggle-group.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/toggle-group.tsx",
-      "target": "@/components/ui/toggle"
-    },
-    {
-      "source": "src/components/ui/context-menu.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/context-menu.tsx",
-      "target": "@radix-ui/react-context-menu"
-    },
-    {
-      "source": "src/components/ui/context-menu.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/context-menu.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/button.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/button.tsx",
-      "target": "@radix-ui/react-slot"
-    },
-    {
-      "source": "src/components/ui/button.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/button.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/dropdown-menu.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/dropdown-menu.tsx",
-      "target": "@radix-ui/react-dropdown-menu"
-    },
-    {
-      "source": "src/components/ui/dropdown-menu.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/dropdown-menu.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/collapsible.tsx",
-      "target": "@radix-ui/react-collapsible"
-    },
-    {
-      "source": "src/components/ui/dialog.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/dialog.tsx",
-      "target": "@radix-ui/react-dialog"
-    },
-    {
-      "source": "src/components/ui/dialog.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/dialog.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/form.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/form.tsx",
-      "target": "@radix-ui/react-label"
-    },
-    {
-      "source": "src/components/ui/form.tsx",
-      "target": "@radix-ui/react-slot"
-    },
-    {
-      "source": "src/components/ui/form.tsx",
-      "target": "react-hook-form"
-    },
-    {
-      "source": "src/components/ui/form.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/form.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/components/ui/slider.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/slider.tsx",
-      "target": "@radix-ui/react-slider"
-    },
-    {
-      "source": "src/components/ui/slider.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/select.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/select.tsx",
-      "target": "@radix-ui/react-select"
-    },
-    {
-      "source": "src/components/ui/select.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/select.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/menubar.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/menubar.tsx",
-      "target": "@radix-ui/react-menubar"
-    },
-    {
-      "source": "src/components/ui/menubar.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/menubar.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/aspect-ratio.tsx",
-      "target": "@radix-ui/react-aspect-ratio"
-    },
-    {
-      "source": "src/components/ui/sheet.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/sheet.tsx",
-      "target": "@radix-ui/react-dialog"
-    },
-    {
-      "source": "src/components/ui/sheet.tsx",
-      "target": "class-variance-authority"
-    },
-    {
-      "source": "src/components/ui/sheet.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/sheet.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/card.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/card.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/alert-dialog.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/alert-dialog.tsx",
-      "target": "@radix-ui/react-alert-dialog"
-    },
-    {
-      "source": "src/components/ui/alert-dialog.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/alert-dialog.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/ui/pagination.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/pagination.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/pagination.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/pagination.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/components/ui/separator.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/separator.tsx",
-      "target": "@radix-ui/react-separator"
-    },
-    {
-      "source": "src/components/ui/separator.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/tabs.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/tabs.tsx",
-      "target": "@radix-ui/react-tabs"
-    },
-    {
-      "source": "src/components/ui/tabs.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/chart.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/chart.tsx",
-      "target": "recharts"
-    },
-    {
-      "source": "src/components/ui/chart.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/textarea.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/textarea.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/accordion.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/accordion.tsx",
-      "target": "@radix-ui/react-accordion"
-    },
-    {
-      "source": "src/components/ui/accordion.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/accordion.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/components/ui/sonner.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/components/ui/input-otp.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/components/ui/input-otp.tsx",
-      "target": "input-otp"
-    },
-    {
-      "source": "src/components/ui/input-otp.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/components/ui/input-otp.tsx",
-      "target": "@/lib/utils"
     }
   ]
 }
