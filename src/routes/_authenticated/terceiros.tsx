@@ -715,6 +715,109 @@ function PainelTerceiros() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={cadOpen} onOpenChange={setCadOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-black uppercase tracking-tight flex items-center gap-2">
+              <Plus className="h-5 w-5 text-primary" /> Cadastrar terceiro
+            </DialogTitle>
+            <DialogDescription className="text-xs font-medium">
+              Informe o CNPJ e use "Buscar" para preencher os dados automaticamente. Revise e ajuste antes de salvar.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">CNPJ</Label>
+              <div className="flex gap-2">
+                <Input
+                  className="h-10 text-xs"
+                  placeholder="00.000.000/0000-00"
+                  value={cadForm.cnpj}
+                  onChange={(e) => setCadForm((f) => ({ ...f, cnpj: e.target.value }))}
+                />
+                <BotaoConsultaCnpj cnpj={cadForm.cnpj} onDados={preencherTerceiroComCnpj} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Nome / Razão social *</Label>
+              <Input
+                className="h-10 text-xs"
+                placeholder="Nome do terceiro"
+                value={cadForm.nome}
+                onChange={(e) => setCadForm((f) => ({ ...f, nome: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Contato</Label>
+                <Input
+                  className="h-10 text-xs"
+                  placeholder="Pessoa de contato"
+                  value={cadForm.contato}
+                  onChange={(e) => setCadForm((f) => ({ ...f, contato: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest">Telefone</Label>
+                <Input
+                  className="h-10 text-xs"
+                  placeholder="(00) 00000-0000"
+                  value={cadForm.telefone}
+                  onChange={(e) => setCadForm((f) => ({ ...f, telefone: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">E-mail</Label>
+              <Input
+                className="h-10 text-xs"
+                placeholder="contato@empresa.com.br"
+                value={cadForm.email}
+                onChange={(e) => setCadForm((f) => ({ ...f, email: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Endereço</Label>
+              <Input
+                className="h-10 text-xs"
+                placeholder="Rua, número, bairro, cidade - UF"
+                value={cadForm.endereco}
+                onChange={(e) => setCadForm((f) => ({ ...f, endereco: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-black uppercase tracking-widest">Observação</Label>
+              <Textarea
+                className="text-xs"
+                rows={2}
+                placeholder="Especialidade, condições, referência..."
+                value={cadForm.observacao}
+                onChange={(e) => setCadForm((f) => ({ ...f, observacao: e.target.value }))}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setCadOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                size="sm"
+                className="font-black uppercase text-[10px] tracking-widest"
+                disabled={cadSalvando}
+                onClick={salvarTerceiro}
+              >
+                {cadSalvando ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="mr-2 h-4 w-4" />
+                )}
+                Salvar terceiro
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
