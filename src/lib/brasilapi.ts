@@ -27,7 +27,19 @@ export const formatarCnpj = (valor: string) => {
   return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
 };
 
-export const cnpjValido = (valor: string) => somenteDigitos(valor).length === 14;
+export const cnpjValido = (valor: string) => {
+  const d = somenteDigitos(valor);
+  if (d.length !== 14) return false;
+  if (/^(\d)\1{13}$/.test(d)) return false; // rejeita sequências repetidas (000..., 111...)
+  const digito = (base: string, pesos: number[]) => {
+    const soma = pesos.reduce((acc, p, i) => acc + Number(base[i]) * p, 0);
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+  };
+  const d1 = digito(d, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  const d2 = digito(d, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  return d1 === Number(d[12]) && d2 === Number(d[13]);
+};
 
 const montarTelefone = (raw: any) => {
   const ddd = String(raw?.ddd_telefone_1 ?? "").trim();
