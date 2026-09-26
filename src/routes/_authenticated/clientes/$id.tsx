@@ -39,6 +39,10 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ptBR } from "date-fns/locale";
 
 export const Route = createFileRoute("/_authenticated/clientes/$id")({
@@ -89,6 +93,28 @@ function ClienteDetalhesPage() {
       return data;
     }
   });
+
+  const [contatoOpen, setContatoOpen] = useState(false);
+  const [contatoSalvando, setContatoSalvando] = useState(false);
+  const [contatoForm, setContatoForm] = useState({ nome: "", cargo: "", email: "", telefone: "" });
+
+  const salvarContato = async () => {
+    if (!contatoForm.nome.trim()) { toast.error("Informe o nome do contato."); return; }
+    setContatoSalvando(true);
+    const { error } = await supabase.from('contatos_cliente' as any).insert({
+      cliente_id: id,
+      nome: contatoForm.nome.trim(),
+      cargo: contatoForm.cargo.trim() || null,
+      email: contatoForm.email.trim() || null,
+      telefone: contatoForm.telefone.trim() || null,
+    });
+    setContatoSalvando(false);
+    if (error) { toast.error(`Erro ao salvar contato: ${error.message}`); return; }
+    toast.success("Contato adicionado.");
+    setContatoForm({ nome: "", cargo: "", email: "", telefone: "" });
+    setContatoOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['contatos_cliente', id] });
+  };
 
   const { data: contatos = [] } = useQuery({
     queryKey: ['contatos_cliente', id],
@@ -237,7 +263,7 @@ function ClienteDetalhesPage() {
 
       <Tabs defaultValue="resumo" className="w-full">
         <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-12 p-0 space-x-8 mb-8 overflow-x-auto overflow-y-hidden custom-scrollbar">
-          {["Resumo", "Dados Cadastrais", "Contatos", "Equipamentos", "OS", "Orçamentos", "Financeiro", "Histórico"].map((tab) => (
+          {["Resumo", "Dados Cadastrais", "Contatos", "OS", "Orçamentos", "Financeiro", "Histórico"].map((tab) => (
             <TabsTrigger 
               key={tab} 
               value={tab.toLowerCase().replace(" ", "-")} 
@@ -358,14 +384,20 @@ function ClienteDetalhesPage() {
 
         <TabsContent value="contatos">
            <Card className="border-border shadow-sm bg-white">
-              <CardContent className="p-6">
+              <CardContent className="p-6 space-y-4">
+                 <div className="flex justify-end">
+                   <Button onClick={() => setContatoOpen(true)} className="h-10 font-black uppercase tracking-widest text-xs">
+                     <UserPlus className="mr-2 h-4 w-4" /> Adicionar contato
+                   </Button>
+                 </div>
                  {contatos.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-2">
-                       {contatos.map(c => (
+                       {contatos.map((c: any) => (
                          <div key={c.id} className="p-4 rounded-lg border border-border flex items-center justify-between bg-slate-50/50">
                            <div>
                              <p className="font-bold uppercase text-xs">{c.nome}</p>
                              <p className="text-[10px] text-muted-foreground">{c.cargo}</p>
+                             {c.email && <p className="text-[10px] text-muted-foreground">{c.email}</p>}
                            </div>
                            <div className="text-[10px] font-mono text-muted-foreground">{c.telefone}</div>
                          </div>
@@ -376,35 +408,23 @@ function ClienteDetalhesPage() {
                  )}
               </CardContent>
            </Card>
-        </TabsContent>
-
-        <TabsContent value="equipamentos">
-           <Card className="border-border shadow-sm bg-white">
-              <CardContent className="p-6">
-                 {equipamentos.length > 0 ? (
-                   <Table>
-                     <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-[10px] font-black uppercase tracking-widest">Equipamento</TableHead>
-                          <TableHead className="text-[10px] font-black uppercase tracking-widest">Tipo</TableHead>
-                          <TableHead className="text-[10px] font-black uppercase tracking-widest">Modelo</TableHead>
-                        </TableRow>
-                     </TableHeader>
-                     <TableBody>
-                        {equipamentos.map((e: any) => (
-                           <TableRow key={e.id}>
-                             <TableCell className="font-bold text-xs">{e.nome}</TableCell>
-                             <TableCell className="text-xs">{e.tipo}</TableCell>
-                             <TableCell className="text-xs font-mono">{e.tipo ?? '—'}</TableCell>
-                           </TableRow>
-                        ))}
-                     </TableBody>
-                   </Table>
-                 ) : (
-                    <div className="text-center py-12 text-muted-foreground text-xs uppercase italic">Nenhum equipamento registrado.</div>
-                 )}
-              </CardContent>
-           </Card>
+           <Dialog open={contatoOpen} onOpenChange={setContatoOpen}>
+             <DialogContent>
+               <DialogHeader><DialogTitle>Novo contato</DialogTitle></DialogHeader>
+               <div className="space-y-3">
+                 {([['nome','Nome *'],['cargo','Cargo'],['email','E-mail'],['telefone','Telefone']] as const).map(([k, l]) => (
+                   <div key={k} className="space-y-1">
+                     <Label>{l}</Label>
+                     <Input value={contatoForm[k]} onChange={(e) => setContatoForm({ ...contatoForm, [k]: e.target.value })} />
+                   </div>
+                 ))}
+               </div>
+               <DialogFooter>
+                 <Button variant="outline" onClick={() => setContatoOpen(false)}>Cancelar</Button>
+                 <Button onClick={salvarContato} disabled={contatoSalvando}>Salvar contato</Button>
+               </DialogFooter>
+             </DialogContent>
+           </Dialog>
         </TabsContent>
 
         <TabsContent value="os">
@@ -414,6 +434,7 @@ function ClienteDetalhesPage() {
                      <TableHeader>
                        <TableRow>
                          <TableHead className="text-[10px] font-black uppercase tracking-widest pl-6">Nº OS</TableHead>
+                         <TableHead className="text-[10px] font-black uppercase tracking-widest">Equipamento</TableHead>
                          <TableHead className="text-[10px] font-black uppercase tracking-widest">Data</TableHead>
                          <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
                        </TableRow>
@@ -430,6 +451,7 @@ function ClienteDetalhesPage() {
                                 {os.numero_os}
                               </Link>
                             </TableCell>
+                            <TableCell className="text-xs font-bold">{(equipamentos as any[]).find((e) => e.id === os.id)?.nome ?? "—"}</TableCell>
                             <TableCell className="text-xs">{os.data_abertura ? format(new Date(os.data_abertura), "dd/MM/yyyy") : "—"}</TableCell>
                             <TableCell><Badge variant="secondary" className="text-[9px] uppercase">{os.status}</Badge></TableCell>
                           </TableRow>
