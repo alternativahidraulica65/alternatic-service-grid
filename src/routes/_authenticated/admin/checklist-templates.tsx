@@ -296,6 +296,70 @@ function ChecklistTemplatesPage() {
           )}
         </div>
       </div>
+
+      <Dialog open={tipoOpen} onOpenChange={setTipoOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-sm font-black uppercase tracking-widest">Cadastrar novo equipamento</DialogTitle>
+            <DialogDescription className="text-xs">
+              O novo tipo ficará disponível nos checklists e nas ordens de serviço.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Nome *</Label>
+              <Input
+                value={tipoForm.nome}
+                onChange={(e) => setTipoForm({ ...tipoForm, nome: e.target.value })}
+                placeholder="Ex: Bomba Hidráulica"
+                className="border-slate-200 bg-white text-xs font-bold"
+                autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleCriarTipoEquipamento()}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Categoria principal</Label>
+              <Input
+                value={tipoForm.categoria_principal}
+                onChange={(e) => setTipoForm({ ...tipoForm, categoria_principal: e.target.value })}
+                placeholder="Ex: Hidráulica, Usinagem, Elétrica"
+                className="border-slate-200 bg-white text-xs font-bold"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Descrição</Label>
+              <Textarea
+                value={tipoForm.descricao}
+                onChange={(e) => setTipoForm({ ...tipoForm, descricao: e.target.value })}
+                placeholder="Detalhe o tipo de equipamento"
+                className="border-slate-200 bg-white text-xs font-bold min-h-[70px]"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTipoOpen(false)} disabled={tipoLoading}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCriarTipoEquipamento}
+              disabled={tipoLoading}
+              className="bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest"
+            >
+              {tipoLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <PlusCircle className="mr-2 h-3 w-3" />
+                  Cadastrar equipamento
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
