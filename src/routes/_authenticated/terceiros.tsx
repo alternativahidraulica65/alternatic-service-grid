@@ -41,6 +41,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
+import { cnpjValido, formatarCnpj, somenteDigitos, type DadosCnpj } from "@/lib/brasilapi";
 
 export const Route = createFileRoute("/_authenticated/terceiros")({
   head: () => ({
@@ -87,6 +89,93 @@ function PainelTerceiros() {
     terceiro_prazo_entrega: "",
     terceiro_observacao: "",
   });
+  const [cadOpen, setCadOpen] = useState(false);
+  const [cadSalvando, setCadSalvando] = useState(false);
+  const [cadForm, setCadForm] = useState({
+    nome: "",
+    cnpj: "",
+    contato: "",
+    telefone: "",
+    email: "",
+    endereco: "",
+    observacao: "",
+  });
+
+  const { data: terceirosCadastrados = [] } = useQuery({
+    queryKey: ["terceiros_cadastro"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("terceiros")
+        .select("id, nome, cnpj, telefone, email, endereco, contato")
+        .eq("ativo", true)
+        .order("nome");
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+  });
+
+  const preencherTerceiroComCnpj = (dados: DadosCnpj) => {
+    setCadForm((atual) => ({
+      ...atual,
+      cnpj: dados.cnpjFormatado,
+      nome: atual.nome || dados.nome,
+      telefone: atual.telefone || dados.telefone,
+      email: atual.email || dados.email,
+      endereco: atual.endereco || dados.endereco,
+    }));
+  };
+
+  const salvarTerceiro = async () => {
+    if (!cadForm.nome.trim()) {
+      toast.error("Informe o nome do terceiro.");
+      return;
+    }
+    const cnpjDigitos = somenteDigitos(cadForm.cnpj);
+    if (cnpjDigitos) {
+      if (!cnpjValido(cadForm.cnpj)) {
+        toast.error("CNPJ inválido. Confira os dígitos informados.");
+        return;
+      }
+      const { data: existente } = await (supabase as any)
+        .from("terceiros")
+        .select("id, nome")
+        .eq("cnpj", formatarCnpj(cnpjDigitos))
+        .maybeSingle();
+      if (existente) {
+        toast.error(`Este CNPJ já está cadastrado para "${existente.nome}".`);
+        return;
+      }
+    }
+    setCadSalvando(true);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const { error } = await (supabase as any).from("terceiros").insert({
+        nome: cadForm.nome.trim(),
+        cnpj: cnpjDigitos ? formatarCnpj(cnpjDigitos) : null,
+        contato: cadForm.contato.trim() || null,
+        telefone: cadForm.telefone.trim() || null,
+        email: cadForm.email.trim() || null,
+        endereco: cadForm.endereco.trim() || null,
+        observacao: cadForm.observacao.trim() || null,
+        criado_por: auth?.user?.id ?? null,
+      });
+      if (error) {
+        if (String(error.message).includes("duplicate") || String(error.code) === "23505") {
+          toast.error("Este CNPJ já está cadastrado.");
+          return;
+        }
+        throw error;
+      }
+      queryClient.invalidateQueries({ queryKey: ["terceiros_cadastro"] });
+      toast.success("Terceiro cadastrado com sucesso.");
+      setCadForm({ nome: "", cnpj: "", contato: "", telefone: "", email: "", endereco: "", observacao: "" });
+      setCadOpen(false);
+    } catch (e: any) {
+      toast.error("Erro ao cadastrar: " + e.message);
+    } finally {
+      setCadSalvando(false);
+    }
+  };
 
   const { data: ordensAbertas = [] } = useQuery({
     queryKey: ["painel_terceiros_os_abertas"],
