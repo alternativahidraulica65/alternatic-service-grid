@@ -1,3 +1,4 @@
+import { RemoverSelecionados } from "@/components/RemoverSelecionados";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -769,6 +770,7 @@ function ClientesPage() {
                   </Button>
                 </div>
               )}
+              <RemoverSelecionados tabela="clientes" ids={selecionadosVisiveis} rotulo="cliente(s)" onRemovidos={() => setSelecionados([])} />
               <Button
                 variant="ghost"
                 size="sm"

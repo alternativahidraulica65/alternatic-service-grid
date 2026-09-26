@@ -1,3 +1,4 @@
+import { RemoverSelecionados } from "@/components/RemoverSelecionados";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useMemo } from "react";
 import { 
@@ -534,6 +535,7 @@ function FornecedoresPage() {
                   if (f.visao === "cards" || f.visao === "tabela") setVisao(f.visao);
                 }}
               />
+              <RemoverSelecionados tabela="fornecedores" ids={selecionadosVisiveis} rotulo="fornecedor(es)" onRemovidos={() => setSelecionados([])} />
               <Button
                 variant="outline"
                 size="sm"
