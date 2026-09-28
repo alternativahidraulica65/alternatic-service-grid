@@ -290,14 +290,6 @@ function DashboardGestor() {
           </CardHeader>
           <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">OS Atrasadas</CardContent>
         </Card>
-        <Card className="col-span-2 lg:col-span-1 bg-slate-900 text-white border-none shadow-lg">
-          <CardHeader className="p-4">
-            <CardTitle className="text-2xl font-black">
-              {isLoading ? <Skeleton className="h-8 w-12 bg-white/20" /> : "02"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 text-[10px] font-bold uppercase">Equip. Parados</CardContent>
-        </Card>
         <Card
           role="button"
           tabIndex={0}
