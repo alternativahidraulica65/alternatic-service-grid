@@ -243,12 +243,7 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
       pendencias.push(`${custosSemValor.length} custo(s) sem valor lançado`);
     }
 
-    const custosNaoPagos = listaCustos.filter(
-      (c: any) => Number(c.custo_interno ?? 0) > 0 && !c.pago,
-    );
-    if (custosNaoPagos.length > 0) {
-      pendencias.push(`${custosNaoPagos.length} custo(s) em aberto não pago(s)`);
-    }
+    // Custos não pagos não bloqueiam o gestor: pagamento é responsabilidade do Financeiro.
 
     return pendencias;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -544,23 +539,22 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
         };
       });
 
-    // 5. Custos
+    // 5. Custos — lançados (valor > 0,10) já contam como executados; pagamento é do Financeiro.
     const custosItens: Item[] = listaCustos.map((c: any) => {
-      const semValor = !Number(c.custo_interno ?? 0);
+      const valor = Number(c.custo_interno ?? 0);
+      const lancado = valor >= 0.1;
       return {
         id: `custo-${c.id}`,
         titulo: c.descricao ?? "Custo",
-        detalhe: semValor
-          ? "Valor ainda não lançado"
-          : `${Number(c.custo_interno).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} • ${c.pago ? `pago em ${dataBr(c.data_pagamento)}` : "a pagar"}`,
-        situacao: semValor ? "pendente" : c.pago ? "concluido" : "pendente",
+        detalhe: lancado
+          ? `${valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} lançado${c.pago ? ` • pago em ${dataBr(c.data_pagamento)}` : " • pagamento com o Financeiro"}`
+          : "Valor ainda não lançado",
+        situacao: lancado ? "concluido" : "pendente",
         irPara: "custos",
         verificar: () =>
-          semValor
-            ? "O valor do custo ainda não foi lançado. Informe o valor na aba Custos."
-            : !c.pago
-              ? "O custo tem valor lançado, mas ainda não foi marcado como pago na aba Custos."
-              : null,
+          lancado
+            ? null
+            : "O valor do custo ainda não foi lançado. Informe o valor na aba Custos.",
       };
     });
 
