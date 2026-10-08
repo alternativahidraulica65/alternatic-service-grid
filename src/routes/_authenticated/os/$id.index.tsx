@@ -40,6 +40,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
+import { ServicosLaudoEditor } from "@/components/ServicosLaudoEditor";
+import { linhasDoChecklist, defeitosDoChecklist, parseLinhas, serializarLinhas, criarSubservicos, type LinhaServico } from "@/lib/subservicos";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -919,6 +921,38 @@ function GestaoOSPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [os]);
 
+  const [linhasServico, setLinhasServico] = useState<LinhaServico[]>([]);
+  const atualizarLinhas = (linhas: LinhaServico[]) => {
+    setLinhasServico(linhas);
+    setLaudoData((prev) => ({ ...prev, servicos_necessarios: serializarLinhas(linhas) }));
+  };
+
+  // Pré-preenche Defeitos e Serviços com os itens "Ruim" do checklist.
+  useEffect(() => {
+    if (!os) return;
+    const atual = lerLaudoDoRegistro(os);
+    const doChecklist = linhasDoChecklist(checklistData as any[]);
+    let linhas: LinhaServico[];
+    if (atual.servicos_necessarios) {
+      linhas = parseLinhas(atual.servicos_necessarios).map((l) => {
+        const m = doChecklist.find((c) => c.componente.toLowerCase() === l.componente.toLowerCase());
+        return m ? { ...l, origem: "checklist", checklist_item_id: m.checklist_item_id } : l;
+      });
+      const faltando = doChecklist.filter((c) => !linhas.some((l) => l.componente.toLowerCase() === c.componente.toLowerCase()));
+      if (!editandoLaudo || !laudoSalvoRef.current) linhas = [...linhas, ...(laudoSalvoRef.current ? [] : faltando)];
+    } else {
+      linhas = doChecklist;
+    }
+    setLinhasServico(linhas);
+    setLaudoData((prev) => ({
+      ...prev,
+      defeitos: prev.defeitos || defeitosDoChecklist(checklistData as any[]),
+      servicos_necessarios: serializarLinhas(linhas),
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [os, checklistData]);
+  const laudoSalvoRef = useRef(false);
+
   const laudoSalvo = useMemo(() => {
     if (!os) return false;
     const l = lerLaudoDoRegistro(os);
@@ -1007,6 +1041,9 @@ function GestaoOSPage() {
         .eq('id', osId);
 
       if (error) throw error;
+
+      const criados = await criarSubservicos(osId as any, linhasServico, profile?.user_id ?? null);
+      if (criados > 0) toast.info(`${criados} subserviço(s) enviados ao Orquestrador`);
 
       await supabase.from('historico_status_os' as any).insert({
         os_id: osId,
@@ -1888,12 +1925,8 @@ function GestaoOSPage() {
                       </div>
                       <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Serviços Necessários</Label>
-                        <Textarea 
-                          placeholder="Descreva os serviços que precisam ser realizados..." 
-                          className="min-h-[120px] text-sm border-slate-200 bg-slate-50/50 focus:bg-white transition-all"
-                          value={laudoData.servicos_necessarios}
-                          onChange={(e) => setLaudoData(prev => ({ ...prev, servicos_necessarios: e.target.value }))}
-                        />
+                        <ServicosLaudoEditor linhas={linhasServico} onChange={atualizarLinhas} />
+                        <p className="text-[10px] text-muted-foreground">Ao finalizar o diagnóstico, cada linha vira um subserviço no Orquestrador.</p>
                       </div>
                     </>
                   )}
