@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T01:08:24.697769+00:00",
+  "generated_at": "2026-10-08T01:24:16.396636+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 33838
+      "bytes": 35016
     },
     {
       "path": "src/styles.css",
@@ -60,6 +60,10 @@
     {
       "path": "src/start.ts",
       "bytes": 1064
+    },
+    {
+      "path": "supabase/migrations/20261008011600_os_subservicos.sql",
+      "bytes": 2029
     },
     {
       "path": "supabase/migrations/20260910164733_2d41e8e8-b0ba-4ef3-aeba-bcabbeb425b3.sql",
@@ -506,6 +510,10 @@
       "bytes": 1810
     },
     {
+      "path": "src/components/ServicosLaudoEditor.tsx",
+      "bytes": 2650
+    },
+    {
       "path": "src/components/BancadasDialog.tsx",
       "bytes": 16351
     },
@@ -543,7 +551,7 @@
     },
     {
       "path": "src/components/PendenciasOsCard.tsx",
-      "bytes": 3441
+      "bytes": 3495
     },
     {
       "path": "src/components/TerceirosDialog.tsx",
@@ -590,6 +598,10 @@
       "bytes": 1739
     },
     {
+      "path": "src/lib/subservicos.ts",
+      "bytes": 3557
+    },
+    {
       "path": "src/lib/admin-usuarios.functions.ts",
       "bytes": 7348
     },
@@ -607,7 +619,7 @@
     },
     {
       "path": "src/lib/os-fluxo.ts",
-      "bytes": 9363
+      "bytes": 9659
     },
     {
       "path": "src/lib/utils.ts",
@@ -627,7 +639,7 @@
     },
     {
       "path": "src/routes/__root.tsx",
-      "bytes": 5009
+      "bytes": 5011
     },
     {
       "path": "src/routes/README.md",
@@ -883,7 +895,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11390
+      "bytes": 11496
     },
     {
       "path": "src/routes/_authenticated/terceiros.tsx",
@@ -922,6 +934,10 @@
       "bytes": 47354
     },
     {
+      "path": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "bytes": 24439
+    },
+    {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
       "bytes": 11228
     },
@@ -955,7 +971,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 118198
+      "bytes": 120309
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
@@ -1126,6 +1142,10 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/os/nova"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/producao/orquestrador"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -1524,6 +1544,26 @@
       "target": "@/lib/brasilapi"
     },
     {
+      "source": "src/components/ServicosLaudoEditor.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ServicosLaudoEditor.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/ServicosLaudoEditor.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/ServicosLaudoEditor.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/ServicosLaudoEditor.tsx",
+      "target": "@/lib/subservicos"
+    },
+    {
       "source": "src/components/BancadasDialog.tsx",
       "target": "react"
     },
@@ -1905,6 +1945,10 @@
     },
     {
       "source": "src/lib/orcamento.ts",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/lib/subservicos.ts",
       "target": "@/integrations/supabase/client"
     },
     {
@@ -3652,6 +3696,70 @@
       "target": "@/components/ui/select"
     },
     {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/ui/tabs"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/lib/subservicos"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/lib/os-fluxo"
+    },
+    {
       "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
       "target": "@tanstack/react-router"
     },
@@ -4070,6 +4178,14 @@
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/ServicosLaudoEditor"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/lib/subservicos"
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
