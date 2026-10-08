@@ -95,12 +95,37 @@ function PropostaPage() {
 
   const pronto = !isLoading && !!data;
 
+  // Ao imprimir, o orçamento passa a "gerado" e a OS segue para aprovação do cliente.
+  const imprimir = async () => {
+    const os = data?.os;
+    if (os && !os.orcamento_enviado_em) {
+      const agora = new Date().toISOString();
+      const updates: any = { orcamento_enviado_em: agora };
+      if (os.status === "orcamento_pendente") updates.status_financeiro = "aguardando aprovação";
+      const { error } = await supabase.from("ordens_servico").update(updates).eq("id", id);
+      if (!error) {
+        const { data: u } = await supabase.auth.getUser();
+        await supabase.from("historico_status_os" as any).insert({
+          os_id: id,
+          status_anterior: os.status,
+          status_novo: os.status,
+          observacao: "Orçamento gerado (impresso) — aguardando aprovação do cliente",
+          executor_id: u.user?.id ?? null,
+          executor_email: u.user?.email ?? null,
+        });
+        os.orcamento_enviado_em = agora;
+      }
+    }
+    window.print();
+  };
+
   useEffect(() => {
     if (!pronto) return;
     if (typeof window === "undefined") return;
     if (!new URLSearchParams(window.location.search).has("print")) return;
-    const t = setTimeout(() => window.print(), 700);
+    const t = setTimeout(() => void imprimir(), 700);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pronto]);
 
   if (!pronto) {
@@ -122,7 +147,7 @@ function PropostaPage() {
             </Link>
           </Button>
           <Button
-            onClick={() => window.print()}
+            onClick={() => void imprimir()}
             className="h-10 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest"
           >
             <Printer className="mr-2 h-4 w-4" /> Imprimir / Salvar PDF

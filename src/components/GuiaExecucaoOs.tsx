@@ -428,36 +428,31 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
     });
 
     const prazoOrc = os?.prazo_orcamento ? new Date(os.prazo_orcamento) : null;
-    const orcamentoOk = Number(os?.valor_total ?? 0) > 0;
+    const aprovado = ["aprovada", "usinagem", "montagem", "pronto", "entregue", "encerrado", "faturamento"].includes(
+      String(os?.status ?? ""),
+    );
+    // Concluído por ação do Financeiro/Diretor (impressão do orçamento) — somente acompanhamento aqui.
+    const orcamentoOk = aprovado || !!os?.orcamento_enviado_em;
     fluxo.push({
       id: "fluxo-orcamento",
-      titulo: "Orçamento gerado",
-      detalhe: prazoOrc ? `Prazo do orçamento: ${dataBr(os.prazo_orcamento)}` : "Sem prazo definido",
+      titulo: orcamentoOk ? "Orçamento gerado" : "Orçamento pendente (Financeiro/Diretor)",
+      detalhe: orcamentoOk
+        ? `Gerado em ${dataBr(os?.orcamento_enviado_em) || "—"}`
+        : prazoOrc ? `Prazo do orçamento: ${dataBr(os.prazo_orcamento)}` : "Sem prazo definido",
       situacao: orcamentoOk
         ? "concluido"
         : prazoOrc && prazoOrc.getTime() < Date.now()
           ? "atrasado"
           : "pendente",
       irPara: "orçamento",
-      verificar: () =>
-        orcamentoOk
-          ? null
-          : "O orçamento ainda não foi gerado. Lance os valores e gere o orçamento na aba Orçamento.",
     });
 
-    const aprovado = ["aprovada", "usinagem", "montagem", "pronto", "entregue", "encerrado", "faturamento"].includes(
-      String(os?.status ?? ""),
-    );
     fluxo.push({
       id: "fluxo-aprovacao",
-      titulo: "Aprovação do cliente registrada",
-      detalhe: `Status atual da OS: ${os?.status ?? "—"}`,
+      titulo: aprovado ? "Serviço aprovado pelo cliente" : "Aprovação pendente",
+      detalhe: aprovado ? "Execução liberada" : "Aguardando o cliente aprovar a execução do serviço",
       situacao: aprovado ? "concluido" : "pendente",
       irPara: "aprovação",
-      verificar: () =>
-        aprovado
-          ? null
-          : "A aprovação do cliente ainda não foi registrada. Avance o status da OS após a aprovação.",
     });
 
     // 2. Peças
