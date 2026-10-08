@@ -374,6 +374,16 @@ function GestaoOSPage() {
   });
 
 
+  const { data: subservicosOs = [] } = useQuery({
+    queryKey: ['os_subservicos', osId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('os_subservicos' as any).select('id,status').eq('os_id', osId);
+      if (error) return [];
+      return data ?? [];
+    },
+    enabled: osId !== null,
+  });
+
   const [savingChecklist, setSavingChecklist] = useState(false);
 
   const estadoLegadoDoChecklist = (status: string) =>
@@ -1186,7 +1196,7 @@ function GestaoOSPage() {
       toast.error("Sem permissão", { description: "Apenas Gestor, Diretor ou Administrativo/Financeiro podem avançar a OS." });
       return;
     }
-    const resultado = avaliarFluxo(os, { checklist: checklistData, custos, pecas });
+    const resultado = avaliarFluxo(os, { checklist: checklistData, custos, pecas, subservicos: subservicosOs as any[] });
     const proxima = resultado.proximaFase;
     if (!proxima || indiceFase(proxima) <= indiceFase(resultado.faseAtual)) {
       toast.info("A OS já está na última fase.");
@@ -1365,7 +1375,7 @@ function GestaoOSPage() {
         ))}
       </div>
 
-      <PendenciasOsCard
+      <PendenciasOsCard subservicos={subservicosOs as any[]}
         os={os}
         checklist={checklistData}
         custos={custos}
