@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T01:24:16.396636+00:00",
+  "generated_at": "2026-10-08T01:47:33.690970+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -955,7 +955,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 36805
+      "bytes": 39583
     },
     {
       "path": "src/routes/_authenticated/os/$id.proposta.tsx",
