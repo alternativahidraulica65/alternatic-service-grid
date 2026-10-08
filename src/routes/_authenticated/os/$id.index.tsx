@@ -938,8 +938,6 @@ function GestaoOSPage() {
         const m = doChecklist.find((c) => c.componente.toLowerCase() === l.componente.toLowerCase());
         return m ? { ...l, origem: "checklist", checklist_item_id: m.checklist_item_id } : l;
       });
-      const faltando = doChecklist.filter((c) => !linhas.some((l) => l.componente.toLowerCase() === c.componente.toLowerCase()));
-      if (!editandoLaudo || !laudoSalvoRef.current) linhas = [...linhas, ...(laudoSalvoRef.current ? [] : faltando)];
     } else {
       linhas = doChecklist;
     }
@@ -951,7 +949,6 @@ function GestaoOSPage() {
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [os, checklistData]);
-  const laudoSalvoRef = useRef(false);
 
   const laudoSalvo = useMemo(() => {
     if (!os) return false;
@@ -1101,6 +1098,10 @@ function GestaoOSPage() {
         } as any)
         .eq('id', osId);
       if (error) throw error;
+      if (["aguardando_gestor","orcamento_pendente","aprovada","usinagem","montagem","execucao"].includes(String(os?.status))) {
+        const criados = await criarSubservicos(osId as any, linhasServico, profile?.user_id ?? null);
+        if (criados > 0) toast.info(`${criados} novo(s) subserviço(s) enviados ao Orquestrador`);
+      }
 
       await supabase.from('historico_status_os' as any).insert({
         os_id: osId,
