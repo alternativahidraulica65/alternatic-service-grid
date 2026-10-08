@@ -476,6 +476,35 @@ function NovaOSPage() {
                   {prazoInfo[prioridade] || prazoInfo["Média"]}
                 </p>
               </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Responsável</Label>
+                {podeTransferir ? (
+                  <>
+                    <Select value={responsavelUserId || "__eu"} onValueChange={(v) => setResponsavelUserId(v === "__eu" ? "" : v)}>
+                      <SelectTrigger className="h-11 border-border">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__eu">Eu mesmo (padrão)</SelectItem>
+                        {responsaveis
+                          .filter((u: any) => u.user_id && u.user_id !== authCtx?.user?.id)
+                          .map((u: any) => (
+                            <SelectItem key={u.user_id} value={u.user_id}>
+                              Transferir para {u.nome} ({u.cargo})
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      A OS fica com você, a menos que transfira para um operador.
+                    </p>
+                  </>
+                ) : (
+                  <div className="h-11 px-3 flex items-center rounded-md border border-border bg-muted text-sm font-semibold">
+                    {authCtx?.profile?.nome || "Você"} — OS aberta para você
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         )}
