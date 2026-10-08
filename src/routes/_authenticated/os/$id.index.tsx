@@ -1190,6 +1190,7 @@ function GestaoOSPage() {
 
   // Barra de ação rápida — avançar para a próxima fase da sequência oficial
   const [avancando, setAvancando] = useState(false);
+  const [pendenciasFase, setPendenciasFase] = useState<{ destino: string; itens: string[] } | null>(null);
 
   const handleAvancarFase = async () => {
     if (!os || !podeGerenciarOS) {
@@ -1204,11 +1205,13 @@ function GestaoOSPage() {
     }
     const { ok, pendencias } = podeAvancar(resultado.faseAtual, proxima, resultado);
     if (!ok) {
+      setPendenciasFase({ destino: ROTULO_FASE[proxima], itens: pendencias });
       toast.error(`Não é possível avançar para ${ROTULO_FASE[proxima]}`, {
-        description: pendencias.slice(0, 4).join(" · "),
+        description: "Veja abaixo o que falta preencher.",
       });
       return;
     }
+    setPendenciasFase(null);
     setAvancando(true);
     try {
       const update: any = { status: STATUS_DA_FASE[proxima] };
