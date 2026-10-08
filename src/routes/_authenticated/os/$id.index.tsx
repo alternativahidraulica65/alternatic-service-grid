@@ -1343,14 +1343,37 @@ function GestaoOSPage() {
               </Link>
             </Button>
           )}
-          <Button
-            variant="outline"
-            className="h-9 border-border font-bold uppercase text-[10px] tracking-widest"
-            onClick={() => window.open(`/os/${osId}/proposta?print=1`, "_blank")}
-          >
-            <FileText className="mr-2 h-4 w-4 text-primary" /> Imprimir
-          </Button>
+          {podeVerValoresFinanceiros && (
+            <Button
+              variant="outline"
+              className="h-9 border-border font-bold uppercase text-[10px] tracking-widest"
+              onClick={() => window.open(`/os/${osId}/proposta?print=1`, "_blank")}
+            >
+              <FileText className="mr-2 h-4 w-4 text-primary" /> Imprimir
+            </Button>
+          )}
         </div>
+        {pendenciasFase && (
+          <div className="mt-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-[11px] text-amber-700 dark:text-amber-400">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-bold uppercase tracking-widest text-[9px]">
+                Para avançar para {pendenciasFase.destino}, falta:
+              </span>
+              <button
+                type="button"
+                onClick={() => setPendenciasFase(null)}
+                className="text-[9px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100"
+              >
+                Fechar
+              </button>
+            </div>
+            <ul className="mt-1 list-disc pl-4 space-y-0.5 font-medium">
+              {pendenciasFase.itens.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Fluxo de Processo (Stepper) */}
