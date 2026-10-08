@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
+import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, pendenciasAte, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";
 import { NotasInternasOs } from "@/components/NotasInternasOs";
 import { getExecutorEmail } from "@/lib/log-executor";
@@ -1154,6 +1154,20 @@ function GestaoOSPage() {
     if (!entregaForm.data_entrega || !entregaForm.entregue_por.trim() || !entregaForm.testado) {
       toast.error("Campos obrigatórios", { description: "Informe data de entrega, quem retirou e se foi testado." });
       return;
+    }
+    if (os) {
+      const fluxo = avaliarFluxo(os, { checklist: checklistData, custos, pecas, subservicos: subservicosOs as any[] });
+      const faltas: string[] = [];
+      if (indiceFase(fluxo.faseAtual) < indiceFase("pronto")) {
+        faltas.push(`A OS está em "${ROTULO_FASE[fluxo.faseAtual]}" — precisa estar em "${ROTULO_FASE.pronto}" para entregar`);
+      }
+      faltas.push(...pendenciasAte("pronto", fluxo));
+      if (entregaForm.testado !== "sim") faltas.push("Pronto: o serviço precisa ser testado antes da entrega");
+      if (faltas.length > 0) {
+        setPendenciasFase({ destino: ROTULO_FASE.entrega, itens: faltas });
+        toast.error("Entrega bloqueada", { description: "Conclua todas as etapas da execução antes de entregar." });
+        return;
+      }
     }
     setSalvandoEntrega(true);
     try {
