@@ -243,12 +243,7 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
       pendencias.push(`${custosSemValor.length} custo(s) sem valor lançado`);
     }
 
-    const custosNaoPagos = listaCustos.filter(
-      (c: any) => Number(c.custo_interno ?? 0) > 0 && !c.pago,
-    );
-    if (custosNaoPagos.length > 0) {
-      pendencias.push(`${custosNaoPagos.length} custo(s) em aberto não pago(s)`);
-    }
+    // Custos não pagos não bloqueiam o gestor: pagamento é responsabilidade do Financeiro.
 
     return pendencias;
     // eslint-disable-next-line react-hooks/exhaustive-deps
