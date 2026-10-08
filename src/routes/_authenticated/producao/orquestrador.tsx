@@ -108,7 +108,7 @@ function Orquestrador() {
 
   const atualizar = async (id: string, patch: Record<string, any>, msg?: string) => {
     const { error } = await supabase.from("os_subservicos" as any).update(patch).eq("id", id);
-    if (error) return toast.error("Erro: " + error.message);
+    if (error) { toast.error("Erro: " + error.message); return; }
     if (msg) toast.success(msg);
     refresh();
   };
@@ -431,7 +431,7 @@ function Orquestrador() {
           <Input value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Motivo (ex: aguardando peça)" />
           <DialogFooter>
             <Button onClick={async () => {
-              if (!motivo.trim()) return toast.error("Informe o motivo da pausa.");
+              if (!motivo.trim()) { toast.error("Informe o motivo da pausa."); return; }
               await atualizar(pausa.id, { status: "pausado", motivo_pausa: motivo.trim() }, "Serviço pausado");
               setPausa(null);
             }}>Pausar</Button>

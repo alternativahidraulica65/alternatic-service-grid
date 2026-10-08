@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 export interface LinhaServico {
   componente: string;
   descricao: string;
-  checklist_item_id?: string | null;
+  checklist_item_id?: string | null | undefined;
   origem: "checklist" | "manual";
 }
 
@@ -59,7 +59,7 @@ export function parseLinhas(texto: string): LinhaServico[] {
     .filter(Boolean)
     .map((l) => {
       const [comp, ...resto] = l.split(" --- ");
-      return { componente: comp.trim(), descricao: resto.join(" --- ").trim(), origem: "manual" as const };
+      return { componente: (comp ?? "").trim(), descricao: resto.join(" --- ").trim(), origem: "manual" as const };
     });
 }
 
