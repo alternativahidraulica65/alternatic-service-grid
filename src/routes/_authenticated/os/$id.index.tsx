@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
+import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, pendenciasAte, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";
 import { NotasInternasOs } from "@/components/NotasInternasOs";
 import { getExecutorEmail } from "@/lib/log-executor";
