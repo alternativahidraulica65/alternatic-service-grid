@@ -27,6 +27,7 @@ interface Props {
   checklist?: any[];
   custos?: any[];
   pecas?: any[];
+  subservicos?: any[];
   onIrPara?: (tab: string) => void;
 }
 
@@ -34,10 +35,10 @@ interface Props {
  * Bloco "O que falta nesta OS": mostra as pendências que travam o avanço,
  * já ordenadas pela sequência oficial, com atalho para a aba correspondente.
  */
-export function PendenciasOsCard({ os, checklist = [], custos = [], pecas = [], onIrPara }: Props) {
+export function PendenciasOsCard({ os, checklist = [], custos = [], pecas = [], subservicos = [], onIrPara }: Props) {
   if (!os) return null;
 
-  const resultado = avaliarFluxo(os, { checklist, custos, pecas });
+  const resultado = avaliarFluxo(os, { checklist, custos, pecas, subservicos });
   const idxAtual = indiceFase(resultado.faseAtual);
 
   // Pendências das fases já alcançadas (inclui a fase atual) — as futuras ainda não travam.

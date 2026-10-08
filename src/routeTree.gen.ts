@@ -37,6 +37,7 @@ import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated/os/index'
 import { Route as AuthenticatedOsIdRouteImport } from './routes/_authenticated/os/$id'
 import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
+import { Route as AuthenticatedProducaoOrquestradorRouteImport } from './routes/_authenticated/producao/orquestrador'
 import { Route as AuthenticatedFinanceiroFornecedoresIndexRouteImport } from './routes/_authenticated/financeiro/fornecedores/index'
 import { Route as AuthenticatedOsIdIndexRouteImport } from './routes/_authenticated/os/$id.index'
 import { Route as AuthenticatedOsIdOficinaRouteImport } from './routes/_authenticated/os/$id.oficina'
@@ -196,6 +197,12 @@ const AuthenticatedOsNovaRoute = AuthenticatedOsNovaRouteImport.update({
   path: '/os/nova',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProducaoOrquestradorRoute =
+  AuthenticatedProducaoOrquestradorRouteImport.update({
+    id: '/producao/orquestrador',
+    path: '/producao/orquestrador',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedFinanceiroFornecedoresIndexRoute =
   AuthenticatedFinanceiroFornecedoresIndexRouteImport.update({
     id: '/financeiro/fornecedores/',
@@ -251,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
+  '/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/os/': typeof AuthenticatedOsIndexRoute
@@ -283,6 +291,7 @@ export interface FileRoutesByTo {
   '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
   '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/os/nova': typeof AuthenticatedOsNovaRoute
+  '/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/os': typeof AuthenticatedOsIndexRoute
@@ -319,6 +328,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
+  '/_authenticated/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
@@ -355,6 +365,7 @@ export interface FileRouteTypes {
     | '/orcamento/precificacao'
     | '/os/$id'
     | '/os/nova'
+    | '/producao/orquestrador'
     | '/clientes/'
     | '/dashboard/'
     | '/os/'
@@ -387,6 +398,7 @@ export interface FileRouteTypes {
     | '/orcamento/pdf'
     | '/orcamento/precificacao'
     | '/os/nova'
+    | '/producao/orquestrador'
     | '/clientes'
     | '/dashboard'
     | '/os'
@@ -422,6 +434,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamento/precificacao'
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
+    | '/_authenticated/producao/orquestrador'
     | '/_authenticated/clientes/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/os/'
@@ -637,6 +650,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsNovaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/producao/orquestrador': {
+      id: '/_authenticated/producao/orquestrador'
+      path: '/producao/orquestrador'
+      fullPath: '/producao/orquestrador'
+      preLoaderRoute: typeof AuthenticatedProducaoOrquestradorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/financeiro/fornecedores/': {
       id: '/_authenticated/financeiro/fornecedores/'
       path: '/financeiro/fornecedores'
@@ -748,6 +768,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFinanceiroLancamentosRoute: typeof AuthenticatedFinanceiroLancamentosRoute
   AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRouteWithChildren
   AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
+  AuthenticatedProducaoOrquestradorRoute: typeof AuthenticatedProducaoOrquestradorRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
   AuthenticatedOsIndexRoute: typeof AuthenticatedOsIndexRoute
   AuthenticatedFinanceiroFornecedoresIndexRoute: typeof AuthenticatedFinanceiroFornecedoresIndexRoute
@@ -771,6 +792,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedFinanceiroLancamentosRoute,
   AuthenticatedOsIdRoute: AuthenticatedOsIdRouteWithChildren,
   AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
+  AuthenticatedProducaoOrquestradorRoute:
+    AuthenticatedProducaoOrquestradorRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
   AuthenticatedOsIndexRoute: AuthenticatedOsIndexRoute,
   AuthenticatedFinanceiroFornecedoresIndexRoute:

@@ -154,6 +154,7 @@ export interface DadosFluxo {
   checklist?: any[];
   custos?: any[];
   pecas?: any[];
+  subservicos?: any[];
 }
 
 export interface ResultadoFluxo {
@@ -169,6 +170,7 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
   const checklist = dados.checklist ?? [];
   const custos = dados.custos ?? [];
   const pecas = dados.pecas ?? [];
+  const subservicos = dados.subservicos ?? [];
 
   const faseAtual = faseDoStatus(os?.status, os?.status_financeiro);
   const idxAtual = indiceFase(faseAtual);
@@ -251,6 +253,11 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
   );
   if (bancadaAberta.length > 0) {
     pendencias.execucao.push(`${bancadaAberta.length} serviço(s) de bancada sem baixa`);
+  }
+
+  const subAbertos = subservicos.filter((s: any) => s?.status !== "concluido");
+  if (subAbertos.length > 0) {
+    pendencias.execucao.push(`${subAbertos.length} subserviço(s) ainda não concluído(s) no Orquestrador`);
   }
 
   // Pronto / Entrega
