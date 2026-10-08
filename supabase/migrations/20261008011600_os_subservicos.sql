@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS public.os_subservicos (
   status text NOT NULL DEFAULT 'aguardando',
   motivo_pausa text,
   observacao text,
-  terceiro_id uuid REFERENCES public.terceiros(id) ON DELETE SET NULL,
+  terceiro_id uuid,
   terceiro_nome text,
   quantidade numeric NOT NULL DEFAULT 1,
   prazo_retorno date,
