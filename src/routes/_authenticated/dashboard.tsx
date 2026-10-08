@@ -82,6 +82,7 @@ function DashboardLayout() {
     { label: "Nova OS / Triagem", icon: Wrench, to: "/os/nova", roles: ["diretor", "gestor", "operador"] },
     { label: "Ordens de Serviço", icon: ClipboardList, to: "/os", roles: ["diretor", "administrativo_financeiro", "gestor", "operador"] },
     { label: "Terceiros", icon: Package, to: "/terceiros", roles: ["diretor", "administrativo_financeiro", "gestor"] },
+    { label: "Orquestrador", icon: Factory, to: "/producao/orquestrador", roles: ["diretor", "gestor"] },
     { label: "Produção (Kanban)", icon: LayoutDashboard, to: "/kanban", roles: ["diretor", "gestor", "operador"] },
     { label: "Lançamentos", icon: Receipt, to: "/financeiro/lancamentos", roles: ["diretor", "administrativo_financeiro"] },
 
