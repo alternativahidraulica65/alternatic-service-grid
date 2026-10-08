@@ -77,6 +77,24 @@ function NovaOSPage() {
   const [tipoOpen, setTipoOpen] = useState(false);
   const [tipoLoading, setTipoLoading] = useState(false);
   const [tipoForm, setTipoForm] = useState({ nome: "", categoria_principal: "", descricao: "" });
+  const authCtx = Route.useRouteContext() as any;
+  const podeTransferir = !!(authCtx?.isGestor || authCtx?.isDiretor);
+  const [responsavelUserId, setResponsavelUserId] = useState<string>("");
+  const { data: responsaveis = [] } = useQuery({
+    queryKey: ["nova_os_responsaveis"],
+    enabled: podeTransferir,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("id, user_id, nome, cargo, ativo")
+        .eq("ativo", true)
+        .order("nome");
+      if (error) throw error;
+      return (data ?? []).filter((u: any) =>
+        ["operador", "tecnico", "gestor"].includes(String(u.cargo ?? "").toLowerCase()),
+      );
+    },
+  });
 
   const { data: clientes = [] } = useQuery({
     queryKey: ['clientes_lookup'],
@@ -252,6 +270,14 @@ function NovaOSPage() {
       const { data: userData } = await supabase.auth.getUser();
       const currentUserId = userData.user?.id || null;
 
+      // Operador abre sempre para si; gestor/diretor pode transferir.
+      const destinoUserId = podeTransferir && responsavelUserId ? responsavelUserId : currentUserId;
+      let destinoTecnicoId: string | null = null;
+      if (destinoUserId) {
+        const { data: u } = await supabase.from("usuarios").select("id").eq("user_id", destinoUserId).maybeSingle();
+        destinoTecnicoId = (u as any)?.id ?? null;
+      }
+
       const numeroOs = `OS-${Date.now().toString().slice(-8)}`;
 
       const { data: os, error: osError } = await supabase
@@ -264,7 +290,8 @@ function NovaOSPage() {
           status: 'aberta',
           prioridade,
           data_abertura: new Date().toISOString(),
-          operador_atribuido: currentUserId,
+          operador_atribuido: destinoUserId,
+          tecnico_id: destinoTecnicoId,
           descricao,
         } as any)
         .select()
@@ -448,6 +475,35 @@ function NovaOSPage() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   {prazoInfo[prioridade] || prazoInfo["Média"]}
                 </p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Responsável</Label>
+                {podeTransferir ? (
+                  <>
+                    <Select value={responsavelUserId || "__eu"} onValueChange={(v) => setResponsavelUserId(v === "__eu" ? "" : v)}>
+                      <SelectTrigger className="h-11 border-border">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__eu">Eu mesmo (padrão)</SelectItem>
+                        {responsaveis
+                          .filter((u: any) => u.user_id && u.user_id !== authCtx?.user?.id)
+                          .map((u: any) => (
+                            <SelectItem key={u.user_id} value={u.user_id}>
+                              Transferir para {u.nome} ({u.cargo})
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      A OS fica com você, a menos que transfira para um operador.
+                    </p>
+                  </>
+                ) : (
+                  <div className="h-11 px-3 flex items-center rounded-md border border-border bg-muted text-sm font-semibold">
+                    {authCtx?.profile?.nome || "Você"} — OS aberta para você
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
