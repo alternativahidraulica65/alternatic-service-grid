@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T02:06:12.152282+00:00",
+  "generated_at": "2026-10-08T02:08:04.839470+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -503,7 +503,7 @@
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
-      "bytes": 35099
+      "bytes": 34936
     },
     {
       "path": "src/components/BotaoConsultaCnpj.tsx",
