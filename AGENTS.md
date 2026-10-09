@@ -11,3 +11,5 @@
 
 - Checklist document previews live in a dedicated component; completion signatures use persisted history events so refreshes retain the real evaluator.
 - Checklist removal goes through an authenticated server function that validates protected user_roles before performing user-scoped deletion.
+- Automatic piece costs use deterministic primary keys based on OS, piece and destination; creation occurs on destination actions, never page-load effects, preventing concurrent duplicates without overwriting amounts.
+- Monetary editing uses a reusable PT-BR decimal input with validation and two-decimal formatting; payment controls remain separate from operational cost entry.
