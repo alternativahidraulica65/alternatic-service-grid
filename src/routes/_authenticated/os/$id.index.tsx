@@ -420,7 +420,20 @@ function GestaoOSPage() {
   });
   const checklistFinalizado = registroChecklist?.observacao?.startsWith('Checklist técnico finalizado') &&
     checklistData.length > 0 && checklistData.every((item: any) => ['Bom', 'Ruim', 'Aprovado', 'Danificado', 'Substituir'].includes(item.status));
-  const assinaturaChecklist = registroChecklist?.observacao?.split(' — Responsável: ')[1] || registroChecklist?.executor_email || '';
+  const { data: responsavelChecklist } = useQuery({
+    queryKey: ['os_checklist_responsavel', registroChecklist?.executor_id, registroChecklist?.executor_email],
+    queryFn: async () => {
+      let query = supabase.from('usuarios').select('nome');
+      query = registroChecklist?.executor_email
+        ? query.eq('email', registroChecklist.executor_email)
+        : query.eq('user_id', registroChecklist.executor_id);
+      const { data, error } = await query.maybeSingle();
+      if (error) throw error;
+      return data?.nome ?? '';
+    },
+    enabled: !!(registroChecklist?.executor_id || registroChecklist?.executor_email),
+  });
+  const assinaturaChecklist = registroChecklist?.observacao?.split(' — Responsável: ')[1] || responsavelChecklist || '';
   const checklistCompacto = checklistFinalizado && !editandoChecklist;
   const selecionarChecklist = (id: string, checked: boolean) => setSelecionadosChecklist((ids) =>
     checked ? [...new Set([...ids, id])] : ids.filter((value) => value !== id));
@@ -927,7 +940,7 @@ function GestaoOSPage() {
     setSavingChecklist(true);
     try {
       const statusAnterior = os?.status ?? null;
-      const statusNovo = indiceFase(faseDoStatus(os)) <= indiceFase('checklist') ? 'vistoria' : os.status;
+      const statusNovo = indiceFase(faseDoStatus(os?.status, os?.status_financeiro)) <= indiceFase('checklist') ? 'vistoria' : os.status;
       const { error } = await supabase
         .from('ordens_servico')
         .update({ status: statusNovo })
