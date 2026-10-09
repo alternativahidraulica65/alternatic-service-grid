@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { ValorMonetarioInput } from "@/components/ValorMonetarioInput";
 import { FotoThumb } from "@/components/FotoThumb";
+import { AnaliseDuplicidadeCustos } from "@/components/AnaliseDuplicidadeCustos";
 import {
   DollarSign,
   Lock,
@@ -548,6 +549,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
           <Receipt className="h-3.5 w-3.5" /> Custos lançados nesta OS
         </p>
+        <AnaliseDuplicidadeCustos osId={osId} custos={custos as any[]} fornecedores={fornecedores as any[]} />
         {isLoading ? (
           <Skeleton className="h-20 w-full" />
         ) : custos.length === 0 ? (

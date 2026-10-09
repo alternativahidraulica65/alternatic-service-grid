@@ -13,3 +13,4 @@
 - Checklist removal goes through an authenticated server function that validates protected user_roles before performing user-scoped deletion.
 - Automatic piece costs use deterministic primary keys based on OS, piece and destination; creation occurs on destination actions, never page-load effects, preventing concurrent duplicates without overwriting amounts.
 - Monetary editing uses a reusable PT-BR decimal input with validation and two-decimal formatting; payment controls remain separate from operational cost entry.
+- AI cost-duplicate analysis runs in a server function that verifies the user's role before calling the AI Gateway; keeps the AI key server-side.

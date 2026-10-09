@@ -435,6 +435,9 @@ function FornecedoresPage() {
           </div>
         </div>
         <div className="flex gap-3">
+          <Button asChild variant="outline" className="border-border text-slate-600 font-bold uppercase tracking-widest text-xs h-11 px-6">
+            <Link to="/financeiro/valinhos">Vales a pagar</Link>
+          </Button>
           <Button variant="outline" onClick={() => setIsAuditModalOpen(true)} className="border-border text-slate-600 font-bold uppercase tracking-widest text-xs h-11 px-6">
             <History className="mr-2 h-4 w-4" /> Auditoria
           </Button>
