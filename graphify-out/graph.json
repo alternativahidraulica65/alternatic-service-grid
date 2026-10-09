@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T02:08:04.839470+00:00",
+  "generated_at": "2026-10-09T15:15:05.565790+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -148,6 +148,10 @@
     {
       "path": "supabase/migrations/20260816180849_55893156-dbc5-4764-a2ff-dc80ef991e21.sql",
       "bytes": 787
+    },
+    {
+      "path": "supabase/migrations/20261009151500_os_anexos_mencoes_atraso.sql",
+      "bytes": 2948
     },
     {
       "path": "supabase/migrations/20260816194837_f1262daf-e8d1-429f-b15e-6b7c9dfe2e6c.sql",
@@ -510,6 +514,10 @@
       "bytes": 1810
     },
     {
+      "path": "src/components/SlaOs.tsx",
+      "bytes": 4066
+    },
+    {
       "path": "src/components/ServicosLaudoEditor.tsx",
       "bytes": 2650
     },
@@ -536,6 +544,10 @@
     {
       "path": "src/components/LembretesCard.tsx",
       "bytes": 5473
+    },
+    {
+      "path": "src/components/AnexosOs.tsx",
+      "bytes": 6948
     },
     {
       "path": "src/components/PropostaDocumento.tsx",
@@ -971,7 +983,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 122336
+      "bytes": 122538
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
@@ -1544,6 +1556,18 @@
       "target": "@/lib/brasilapi"
     },
     {
+      "source": "src/components/SlaOs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/SlaOs.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/SlaOs.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
       "source": "src/components/ServicosLaudoEditor.tsx",
       "target": "lucide-react"
     },
@@ -1773,6 +1797,38 @@
     },
     {
       "source": "src/components/LembretesCard.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/AnexosOs.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/AnexosOs.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/AnexosOs.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AnexosOs.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/AnexosOs.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/AnexosOs.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/AnexosOs.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/AnexosOs.tsx",
       "target": "@/components/ui/select"
     },
     {
@@ -4154,6 +4210,14 @@
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/components/NotasInternasOs"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/AnexosOs"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/SlaOs"
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",

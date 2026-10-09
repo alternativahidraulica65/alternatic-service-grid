@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-08T02:08:04.839470+00:00
+Generated: 2026-10-09T15:15:05.565790+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -149,6 +149,7 @@ Generated: 2026-10-08T02:08:04.839470+00:00
 
 ## Project components
 - src/components/AlertaOrcamentosCard.tsx
+- src/components/AnexosOs.tsx
 - src/components/BancadasDialog.tsx
 - src/components/BotaoConsultaCnpj.tsx
 - src/components/BuscaGlobal.tsx
@@ -168,6 +169,7 @@ Generated: 2026-10-08T02:08:04.839470+00:00
 - src/components/PropostaDocumento.tsx
 - src/components/RemoverSelecionados.tsx
 - src/components/ServicosLaudoEditor.tsx
+- src/components/SlaOs.tsx
 - src/components/TerceirosDialog.tsx
 - src/components/ui/accordion.tsx
 - src/components/ui/alert-dialog.tsx
