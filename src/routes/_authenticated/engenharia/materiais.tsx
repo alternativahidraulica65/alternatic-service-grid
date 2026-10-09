@@ -170,21 +170,21 @@ function MateriaisPage() {
 
   const salvarPreco = async () => {
     const p = Number(preco.replace(",", ".")) || 0;
-    if (modoPreco !== "kg" || p <= 0) return toast.error("Informe o preço por kg para salvar como referência");
+    if (modoPreco !== "kg" || p <= 0) { toast.error("Informe o preço por kg para salvar como referência"); return; }
     const payload = { nome: mat.nome, densidade: mat.densidade, preco_base_kg: p };
     const q = mat.id
       ? supabase.from("materias_primas" as any).update({ preco_base_kg: p }).eq("id", mat.id)
       : supabase.from("materias_primas" as any).insert(payload);
     const { error } = await q;
-    if (error) return toast.error("Erro ao salvar preço: " + error.message);
+    if (error) { toast.error("Erro ao salvar preço: " + error.message); return; }
     toast.success("Preço de referência salvo");
     qc.invalidateQueries({ queryKey: ["materias_primas"] });
   };
 
   const registrar = async () => {
-    if (!sel) return toast.error("Selecione um item da fila");
-    if (!calc.valido) return toast.error("Confira as medidas");
-    if (calc.custoTotal < 0.5) return toast.error("O custo precisa ser de no mínimo R$ 0,50");
+    if (!sel) { toast.error("Selecione um item da fila"); return; }
+    if (!calc.valido) { toast.error("Confira as medidas"); return; }
+    if (calc.custoTotal < 0.5) { toast.error("O custo precisa ser de no mínimo R$ 0,50"); return; }
     setSalvando(true);
     try {
       const { data: auth } = await supabase.auth.getUser();
