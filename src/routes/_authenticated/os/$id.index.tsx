@@ -2,6 +2,8 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, pendenciasAte, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";
 import { NotasInternasOs } from "@/components/NotasInternasOs";
+import { ChecklistDocumento, iconeComponente } from "@/components/ChecklistDocumento";
+import { removerChecklist } from "@/lib/checklist.functions";
 import { AnexosOs } from "@/components/AnexosOs";
 import { SlaOs } from "@/components/SlaOs";
 import { getExecutorEmail } from "@/lib/log-executor";
@@ -34,7 +36,8 @@ import {
   Pencil,
   AlertTriangle,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Trash2
 
 
 } from "lucide-react";
@@ -88,6 +91,17 @@ const FOTOS_VAZIAS: any[] = [];
 
 export const Route = createFileRoute("/_authenticated/os/$id/")({
   component: GestaoOSPage,
+  head: () => ({
+    meta: [
+      { title: "Detalhes da OS — Alternativa Hidráulica" },
+      { name: "description", content: "Checklist técnico, diagnóstico e acompanhamento da ordem de serviço na Alternativa Hidráulica." },
+      { property: "og:title", content: "Ordem de serviço — Alternativa Hidráulica" },
+      { property: "og:description", content: "Avaliação técnica e acompanhamento da manutenção hidráulica." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+    links: [{ rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" }],
+  }),
 });
 
 function GestaoOSPage() {
@@ -95,7 +109,7 @@ function GestaoOSPage() {
   const osId = id;
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { profile } = Route.useRouteContext();
+  const { profile, roles } = Route.useRouteContext();
   const { podeVerValoresFinanceiros, podeGerenciarOS } = useUserRole();
 
   const { data: os, isLoading } = useQuery({
@@ -387,6 +401,62 @@ function GestaoOSPage() {
   });
 
   const [savingChecklist, setSavingChecklist] = useState(false);
+  const [selecionadosChecklist, setSelecionadosChecklist] = useState<string[]>([]);
+  const [avaliandoEmMassa, setAvaliandoEmMassa] = useState(false);
+  const [editandoChecklist, setEditandoChecklist] = useState(false);
+  const [documentoChecklist, setDocumentoChecklist] = useState(false);
+  const [confirmarRemoverChecklist, setConfirmarRemoverChecklist] = useState(false);
+  const [removendoChecklist, setRemovendoChecklist] = useState(false);
+  const podeRemoverChecklist = roles.some((role) => ['gestor', 'diretor', 'administrativo_financeiro', 'financeiro'].includes(role));
+  const { data: registroChecklist } = useQuery({
+    queryKey: ['os_checklist_documento', osId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('historico_status_os' as any)
+        .select('*').eq('os_id', osId).like('observacao', 'Checklist%')
+        .order('criado_em', { ascending: false }).limit(1);
+      if (error) throw error;
+      return data?.[0] as any ?? null;
+    },
+  });
+  const checklistFinalizado = registroChecklist?.observacao?.startsWith('Checklist técnico finalizado') &&
+    checklistData.length > 0 && checklistData.every((item: any) => ['Bom', 'Ruim', 'Aprovado', 'Danificado', 'Substituir'].includes(item.status));
+  const { data: responsavelChecklist } = useQuery({
+    queryKey: ['os_checklist_responsavel', registroChecklist?.executor_id, registroChecklist?.executor_email],
+    queryFn: async () => {
+      let query = supabase.from('usuarios').select('nome');
+      query = registroChecklist?.executor_email
+        ? query.eq('email', registroChecklist.executor_email)
+        : query.eq('user_id', registroChecklist.executor_id);
+      const { data, error } = await query.maybeSingle();
+      if (error) throw error;
+      return data?.nome ?? '';
+    },
+    enabled: !!(registroChecklist?.executor_id || registroChecklist?.executor_email),
+  });
+  const assinaturaChecklist = registroChecklist?.observacao?.split(' — Responsável: ')[1] || responsavelChecklist || '';
+  const checklistCompacto = checklistFinalizado && !editandoChecklist;
+  const selecionarChecklist = (id: string, checked: boolean) => setSelecionadosChecklist((ids) =>
+    checked ? [...new Set([...ids, id])] : ids.filter((value) => value !== id));
+  const handleRemoverChecklist = async () => {
+    if (!podeRemoverChecklist) return;
+    setRemovendoChecklist(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Entre novamente para remover o checklist.');
+      await removerChecklist({ data: { osId: String(osId), accessToken: session.access_token } });
+      setConfirmarRemoverChecklist(false);
+      setEditandoChecklist(false);
+      setSelecionadosChecklist([]);
+      await Promise.all([
+        refetchChecklist(),
+        queryClient.invalidateQueries({ queryKey: ['os_checklist_documento', osId] }),
+        queryClient.invalidateQueries({ queryKey: ['os_historico', osId] }),
+      ]);
+      toast.success('Checklist removido. As fotos e peças existentes foram preservadas.');
+    } catch (error: any) {
+      toast.error(error.message || 'Não foi possível remover o checklist.');
+    } finally { setRemovendoChecklist(false); }
+  };
 
   const estadoLegadoDoChecklist = (status: string) =>
     status === 'Bom' ? 'aprovado' : status === 'Ruim' ? 'recuperacao' : status;
@@ -718,16 +788,19 @@ function GestaoOSPage() {
   };
 
 
-  const handleUpdateChecklistItem = async (itemId: string, updates: any) => {
+  const handleUpdateChecklistItem = async (itemId: string, updates: any, refetch = true) => {
     try {
       const item: any = checklistData.find((i: any) => i.id === itemId);
       if (itemId.startsWith('temp-')) {
-        if (!item) return;
+        if (!item) return false;
 
         const { error } = await supabase
           .from('os_checklist_tecnico' as any)
           .insert({
             os_id: osId,
+            responsavel_id: profile?.user_id ?? null,
+            criado_por: profile?.user_id ?? null,
+            data_verificacao: new Date().toISOString(),
             componente: item.item,
             item_peca: item.item,
             estado: estadoLegadoDoChecklist(updates.status || item.status),
@@ -739,7 +812,7 @@ function GestaoOSPage() {
 
         if (error) throw error;
       } else {
-        const payload: any = {};
+        const payload: any = { responsavel_id: profile?.user_id ?? null, data_verificacao: new Date().toISOString() };
         if (updates.status !== undefined) {
           payload.estado_atual = updates.status;
           payload.estado = estadoLegadoDoChecklist(updates.status);
@@ -756,10 +829,24 @@ function GestaoOSPage() {
       if (updates.status && item?.item) {
         await sincronizarPecaDoChecklist(item.item, updates.status);
       }
-      refetchChecklist();
+      if (refetch) await refetchChecklist();
+      return true;
     } catch (error: any) {
       toast.error("Erro ao atualizar item: " + error.message);
+      return false;
     }
+  };
+
+  const handleAvaliarEmMassa = async (status: 'Bom' | 'Ruim') => {
+    setAvaliandoEmMassa(true);
+    try {
+      const results = await Promise.all(selecionadosChecklist.map((id) => handleUpdateChecklistItem(id, { status }, false)));
+      await refetchChecklist();
+      if (results.every(Boolean)) {
+        setSelecionadosChecklist([]);
+        toast.success(`${results.length} itens marcados como ${status}.`);
+      }
+    } finally { setAvaliandoEmMassa(false); }
   };
 
 
@@ -850,39 +937,31 @@ function GestaoOSPage() {
       });
       return;
     }
-    const itemsPendingPhoto = checklistData.filter((item: any) => 
-      (item.status === 'Ruim' || item.status === 'Danificado' || item.status === 'Substituir') && !fotoDoItem(item)
-    );
-
-    if (itemsPendingPhoto.length > 0) {
-      toast.error("Fotos obrigatórias pendentes", {
-        description: "Itens com status 'Danificado' ou 'Substituir' exigem comprovação por foto."
-      });
-      return;
-    }
-
     setSavingChecklist(true);
     try {
       const statusAnterior = os?.status ?? null;
+      const statusNovo = indiceFase(faseDoStatus(os?.status, os?.status_financeiro)) <= indiceFase('checklist') ? 'vistoria' : os.status;
       const { error } = await supabase
         .from('ordens_servico')
-        .update({ status: 'vistoria' })
+        .update({ status: statusNovo })
         .eq('id', osId);
 
       if (error) throw error;
 
-      await supabase.from('historico_status_os' as any).insert({
+      const { error: logError } = await supabase.from('historico_status_os' as any).insert({
         os_id: osId,
         status_anterior: statusAnterior,
-        status_novo: 'vistoria',
-        observacao: 'Checklist técnico finalizado e OS enviada para vistoria',
-        executor_id: profile?.id ?? null,
+        status_novo: statusNovo,
+        observacao: `Checklist técnico finalizado — Responsável: ${profile?.nome || ''}`,
+        executor_id: profile?.user_id ?? null,
         executor_email: await getExecutorEmail(),
       });
 
-      toast.success("Checklist finalizado", {
-        description: "OS avançada para Vistoria Técnica."
-      });
+      if (logError) throw logError;
+      setEditandoChecklist(false);
+      setSelecionadosChecklist([]);
+      await queryClient.invalidateQueries({ queryKey: ['os_checklist_documento', osId] });
+      toast.success("Checklist finalizado", { description: "Avaliação salva com o responsável." });
       queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
       queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
     } catch (error: any) {
@@ -1765,72 +1844,104 @@ function GestaoOSPage() {
         </TabsContent>
 
         <TabsContent value="checklist">
-           <Card className="border-border shadow-md">
+          <ChecklistDocumento open={documentoChecklist} onOpenChange={setDocumentoChecklist}
+            numeroOs={String(os.numero_os ?? os.id)} cliente={os.clientes?.razao_social ?? os.cliente ?? ''}
+            equipamento={os.descricao || ''} itens={checklistData as any[]}
+            assinatura={assinaturaChecklist} data={registroChecklist?.criado_em ?? null} />
+          <Dialog open={confirmarRemoverChecklist} onOpenChange={setConfirmarRemoverChecklist}>
+            <DialogContent>
+              <DialogHeader><DialogTitle>Remover checklist?</DialogTitle></DialogHeader>
+              <p className="text-sm text-muted-foreground">As avaliações desta OS serão excluídas. Fotos, peças e histórico serão preservados. Será necessário preencher e finalizar novamente.</p>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" disabled={removendoChecklist} onClick={() => setConfirmarRemoverChecklist(false)}>Cancelar</Button>
+                <Button variant="destructive" disabled={removendoChecklist} onClick={handleRemoverChecklist}>{removendoChecklist ? 'Removendo...' : 'Remover checklist'}</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+          {checklistCompacto ? (
+            <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-card p-4">
+              <Button variant="ghost" className="h-auto min-w-0 flex-1 justify-start gap-3 whitespace-normal py-2 text-left" onClick={() => setDocumentoChecklist(true)}>
+                <FileText className="h-9 w-9 shrink-0 text-primary" />
+                <span><span className="block font-semibold">Checklist técnico · OS {os.numero_os}</span>
+                  <span className="block text-xs text-muted-foreground">{checklistData.length} itens · {assinaturaChecklist}</span>
+                </span>
+              </Button>
+              <Badge variant="outline"><CheckCircle2 className="mr-1 h-3 w-3" />Finalizado</Badge>
+              <Button variant="outline" size="icon" title="Editar checklist" aria-label="Editar checklist" onClick={() => setEditandoChecklist(true)}><Pencil className="h-4 w-4" /></Button>
+              {podeRemoverChecklist && <Button variant="ghost" size="icon" title="Remover checklist" aria-label="Remover checklist" onClick={() => setConfirmarRemoverChecklist(true)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
+            </div>
+          ) : <Card className="border-border shadow-md">
              <CardHeader className="bg-muted/10 border-b border-border/50">
                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                  <div>
                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                      Ordem de Serviço #{os.numero_os ?? os.id} / Checklist
                    </div>
-                   <CardTitle className="text-xl font-black uppercase tracking-tight text-slate-900 flex items-center gap-2">
+                   <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground flex items-center gap-2">
                      <ClipboardCheck className="h-6 w-6 text-primary" />
                      Checklist de Equipamento
                    </CardTitle>
                  </div>
                  <div className="text-right">
-                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Equipamento: <span className="text-slate-900">{os.descricao || "N/A"}</span></p>
-                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Cliente: <span className="text-slate-900">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span></p>
+                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Equipamento: <span className="text-foreground">{os.descricao || "N/A"}</span></p>
+                   <p className="text-[10px] font-bold text-muted-foreground uppercase">Cliente: <span className="text-foreground">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span></p>
                  </div>
                </div>
              </CardHeader>
              <CardContent className="pt-6">
                <div className="mb-6 flex items-center justify-between">
                  <div>
-                   <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Itens do Checklist</h3>
-                   <p className="text-[10px] text-muted-foreground font-medium">Marque BOM no que está aprovado. Ao marcar RUIM, a peça vai automaticamente para destinação em "Peças" (foto obrigatória).</p>
+                   <h3 className="text-sm font-bold text-foreground uppercase tracking-widest">Itens do Checklist</h3>
+
                  </div>
                  <Badge variant="outline" className="text-[10px] font-black uppercase">{checklistData.length} itens</Badge>
 
                </div>
 
+               <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-border pb-4">
+                 <label className="flex items-center gap-2 text-sm">
+                   <Checkbox aria-label="Selecionar todos os itens" disabled={avaliandoEmMassa}
+                     checked={checklistData.length > 0 && selecionadosChecklist.length === checklistData.length ? true : selecionadosChecklist.length > 0 ? 'indeterminate' : false}
+                     onCheckedChange={(checked) => setSelecionadosChecklist(checked === true ? checklistData.map((item: any) => item.id) : [])} />
+                   Selecionar todos
+                 </label>
+                 {selecionadosChecklist.length > 0 && <>
+                   <span className="text-xs text-muted-foreground">{selecionadosChecklist.length} selecionados</span>
+                   <Button size="sm" variant="outline" disabled={avaliandoEmMassa} onClick={() => handleAvaliarEmMassa('Bom')}><CheckCircle2 className="mr-2 h-4 w-4" />Bom</Button>
+                   <Button size="sm" variant="outline" disabled={avaliandoEmMassa} onClick={() => handleAvaliarEmMassa('Ruim')}><AlertTriangle className="mr-2 h-4 w-4" />Ruim</Button>
+                 </>}
+               </div>
                <div className="space-y-3">
                  {loadingChecklist ? (
-                   <div className="py-10 text-center animate-pulse text-[10px] font-bold uppercase text-slate-400">Carregando itens...</div>
+                   <div className="py-10 text-center animate-pulse text-[10px] font-bold uppercase text-muted-foreground">Carregando itens...</div>
                  ) : checklistData.length === 0 ? (
-                   <div className="py-10 text-center text-[10px] font-bold uppercase text-slate-400">Nenhum item definido para este equipamento.</div>
+                   <div className="py-10 text-center text-[10px] font-bold uppercase text-muted-foreground">Nenhum item definido para este equipamento.</div>
                  ) : (
                    checklistData.map((item: any) => {
+                     const ItemIcon = iconeComponente(item.item || '');
                      const bom = item.status === 'Bom' || item.status === 'Aprovado';
                      const ruim = item.status === 'Ruim' || item.status === 'Danificado' || item.status === 'Substituir';
                      return (
                        <div
                          key={item.id}
-                         className={`rounded-xl border p-4 transition-all ${
-                           ruim ? 'border-red-300 bg-red-50/60' : bom ? 'border-emerald-200 bg-emerald-50/40' : 'border-border bg-card'
+                         className={`rounded-lg border p-4 transition-all ${
+                           ruim ? 'border-destructive/40 bg-destructive/5' : bom ? 'border-primary/40 bg-primary/5' : 'border-border bg-card'
                          }`}
                        >
                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                            <div className="flex items-start gap-3 min-w-0">
-                             <div
-                               className={`h-9 w-9 shrink-0 rounded-lg flex items-center justify-center border ${
-                                 ruim ? 'bg-red-100 border-red-200' : bom ? 'bg-emerald-100 border-emerald-200' : 'bg-slate-100 border-border'
-                               }`}
-                             >
-                               {ruim ? (
-                                 <AlertTriangle className="h-4 w-4 text-red-500" />
-                               ) : bom ? (
-                                 <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                               ) : (
-                                 <ClipboardCheck className="h-4 w-4 text-slate-400" />
-                               )}
+                             <Checkbox className="mt-2" aria-label={`Selecionar ${item.item}`} checked={selecionadosChecklist.includes(item.id)}
+                               disabled={avaliandoEmMassa} onCheckedChange={(checked) => selecionarChecklist(item.id, checked === true)} />
+                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-muted">
+                               <ItemIcon className="h-5 w-5 text-muted-foreground" />
                              </div>
                              <div className="min-w-0">
-                               <p className="text-sm font-bold text-slate-800 uppercase tracking-tight">{item.item}</p>
+                               <p className="text-sm font-bold text-foreground uppercase tracking-tight">{item.item}</p>
                                {item.descricao && (
                                  <p className="text-[10px] font-medium text-muted-foreground">{item.descricao}</p>
                                )}
                                {ruim && (
-                                 <p className="text-[9px] font-black uppercase tracking-widest text-red-500 mt-1">
+                                 <p className="text-[9px] font-black uppercase tracking-widest text-destructive mt-1">
                                    Peça enviada para destinação
                                  </p>
                                )}
@@ -1842,7 +1953,7 @@ function GestaoOSPage() {
                                size="sm"
                                variant={bom ? 'default' : 'outline'}
                                className={`h-9 px-4 text-[10px] font-black uppercase tracking-widest gap-2 ${
-                                 bom ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600' : 'border-slate-200 bg-white text-slate-500'
+                                 bom ? 'bg-primary text-primary-foreground' : 'border-border bg-card text-muted-foreground'
                                }`}
                                onClick={() => handleUpdateChecklistItem(item.id, { status: 'Bom' })}
                              >
@@ -1853,7 +1964,7 @@ function GestaoOSPage() {
                                size="sm"
                                variant={ruim ? 'default' : 'outline'}
                                className={`h-9 px-4 text-[10px] font-black uppercase tracking-widest gap-2 ${
-                                 ruim ? 'bg-red-600 hover:bg-red-700 text-white border-red-600' : 'border-slate-200 bg-white text-slate-500'
+                                 ruim ? 'bg-destructive text-destructive-foreground' : 'border-border bg-card text-muted-foreground'
                                }`}
                                onClick={() => handleUpdateChecklistItem(item.id, { status: 'Ruim' })}
                              >
@@ -1863,7 +1974,7 @@ function GestaoOSPage() {
                               <FotoChecklist
                                 url={fotoDoItem(item)?.url}
                                 path={fotoDoItem(item)?.path}
-                                obrigatoria={ruim && !fotoDoItem(item)}
+                                obrigatoria={false}
                                 onUpload={() => handleChecklistPhoto(item.id)}
                               />
                            </div>
@@ -1872,7 +1983,7 @@ function GestaoOSPage() {
                          {ruim && (
                            <Input
                              placeholder="O que está errado nesta peça?"
-                             className="mt-3 h-9 text-xs border-red-200 bg-white"
+                             className="mt-3 h-9 text-xs border-destructive/30 bg-card"
                              defaultValue={item.observacao || ''}
                              onBlur={(e) => handleUpdateChecklistItem(item.id, { observacao: e.target.value })}
                            />
@@ -1884,23 +1995,23 @@ function GestaoOSPage() {
                </div>
 
 
-               <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-50/50 p-4 rounded-xl">
+               <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 bg-muted/50 p-4 rounded-lg">
                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">Ao finalizar, a OS avança para a próxima etapa.</p>
                  <div className="flex gap-3">
-                   <Button variant="outline" className="h-10 border-slate-300 font-bold uppercase text-[10px] tracking-widest px-6" onClick={() => router.history.back()}>
+                   <Button variant="outline" className="h-10 border-border font-bold uppercase text-[10px] tracking-widest px-6" onClick={() => router.history.back()}>
                      Voltar
                    </Button>
                    <Button 
-                    className="h-10 bg-slate-900 text-white hover:bg-slate-800 font-black uppercase text-[10px] tracking-widest px-8 shadow-lg shadow-slate-200"
+                    className="h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase text-[10px] tracking-widest px-8 shadow-lg "
                     onClick={handleFinalizarChecklist}
-                    disabled={savingChecklist || checklistData.length === 0}
+                    disabled={savingChecklist || avaliandoEmMassa || checklistData.length === 0}
                    >
                      {savingChecklist ? "Finalizando..." : "Finalizar Checklist"}
                    </Button>
                  </div>
                </div>
              </CardContent>
-           </Card>
+           </Card>}
         </TabsContent>
 
         <TabsContent value="laudo-técnico">

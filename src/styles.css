@@ -164,6 +164,10 @@
 }
 
 
+.checklist-signature {
+  font-family: "Caveat", cursive;
+}
+
 /* Marca d'água removida */
 #lovable-badge,
 a[href*="lovable.dev"],
