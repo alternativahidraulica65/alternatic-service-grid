@@ -285,11 +285,11 @@ function FornecedoresPage() {
     if (!form) return;
     const campo = (nome: string) => form.elements.namedItem(nome) as HTMLInputElement | HTMLTextAreaElement | null;
     const nome = campo("nome");
-    if (nome && !nome.value.trim()) nome.value = dados.nome;
+    if (nome && dados.nome) nome.value = dados.nome;
     const contato = campo("contato");
-    if (contato && !contato.value.trim()) contato.value = dados.telefone;
+    if (contato && dados.telefone) contato.value = dados.telefone;
     const obs = campo("observacoes");
-    if (obs && !obs.value.trim()) {
+    if (obs) {
       obs.value = [dados.endereco, dados.email, dados.atividade].filter(Boolean).join(" · ");
     }
   };

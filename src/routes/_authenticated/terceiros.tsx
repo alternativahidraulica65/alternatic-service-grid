@@ -119,10 +119,10 @@ function PainelTerceiros() {
     setCadForm((atual) => ({
       ...atual,
       cnpj: dados.cnpjFormatado,
-      nome: atual.nome || dados.nome,
-      telefone: atual.telefone || dados.telefone,
-      email: atual.email || dados.email,
-      endereco: atual.endereco || dados.endereco,
+      nome: dados.nome || atual.nome,
+      telefone: dados.telefone || atual.telefone,
+      email: dados.email || atual.email,
+      endereco: dados.endereco || atual.endereco,
     }));
   };
 
