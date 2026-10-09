@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ValorMonetarioInput } from "@/components/ValorMonetarioInput";
 import { FotoThumb } from "@/components/FotoThumb";
 import {
   DollarSign,
@@ -66,7 +67,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
   const [novo, setNovo] = useState({
     descricao: "",
     categoria: "outros",
-    custo: "",
+    custo: 0,
     fornecedor_id: "",
   });
   const [salvando, setSalvando] = useState(false);
@@ -196,13 +197,20 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
       toast.error("Informe a descrição do custo");
       return;
     }
+    if (salvando) return;
+    if (!Number.isFinite(novo.custo) || novo.custo < 0) {
+      toast.error("Informe um valor válido para o custo");
+      return;
+    }
     setSalvando(true);
     try {
       const { error } = await supabase.from("os_custos" as any).insert({
         os_id: osId,
         descricao: novo.descricao.trim(),
         categoria: novo.categoria,
-        custo_interno: Number(novo.custo || 0),
+        custo_interno: novo.custo,
+        pago: false,
+        data_pagamento: null,
         fornecedor_id: novo.fornecedor_id || null,
         is_terceirizado: novo.categoria === "terceiros",
         criado_por: profile?.user_id ?? null,
@@ -211,7 +219,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
       await registrarLog(
         `Custo lançado: "${novo.descricao.trim()}" (${novo.categoria}) — ${brl(Number(novo.custo || 0))}`
       );
-      setNovo({ descricao: "", categoria: "outros", custo: "", fornecedor_id: "" });
+      setNovo({ descricao: "", categoria: "outros", custo: 0, fornecedor_id: "" });
       invalidar();
       toast.success("Custo lançado");
     } catch (e: any) {
@@ -292,7 +300,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
           : "Solicitação enviada para aprovação da diretoria/financeiro"
       );
     } catch (e: any) {
-      toast.error("Erro ao solicitar fornecedor: " + e.message);
+      toast.error("Erro ao cadastrar fornecedor: " + e.message);
     }
   };
 
@@ -328,8 +336,8 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
 
   const KPI = ({ label, valor, destaque }: { label: string; valor: number; destaque?: boolean }) => (
     <div
-      className={`p-4 rounded-xl border ${
-        destaque ? "border-primary/30 bg-primary/5" : "border-border bg-slate-50"
+      className={`p-4 rounded-lg border ${
+        destaque ? "border-primary/30 bg-primary/5" : "border-border bg-muted/40"
       }`}
     >
       <p
@@ -360,8 +368,8 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
 
       {/* Fornecedores pendentes de aprovação */}
       {fornecedoresPendentes.length > 0 && (
-        <div className="rounded-xl border border-amber-300 bg-amber-50/60 p-4 space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 flex items-center gap-2">
+        <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
+          <p className="text-[10px] font-black uppercase tracking-widest text-foreground flex items-center gap-2">
             <Clock className="h-3.5 w-3.5" /> Fornecedores aguardando aprovação
           </p>
           {fornecedoresPendentes.map((f: any) => (
@@ -398,15 +406,15 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
       )}
 
       {/* Lançar novo custo */}
-      <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+      <div className="border-y border-border py-5 space-y-4">
         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
           <Plus className="h-3.5 w-3.5" /> Lançar custo avulso
         </p>
-        <div className="grid gap-3 md:grid-cols-6">
-          <div className="md:col-span-2">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="md:col-span-2 lg:col-span-1">
             <Label className="text-[10px] font-bold uppercase">Descrição</Label>
             <Input
-              className="h-9 text-xs"
+              className="h-11 text-sm"
               placeholder="Ex.: Óleo hidráulico, frete, retífica"
               value={novo.descricao}
               onChange={(e) => setNovo({ ...novo, descricao: e.target.value })}
@@ -418,7 +426,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
               value={novo.categoria}
               onValueChange={(v) => setNovo({ ...novo, categoria: v })}
             >
-              <SelectTrigger className="h-9 text-xs">
+              <SelectTrigger className="h-11 text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -436,7 +444,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
               value={novo.fornecedor_id || "none"}
               onValueChange={(v) => setNovo({ ...novo, fornecedor_id: v === "none" ? "" : v })}
             >
-              <SelectTrigger className="h-9 text-xs">
+              <SelectTrigger className="h-11 text-sm">
                 <SelectValue placeholder="Selecionar" />
               </SelectTrigger>
               <SelectContent>
@@ -453,13 +461,8 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
           </div>
           <div>
             <Label className="text-[10px] font-bold uppercase">Custo (R$)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              className="h-9 text-xs"
-              value={novo.custo}
-              onChange={(e) => setNovo({ ...novo, custo: e.target.value })}
-            />
+            <ValorMonetarioInput value={novo.custo} label="Valor do novo custo"
+              onChange={(value) => setNovo((current) => ({ ...current, custo: value }))} />
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -476,20 +479,20 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                 variant="outline"
                 className="h-9 text-[10px] font-bold uppercase tracking-widest"
               >
-                <Truck className="h-3.5 w-3.5 mr-1" /> Solicitar fornecedor
+                <Truck className="h-3.5 w-3.5 mr-1" /> Novo fornecedor
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle className="text-sm font-black uppercase tracking-widest">
-                  {podeAprovarFornecedor ? "Novo fornecedor" : "Solicitar novo fornecedor"}
+                  {podeAprovarFornecedor ? "Novo fornecedor" : "Novo fornecedor"}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-3">
                 <div>
                   <Label className="text-[10px] font-bold uppercase">Nome *</Label>
                   <Input
-                    className="h-9 text-xs"
+                    className="h-11 text-sm"
                     value={novoFornecedor.nome}
                     onChange={(e) =>
                       setNovoFornecedor({ ...novoFornecedor, nome: e.target.value })
@@ -500,7 +503,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                   <div>
                     <Label className="text-[10px] font-bold uppercase">CNPJ</Label>
                     <Input
-                      className="h-9 text-xs"
+                      className="h-11 text-sm"
                       value={novoFornecedor.cnpj}
                       onChange={(e) =>
                         setNovoFornecedor({ ...novoFornecedor, cnpj: e.target.value })
@@ -510,7 +513,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                   <div>
                     <Label className="text-[10px] font-bold uppercase">Contato</Label>
                     <Input
-                      className="h-9 text-xs"
+                      className="h-11 text-sm"
                       value={novoFornecedor.contato}
                       onChange={(e) =>
                         setNovoFornecedor({ ...novoFornecedor, contato: e.target.value })
@@ -554,39 +557,43 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
           </div>
         ) : (
           (custos as any[]).map((custo: any) => {
-            const semValor = !Number(custo.custo_interno ?? 0);
+            const semValor = Number(custo.custo_interno ?? 0) <= 0;
             const notas = (comprovantes as any[]).filter(
               (f) => f.categoria === `custo:${custo.id}`
             );
             return (
               <div
                 key={custo.id}
-                className={`rounded-xl border p-4 space-y-3 ${
-                  semValor ? "border-amber-300 bg-amber-50/40" : "border-border bg-card"
+                className={`rounded-lg border p-4 space-y-3 ${
+                  semValor ? "border-primary/40 bg-primary/5" : "border-border bg-card"
                 }`}
               >
-                <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/60 pb-3">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-tight text-foreground">
+                    <p className="text-sm font-semibold text-foreground">
                       {custo.descricao}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
                       <Badge variant="outline" className="text-[9px] font-black uppercase">
                         {CATEGORIAS.find((c) => c.value === custo.categoria)?.label ??
                           custo.categoria}
                       </Badge>
                       {custo.pago ? (
-                        <Badge className="text-[9px] font-black uppercase bg-emerald-600 text-white">
+                        <Badge className="text-[9px] font-black uppercase bg-secondary text-secondary-foreground">
                           <CheckCircle2 className="h-3 w-3 mr-1" /> Pago
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="text-[9px] font-black uppercase">
-                          {semValor ? "Sem valor" : "A pagar"}
+                          {semValor ? "Valor pendente" : "A pagar · Financeiro"}
                         </Badge>
                       )}
                     </div>
                   </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-bold tabular-nums">{brl(Number(custo.custo_interno ?? 0))}</span>
                   <Button
+                    aria-label={`Remover custo ${custo.descricao}`}
+                    title="Remover custo"
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
@@ -594,27 +601,17 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
+                  </div>
                 </div>
 
-                <div className="grid gap-3 md:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-3">
                   <div>
                     <Label className="text-[10px] font-bold uppercase">Custo (R$)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      className="h-9 text-xs bg-white"
-                      defaultValue={custo.custo_interno ?? ""}
-                      onBlur={(e) => {
-                        const val = Number(e.target.value || 0);
-                        if (val !== Number(custo.custo_interno ?? 0)) {
-                          atualizarCusto(
-                            custo,
-                            { custo_interno: val },
-                            `Custo "${custo.descricao}" atualizado para ${brl(val)}`
-                          );
-                        }
-                      }}
-                    />
+                    <ValorMonetarioInput value={Number(custo.custo_interno ?? 0)} label={`Valor de ${custo.descricao}`}
+                      onChange={() => {}}
+                      onCommit={(value) => {
+                        if (value !== Number(custo.custo_interno ?? 0)) atualizarCusto(custo, { custo_interno: value }, `Custo "${custo.descricao}" atualizado para ${brl(value)}`);
+                      }} />
                   </div>
                   <div>
                     <Label className="text-[10px] font-bold uppercase">Fornecedor</Label>
@@ -628,7 +625,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                         )
                       }
                     >
-                      <SelectTrigger className="h-9 text-xs bg-white">
+                      <SelectTrigger className="h-11 text-sm bg-background">
                         <SelectValue placeholder="Selecionar" />
                       </SelectTrigger>
                       <SelectContent>
@@ -646,7 +643,8 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                   <div>
                     <Label className="text-[10px] font-bold uppercase">Pagamento</Label>
                     <div className="flex items-center gap-2 h-9">
-                      <Checkbox
+                      {podeAprovarFornecedor && <Checkbox
+                        aria-label={`Confirmar pagamento de ${custo.descricao}`}
                         checked={!!custo.pago}
                         onCheckedChange={(v) =>
                           atualizarCusto(
@@ -660,15 +658,15 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                             `Custo "${custo.descricao}" marcado como ${v ? "pago" : "não pago"}`
                           )
                         }
-                      />
-                      <span className="text-[10px] font-bold uppercase text-muted-foreground">
+                      />}
+                      <span className="text-xs text-muted-foreground">
                         {custo.pago
                           ? `Pago em ${
                               custo.data_pagamento
                                 ? new Date(custo.data_pagamento + "T12:00:00").toLocaleDateString("pt-BR")
                                 : "-"
                             }`
-                          : "Marcar como pago"}
+                          : podeAprovarFornecedor ? "Confirmar quitação" : "A pagar · Financeiro"}
                       </span>
                     </div>
                   </div>
@@ -686,7 +684,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                     />
                     <span className="inline-flex items-center gap-1 mt-3 text-[10px] font-bold uppercase tracking-widest text-primary">
                       <Paperclip className="h-3.5 w-3.5" />
-                      {uploadCusto === custo.id ? "Enviando..." : "Anexar notinha"}
+                      {uploadCusto === custo.id ? "Enviando..." : "Anexar nota / comprovante"}
                     </span>
                   </label>
                   <div className="flex flex-wrap gap-2 mt-3">

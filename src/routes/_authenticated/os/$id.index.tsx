@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, pendenciasAte, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";
 import { NotasInternasOs } from "@/components/NotasInternasOs";
+import { idCustoAutomatico } from "@/lib/custos-automaticos";
 import { ChecklistDocumento, iconeComponente } from "@/components/ChecklistDocumento";
 import { removerChecklist } from "@/lib/checklist.functions";
 import { AnexosOs } from "@/components/AnexosOs";
@@ -554,15 +555,18 @@ function GestaoOSPage() {
     const nomePeca = peca.nome ?? peca.descricao ?? 'Peça';
     const descricao = `${peca.status_peca} - ${nomePeca}`;
 
-    const { data: existente } = await supabase
+    const { data: existente, error: consultaError } = await supabase
       .from('os_custos' as any)
       .select('id')
       .eq('os_id', peca.os_id ?? osId)
       .eq('descricao', descricao)
       .limit(1);
+    if (consultaError) throw consultaError;
     if ((existente ?? []).length > 0) return false;
 
+    const id = await idCustoAutomatico(String(peca.os_id ?? osId), String(peca.id), String(peca.status_peca));
     const { error } = await supabase.from('os_custos' as any).insert({
+      id,
       os_id: peca.os_id ?? osId,
       descricao,
       categoria,
@@ -572,6 +576,7 @@ function GestaoOSPage() {
       terceiro_nome: categoria === 'terceiros' ? (peca.terceiro_nome ?? null) : null,
       criado_por: profile?.user_id ?? null,
     });
+    if (error?.code === '23505') return false;
     if (error) throw error;
 
     if (!opts?.silencioso) {
@@ -579,29 +584,6 @@ function GestaoOSPage() {
     }
     return true;
   };
-
-  // Sincroniza custos de peças já destinadas anteriormente
-  useEffect(() => {
-    if (!osId || !Array.isArray(pecas) || pecas.length === 0) return;
-    let cancelado = false;
-    (async () => {
-      let criou = false;
-      for (const peca of pecas as any[]) {
-        if (!categoriaCustoDoDestino(peca?.status_peca)) continue;
-        try {
-          const feito = await garantirCustoDaPeca(peca, { silencioso: true });
-          criou = criou || feito;
-        } catch {
-          // não bloqueia a tela
-        }
-      }
-      if (criou && !cancelado) {
-        queryClient.invalidateQueries({ queryKey: ['os_custos', osId] });
-        queryClient.invalidateQueries({ queryKey: ['os_terceiros', osId] });
-      }
-    })();
-    return () => { cancelado = true; };
-  }, [osId, pecas]);
 
   const handleDefinirDestinacao = async (peca: any, destino: string) => {
     const extras = destino === 'Terceiros'
