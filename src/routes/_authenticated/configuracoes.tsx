@@ -471,11 +471,11 @@ function DialogEmpresa({
     setForm((atual) => ({
       ...atual,
       cnpj: dados.cnpjFormatado,
-      nome: atual.nome?.trim() ? atual.nome : dados.nome,
-      razao_social: atual.razao_social?.trim() ? atual.razao_social : dados.razaoSocial,
-      endereco: atual.endereco?.trim() ? atual.endereco : dados.endereco,
-      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
-      email: atual.email?.trim() ? atual.email : dados.email,
+      nome: dados.nome || atual.nome,
+      razao_social: dados.razaoSocial || atual.razao_social,
+      endereco: dados.endereco || atual.endereco,
+      telefone: dados.telefone || atual.telefone,
+      email: dados.email || atual.email,
     }));
   };
 

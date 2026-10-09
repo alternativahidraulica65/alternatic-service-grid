@@ -151,9 +151,9 @@ function VendedoresPage() {
     setForm((atual) => ({
       ...atual,
       cpf_cnpj: dados.cnpjFormatado,
-      nome: atual.nome?.trim() ? atual.nome : dados.nome,
-      email: atual.email?.trim() ? atual.email : dados.email,
-      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
+      nome: dados.nome || atual.nome,
+      email: dados.email || atual.email,
+      telefone: dados.telefone || atual.telefone,
     }));
   };
   const [erros, setErros] = useState<Record<string, string>>({});

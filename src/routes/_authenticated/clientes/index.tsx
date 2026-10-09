@@ -145,10 +145,10 @@ function ClientesPage() {
     setFormValues((atual) => ({
       ...atual,
       cnpj: dados.cnpjFormatado,
-      nome: atual.nome?.trim() ? atual.nome : dados.nome,
-      endereco: atual.endereco?.trim() ? atual.endereco : dados.endereco,
-      email: atual.email?.trim() ? atual.email : dados.email,
-      telefone: atual.telefone?.trim() ? atual.telefone : dados.telefone,
+      nome: dados.nome || atual.nome,
+      endereco: dados.endereco || atual.endereco,
+      email: dados.email || atual.email,
+      telefone: dados.telefone || atual.telefone,
     }));
   };
 
