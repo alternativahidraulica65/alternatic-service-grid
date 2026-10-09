@@ -22,7 +22,7 @@ export function AnaliseDuplicidadeCustos({ osId, custos, fornecedores }: { osId:
       if (!token) throw new Error("Sessão expirada. Entre novamente.");
       const { data: os } = await supabase
         .from("ordens_servico" as any)
-        .select("numero_os, equipamento, defeitos, servicos_necessarios")
+        .select("*")
         .eq("id", osId)
         .maybeSingle();
       const nomeForn = new Map(fornecedores.map((f: any) => [f.id, f.nome]));
@@ -32,9 +32,9 @@ export function AnaliseDuplicidadeCustos({ osId, custos, fornecedores }: { osId:
           accessToken: token,
           contexto: {
             numero_os: o.numero_os ? String(o.numero_os) : null,
-            equipamento: o.equipamento ? String(o.equipamento).slice(0, 300) : null,
-            defeitos: o.defeitos ? String(o.defeitos).slice(0, 3000) : null,
-            servicos: o.servicos_necessarios ? String(o.servicos_necessarios).slice(0, 3000) : null,
+            equipamento: (o.equipamento ?? o.modelo_equipamento) ? String(o.equipamento ?? o.modelo_equipamento).slice(0, 300) : null,
+            defeitos: (o.laudo_defeitos ?? o.defeitos) ? String(o.laudo_defeitos ?? o.defeitos).slice(0, 3000) : null,
+            servicos: (o.laudo_servicos_necessarios ?? o.servicos_necessarios) ? String(o.laudo_servicos_necessarios ?? o.servicos_necessarios).slice(0, 3000) : null,
           },
           itens: custos.map((c) => ({
             id: String(c.id),

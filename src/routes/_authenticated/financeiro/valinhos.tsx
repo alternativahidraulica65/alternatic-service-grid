@@ -26,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/financeiro/valinhos")({
   component: ValinhosPage,
 });
 
+type Grupo = { id: string; nome: string; total: number; ids: string[]; itens: any[] };
 const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 function ValinhosPage() {
@@ -33,7 +34,7 @@ function ValinhosPage() {
   const qc = useQueryClient();
   const hoje = new Date();
   const [mes, setMes] = useState(`${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`);
-  const [quitar, setQuitar] = useState<{ id: string; nome: string; total: number; ids: string[] } | null>(null);
+  const [quitar, setQuitar] = useState<Grupo | null>(null);
   const [salvando, setSalvando] = useState(false);
 
   const { inicio, fim } = useMemo(() => {
@@ -69,7 +70,7 @@ function ValinhosPage() {
 
   const grupos = useMemo(() => {
     const nomes = new Map(fornecedores.map((f: any) => [f.id, f.nome]));
-    const map = new Map<string, { id: string; nome: string; total: number; ids: string[]; itens: any[] }>();
+    const map = new Map<string, Grupo>();
     for (const c of custos) {
       const id = c.fornecedor_id ?? "__sem";
       const nome = (nomes.get(c.fornecedor_id) as string) ?? c.terceiro_nome ?? "Sem fornecedor";
@@ -92,7 +93,7 @@ function ValinhosPage() {
       .update({ pago: true, data_pagamento: new Date().toISOString().slice(0, 10) })
       .in("id", quitar.ids);
     setSalvando(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(`Quitação de ${brl(quitar.total)} registrada para ${quitar.nome}`);
     setQuitar(null);
     qc.invalidateQueries({ queryKey: ["valinhos"] });
