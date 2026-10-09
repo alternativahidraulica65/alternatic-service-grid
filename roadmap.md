@@ -21,6 +21,7 @@ O sistema tem **um único banco de dados**: o projeto Supabase
       operador), clientes, kanban e configurações sem erros.
 
 ## Pendente
+- [ ] Custos da OS: impedir duplicação automática, separar pagamento, renomear fornecedor e melhorar valores/cartões.
 - [x] Checklist da OS: ícones, avaliação em massa, documento assinado e remoção restrita.
 - [ ] Validar checklist com sessão real: avaliação em massa, finalizar, editar e remover (teste depende de acesso autenticado ao banco oficial).
 - [ ] Endurecer RLS: as políticas aplicadas na migração são permissivas
