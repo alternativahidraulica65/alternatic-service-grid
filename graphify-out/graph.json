@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T16:57:00.492284+00:00",
+  "generated_at": "2026-10-09T17:33:11.263633+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -943,7 +943,7 @@
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "bytes": 9865
+      "bytes": 20683
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -3441,7 +3441,11 @@
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/integrations/supabase/client"
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "sonner"
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
@@ -3449,7 +3453,15 @@
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "react"
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "@/lib/custos-automaticos"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "@/hooks/useUserRole"
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
@@ -3469,15 +3481,15 @@
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@/components/ui/badge"
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "target": "sonner"
+      "target": "@/components/ui/switch"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "@/components/ui/select"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
