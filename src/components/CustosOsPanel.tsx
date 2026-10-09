@@ -485,7 +485,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle className="text-sm font-black uppercase tracking-widest">
-                  {podeAprovarFornecedor ? "Novo fornecedor" : "Novo fornecedor"}
+                  Novo fornecedor
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-3">
@@ -642,7 +642,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                   </div>
                   <div>
                     <Label className="text-[10px] font-bold uppercase">Pagamento</Label>
-                    <div className="flex items-center gap-2 h-9">
+                    <div className="flex min-h-11 items-center gap-2">
                       {podeAprovarFornecedor && <Checkbox
                         aria-label={`Confirmar pagamento de ${custo.descricao}`}
                         checked={!!custo.pago}
