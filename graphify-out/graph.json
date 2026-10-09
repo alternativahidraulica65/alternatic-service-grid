@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T16:47:51.254035+00:00",
+  "generated_at": "2026-10-09T16:57:00.492284+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -526,6 +526,10 @@
       "bytes": 1790
     },
     {
+      "path": "src/components/TextosRapidosDiagnostico.tsx",
+      "bytes": 1883
+    },
+    {
       "path": "src/components/ChecklistDocumento.tsx",
       "bytes": 2956
     },
@@ -1007,7 +1011,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 130157
+      "bytes": 130614
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
@@ -1634,6 +1638,10 @@
     {
       "source": "src/components/ValorMonetarioInput.tsx",
       "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/TextosRapidosDiagnostico.tsx",
+      "target": "@/components/ui/button"
     },
     {
       "source": "src/components/ChecklistDocumento.tsx",
@@ -4370,6 +4378,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/components/ServicosLaudoEditor"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/TextosRapidosDiagnostico"
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
