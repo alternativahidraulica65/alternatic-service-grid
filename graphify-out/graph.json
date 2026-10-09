@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T18:30:14.434658+00:00",
+  "generated_at": "2026-10-09T18:36:02.827259+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -923,7 +923,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 42296
+      "bytes": 42179
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
@@ -971,7 +971,7 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 47354
+      "bytes": 47265
     },
     {
       "path": "src/routes/_authenticated/producao/orquestrador.tsx",
@@ -1015,7 +1015,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 32077
+      "bytes": 32012
     },
     {
       "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
@@ -1035,7 +1035,7 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
-      "bytes": 48858
+      "bytes": 48822
     }
   ],
   "dependencies": [
