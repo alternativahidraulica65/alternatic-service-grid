@@ -47,6 +47,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { ServicosLaudoEditor } from "@/components/ServicosLaudoEditor";
+import { TextosRapidosDiagnostico } from "@/components/TextosRapidosDiagnostico";
 import { linhasDoChecklist, defeitosDoChecklist, parseLinhas, serializarLinhas, criarSubservicos, type LinhaServico } from "@/lib/subservicos";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -2059,6 +2060,14 @@ function GestaoOSPage() {
                           onChange={(e) => setLaudoData(prev => ({ ...prev, diagnostico: e.target.value }))}
                         />
                       </div>
+                      <TextosRapidosDiagnostico
+                        onSelecionar={(texto) =>
+                          setLaudoData((prev) => ({
+                            ...prev,
+                            diagnostico: prev.diagnostico ? `${prev.diagnostico.trim()}\n${texto}` : texto,
+                          }))
+                        }
+                      />
                       <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Defeitos</Label>
                         <Textarea 
