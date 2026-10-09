@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-09T16:28:34.494353+00:00",
+  "generated_at": "2026-10-09T16:34:33.192226+00:00",
   "files": [
     {
       "path": "roadmap.md",
-      "bytes": 3201
+      "bytes": 3479
     },
     {
       "path": "AGENTS.md",
-      "bytes": 775
+      "bytes": 1154
     },
     {
       "path": "tsconfig.json",
@@ -487,7 +487,7 @@
     },
     {
       "path": "src/components/CustosOsPanel.tsx",
-      "bytes": 26704
+      "bytes": 27102
     },
     {
       "path": "src/components/AlertaOrcamentosCard.tsx",
@@ -520,6 +520,10 @@
     {
       "path": "src/components/ServicosLaudoEditor.tsx",
       "bytes": 2650
+    },
+    {
+      "path": "src/components/ValorMonetarioInput.tsx",
+      "bytes": 1790
     },
     {
       "path": "src/components/ChecklistDocumento.tsx",
@@ -624,6 +628,10 @@
     {
       "path": "src/lib/checklist.functions.ts",
       "bytes": 1895
+    },
+    {
+      "path": "src/lib/custos-automaticos.ts",
+      "bytes": 716
     },
     {
       "path": "src/lib/fila-offline.ts",
@@ -991,7 +999,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 130655
+      "bytes": 130157
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
@@ -1329,6 +1337,10 @@
     },
     {
       "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/ValorMonetarioInput"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
       "target": "@/components/FotoThumb"
     },
     {
@@ -1594,6 +1606,14 @@
     {
       "source": "src/components/ServicosLaudoEditor.tsx",
       "target": "@/lib/subservicos"
+    },
+    {
+      "source": "src/components/ValorMonetarioInput.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/ValorMonetarioInput.tsx",
+      "target": "@/components/ui/input"
     },
     {
       "source": "src/components/ChecklistDocumento.tsx",
@@ -4238,6 +4258,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/components/NotasInternasOs"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/lib/custos-automaticos"
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
