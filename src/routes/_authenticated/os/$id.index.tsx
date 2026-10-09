@@ -1260,43 +1260,39 @@ function GestaoOSPage() {
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
       {/* Cabeçalho da OS */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" className="h-10 w-10 shrink-0 border-border" asChild>
+      <div className="space-y-4 border-b border-border pb-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-3 min-w-0">
+          <Button variant="outline" size="icon" className="h-9 w-9 shrink-0 border-border" asChild>
             <Link to="/kanban" title="Voltar ao painel Kanban">
               <ChevronLeft className="h-5 w-5 text-primary" />
             </Link>
           </Button>
-          <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-            <Wrench className="h-8 w-8 text-primary-foreground" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="font-display text-2xl font-black text-foreground tracking-tight uppercase">ORDEM DE SERVIÇO <span className="text-primary">{os.numero_os ?? os.id}</span></h2>
-              <Badge className="bg-amber-500 text-white font-black uppercase text-[9px] tracking-widest">{os.status}</Badge>
+          <div className="min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Ordem de serviço</p>
+            <h2 className="font-display text-3xl font-black tracking-tight text-foreground leading-none mt-1">
+              {os.numero_os ?? os.id}
+            </h2>
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+              <span className="text-muted-foreground">Cliente{" "}
+                {os.clientes?.id ? (
+                  <Link to="/clientes/$id" params={{ id: os.clientes.id }} className="font-bold text-foreground hover:text-primary hover:underline">
+                    {os.clientes?.razao_social ?? os.cliente ?? 'Não informado'}
+                  </Link>
+                ) : (
+                  <span className="font-bold text-foreground">{os.clientes?.razao_social ?? os.cliente ?? 'Não informado'}</span>
+                )}
+              </span>
+              <span className="text-muted-foreground">Técnico <span className="font-bold text-foreground">{os.tecnico?.nome || "Não atribuído"}</span></span>
+              {os.prioridade && <span className="text-muted-foreground">Prioridade <span className="font-bold text-foreground">{os.prioridade}</span></span>}
             </div>
-            <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-2">
-              Cliente:{" "}
-              {os.clientes?.id ? (
-                <Link
-                  to="/clientes/$id"
-                  params={{ id: os.clientes.id }}
-                  className="text-foreground hover:text-primary hover:underline"
-                >
-                  {os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}
-                </Link>
-              ) : (
-                <span className="text-foreground">{os.clientes?.razao_social ?? os.cliente ?? 'Cliente não informado'}</span>
-              )}
-              <span className="h-1 w-1 rounded-full bg-border" />
-              Técnico: <span className="text-foreground">{os.tecnico?.nome || "Não atribuído"}</span>
-            </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="hidden lg:inline-flex text-[9px] font-black uppercase tracking-widest">
-            Fase: {ROTULO_FASE[faseCorrente]}
-          </Badge>
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5">
+            <span className="h-2 w-2 rounded-full bg-primary" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-foreground">{ROTULO_FASE[faseCorrente]}</span>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-10 w-10 border border-border">
@@ -1491,7 +1487,6 @@ function GestaoOSPage() {
         </TabsList>
 
         <TabsContent value="resumo" className="space-y-6">
-          <NotasInternasOs osId={String(osId)} />
           <div className="grid gap-6 md:grid-cols-3">
             <div className="md:col-span-2 space-y-6">
               <Card className="border-border shadow-md">
@@ -1761,6 +1756,8 @@ function GestaoOSPage() {
             </DialogContent>
           </Dialog>
 
+          <AnexosOs osId={String(osId)} />
+          <NotasInternasOs osId={String(osId)} />
         </TabsContent>
 
         <TabsContent value="checklist">
