@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-09T15:15:05.565790+00:00",
+  "generated_at": "2026-10-09T16:28:34.494353+00:00",
   "files": [
     {
       "path": "roadmap.md",
-      "bytes": 2958
+      "bytes": 3201
     },
     {
       "path": "AGENTS.md",
-      "bytes": 480
+      "bytes": 775
     },
     {
       "path": "tsconfig.json",
@@ -47,7 +47,7 @@
     },
     {
       "path": "src/styles.css",
-      "bytes": 5784
+      "bytes": 5844
     },
     {
       "path": "src/server.ts",
@@ -522,6 +522,10 @@
       "bytes": 2650
     },
     {
+      "path": "src/components/ChecklistDocumento.tsx",
+      "bytes": 2956
+    },
+    {
       "path": "src/components/BancadasDialog.tsx",
       "bytes": 16351
     },
@@ -616,6 +620,10 @@
     {
       "path": "src/lib/admin-usuarios.functions.ts",
       "bytes": 7348
+    },
+    {
+      "path": "src/lib/checklist.functions.ts",
+      "bytes": 1895
     },
     {
       "path": "src/lib/fila-offline.ts",
@@ -983,7 +991,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 122538
+      "bytes": 130655
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
@@ -1588,6 +1596,14 @@
       "target": "@/lib/subservicos"
     },
     {
+      "source": "src/components/ChecklistDocumento.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ChecklistDocumento.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
       "source": "src/components/BancadasDialog.tsx",
       "target": "react"
     },
@@ -2010,6 +2026,18 @@
     {
       "source": "src/lib/admin-usuarios.functions.ts",
       "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/checklist.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/checklist.functions.ts",
+      "target": "@supabase/supabase-js"
+    },
+    {
+      "source": "src/lib/checklist.functions.ts",
+      "target": "zod"
     },
     {
       "source": "src/lib/cliente-vendedor.ts",
@@ -4210,6 +4238,14 @@
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/components/NotasInternasOs"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/ChecklistDocumento"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/lib/checklist.functions"
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
