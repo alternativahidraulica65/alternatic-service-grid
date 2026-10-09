@@ -79,16 +79,36 @@ export async function consultarCnpj(valor: string): Promise<DadosCnpj> {
     throw new Error("Informe um CNPJ com 14 dígitos.");
   }
 
-  const resposta = await fetch(`https://brasilapi.com.br/api/v1/cnpj/${digitos}`);
-
-  if (resposta.status === 404) {
-    throw new Error("CNPJ não encontrado na base da Receita Federal.");
+  // Fontes gratuitas com o mesmo formato de resposta; tenta em ordem (redundância).
+  const fontes = [
+    `https://brasilapi.com.br/api/v1/cnpj/${digitos}`,
+    `https://minhareceita.org/${digitos}`,
+  ];
+  let raw: any = null;
+  let todas404 = true;
+  for (const url of fontes) {
+    try {
+      const r = await fetch(url, { headers: { Accept: "application/json" } });
+      if (r.ok) {
+        const json = await r.json();
+        if (json?.razao_social || json?.cnpj) {
+          raw = json;
+          break;
+        }
+      }
+      if (r.status !== 404) todas404 = false;
+    } catch {
+      todas404 = false;
+    }
   }
-  if (!resposta.ok) {
-    throw new Error("Não foi possível consultar o CNPJ agora. Tente novamente em instantes.");
-  }
 
-  const raw = await resposta.json();
+  if (!raw) {
+    throw new Error(
+      todas404
+        ? "CNPJ não encontrado na base da Receita Federal."
+        : "Não foi possível consultar o CNPJ agora. Tente novamente em instantes.",
+    );
+  }
   const razaoSocial = normalizar(raw?.razao_social);
   const nomeFantasia = normalizar(raw?.nome_fantasia);
 
