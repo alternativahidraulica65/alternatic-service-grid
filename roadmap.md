@@ -21,7 +21,8 @@ O sistema tem **um único banco de dados**: o projeto Supabase
       operador), clientes, kanban e configurações sem erros.
 
 ## Pendente
-- [ ] Checklist da OS: ícones, avaliação em massa, documento assinado e remoção restrita.
+- [x] Checklist da OS: ícones, avaliação em massa, documento assinado e remoção restrita.
+- [ ] Validar checklist com sessão real: avaliação em massa, finalizar, editar e remover (teste depende de acesso autenticado ao banco oficial).
 - [ ] Endurecer RLS: as políticas aplicadas na migração são permissivas
       (`USING (true)`) para todos os autenticados. Precisam virar políticas
       por perfil (financeiro/margens fora do alcance de operador e gestor).
