@@ -74,7 +74,7 @@ function ValinhosPage() {
     for (const c of custos) {
       const id = c.fornecedor_id ?? "__sem";
       const nome = (nomes.get(c.fornecedor_id) as string) ?? c.terceiro_nome ?? "Sem fornecedor";
-      const g = map.get(id) ?? { id, nome, total: 0, ids: [], itens: [] };
+      const g: Grupo = map.get(id) ?? { id, nome, total: 0, ids: [] as string[], itens: [] as any[] };
       g.total += Number(c.custo_interno ?? 0);
       g.ids.push(c.id);
       g.itens.push(c);
