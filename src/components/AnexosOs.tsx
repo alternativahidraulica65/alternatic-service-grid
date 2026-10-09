@@ -44,7 +44,7 @@ export function AnexosOs({ osId }: { osId: string }) {
       for (const f of files) {
         const ext = f.name.includes(".") ? f.name.split(".").pop() : "bin";
         const path = `${osId}/anexos/${crypto.randomUUID()}.${ext}`;
-        const up = await supabase.storage.from("os-assets").upload(path, f, { contentType: f.type || undefined });
+        const up = await supabase.storage.from("os-assets").upload(path, f, f.type ? { contentType: f.type } : {});
         if (up.error) throw up.error;
         const { error } = await supabase.from("os_anexos" as any).insert({
           os_id: osId,
@@ -81,7 +81,7 @@ export function AnexosOs({ osId }: { osId: string }) {
 
   const baixar = async (a: any) => {
     const { data, error } = await supabase.storage.from("os-assets").createSignedUrl(a.storage_path, 300, { download: a.nome_arquivo });
-    if (error || !data) return toast.error("Não foi possível abrir o arquivo.");
+    if (error || !data) { toast.error("Não foi possível abrir o arquivo."); return; }
     window.open(data.signedUrl, "_blank");
   };
 
