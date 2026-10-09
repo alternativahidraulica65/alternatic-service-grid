@@ -2,6 +2,8 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, pendenciasAte, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";
 import { NotasInternasOs } from "@/components/NotasInternasOs";
+import { AnexosOs } from "@/components/AnexosOs";
+import { SlaOs } from "@/components/SlaOs";
 import { getExecutorEmail } from "@/lib/log-executor";
 import { 
   ClipboardList, 
@@ -1322,6 +1324,8 @@ function GestaoOSPage() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </div>
+      <SlaOs os={os} />
       </div>
 
       {/* Barra de ação rápida */}
