@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T16:34:33.192226+00:00",
+  "generated_at": "2026-10-09T16:47:51.254035+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -7,7 +7,7 @@
     },
     {
       "path": "AGENTS.md",
-      "bytes": 1154
+      "bytes": 1300
     },
     {
       "path": "tsconfig.json",
@@ -27,7 +27,7 @@
     },
     {
       "path": "package.json",
-      "bytes": 2997
+      "bytes": 3052
     },
     {
       "path": "components.json",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 35016
+      "bytes": 36142
     },
     {
       "path": "src/styles.css",
@@ -487,7 +487,7 @@
     },
     {
       "path": "src/components/CustosOsPanel.tsx",
-      "bytes": 27102
+      "bytes": 27295
     },
     {
       "path": "src/components/AlertaOrcamentosCard.tsx",
@@ -546,6 +546,10 @@
       "bytes": 6285
     },
     {
+      "path": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "bytes": 5175
+    },
+    {
       "path": "src/components/OrcamentoEnvioCard.tsx",
       "bytes": 9239
     },
@@ -596,6 +600,10 @@
     {
       "path": "src/lib/error-page.ts",
       "bytes": 1371
+    },
+    {
+      "path": "src/lib/custos-duplicidade.functions.ts",
+      "bytes": 6080
     },
     {
       "path": "src/lib/orcamento.ts",
@@ -1018,8 +1026,12 @@
       "bytes": 14735
     },
     {
+      "path": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "bytes": 8555
+    },
+    {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
-      "bytes": 48633
+      "bytes": 48858
     }
   ],
   "dependencies": [
@@ -1150,6 +1162,10 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/financeiro/lancamentos"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/financeiro/valinhos"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -1342,6 +1358,10 @@
     {
       "source": "src/components/CustosOsPanel.tsx",
       "target": "@/components/FotoThumb"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/AnaliseDuplicidadeCustos"
     },
     {
       "source": "src/components/CustosOsPanel.tsx",
@@ -1756,6 +1776,38 @@
       "target": "@/integrations/supabase/client"
     },
     {
+      "source": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/AnaliseDuplicidadeCustos.tsx",
+      "target": "@/lib/custos-duplicidade.functions"
+    },
+    {
       "source": "src/components/OrcamentoEnvioCard.tsx",
       "target": "react"
     },
@@ -2033,6 +2085,18 @@
     },
     {
       "source": "src/lib/proposta-publica.functions.ts",
+      "target": "zod"
+    },
+    {
+      "source": "src/lib/custos-duplicidade.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/custos-duplicidade.functions.ts",
+      "target": "@supabase/supabase-js"
+    },
+    {
+      "source": "src/lib/custos-duplicidade.functions.ts",
       "target": "zod"
     },
     {
@@ -4634,6 +4698,46 @@
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "@/components/ui/alert-dialog"
     },
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
