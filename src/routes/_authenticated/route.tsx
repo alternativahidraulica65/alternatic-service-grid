@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AppNavigation } from "@/components/AppNavigation";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -81,7 +82,8 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthGate() {
-  const { user } = Route.useRouteContext() as any;
+  const context = Route.useRouteContext();
+  const { user } = context;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -98,5 +100,5 @@ function AuthGate() {
     );
   }
 
-  return <Outlet />;
+  return <AppNavigation context={context}><Outlet /></AppNavigation>;
 }

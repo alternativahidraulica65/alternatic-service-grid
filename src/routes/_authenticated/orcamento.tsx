@@ -41,6 +41,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/orcamento")({
+  head: () => ({ meta: [
+    { title: "Gestão de orçamentos — Alternativa Hidráulica" },
+    { name: "description", content: "Consulta e acompanhamento dos orçamentos de manutenção hidráulica." },
+    { property: "og:title", content: "Gestão de orçamentos — Alternativa Hidráulica" },
+    { property: "og:description", content: "Consulta e acompanhamento dos orçamentos de manutenção hidráulica." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: OrcamentoPage,
 });
 

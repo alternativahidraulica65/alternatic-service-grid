@@ -38,6 +38,14 @@ import {
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/historico")({
+  head: () => ({ meta: [
+    { title: "Histórico de manutenção — Alternativa Hidráulica" },
+    { name: "description", content: "Histórico de intervenções e rastreabilidade dos equipamentos." },
+    { property: "og:title", content: "Histórico de manutenção — Alternativa Hidráulica" },
+    { property: "og:description", content: "Histórico de intervenções e rastreabilidade dos equipamentos." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: HistoricoPage,
 });
 

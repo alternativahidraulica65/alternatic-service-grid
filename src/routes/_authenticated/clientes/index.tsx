@@ -61,6 +61,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/clientes/")({
+  head: () => ({ meta: [
+    { title: "Clientes — Alternativa Hidráulica" },
+    { name: "description", content: "Gestão de clientes, contatos e responsáveis comerciais." },
+    { property: "og:title", content: "Clientes — Alternativa Hidráulica" },
+    { property: "og:description", content: "Gestão de clientes, contatos e responsáveis comerciais." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ClientesPage,
 });
 

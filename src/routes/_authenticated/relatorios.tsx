@@ -39,6 +39,14 @@ import {
 import { ClientOnly } from "@/components/ClientOnly";
 
 export const Route = createFileRoute("/_authenticated/relatorios")({
+  head: () => ({ meta: [
+    { title: "Relatórios da oficina — Alternativa Hidráulica" },
+    { name: "description", content: "Consulta de relatórios operacionais e financeiros da oficina." },
+    { property: "og:title", content: "Relatórios da oficina — Alternativa Hidráulica" },
+    { property: "og:description", content: "Consulta de relatórios operacionais e financeiros da oficina." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: RelatoriosPage,
 });
 

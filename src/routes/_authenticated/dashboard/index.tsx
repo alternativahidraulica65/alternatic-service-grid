@@ -2,6 +2,14 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
+  head: () => ({ meta: [
+    { title: "Meu painel — Alternativa Hidráulica" },
+    { name: "description", content: "Acesso ao painel de trabalho conforme o perfil do usuário." },
+    { property: "og:title", content: "Meu painel — Alternativa Hidráulica" },
+    { property: "og:description", content: "Acesso ao painel de trabalho conforme o perfil do usuário." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: DashboardRedirect,
 });
 

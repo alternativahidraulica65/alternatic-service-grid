@@ -21,6 +21,8 @@ O sistema tem **um único banco de dados**: o projeto Supabase
       operador), clientes, kanban e configurações sem erros.
 
 ## Pendente
+- [x] Menu global: acesso permanente, abertura rápida e opção de fixar no computador.
+- [ ] Validar menu com login do banco oficial; sessão de teste disponível não autentica nesse banco.
 - [x] Custos da OS: impedir duplicação automática, separar pagamento, renomear fornecedor e melhorar valores/cartões.
 - [ ] Validar custos com sessão real no banco oficial (lançamento, destinação e quitação); registros duplicados anteriores preservados para revisão.
 - [x] Checklist da OS: ícones, avaliação em massa, documento assinado e remoção restrita.

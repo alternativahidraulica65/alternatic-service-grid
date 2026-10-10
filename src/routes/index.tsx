@@ -42,6 +42,10 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Acesso à Plataforma — Alternativa Hidráulica" },
       { name: "description", content: "Acesse o sistema Alternativa Hidráulica." },
+      { property: "og:title", content: "Acesso à Plataforma — Alternativa Hidráulica" },
+      { property: "og:description", content: "Acesse o sistema Alternativa Hidráulica." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

@@ -53,6 +53,14 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/os/nova")({
+  head: () => ({ meta: [
+    { title: "Nova ordem de serviço — Alternativa Hidráulica" },
+    { name: "description", content: "Abertura de ordem de serviço e atribuição de responsável." },
+    { property: "og:title", content: "Nova ordem de serviço — Alternativa Hidráulica" },
+    { property: "og:description", content: "Abertura de ordem de serviço e atribuição de responsável." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: NovaOSPage,
 });
 

@@ -37,6 +37,14 @@ import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
 import { LembretesCard } from "@/components/LembretesCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/diretor")({
+  head: () => ({ meta: [
+    { title: "Painel do diretor — Alternativa Hidráulica" },
+    { name: "description", content: "Visão geral dos indicadores e pendências da oficina." },
+    { property: "og:title", content: "Painel do diretor — Alternativa Hidráulica" },
+    { property: "og:description", content: "Visão geral dos indicadores e pendências da oficina." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: DashboardDiretor,
 });
 

@@ -46,6 +46,14 @@ import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
 import { LembretesCard } from "@/components/LembretesCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
+  head: () => ({ meta: [
+    { title: "Painel financeiro — Alternativa Hidráulica" },
+    { name: "description", content: "Indicadores financeiros e acompanhamento de orçamentos." },
+    { property: "og:title", content: "Painel financeiro — Alternativa Hidráulica" },
+    { property: "og:description", content: "Indicadores financeiros e acompanhamento de orçamentos." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: DashboardFinanceiro,
 });
 

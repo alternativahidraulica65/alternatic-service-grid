@@ -26,6 +26,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/admin/auditoria")({
+  head: () => ({ meta: [
+    { title: "Auditoria — Alternativa Hidráulica" },
+    { name: "description", content: "Histórico de ações e rastreabilidade da operação." },
+    { property: "og:title", content: "Auditoria — Alternativa Hidráulica" },
+    { property: "og:description", content: "Histórico de ações e rastreabilidade da operação." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AuditoriaPage,
 });
 
