@@ -92,10 +92,13 @@ function DashboardLayout() {
     { label: "Configurações", icon: Settings, to: "/configuracoes", roles: ["diretor", "administrativo_financeiro"] },
     { label: "Checklists", icon: ClipboardCheck, to: "/admin/checklist-templates", roles: ["diretor", "gestor"] },
     { label: "Auditoria", icon: HistoryIcon, to: "/admin/auditoria", roles: ["diretor"] },
+    { label: "Colaboradores", icon: Users, to: "/rh/colaboradores", roles: ["administrativo_financeiro"], exclusivo: true },
   ];
 
-  const filteredMenu = menuItems.filter(item => 
-    isDiretor || item.roles.some(role => profile?.cargo === role || (roles as string[]).includes(role))
+  const filteredMenu = menuItems.filter((item: any) =>
+    item.exclusivo
+      ? (roles as string[]).includes("administrativo_financeiro")
+      : isDiretor || item.roles.some((role: string) => profile?.cargo === role || (roles as string[]).includes(role))
   );
 
   const ViewSwitcher = () => {
