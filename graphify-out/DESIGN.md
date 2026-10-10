@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-10T14:29:27.182104+00:00
+Generated: 2026-10-10T14:43:22.267604+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -151,6 +151,7 @@ Generated: 2026-10-10T14:29:27.182104+00:00
 - src/components/AlertaOrcamentosCard.tsx
 - src/components/AnaliseDuplicidadeCustos.tsx
 - src/components/AnexosOs.tsx
+- src/components/AppNavigation.tsx
 - src/components/BancadasDialog.tsx
 - src/components/BotaoConsultaCnpj.tsx
 - src/components/BuscaGlobal.tsx

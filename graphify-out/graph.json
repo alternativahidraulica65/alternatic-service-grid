@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-10T14:29:27.182104+00:00",
+  "generated_at": "2026-10-10T14:43:22.267604+00:00",
   "files": [
     {
       "path": "roadmap.md",
-      "bytes": 3479
+      "bytes": 3672
     },
     {
       "path": "drizzle.config.ts",
@@ -11,7 +11,7 @@
     },
     {
       "path": "AGENTS.md",
-      "bytes": 1300
+      "bytes": 1519
     },
     {
       "path": "tsconfig.json",
@@ -518,6 +518,10 @@
       "bytes": 4637
     },
     {
+      "path": "src/components/AppNavigation.tsx",
+      "bytes": 13870
+    },
+    {
       "path": "src/components/GuiaExecucaoOs.tsx",
       "bytes": 34936
     },
@@ -699,7 +703,7 @@
     },
     {
       "path": "src/routes/index.tsx",
-      "bytes": 19582
+      "bytes": 19870
     },
     {
       "path": "src/hooks/useUserRole.ts",
@@ -923,15 +927,15 @@
     },
     {
       "path": "src/routes/_authenticated/historico.tsx",
-      "bytes": 11420
+      "bytes": 11941
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
-      "bytes": 13158
+      "bytes": 13665
     },
     {
       "path": "src/routes/_authenticated/relatorios.tsx",
-      "bytes": 13372
+      "bytes": 13881
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -939,15 +943,15 @@
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
-      "bytes": 17082
+      "bytes": 17607
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
-      "bytes": 3334
+      "bytes": 3463
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11726
+      "bytes": 709
     },
     {
       "path": "src/routes/_authenticated/terceiros.tsx",
@@ -959,31 +963,31 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "bytes": 25175
+      "bytes": 25662
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
-      "bytes": 11571
+      "bytes": 12052
     },
     {
       "path": "src/routes/_authenticated/dashboard/gestor.tsx",
-      "bytes": 17513
+      "bytes": 18026
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
-      "bytes": 12287
+      "bytes": 12770
     },
     {
       "path": "src/routes/_authenticated/dashboard/index.tsx",
-      "bytes": 901
+      "bytes": 1380
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 26881
+      "bytes": 27358
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 47265
+      "bytes": 47736
     },
     {
       "path": "src/routes/_authenticated/producao/orquestrador.tsx",
@@ -991,11 +995,11 @@
     },
     {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "bytes": 11228
+      "bytes": 11713
     },
     {
       "path": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "bytes": 7824
+      "bytes": 8341
     },
     {
       "path": "src/routes/_authenticated/os/$id.oficina.tsx",
@@ -1007,7 +1011,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 39583
+      "bytes": 40090
     },
     {
       "path": "src/routes/_authenticated/os/$id.proposta.tsx",
@@ -1027,15 +1031,15 @@
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 32012
+      "bytes": 32483
     },
     {
       "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "bytes": 14948
+      "bytes": 15447
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
-      "bytes": 23759
+      "bytes": 24226
     },
     {
       "path": "src/routes/_authenticated/rh/colaboradores.tsx",
@@ -1546,6 +1550,46 @@
     {
       "source": "src/components/FotoThumb.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "@/components/NotificacoesSino"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "@/components/ui/dropdown-menu"
+    },
+    {
+      "source": "src/components/AppNavigation.tsx",
+      "target": "@/components/ui/sheet"
     },
     {
       "source": "src/components/GuiaExecucaoOs.tsx",
@@ -3340,44 +3384,12 @@
       "target": "@/integrations/supabase/client"
     },
     {
+      "source": "src/routes/_authenticated/route.tsx",
+      "target": "@/components/AppNavigation"
+    },
+    {
       "source": "src/routes/_authenticated/dashboard.tsx",
       "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/NotificacoesSino"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/ui/dropdown-menu"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/ui/sheet"
     },
     {
       "source": "src/routes/_authenticated/terceiros.tsx",
