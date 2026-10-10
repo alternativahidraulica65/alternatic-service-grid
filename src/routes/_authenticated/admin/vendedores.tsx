@@ -112,6 +112,14 @@ const FORM_VAZIO: FormState = {
 };
 
 export const Route = createFileRoute("/_authenticated/admin/vendedores")({
+  head: () => ({ meta: [
+    { title: "Vendedores — Alternativa Hidráulica" },
+    { name: "description", content: "Cadastro e acompanhamento dos responsáveis comerciais." },
+    { property: "og:title", content: "Vendedores — Alternativa Hidráulica" },
+    { property: "og:description", content: "Cadastro e acompanhamento dos responsáveis comerciais." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   beforeLoad: ({ context, location }) => {
     const { roles, profile, isDiretor, isFinanceiro } = context as any;
     const cargo = profile?.cargo || "";

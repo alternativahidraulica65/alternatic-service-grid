@@ -30,6 +30,14 @@ import { PainelGestorOs } from "@/components/PainelGestorOs";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/gestor")({
+  head: () => ({ meta: [
+    { title: "Painel do gestor — Alternativa Hidráulica" },
+    { name: "description", content: "Controle das filas de produção e pendências das ordens de serviço." },
+    { property: "og:title", content: "Painel do gestor — Alternativa Hidráulica" },
+    { property: "og:description", content: "Controle das filas de produção e pendências das ordens de serviço." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: DashboardGestor,
 });
 
