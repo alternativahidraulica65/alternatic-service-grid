@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/rh/colaboradores")({
   component: ColaboradoresPage,
 });
 
-type Colab = Record<string, any>;
+type Colab = any;
 type Janela = "vencidos" | "30" | "60";
 type Alerta = { colabId: string; nome: string; tipo: "ASO" | "NR" | "Experiência" | "Férias"; rotulo: string; data: string; dias: number };
 
