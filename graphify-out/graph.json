@@ -1,9 +1,13 @@
 {
-  "generated_at": "2026-10-10T14:23:15.331265+00:00",
+  "generated_at": "2026-10-10T14:29:27.182104+00:00",
   "files": [
     {
       "path": "roadmap.md",
       "bytes": 3479
+    },
+    {
+      "path": "drizzle.config.ts",
+      "bytes": 245
     },
     {
       "path": "AGENTS.md",
@@ -27,15 +31,11 @@
     },
     {
       "path": "package.json",
-      "bytes": 3052
+      "bytes": 3130
     },
     {
       "path": "components.json",
       "bytes": 443
-    },
-    {
-      "path": ".lovable/plan.md",
-      "bytes": 2921
     },
     {
       "path": ".lovable/project.json",
@@ -47,7 +47,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 36142
+      "bytes": 37196
     },
     {
       "path": "src/styles.css",
@@ -64,6 +64,10 @@
     {
       "path": "src/start.ts",
       "bytes": 1064
+    },
+    {
+      "path": "drizzle/schema.ts",
+      "bytes": 60
     },
     {
       "path": "supabase/migrations/20261008011600_os_subservicos.sql",
@@ -364,6 +368,10 @@
     {
       "path": ".lovable/plan/plano-separar-custos-produtos-vendidos-e-preço-da-proposta-2026-09-14.md",
       "bytes": 4616
+    },
+    {
+      "path": ".lovable/plan/gestão-de-colaboradores-rh-acesso-exclusivo-do-financeiro-2026-10-10.md",
+      "bytes": 2921
     },
     {
       "path": ".lovable/plan/plano-de-implementação-módulo-de-orçamento-e-precificação-os-2026-08-20.md",
@@ -715,7 +723,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 58755
+      "bytes": 65227
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -939,7 +947,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 11496
+      "bytes": 11726
     },
     {
       "path": "src/routes/_authenticated/terceiros.tsx",
@@ -1030,6 +1038,10 @@
       "bytes": 23759
     },
     {
+      "path": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "bytes": 28293
+    },
+    {
       "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "bytes": 14735
     },
@@ -1040,9 +1052,25 @@
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
       "bytes": 48822
+    },
+    {
+      "path": "drizzle/migrations/0000_colaboradores_rh.sql",
+      "bytes": 4596
+    },
+    {
+      "path": "drizzle/migrations/meta/0000_snapshot.json",
+      "bytes": 336
+    },
+    {
+      "path": "drizzle/migrations/meta/_journal.json",
+      "bytes": 211
     }
   ],
   "dependencies": [
+    {
+      "source": "drizzle.config.ts",
+      "target": "drizzle-kit"
+    },
     {
       "source": "vite.config.ts",
       "target": "@lovable.dev/vite-tanstack-config"
@@ -1198,6 +1226,10 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/producao/orquestrador"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/rh/colaboradores"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -4662,6 +4694,50 @@
     {
       "source": "src/routes/_authenticated/admin/auditoria.tsx",
       "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@/components/ui/tabs"
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
