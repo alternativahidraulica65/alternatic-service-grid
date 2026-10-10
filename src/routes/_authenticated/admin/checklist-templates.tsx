@@ -38,6 +38,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/_authenticated/admin/checklist-templates")({
+  head: () => ({ meta: [
+    { title: "Modelos de checklist — Alternativa Hidráulica" },
+    { name: "description", content: "Cadastro de equipamentos e modelos de avaliação técnica." },
+    { property: "og:title", content: "Modelos de checklist — Alternativa Hidráulica" },
+    { property: "og:description", content: "Cadastro de equipamentos e modelos de avaliação técnica." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ChecklistTemplatesPage,
 });
 

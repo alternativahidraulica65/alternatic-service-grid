@@ -32,6 +32,14 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 export const Route = createFileRoute("/_authenticated/orcamento/precificacao")({
+  head: () => ({ meta: [
+    { title: "Precificação — Alternativa Hidráulica" },
+    { name: "description", content: "Formação de preços dos serviços e produtos da oficina." },
+    { property: "og:title", content: "Precificação — Alternativa Hidráulica" },
+    { property: "og:description", content: "Formação de preços dos serviços e produtos da oficina." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: PrecificacaoPage,
 });
 

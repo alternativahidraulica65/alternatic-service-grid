@@ -18,6 +18,14 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 export const Route = createFileRoute("/_authenticated/orcamento/pdf")({
+  head: () => ({ meta: [
+    { title: "Documento de orçamento — Alternativa Hidráulica" },
+    { name: "description", content: "Documento comercial para apresentação do orçamento ao cliente." },
+    { property: "og:title", content: "Documento de orçamento — Alternativa Hidráulica" },
+    { property: "og:description", content: "Documento comercial para apresentação do orçamento ao cliente." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: GeradorPdfPage,
 });
 

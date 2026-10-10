@@ -17,6 +17,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/dashboard/operador")({
+  head: () => ({ meta: [
+    { title: "Painel do operador — Alternativa Hidráulica" },
+    { name: "description", content: "Fila de ordens de serviço e atividades do operador." },
+    { property: "og:title", content: "Painel do operador — Alternativa Hidráulica" },
+    { property: "og:description", content: "Fila de ordens de serviço e atividades do operador." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: DashboardOperador,
 });
 

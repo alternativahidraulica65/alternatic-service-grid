@@ -46,6 +46,14 @@ const LIMITE_ATENCAO = 5;
 const LIMITE_CRITICO = 10;
 
 export const Route = createFileRoute("/_authenticated/kanban")({
+  head: () => ({ meta: [
+    { title: "Produção em Kanban — Alternativa Hidráulica" },
+    { name: "description", content: "Acompanhamento das etapas de produção das ordens de serviço." },
+    { property: "og:title", content: "Produção em Kanban — Alternativa Hidráulica" },
+    { property: "og:description", content: "Acompanhamento das etapas de produção das ordens de serviço." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: KanbanPage,
 });
 

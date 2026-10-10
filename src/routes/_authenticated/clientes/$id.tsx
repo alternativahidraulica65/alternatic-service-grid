@@ -46,6 +46,14 @@ import { Label } from "@/components/ui/label";
 import { ptBR } from "date-fns/locale";
 
 export const Route = createFileRoute("/_authenticated/clientes/$id")({
+  head: () => ({ meta: [
+    { title: "Ficha do cliente — Alternativa Hidráulica" },
+    { name: "description", content: "Contatos e ordens de serviço vinculados ao cliente." },
+    { property: "og:title", content: "Ficha do cliente — Alternativa Hidráulica" },
+    { property: "og:description", content: "Contatos e ordens de serviço vinculados ao cliente." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ClienteDetalhesPage,
 });
 
