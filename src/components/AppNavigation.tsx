@@ -68,7 +68,7 @@ export function AppNavigation({ context, children }: { context: any; children: R
   }, []);
 
   const currentPath = router.state.location.pathname;
-  const activeView = currentPath.split("/")[2] || homeDashboard || "operador";
+  const activeView = currentPath.startsWith("/dashboard/") ? currentPath.split("/")[2] : homeDashboard || "operador";
 
 
   async function handleSignOut() {
@@ -138,7 +138,7 @@ export function AppNavigation({ context, children }: { context: any; children: R
   };
 
   return (
-    <div className={`min-h-screen bg-background ${isMenuPinned ? "md:pl-64" : ""}`}>
+    <div className={`min-h-screen bg-background print:pl-0 ${isMenuPinned ? "md:pl-64" : ""}`}>
       {/* Sidebar Desktop */}
       <aside
         id="desktop-navigation"
@@ -147,7 +147,7 @@ export function AppNavigation({ context, children }: { context: any; children: R
         onBlur={(event) => {
           if (!isMenuPinned && !event.currentTarget.contains(event.relatedTarget)) setIsDesktopMenuOpen(false);
         }}
-        className={`fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-metal-dark text-destructive-foreground shadow-xl md:flex ${isMenuPinned || isDesktopMenuOpen ? "visible" : "invisible pointer-events-none"}`}
+        className={`fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-metal-dark text-destructive-foreground shadow-xl md:flex print:hidden ${isMenuPinned || isDesktopMenuOpen ? "visible" : "invisible pointer-events-none"}`}
       >
         <div className="p-6 border-b border-border/20 flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-sm">
@@ -213,13 +213,13 @@ export function AppNavigation({ context, children }: { context: any; children: R
       {/* Main Content */}
       <div className="flex min-w-0 flex-col">
         {/* Top Header */}
-        <header className="sticky top-0 z-30 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border bg-card px-4 shadow-sm md:px-8">
+        <header className="sticky top-0 z-30 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border bg-card px-4 shadow-sm md:px-8 print:hidden">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               variant="ghost" size="icon" aria-label="Abrir menu"
               aria-controls="desktop-navigation" aria-expanded={isMenuPinned || isDesktopMenuOpen}
               onMouseEnter={() => setIsDesktopMenuOpen(true)}
-              onClick={() => setIsDesktopMenuOpen(!isDesktopMenuOpen)}
+              onClick={() => setIsDesktopMenuOpen(true)}
               className="hidden shrink-0 md:inline-flex"
             ><Menu className="h-6 w-6" /></Button>
              {/* Mobile Menu Trigger */}
