@@ -22,7 +22,7 @@ Nova tela `/rh/colaboradores` para cadastro de pessoal, com cards estilo "RG", f
 - A rotina diária existente passa a avisar apenas usuários Financeiro sobre itens vencidos ou vencendo em 30 dias (sem repetir no mesmo dia).
 
 ## Detalhes técnicos
-- Migration incremental (sem DROP):
+- Migration incremental (sem DROP), aplicada direto no banco Supabase real usado pelo app (sem dados fictícios ou armazenamento local; todas as leituras e gravações vão direto ao banco):
   - `colaboradores` (dados pessoais/contrato, foto_url, status, ativo).
   - `colaborador_aso` (tipo, data_exame, validade).
   - `colaborador_certificacoes` (norma, descricao, emissao, validade).
