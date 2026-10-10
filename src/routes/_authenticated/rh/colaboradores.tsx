@@ -259,9 +259,9 @@ function FichaDialog({ id, onClose, onCriado }: { id: string | null; onClose: ()
   const recarregar = () => qc.invalidateQueries({ queryKey: ["rh-colaboradores"] });
 
   async function salvar() {
-    if (!form.nome?.trim()) return toast.error("Informe o nome.");
+    if (!form.nome?.trim()) return void toast.error("Informe o nome.");
     const cpf = (form.cpf || "").replace(/\D/g, "");
-    if (cpf && cpf.length !== 11) return toast.error("CPF deve ter 11 dígitos.");
+    if (cpf && cpf.length !== 11) return void toast.error("CPF deve ter 11 dígitos.");
     setSalvando(true);
     const payload: Colab = {};
     for (const [k, , t] of [...CAMPOS_PESSOAIS, ...CAMPOS_CONTRATO]) {
@@ -276,7 +276,7 @@ function FichaDialog({ id, onClose, onCriado }: { id: string | null; onClose: ()
       ? await supabase.from("colaboradores").update(payload).eq("id", id).select("id").single()
       : await supabase.from("colaboradores").insert({ ...payload, criado_por: u.user?.id }).select("id").single();
     setSalvando(false);
-    if (res.error) return toast.error(res.error.code === "23505" ? "CPF já cadastrado." : `Erro ao salvar: ${res.error.message}`);
+    if (res.error) return void toast.error(res.error.code === "23505" ? "CPF já cadastrado." : `Erro ao salvar: ${res.error.message}`);
     toast.success("Colaborador salvo.");
     await recarregar();
     if (!id && res.data) onCriado?.(res.data.id);
@@ -286,9 +286,9 @@ function FichaDialog({ id, onClose, onCriado }: { id: string | null; onClose: ()
     if (!id) return;
     const ativo = !existente?.ativo;
     const { error } = await supabase.from("colaboradores").update({ ativo, status: ativo ? "ativo" : "desligado" }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success(ativo ? "Colaborador reativado." : "Colaborador inativado.");
-    setForm((f) => ({ ...f, ativo, status: ativo ? "ativo" : "desligado" }));
+    setForm((f: any) => ({ ...f, ativo, status: ativo ? "ativo" : "desligado" }));
     recarregar();
   }
 
@@ -296,9 +296,9 @@ function FichaDialog({ id, onClose, onCriado }: { id: string | null; onClose: ()
     if (!id) return;
     const path = `${id}/foto-${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
     const up = await supabase.storage.from("colaboradores-docs").upload(path, file);
-    if (up.error) return toast.error(up.error.message);
+    if (up.error) return void toast.error(up.error.message);
     const { error } = await supabase.from("colaboradores").update({ foto_path: path }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Foto atualizada.");
     recarregar();
   }
@@ -379,11 +379,11 @@ function SubLista({ colabId, tabela, registros, campos }: { colabId: string; tab
 
   async function adicionar() {
     const faltando = obrigatorios.filter((k) => !novo[k] && !(campos.find((c) => c[0] === k)?.[2]?.startsWith("select")));
-    if (faltando.length) return toast.error("Preencha as datas obrigatórias.");
+    if (faltando.length) return void toast.error("Preencha as datas obrigatórias.");
     const payload: Colab = { colaborador_id: colabId };
     for (const [k, , t] of campos) payload[k] = novo[k] || (t?.startsWith("select") ? t.slice(7).split(",")[0] : null);
     const { error } = await supabase.from(tabela).insert(payload);
-    if (error) return toast.error(`Erro: ${error.message}`);
+    if (error) return void toast.error(`Erro: ${error.message}`);
     toast.success("Registro adicionado.");
     setNovo({});
     qc.invalidateQueries({ queryKey: ["rh-colaboradores"] });
@@ -391,7 +391,7 @@ function SubLista({ colabId, tabela, registros, campos }: { colabId: string; tab
   async function remover(rid: string) {
     if (!confirm("Remover este registro?")) return;
     const { error } = await supabase.from(tabela).delete().eq("id", rid);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["rh-colaboradores"] });
   }
 
@@ -454,14 +454,14 @@ function Anexos({ colabId }: { colabId: string }) {
   }
   async function baixar(path: string) {
     const { data, error } = await supabase.storage.from("colaboradores-docs").createSignedUrl(path, 300);
-    if (error || !data) return toast.error("Não foi possível abrir o arquivo.");
+    if (error || !data) return void toast.error("Não foi possível abrir o arquivo.");
     window.open(data.signedUrl, "_blank");
   }
   async function remover(a: any) {
     if (!confirm(`Remover ${a.nome}?`)) return;
     await supabase.storage.from("colaboradores-docs").remove([a.storage_path]);
     const { error } = await supabase.from("colaborador_anexos").delete().eq("id", a.id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["rh-anexos", colabId] });
   }
 
