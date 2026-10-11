@@ -421,7 +421,7 @@ function NovaOSPage() {
                     {clientes.map((c: any) => (
                       <SelectItem key={c.id} value={c.id}>
                         <span className="flex items-center gap-2">
-                          {c.status_cadastro === 'pendente' && <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
+                          {['pendente','provisório'].includes(String(c.status_cadastro).toLowerCase()) && <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
                           {c.nome}
                         </span>
                       </SelectItem>
