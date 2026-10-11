@@ -705,6 +705,8 @@ export type Database = {
           cnpj: string | null
           contato: string | null
           criado_em: string | null
+          email: string | null
+          endereco: string | null
           id: string
           limite_mensal: number | null
           motivo_reprovacao: string | null
@@ -712,6 +714,8 @@ export type Database = {
           observacoes: string | null
           solicitado_por: string | null
           status_cadastro: string
+          telefone: string | null
+          tipo_parceiro: string
         }
         Insert: {
           aprovado_em?: string | null
@@ -720,6 +724,8 @@ export type Database = {
           cnpj?: string | null
           contato?: string | null
           criado_em?: string | null
+          email?: string | null
+          endereco?: string | null
           id?: string
           limite_mensal?: number | null
           motivo_reprovacao?: string | null
@@ -727,6 +733,8 @@ export type Database = {
           observacoes?: string | null
           solicitado_por?: string | null
           status_cadastro?: string
+          telefone?: string | null
+          tipo_parceiro?: string
         }
         Update: {
           aprovado_em?: string | null
@@ -735,6 +743,8 @@ export type Database = {
           cnpj?: string | null
           contato?: string | null
           criado_em?: string | null
+          email?: string | null
+          endereco?: string | null
           id?: string
           limite_mensal?: number | null
           motivo_reprovacao?: string | null
@@ -742,6 +752,8 @@ export type Database = {
           observacoes?: string | null
           solicitado_por?: string | null
           status_cadastro?: string
+          telefone?: string | null
+          tipo_parceiro?: string
         }
         Relationships: []
       }

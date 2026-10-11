@@ -15,3 +15,4 @@
 - Monetary editing uses a reusable PT-BR decimal input with validation and two-decimal formatting; payment controls remain separate from operational cost entry.
 - AI cost-duplicate analysis runs in a server function that verifies the user's role before calling the AI Gateway; keeps the AI key server-side.
 - Authenticated navigation is rendered once by the authenticated parent layout through AppNavigation so menu access and pin state survive navigation across all internal pages; dashboard routes render only their outlet.
+- Fornecedores e terceiros usam um cadastro único (fornecedores.tipo_parceiro: material/servico/ambos); a tabela terceiros está obsoleta — evita cadastro duplicado entre oficina e financeiro.

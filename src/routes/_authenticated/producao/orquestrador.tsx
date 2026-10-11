@@ -86,7 +86,7 @@ function Orquestrador() {
   const { data: terceiros = [] } = useQuery({
     queryKey: ["orq_terceiros"],
     queryFn: async () => {
-      const { data } = await supabase.from("terceiros" as any).select("id, nome").eq("ativo", true).order("nome");
+      const { data } = await supabase.from("fornecedores" as any).select("id, nome").eq("ativo", true).in("tipo_parceiro", ["servico", "ambos"]).order("nome");
       return (data ?? []) as any[];
     },
   });

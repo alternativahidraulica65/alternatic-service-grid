@@ -808,6 +808,7 @@ function FornecedoresPage() {
               contato: formData.get('contato'),
               limite_mensal: parseFloat(formData.get('limite_mensal') as string || '0'),
               observacoes: formData.get('observacoes'),
+              tipo_parceiro: (formData.get('tipo_parceiro') as string) || 'material',
               ativo: formData.get('ativo') === 'on'
             };
             if (editingFornecedor) data.id = editingFornecedor.id;
@@ -830,6 +831,15 @@ function FornecedoresPage() {
                 <Label htmlFor="contato" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contato / Telefone</Label>
                 <Input id="contato" name="contato" defaultValue={editingFornecedor?.contato} placeholder="(00) 00000-0000" className="border-border shadow-sm h-11" />
               </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="tipo_parceiro" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Classificação</Label>
+              <select id="tipo_parceiro" name="tipo_parceiro" defaultValue={editingFornecedor?.tipo_parceiro || 'material'} className="h-11 rounded-md border border-border bg-background px-3 text-sm">
+                <option value="material">Fornecedor de material / peças</option>
+                <option value="servico">Prestador de serviço (terceiro)</option>
+                <option value="ambos">Ambos (material e serviço)</option>
+              </select>
             </div>
 
             <div className="grid gap-2">
