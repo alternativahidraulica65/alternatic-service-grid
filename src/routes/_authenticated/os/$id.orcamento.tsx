@@ -187,6 +187,32 @@ function OrcamentoOSPage() {
     },
   });
 
+  // Custos reais entram automaticamente como itens da proposta (1 vez por custo; índice único evita duplicar).
+  const { isFetched: livresCarregados } = useQuery({ queryKey: ["orcamento_itens_livres", id], enabled: false });
+  useEffect(() => {
+    if (!livresCarregados) return;
+    const jaVinculados = new Set(itensLivres.map((i: any) => i.origem_custo_id).filter(Boolean));
+    const faltantes = custos.filter((c: any) => !jaVinculados.has(c.id));
+    if (faltantes.length === 0) return;
+    const linhas = faltantes.map((c: any, idx: number) => ({
+      os_id: id,
+      descricao: String(c.descricao || "ITEM").toUpperCase(),
+      quantidade: 1,
+      valor_unitario: Number(c.preco_venda_final || c.valor_venda || c.custo_interno || 0),
+      tipo_item: "proposta",
+      origem_custo_id: c.id,
+      ordem: itensLivres.length + idx,
+    }));
+    supabase
+      .from("orcamento_itens" as any)
+      .upsert(linhas as any, { onConflict: "origem_custo_id", ignoreDuplicates: true })
+      .then(({ error }) => {
+        if (!error) queryClient.invalidateQueries({ queryKey: ["orcamento_itens_livres", id] });
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [custos, itensLivres, livresCarregados]);
+
+
   const { data: fotos = [] } = useQuery({
     queryKey: ["orcamento_fotos", id],
     queryFn: () => carregarFotosOs(id),
@@ -1284,7 +1310,23 @@ function OrcamentoOSPage() {
                 </TableBody>
               </Table>
 
-              <div className="p-4 bg-amber-50/60 border-t border-amber-200 flex flex-wrap items-end gap-3">
+              <div className="px-4 pt-3 bg-amber-50/60 border-t border-amber-200 flex flex-wrap items-center gap-2">
+                <span className="text-[9px] font-black uppercase text-slate-500">Serviços comuns:</span>
+                {["PINTURA", "FRETE", "VEDAÇÕES", "MÃO DE OBRA", "USINAGEM", "TESTE EM BANCADA"].map((s) => (
+                  <Button
+                    key={s}
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="h-7 px-2 text-[10px] font-bold uppercase"
+                    onClick={() => setNovoLivre({ descricao: s, quantidade: "1", valor: "" })}
+                  >
+                    <Plus className="mr-1 h-3 w-3" /> {s}
+                  </Button>
+                ))}
+              </div>
+              <div className="p-4 bg-amber-50/60 flex flex-wrap items-end gap-3">
+
                 <div className="flex-1 min-w-[200px] space-y-1">
                   <Label className="text-[9px] font-black uppercase text-slate-500">Descrição</Label>
                   <Input
