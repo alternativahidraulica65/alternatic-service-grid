@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useBlocker } from "@tanstack/react-router";
 import {
   Receipt,
   Trash2,
@@ -333,6 +333,46 @@ function OrcamentoOSPage() {
     }
     setDadosAplicados(true);
   }, [dadosOrcamento, dadosAplicados]);
+
+  /* --------------------- Alterações não salvas e versões --------------------- */
+
+  const assinatura = JSON.stringify({
+    valorFinalManual,
+    imposto,
+    margemPadrao,
+    condicoes,
+    empresaEdit,
+    vendedorEdit,
+    fotosSelecionadas: [...fotosSelecionadas].sort(),
+  });
+  const [baseline, setBaseline] = useState<string | null>(null);
+  useEffect(() => {
+    if (baseline !== null || !dadosAplicados) return;
+    if (!regrasAplicadas && config === undefined) return;
+    setBaseline(assinatura);
+  }, [baseline, dadosAplicados, regrasAplicadas, config, assinatura]);
+  const temAlteracoes = baseline !== null && baseline !== assinatura;
+
+  useBlocker({
+    shouldBlockFn: () =>
+      temAlteracoes && !window.confirm("Há alterações no orçamento que não foram salvas. Sair mesmo assim?"),
+    enableBeforeUnload: temAlteracoes,
+  });
+
+  const [expandido, setExpandido] = useState(false);
+  const [versoesAbertas, setVersoesAbertas] = useState(false);
+  const { data: revisoes = [] } = useQuery({
+    queryKey: ["orcamento_revisoes", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orcamento_revisoes" as any)
+        .select("*")
+        .eq("orcamento_id", id)
+        .order("numero_revisao", { ascending: false });
+      if (error) throw error;
+      return (data || []) as any[];
+    },
+  });
 
   const empresaCadastro = useMemo(() => empresaDoCadastro(empresa), [empresa]);
   const vendedorCadastro = useMemo(() => vendedorDoCadastro(vendedor), [vendedor]);
@@ -678,6 +718,29 @@ function OrcamentoOSPage() {
         executor_email: email,
       } as any);
 
+      const { data: authData } = await supabase.auth.getUser();
+      const { error: erroVersao } = await supabase.from("orcamento_revisoes" as any).insert({
+        orcamento_id: id,
+        numero_revisao: (revisoes[0]?.numero_revisao ?? 0) + 1,
+        numero_orcamento: os?.numero_os ?? null,
+        pdf_storage_path: "",
+        fotos_selecionadas: fotosSelecionadas,
+        valor_total: totais.valorFinal,
+        parametros: {
+          executor: email,
+          imposto,
+          margem: Number(totais.margemEfetiva.toFixed(2)),
+          comissao: totais.comissao.valor,
+          custo: totais.custoTotal,
+          condicoes,
+        },
+        criado_por: authData.user?.id ?? null,
+      } as any);
+      if (erroVersao) console.warn("Versão do orçamento não registrada:", erroVersao.message);
+
+      setBaseline(assinatura);
+      setExpandido(false);
+      queryClient.invalidateQueries({ queryKey: ["orcamento_revisoes", id] });
       queryClient.invalidateQueries({ queryKey: ["orcamento_os", id] });
       queryClient.invalidateQueries({ queryKey: ["os_detail", id] });
       toast.success(enviarAprovacao ? "Orçamento enviado para aprovação." : "Orçamento salvo.");
@@ -755,8 +818,107 @@ function OrcamentoOSPage() {
 
   const cliente = os?.clientes;
 
+  const respostaCliente = String(os?.orcamento_resposta ?? "").toLowerCase();
+  const statusOrcamento =
+    respostaCliente === "aprovado" || String(os?.status ?? "").toLowerCase() === "aprovada"
+      ? { rotulo: "Aprovado", classe: "bg-emerald-600 text-white" }
+      : respostaCliente === "recusado"
+        ? { rotulo: "Recusado", classe: "bg-destructive text-destructive-foreground" }
+        : respostaCliente === "revisao"
+          ? { rotulo: "Em revisão", classe: "bg-amber-400 text-slate-900" }
+          : os?.orcamento_enviado_em
+            ? { rotulo: "Enviado", classe: "bg-slate-900 text-white" }
+            : { rotulo: "Pendente", classe: "bg-slate-200 text-slate-700" };
+  const jaSalvo = num(os?.valor_final) > 0 || revisoes.length > 0;
+
+  if (jaSalvo && !expandido) {
+    return (
+      <div className="p-6 md:p-10 space-y-6 max-w-[1000px] mx-auto pb-24">
+        <div className="flex items-center gap-4 border-b border-border pb-4">
+          <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+            <Link to="/os/$id" params={{ id }}>
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              {os?.numero_os || "OS"} · {cliente?.nome || cliente?.razao_social || os?.cliente}
+            </p>
+            <h1 className="font-display text-2xl font-black uppercase tracking-tight text-slate-900">
+              Orçamento <span className="text-primary">Financeiro</span>
+            </h1>
+          </div>
+        </div>
+
+        <Card className="border-border shadow-md">
+          <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
+            <div className="space-y-1">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Valor total ao cliente</p>
+              <p className="text-3xl font-black text-slate-900">{brl(num(os?.valor_final))}</p>
+              <p className="text-[11px] text-slate-500">
+                {revisoes.length} versão(ões) salva(s)
+                {revisoes[0]?.criado_em
+                  ? ` · última em ${new Date(revisoes[0].criado_em).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}`
+                  : ""}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 ${statusOrcamento.classe}`}>
+                {statusOrcamento.rotulo}
+              </Badge>
+              <Button
+                className="h-10 bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-widest"
+                onClick={() => setExpandido(true)}
+              >
+                <Pencil className="mr-2 h-4 w-4" /> Abrir orçamento completo
+              </Button>
+            </div>
+          </CardContent>
+          <div className="border-t border-border">
+            <button
+              type="button"
+              className="flex w-full items-center justify-between px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500"
+              onClick={() => setVersoesAbertas((v) => !v)}
+            >
+              Histórico de versões
+              <ChevronDown className={`h-4 w-4 transition-transform ${versoesAbertas ? "rotate-180" : ""}`} />
+            </button>
+            {versoesAbertas && (
+              <div className="divide-y divide-border px-5 pb-3">
+                {revisoes.length === 0 ? (
+                  <p className="py-2 text-[11px] text-slate-500">Nenhuma versão registrada ainda.</p>
+                ) : (
+                  revisoes.map((r: any) => (
+                    <div key={r.id} className="flex flex-wrap items-center justify-between gap-2 py-2 text-[12px]">
+                      <span className="font-black text-slate-900">Versão {r.numero_revisao}</span>
+                      <span className="text-slate-500">
+                        {new Date(r.criado_em).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}
+                        {r.parametros?.executor ? ` · ${r.parametros.executor}` : ""}
+                      </span>
+                      <span className="font-bold text-slate-900">{brl(num(r.valor_total))}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        </Card>
+
+        <OrcamentoEnvioCard os={os} osId={String(id)} />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 md:p-10 space-y-8 max-w-[1400px] mx-auto pb-24">
+      {temAlteracoes && (
+        <div className="sticky top-2 z-20 flex items-center justify-between gap-3 rounded-md border border-amber-300 bg-amber-50 px-4 py-2 text-[11px] font-bold text-slate-800">
+          Há alterações não salvas neste orçamento.
+          <Button size="sm" disabled={salvando} className="h-8 bg-primary text-primary-foreground text-[10px] font-black uppercase" onClick={() => salvar(false)}>
+            <Save className="mr-1 h-3.5 w-3.5" /> Salvar agora
+          </Button>
+        </div>
+      )}
       {/* Cabeçalho */}
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-6">
         <div className="flex items-start gap-4">
