@@ -2538,7 +2538,28 @@ function GestaoOSPage() {
                     <p className="text-sm font-bold text-foreground uppercase tracking-tight">Aprovação Comercial (Cliente)</p>
                     <p className="text-[10px] font-medium text-muted-foreground">Aceite formal do orçamento.</p>
                   </div>
-                  <Badge className="bg-slate-200 text-slate-500 font-black uppercase text-[9px] tracking-widest">Pendente</Badge>
+                  {(() => {
+                    const r = String((os as any)?.orcamento_resposta || "").toLowerCase();
+                    const st = String((os as any)?.status || "").toLowerCase();
+                    const aprovado = r === "aprovado" || ["aprovada","usinagem","montagem","execucao","pronto","entregue"].includes(st);
+                    const info = aprovado
+                      ? { t: "Aprovado", c: "bg-emerald-500 text-white" }
+                      : r === "recusado"
+                        ? { t: "Recusado", c: "bg-destructive text-destructive-foreground" }
+                        : r === "revisao"
+                          ? { t: "Em revisão", c: "bg-amber-400 text-slate-900" }
+                          : (os as any)?.orcamento_enviado_em
+                            ? { t: "Enviado", c: "bg-blue-500 text-white" }
+                            : { t: "Pendente", c: "bg-slate-200 text-slate-500" };
+                    return (
+                      <div className="text-right">
+                        <Badge className={`${info.c} font-black uppercase text-[9px] tracking-widest`}>{info.t}</Badge>
+                        {(os as any)?.orcamento_resposta_em && r ? (
+                          <p className="mt-1 text-[9px] text-muted-foreground">{new Date((os as any).orcamento_resposta_em).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</p>
+                        ) : null}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </CardContent>
