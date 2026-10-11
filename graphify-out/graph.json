@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T19:29:47.235523+00:00",
+  "generated_at": "2026-10-11T19:44:31.398934+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -575,7 +575,7 @@
     },
     {
       "path": "src/components/OrcamentoEnvioCard.tsx",
-      "bytes": 9239
+      "bytes": 10177
     },
     {
       "path": "src/components/LembretesCard.tsx",
@@ -1023,7 +1023,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 80047
+      "bytes": 87535
     },
     {
       "path": "src/routes/_authenticated/os/index.tsx",
