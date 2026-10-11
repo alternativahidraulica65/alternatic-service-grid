@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T18:51:17.411102+00:00",
+  "generated_at": "2026-10-11T19:17:59.899628+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -611,7 +611,7 @@
     },
     {
       "path": "src/lib/orcamento-calculos.ts",
-      "bytes": 1989
+      "bytes": 2416
     },
     {
       "path": "src/lib/log-executor.ts",
@@ -1023,7 +1023,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 74242
+      "bytes": 78112
     },
     {
       "path": "src/routes/_authenticated/os/index.tsx",
