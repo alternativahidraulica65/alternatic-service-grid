@@ -89,20 +89,20 @@ export function OrcamentoEnvioCard({ os, osId }: { os: any; osId: string }) {
       };
       // Aprovação do cliente libera a OS para execução (fase "Aprovação" concluída).
       if (resposta === "aprovado") {
-        payload.status = "aprovada";
-        payload.status_financeiro = "Aprovado";
+        payload["status"] = "aprovada";
+        payload["status_financeiro"] = "Aprovado";
       } else if (resposta === "revisao") {
-        payload.status = "orcamento_pendente";
-        payload.status_financeiro = "Em revisão";
+        payload["status"] = "orcamento_pendente";
+        payload["status_financeiro"] = "Em revisão";
       } else if (resposta === "recusado") {
-        payload.status_financeiro = "Recusado";
+        payload["status_financeiro"] = "Recusado";
       }
       const { error } = await supabase.from("ordens_servico").update(payload as any).eq("id", osId);
       if (error) throw error;
       await supabase.from("historico_status_os" as any).insert({
         os_id: osId,
         status_anterior: os?.status ?? null,
-        status_novo: payload.status ?? os?.status ?? "orcamento_pendente",
+        status_novo: payload["status"] ?? os?.status ?? "orcamento_pendente",
         observacao: `Resposta do cliente: ${ROTULO_RESPOSTA[resposta] ?? resposta}${motivo ? ` — ${motivo}` : ""}`,
         executor_email: await getExecutorEmail(),
       });
