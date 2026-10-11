@@ -174,7 +174,7 @@ function OrcamentoOSPage() {
     },
   });
 
-  const { data: itensLivres = [] } = useQuery({
+  const { data: itensLivres = [], isFetched: livresCarregados } = useQuery({
     queryKey: ["orcamento_itens_livres", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -188,7 +188,6 @@ function OrcamentoOSPage() {
   });
 
   // Custos reais entram automaticamente como itens da proposta (1 vez por custo; índice único evita duplicar).
-  const { isFetched: livresCarregados } = useQuery({ queryKey: ["orcamento_itens_livres", id], enabled: false });
   useEffect(() => {
     if (!livresCarregados) return;
     const jaVinculados = new Set(itensLivres.map((i: any) => i.origem_custo_id).filter(Boolean));
