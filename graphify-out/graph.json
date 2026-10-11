@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T20:36:05.598494+00:00",
+  "generated_at": "2026-10-11T20:40:10.154732+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -535,7 +535,7 @@
     },
     {
       "path": "src/components/AlertaAprovacoesCard.tsx",
-      "bytes": 13811
+      "bytes": 13863
     },
     {
       "path": "src/components/ServicosLaudoEditor.tsx",
@@ -1015,7 +1015,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 40090
+      "bytes": 40134
     },
     {
       "path": "src/routes/_authenticated/os/$id.proposta.tsx",
