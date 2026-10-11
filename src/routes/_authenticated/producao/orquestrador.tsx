@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -19,6 +19,13 @@ import { STATUS_SUB, type StatusSub } from "@/lib/subservicos";
 import { faseDoStatus, ROTULO_FASE } from "@/lib/os-fluxo";
 
 export const Route = createFileRoute("/_authenticated/producao/orquestrador")({
+  beforeLoad: ({ context }) => {
+    const c = context as any;
+    // Acesso exclusivo: Diretor e Gestor.
+    if (!c.isDiretor && !c.isGestor) {
+      throw redirect({ to: "/dashboard", replace: true });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Orquestrador de Oficina | Alternativa Hidráulica" },
