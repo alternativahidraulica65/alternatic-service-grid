@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T19:17:59.899628+00:00",
+  "generated_at": "2026-10-11T19:29:47.235523+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -1023,7 +1023,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 78112
+      "bytes": 80047
     },
     {
       "path": "src/routes/_authenticated/os/index.tsx",
