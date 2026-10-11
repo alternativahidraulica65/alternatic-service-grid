@@ -257,6 +257,7 @@ function DashboardFinanceiro() {
       </div>
 
       <div className="print:hidden space-y-4">
+        <AlertaAprovacoesCard />
         <AlertaOrcamentosCard />
         <LembretesCard />
       </div>
