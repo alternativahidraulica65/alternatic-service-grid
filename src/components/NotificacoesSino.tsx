@@ -32,6 +32,7 @@ function dataHora(valor: string) {
 /** Sino de notificações: central de avisos do usuário logado. */
 export function NotificacoesSino() {
   const queryClient = useQueryClient();
+  const [selecionados, setSelecionados] = useState<string[]>([]);
 
   const { data: notificacoes = [] } = useQuery({
     queryKey: ["notificacoes_sino"],
