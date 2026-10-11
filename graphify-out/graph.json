@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T20:28:37.590120+00:00",
+  "generated_at": "2026-10-11T20:36:05.598494+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -967,7 +967,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "bytes": 25769
+      "bytes": 21914
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
@@ -3605,39 +3605,11 @@
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/skeleton"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/progress"
+      "target": "react"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/hooks/useUserRole"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -3649,15 +3621,7 @@
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "target": "sonner"
+      "target": "lucide-react"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -3665,7 +3629,35 @@
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/ui/chart"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/hooks/useUserRole"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
