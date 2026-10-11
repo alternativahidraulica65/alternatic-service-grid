@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T20:23:20.841380+00:00",
+  "generated_at": "2026-10-11T20:28:37.590120+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -535,7 +535,7 @@
     },
     {
       "path": "src/components/AlertaAprovacoesCard.tsx",
-      "bytes": 8306
+      "bytes": 13811
     },
     {
       "path": "src/components/ServicosLaudoEditor.tsx",
@@ -1714,6 +1714,14 @@
     {
       "source": "src/components/AlertaAprovacoesCard.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@/lib/log-executor"
     },
     {
       "source": "src/components/AlertaAprovacoesCard.tsx",
