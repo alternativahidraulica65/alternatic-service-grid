@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T14:43:22.267604+00:00",
+  "generated_at": "2026-10-11T18:24:52.151158+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -11,7 +11,7 @@
     },
     {
       "path": "AGENTS.md",
-      "bytes": 1519
+      "bytes": 1715
     },
     {
       "path": "tsconfig.json",
@@ -727,7 +727,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 65227
+      "bytes": 65628
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -955,7 +955,7 @@
     },
     {
       "path": "src/routes/_authenticated/terceiros.tsx",
-      "bytes": 34655
+      "bytes": 35211
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
@@ -991,7 +991,7 @@
     },
     {
       "path": "src/routes/_authenticated/producao/orquestrador.tsx",
-      "bytes": 24439
+      "bytes": 24484
     },
     {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
@@ -1055,11 +1055,15 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
-      "bytes": 48822
+      "bytes": 49585
     },
     {
       "path": "drizzle/migrations/0000_colaboradores_rh.sql",
       "bytes": 4596
+    },
+    {
+      "path": "drizzle/migrations/0001_unificar_parceiros.sql",
+      "bytes": 869
     },
     {
       "path": "drizzle/migrations/meta/0000_snapshot.json",
@@ -1067,7 +1071,11 @@
     },
     {
       "path": "drizzle/migrations/meta/_journal.json",
-      "bytes": 211
+      "bytes": 357
+    },
+    {
+      "path": "drizzle/migrations/meta/0001_snapshot.json",
+      "bytes": 336
     }
   ],
   "dependencies": [
