@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T20:45:41.000307+00:00",
+  "generated_at": "2026-10-11T21:03:01.251949+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -507,7 +507,7 @@
     },
     {
       "path": "src/components/NotificacoesSino.tsx",
-      "bytes": 6055
+      "bytes": 8384
     },
     {
       "path": "src/components/NotasInternasOs.tsx",
@@ -1485,6 +1485,10 @@
     },
     {
       "source": "src/components/NotificacoesSino.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
       "target": "@/integrations/supabase/client"
     },
     {
@@ -1494,6 +1498,10 @@
     {
       "source": "src/components/NotificacoesSino.tsx",
       "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/NotificacoesSino.tsx",
+      "target": "@/components/ui/checkbox"
     },
     {
       "source": "src/components/NotificacoesSino.tsx",
