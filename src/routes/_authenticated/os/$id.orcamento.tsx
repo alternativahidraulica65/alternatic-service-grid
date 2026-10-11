@@ -31,7 +31,8 @@ import { calcularComissao, rotuloComissao } from "@/lib/comissao";
 import {
   calcularResultadoLiquido,
   custoTotalProduto,
-  encontrarReceitaPorMargem,
+  arredondar2,
+  precoPorMarkup,
   precoVendaProduto,
   totalItemProposta,
   totalProduto,
@@ -382,13 +383,16 @@ function OrcamentoOSPage() {
     };
     const porMargem = condicoes.precificacaoModo === "margem";
     const margemDesejada = num(condicoes.margemDesejada);
-    const calculadoPorMargem = encontrarReceitaPorMargem(
+    const calculadoPorMargem = precoPorMarkup({
+      custoDireto: custoTotal + totalCustoProdutos,
+      impostoPercentual: imposto,
       margemDesejada,
-      (receita) => resultadoPara(receita).margem,
-      custoTotal + totalCustoProdutos,
+      comissaoPara: (receita) => comissaoPara(receita).valor,
+    });
+    const sugerido = porMargem ? calculadoPorMargem : arredondar2(base);
+    const valorFinal = arredondar2(
+      porMargem ? calculadoPorMargem : valorFinalManual !== null ? valorFinalManual : sugerido,
     );
-    const sugerido = porMargem ? calculadoPorMargem : base;
-    const valorFinal = porMargem ? calculadoPorMargem : valorFinalManual !== null ? valorFinalManual : sugerido;
     const resultado = resultadoPara(valorFinal);
     const comissaoRegra = calcularComissao(vendedor, {
       valorOS: valorFinal,
@@ -415,6 +419,9 @@ function OrcamentoOSPage() {
       margemEfetiva: resultado.margem,
     };
   }, [linhas, totalLivres, totalCustoProdutos, totalVendaProdutos, imposto, valorFinalManual, vendedor, faturamentoMes, condicoes.comissaoManual, condicoes.precificacaoModo, condicoes.margemDesejada]);
+
+  const totalItensCliente = arredondar2(totalLivres + totalVendaProdutos);
+  const diferencaProposta = arredondar2(totais.valorFinal - totalItensCliente);
 
   /* ------------------------------- Ações --------------------------------- */
 
@@ -542,6 +549,39 @@ function OrcamentoOSPage() {
     recarregarLivres();
   };
 
+  // Lança/ajusta a diferença no item principal de serviço para a soma bater no centavo.
+  const ajustarSaldoProposta = async () => {
+    if (diferencaProposta === 0) return;
+    const principal = itensProposta.find((i) => (num(i.quantidade) || 1) === 1);
+    if (principal) {
+      const novoValor = arredondar2(num(principal.valor_unitario) + diferencaProposta);
+      if (novoValor < 0) {
+        toast.error("O ajuste deixaria o item principal negativo. Revise os itens manualmente.");
+        return;
+      }
+      await atualizarLivre(principal, { valor_unitario: novoValor });
+    } else {
+      if (diferencaProposta < 0) {
+        toast.error("Os itens excedem o planejado. Reduza os valores manualmente.");
+        return;
+      }
+      const { error } = await supabase.from("orcamento_itens" as any).insert({
+        os_id: id,
+        descricao: "SERVIÇO DE RECUPERAÇÃO E MANUTENÇÃO",
+        quantidade: 1,
+        valor_unitario: diferencaProposta,
+        tipo_item: "proposta",
+        ordem: itensLivres.length,
+      } as any);
+      if (error) {
+        toast.error("Erro ao ajustar saldo: " + error.message);
+        return;
+      }
+      recarregarLivres();
+    }
+    toast.success("Itens da proposta ajustados ao valor planejado.");
+  };
+
   const alternarFoto = (fotoId: string) =>
     setFotosSelecionadas((atual) =>
       atual.includes(fotoId) ? atual.filter((f) => f !== fotoId) : [...atual, fotoId],
@@ -566,7 +606,21 @@ function OrcamentoOSPage() {
     queryClient.invalidateQueries({ queryKey: ["orcamento_dados", id] });
   };
 
+  const conferirProposta = () => {
+    if (diferencaProposta === 0) return true;
+    toast.error(
+      diferencaProposta > 0
+        ? `Os itens da proposta estão ${brl(diferencaProposta)} abaixo do valor planejado. Ajuste antes de continuar.`
+        : `Os itens da proposta excedem o valor planejado em ${brl(Math.abs(diferencaProposta))}. Ajuste antes de continuar.`,
+    );
+    return false;
+  };
+
   const salvar = async (enviarAprovacao: boolean) => {
+    if (enviarAprovacao && !conferirProposta()) return false;
+    if (!enviarAprovacao && diferencaProposta !== 0) {
+      toast.warning(`Atenção: itens da proposta divergem ${brl(Math.abs(diferencaProposta))} do valor planejado.`);
+    }
     setSalvando(true);
     try {
       const payload: Record<string, any> = {
@@ -612,6 +666,7 @@ function OrcamentoOSPage() {
   };
 
   const gerarPdf = async () => {
+    if (!conferirProposta()) return;
     const ok = await salvar(false);
     if (!ok) return;
     window.open(`/os/${id}/proposta?print=1`, "_blank");
@@ -1100,9 +1155,44 @@ function OrcamentoOSPage() {
                   <CardTitle className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
                     <Sparkles className="h-4 w-4 shrink-0 text-amber-500" /> Itens da proposta ao cliente
                   </CardTitle>
-                  <p className="mt-1 text-[10px] font-black text-amber-700">Total dos itens: {brl(totalLivres)}</p>
-                  <p className="text-[10px] font-medium text-slate-500">
-                    A soma integral destes itens entra no valor final apresentado ao cliente.
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-wide">
+                    <span className="rounded border border-slate-300 bg-white px-2 py-1 text-slate-700">
+                      Lançado: {brl(totalItensCliente)}
+                    </span>
+                    <span className="rounded border border-slate-300 bg-white px-2 py-1 text-slate-700">
+                      Planejado: {brl(totais.valorFinal)}
+                    </span>
+                    <span
+                      className={`rounded px-2 py-1 ${
+                        diferencaProposta === 0
+                          ? "bg-emerald-100 text-emerald-700"
+                          : diferencaProposta > 0
+                            ? "bg-amber-200 text-amber-800"
+                            : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {diferencaProposta === 0
+                        ? "Valores conferem"
+                        : diferencaProposta > 0
+                          ? `Faltam ${brl(diferencaProposta)}`
+                          : `Excedeu ${brl(Math.abs(diferencaProposta))}`}
+                    </span>
+                    {diferencaProposta !== 0 && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="h-6 bg-slate-900 px-2 text-[9px] font-black uppercase text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          ajustarSaldoProposta();
+                        }}
+                      >
+                        Ajustar saldo no serviço
+                      </Button>
+                    )}
+                  </div>
+                  <p className="mt-1 text-[10px] font-medium text-slate-500">
+                    Itens + produtos vendidos devem somar exatamente o valor planejado.
                   </p>
                 </div>
                 <Button

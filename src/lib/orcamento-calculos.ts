@@ -46,22 +46,34 @@ export function calcularResultadoLiquido({
   return { imposto, custoDireto, lucro, margem };
 }
 
-export function encontrarReceitaPorMargem(
-  margemDesejada: number,
-  calcularMargem: (receita: number) => number,
-  piso: number,
-) {
-  const alvo = Math.min(99, Math.max(-99, margemDesejada));
-  let minimo = Math.max(0.01, piso);
-  let maximo = Math.max(minimo * 2, 100);
+export const arredondar2 = (v: number) => Math.round((Number(v) || 0) * 100) / 100;
 
-  for (let i = 0; i < 80 && calcularMargem(maximo) < alvo; i += 1) maximo *= 2;
-  if (calcularMargem(maximo) < alvo) return maximo;
-
-  for (let i = 0; i < 80; i += 1) {
-    const meio = (minimo + maximo) / 2;
-    if (calcularMargem(meio) < alvo) minimo = meio;
-    else maximo = meio;
+/**
+ * Preço por Mark-up divisor: Preço = (Custos + Comissão fixa) / (1 - Imposto% - Margem%).
+ * A comissão pode depender do próprio preço (faixas/percentual); resolve por ponto fixo
+ * determinístico, que converge rapidamente para o valor exato.
+ */
+export function precoPorMarkup({
+  custoDireto,
+  impostoPercentual,
+  margemDesejada,
+  comissaoPara,
+}: {
+  custoDireto: number;
+  impostoPercentual: number;
+  margemDesejada: number;
+  comissaoPara: (receita: number) => number;
+}) {
+  const divisor = 1 - impostoPercentual / 100 - Math.min(99, Math.max(-99, margemDesejada)) / 100;
+  if (divisor <= 0.0001) return 0;
+  let preco = custoDireto / divisor;
+  for (let i = 0; i < 30; i += 1) {
+    const proximo = (custoDireto + comissaoPara(preco)) / divisor;
+    if (Math.abs(proximo - preco) < 0.0001) {
+      preco = proximo;
+      break;
+    }
+    preco = proximo;
   }
-  return maximo;
+  return arredondar2(Math.max(0, preco));
 }
