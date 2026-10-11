@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useBlocker } from "@tanstack/react-router";
 import {
   Receipt,
   Trash2,
@@ -333,6 +333,46 @@ function OrcamentoOSPage() {
     }
     setDadosAplicados(true);
   }, [dadosOrcamento, dadosAplicados]);
+
+  /* --------------------- Alterações não salvas e versões --------------------- */
+
+  const assinatura = JSON.stringify({
+    valorFinalManual,
+    imposto,
+    margemPadrao,
+    condicoes,
+    empresaEdit,
+    vendedorEdit,
+    fotosSelecionadas: [...fotosSelecionadas].sort(),
+  });
+  const [baseline, setBaseline] = useState<string | null>(null);
+  useEffect(() => {
+    if (baseline !== null || !dadosAplicados) return;
+    if (!regrasAplicadas && config === undefined) return;
+    setBaseline(assinatura);
+  }, [baseline, dadosAplicados, regrasAplicadas, config, assinatura]);
+  const temAlteracoes = baseline !== null && baseline !== assinatura;
+
+  useBlocker({
+    shouldBlockFn: () =>
+      temAlteracoes && !window.confirm("Há alterações no orçamento que não foram salvas. Sair mesmo assim?"),
+    enableBeforeUnload: temAlteracoes,
+  });
+
+  const [expandido, setExpandido] = useState(false);
+  const [versoesAbertas, setVersoesAbertas] = useState(false);
+  const { data: revisoes = [] } = useQuery({
+    queryKey: ["orcamento_revisoes", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orcamento_revisoes" as any)
+        .select("*")
+        .eq("orcamento_id", id)
+        .order("numero_revisao", { ascending: false });
+      if (error) throw error;
+      return (data || []) as any[];
+    },
+  });
 
   const empresaCadastro = useMemo(() => empresaDoCadastro(empresa), [empresa]);
   const vendedorCadastro = useMemo(() => vendedorDoCadastro(vendedor), [vendedor]);
