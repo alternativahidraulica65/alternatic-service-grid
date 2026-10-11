@@ -63,7 +63,7 @@ export function AlertaAprovacoesCard() {
         aprovado_em: new Date().toISOString(),
         motivo_reprovacao: aprovado ? null : motivo.trim(),
       };
-      if (item.tabela === "fornecedores") payload.ativo = aprovado;
+      if (item.tabela === "fornecedores") payload["ativo"] = aprovado;
       const { data: upd, error } = await supabase.from(item.tabela).update(payload as never).eq("id", item.id).select("id");
       if (error) throw error;
       if (!upd?.length) throw new Error("Sem permissão para alterar este cadastro.");
