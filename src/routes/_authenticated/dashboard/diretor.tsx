@@ -34,6 +34,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
 import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
+import { AlertaAprovacoesCard } from "@/components/AlertaAprovacoesCard";
 import { LembretesCard } from "@/components/LembretesCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/diretor")({
@@ -160,6 +161,8 @@ function DashboardDiretor() {
           </Button>
         </div>
       </div>
+
+      <AlertaAprovacoesCard />
 
       <AlertaOrcamentosCard />
 

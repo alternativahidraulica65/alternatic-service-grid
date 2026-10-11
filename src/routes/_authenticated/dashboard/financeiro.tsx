@@ -43,6 +43,7 @@ import {
 } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
+import { AlertaAprovacoesCard } from "@/components/AlertaAprovacoesCard";
 import { LembretesCard } from "@/components/LembretesCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
@@ -256,6 +257,7 @@ function DashboardFinanceiro() {
       </div>
 
       <div className="print:hidden space-y-4">
+        <AlertaAprovacoesCard />
         <AlertaOrcamentosCard />
         <LembretesCard />
       </div>
