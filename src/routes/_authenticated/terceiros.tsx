@@ -106,9 +106,10 @@ function PainelTerceiros() {
     queryKey: ["terceiros_cadastro"],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from("terceiros")
+        .from("fornecedores")
         .select("id, nome, cnpj, telefone, email, endereco, contato")
         .eq("ativo", true)
+        .in("tipo_parceiro", ["servico", "ambos"])
         .order("nome");
       if (error) throw error;
       return (data ?? []) as any[];
@@ -138,27 +139,36 @@ function PainelTerceiros() {
         return;
       }
       const { data: existente } = await (supabase as any)
-        .from("terceiros")
-        .select("id, nome")
+        .from("fornecedores")
+        .select("id, nome, tipo_parceiro")
         .eq("cnpj", formatarCnpj(cnpjDigitos))
         .maybeSingle();
       if (existente) {
-        toast.error(`Este CNPJ já está cadastrado para "${existente.nome}".`);
+        if (existente.tipo_parceiro === "material") {
+          await (supabase as any).from("fornecedores").update({ tipo_parceiro: "ambos" }).eq("id", existente.id);
+          queryClient.invalidateQueries({ queryKey: ["terceiros_cadastro"] });
+          toast.success(`"${existente.nome}" já era fornecedor e agora também presta serviço.`);
+          setCadOpen(false);
+        } else {
+          toast.error(`Este CNPJ já está cadastrado para "${existente.nome}".`);
+        }
         return;
       }
     }
     setCadSalvando(true);
     try {
       const { data: auth } = await supabase.auth.getUser();
-      const { error } = await (supabase as any).from("terceiros").insert({
+      const { error } = await (supabase as any).from("fornecedores").insert({
+        tipo_parceiro: "servico",
+        status_cadastro: "aprovado",
         nome: cadForm.nome.trim(),
         cnpj: cnpjDigitos ? formatarCnpj(cnpjDigitos) : null,
         contato: cadForm.contato.trim() || null,
         telefone: cadForm.telefone.trim() || null,
         email: cadForm.email.trim() || null,
         endereco: cadForm.endereco.trim() || null,
-        observacao: cadForm.observacao.trim() || null,
-        criado_por: auth?.user?.id ?? null,
+        observacoes: cadForm.observacao.trim() || null,
+        solicitado_por: auth?.user?.id ?? null,
       });
       if (error) {
         if (String(error.message).includes("duplicate") || String(error.code) === "23505") {
