@@ -34,8 +34,8 @@ export function AlertaAprovacoesCard() {
     queryKey: ["alerta_aprovacoes"],
     queryFn: async () => {
       const [c, f] = await Promise.all([
-        supabase.from("clientes").select("id, nome, cnpj, telefone, criado_em").eq("status_cadastro", "pendente").order("criado_em", { ascending: true }),
-        supabase.from("fornecedores").select("id, nome, cnpj, telefone, contato, tipo_parceiro, criado_em").eq("status_cadastro", "pendente").order("criado_em", { ascending: true }),
+        supabase.from("clientes").select("id, nome, cnpj, telefone, criado_em").ilike("status_cadastro", "provisório").order("criado_em", { ascending: true }),
+        supabase.from("fornecedores").select("id, nome, cnpj, telefone, contato, tipo_parceiro, criado_em").ilike("status_cadastro", "provisório").order("criado_em", { ascending: true }),
       ]);
       if (c.error) throw c.error;
       if (f.error) throw f.error;
