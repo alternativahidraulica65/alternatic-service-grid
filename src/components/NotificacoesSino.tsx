@@ -1,9 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Bell, Check, CheckCheck, ExternalLink } from "lucide-react";
+import { Bell, Check, CheckCheck, ExternalLink, Mail, X } from "lucide-react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
 
@@ -30,6 +32,7 @@ function dataHora(valor: string) {
 /** Sino de notificações: central de avisos do usuário logado. */
 export function NotificacoesSino() {
   const queryClient = useQueryClient();
+  const [selecionados, setSelecionados] = useState<string[]>([]);
 
   const { data: notificacoes = [] } = useQuery({
     queryKey: ["notificacoes_sino"],
@@ -50,25 +53,29 @@ export function NotificacoesSino() {
 
   const naoLidas = notificacoes.filter((n) => !n.lida);
 
-  async function marcarLida(id: string) {
+  function alternarSelecao(id: string) {
+    setSelecionados((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+  }
+
+  async function definirLida(ids: string[], lida: boolean) {
     const { error } = await supabase
       .from("notificacoes")
-      .update({ lida: true, lida_em: new Date().toISOString() })
-      .eq("id", id);
-    if (error) toast.error("Não foi possível marcar como lida.");
+      .update({ lida, lida_em: lida ? new Date().toISOString() : null })
+      .in("id", ids);
+    if (error) toast.error("Não foi possível atualizar as notificações.");
+    else setSelecionados([]);
     queryClient.invalidateQueries({ queryKey: ["notificacoes_sino"] });
+  }
+
+  function marcarLida(id: string) {
+    return definirLida([id], true);
   }
 
   async function marcarTodas() {
     const ids = naoLidas.map((n) => n.id);
     if (ids.length === 0) return;
-    const { error } = await supabase
-      .from("notificacoes")
-      .update({ lida: true, lida_em: new Date().toISOString() })
-      .in("id", ids);
-    if (error) toast.error("Não foi possível marcar todas.");
-    else toast.success("Todas as notificações foram lidas.");
-    queryClient.invalidateQueries({ queryKey: ["notificacoes_sino"] });
+    await definirLida(ids, true);
+    if (ids.length > 0) toast.success("Todas as notificações foram lidas.");
   }
 
   return (
@@ -90,18 +97,55 @@ export function NotificacoesSino() {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[380px] p-0">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <p className="text-[11px] font-black uppercase tracking-widest">
-            Notificações
-            {naoLidas.length > 0 && (
-              <Badge className="ml-2 bg-amber-400 text-slate-900 text-[10px] font-black">
-                {naoLidas.length} nova{naoLidas.length > 1 ? "s" : ""}
-              </Badge>
-            )}
-          </p>
-          {naoLidas.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={marcarTodas} className="h-7 text-[10px] font-bold uppercase">
-              <CheckCheck className="mr-1 h-3.5 w-3.5" /> Marcar todas
-            </Button>
+          {selecionados.length > 0 ? (
+            <>
+              <p className="text-[11px] font-black uppercase tracking-widest">
+                {selecionados.length} selecionada{selecionados.length > 1 ? "s" : ""}
+              </p>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => definirLida(selecionados, true)}
+                  className="h-7 text-[10px] font-bold uppercase"
+                >
+                  <Check className="mr-1 h-3.5 w-3.5" /> Lida
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => definirLida(selecionados, false)}
+                  className="h-7 text-[10px] font-bold uppercase"
+                >
+                  <Mail className="mr-1 h-3.5 w-3.5" /> Não lida
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setSelecionados([])}
+                  aria-label="Limpar seleção"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-[11px] font-black uppercase tracking-widest">
+                Notificações
+                {naoLidas.length > 0 && (
+                  <Badge className="ml-2 bg-amber-400 text-slate-900 text-[10px] font-black">
+                    {naoLidas.length} nova{naoLidas.length > 1 ? "s" : ""}
+                  </Badge>
+                )}
+              </p>
+              {naoLidas.length > 0 && (
+                <Button variant="ghost" size="sm" onClick={marcarTodas} className="h-7 text-[10px] font-bold uppercase">
+                  <CheckCheck className="mr-1 h-3.5 w-3.5" /> Marcar todas
+                </Button>
+              )}
+            </>
           )}
         </div>
         <div className="max-h-[420px] overflow-y-auto">
@@ -113,12 +157,33 @@ export function NotificacoesSino() {
             notificacoes.map((n) => (
               <div
                 key={n.id}
-                className={`flex items-start gap-3 border-b border-border/50 px-4 py-3 last:border-0 ${
-                  n.lida ? "opacity-60" : "bg-amber-400/5"
+                className={`flex items-start gap-2.5 border-b border-border/50 px-3 py-3 last:border-0 ${
+                  selecionados.includes(n.id) ? "bg-primary/10" : n.lida ? "opacity-60" : "bg-amber-400/5"
                 }`}
               >
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold leading-tight">{n.titulo_enviado || "Aviso"}</p>
+                <Checkbox
+                  checked={selecionados.includes(n.id)}
+                  onCheckedChange={() => alternarSelecao(n.id)}
+                  aria-label={`Selecionar: ${n.titulo_enviado || "Aviso"}`}
+                  className="mt-0.5 shrink-0"
+                />
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => !n.lida && marcarLida(n.id)}
+                  onKeyDown={(e) => {
+                    if ((e.key === "Enter" || e.key === " ") && !n.lida) {
+                      e.preventDefault();
+                      marcarLida(n.id);
+                    }
+                  }}
+                  title={n.lida ? "Clique e use a seleção para marcar como não lida" : "Clique para marcar como lida"}
+                  className="min-w-0 flex-1 cursor-pointer"
+                >
+                  <p className="text-xs font-bold leading-tight">
+                    {n.titulo_enviado || "Aviso"}
+                    {!n.lida && <span className="ml-2 inline-block h-2 w-2 rounded-full bg-amber-400 align-middle" />}
+                  </p>
                   <p className="mt-0.5 text-[11px] text-muted-foreground leading-snug">{n.mensagem_enviada}</p>
                   <div className="mt-1.5 flex items-center gap-3">
                     <span className="text-[9px] font-bold uppercase text-muted-foreground">{dataHora(n.data_envio)}</span>
@@ -126,6 +191,7 @@ export function NotificacoesSino() {
                       <Link
                         to="/os/$id"
                         params={{ id: n.os_id }}
+                        onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-1 text-[10px] font-black uppercase text-primary hover:underline"
                       >
                         Abrir OS <ExternalLink className="h-3 w-3" />
@@ -133,17 +199,6 @@ export function NotificacoesSino() {
                     )}
                   </div>
                 </div>
-                {!n.lida && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 shrink-0"
-                    onClick={() => marcarLida(n.id)}
-                    aria-label="Marcar como lida"
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                )}
               </div>
             ))
           )}
