@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T19:44:31.398934+00:00",
+  "generated_at": "2026-10-11T20:23:20.841380+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -1031,7 +1031,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 130614
+      "bytes": 131992
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
