@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-11T18:24:52.151158+00:00
+Generated: 2026-10-11T18:42:40.182936+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -148,6 +148,7 @@ Generated: 2026-10-11T18:24:52.151158+00:00
 - tooltip
 
 ## Project components
+- src/components/AlertaAprovacoesCard.tsx
 - src/components/AlertaOrcamentosCard.tsx
 - src/components/AnaliseDuplicidadeCustos.tsx
 - src/components/AnexosOs.tsx

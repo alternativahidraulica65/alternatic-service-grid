@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T18:24:52.151158+00:00",
+  "generated_at": "2026-10-11T18:42:40.182936+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -534,6 +534,10 @@
       "bytes": 4066
     },
     {
+      "path": "src/components/AlertaAprovacoesCard.tsx",
+      "bytes": 8294
+    },
+    {
       "path": "src/components/ServicosLaudoEditor.tsx",
       "bytes": 2650
     },
@@ -963,7 +967,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "bytes": 25662
+      "bytes": 25769
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
@@ -975,7 +979,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/diretor.tsx",
-      "bytes": 12770
+      "bytes": 12876
     },
     {
       "path": "src/routes/_authenticated/dashboard/index.tsx",
@@ -1698,6 +1702,46 @@
     {
       "source": "src/components/SlaOs.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/AlertaAprovacoesCard.tsx",
+      "target": "sonner"
     },
     {
       "source": "src/components/ServicosLaudoEditor.tsx",
@@ -3621,6 +3665,10 @@
     },
     {
       "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
+      "target": "@/components/AlertaAprovacoesCard"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/financeiro.tsx",
       "target": "@/components/LembretesCard"
     },
     {
@@ -3774,6 +3822,10 @@
     {
       "source": "src/routes/_authenticated/dashboard/diretor.tsx",
       "target": "@/components/AlertaOrcamentosCard"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard/diretor.tsx",
+      "target": "@/components/AlertaAprovacoesCard"
     },
     {
       "source": "src/routes/_authenticated/dashboard/diretor.tsx",
