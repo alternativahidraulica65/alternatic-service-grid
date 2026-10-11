@@ -55,9 +55,9 @@ export function AlertaAprovacoesCard() {
         supabase.from("fornecedores").select("id, nome, cnpj, telefone, contato, tipo_parceiro, criado_em").in("status_cadastro", ["pendente", "Provisório", "provisório"]).order("criado_em", { ascending: true }),
         supabase.from("ordens_servico").select("*").in("status", ["orcamento_pendente", "orcamento", "aguardando_aprovacao"]).order("data_abertura", { ascending: true }),
       ]);
-      if (o.error) throw o.error;
-      if (c.error) throw c.error;
-      if (f.error) throw f.error;
+      if (o.error) console.error("Aprovações/serviços:", o.error.message);
+      if (c.error) console.error("Aprovações/clientes:", c.error.message);
+      if (f.error) console.error("Aprovações/fornecedores:", f.error.message);
       return {
         clientes: (c.data ?? []).map((x) => ({ ...x, tabela: "clientes" as const })),
         fornecedores: (f.data ?? []).map((x) => ({ ...x, tabela: "fornecedores" as const })),
