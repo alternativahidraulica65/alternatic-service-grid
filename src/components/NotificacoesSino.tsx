@@ -53,25 +53,29 @@ export function NotificacoesSino() {
 
   const naoLidas = notificacoes.filter((n) => !n.lida);
 
-  async function marcarLida(id: string) {
+  function alternarSelecao(id: string) {
+    setSelecionados((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+  }
+
+  async function definirLida(ids: string[], lida: boolean) {
     const { error } = await supabase
       .from("notificacoes")
-      .update({ lida: true, lida_em: new Date().toISOString() })
-      .eq("id", id);
-    if (error) toast.error("Não foi possível marcar como lida.");
+      .update({ lida, lida_em: lida ? new Date().toISOString() : null })
+      .in("id", ids);
+    if (error) toast.error("Não foi possível atualizar as notificações.");
+    else setSelecionados([]);
     queryClient.invalidateQueries({ queryKey: ["notificacoes_sino"] });
+  }
+
+  function marcarLida(id: string) {
+    return definirLida([id], true);
   }
 
   async function marcarTodas() {
     const ids = naoLidas.map((n) => n.id);
     if (ids.length === 0) return;
-    const { error } = await supabase
-      .from("notificacoes")
-      .update({ lida: true, lida_em: new Date().toISOString() })
-      .in("id", ids);
-    if (error) toast.error("Não foi possível marcar todas.");
-    else toast.success("Todas as notificações foram lidas.");
-    queryClient.invalidateQueries({ queryKey: ["notificacoes_sino"] });
+    await definirLida(ids, true);
+    if (ids.length > 0) toast.success("Todas as notificações foram lidas.");
   }
 
   return (
