@@ -1,47 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { 
-  DollarSign,
-  CheckCircle2,
-  AlertTriangle,
-  FileText,
-  TrendingUp,
-  Receipt,
-  Wallet,
-  Clock,
-  ArrowUpRight,
-  ArrowDownRight,
-  Truck,
-  Plus,
-  Calendar,
-  Download,
-  FileSpreadsheet,
-  FileIcon,
-  AlertCircle,
-  BarChart3
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { endOfMonth, startOfMonth, subMonths, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  TrendingUp, Wrench, Wallet, Truck, Handshake, FileSpreadsheet, Printer, Receipt, Users, ArrowUpRight, ArrowDownRight,
 } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
-import { format, startOfMonth, endOfMonth, subMonths, eachMonthOfInterval } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
-} from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { AlertaOrcamentosCard } from "@/components/AlertaOrcamentosCard";
 import { AlertaAprovacoesCard } from "@/components/AlertaAprovacoesCard";
 import { LembretesCard } from "@/components/LembretesCard";
@@ -49,528 +22,366 @@ import { LembretesCard } from "@/components/LembretesCard";
 export const Route = createFileRoute("/_authenticated/dashboard/financeiro")({
   head: () => ({ meta: [
     { title: "Painel financeiro — Alternativa Hidráulica" },
-    { name: "description", content: "Indicadores financeiros e acompanhamento de orçamentos." },
+    { name: "description", content: "Faturamento, lucro real, contas a pagar, cobranças e comissões do mês." },
     { property: "og:title", content: "Painel financeiro — Alternativa Hidráulica" },
-    { property: "og:description", content: "Indicadores financeiros e acompanhamento de orçamentos." },
+    { property: "og:description", content: "Faturamento, lucro real, contas a pagar, cobranças e comissões do mês." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
   component: DashboardFinanceiro,
 });
 
-function FinanceKPICard({ title, value, subtext, icon: Icon, trend, trendValue }: any) {
+const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const brl = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0);
+const dia = (d: Date) => format(d, "yyyy-MM-dd");
+const ESTADOS_PIPELINE = ["orcamento_pendente", "orcamento", "aguardando_aprovacao"];
+
+type OsRow = {
+  id: string; numero_os: string; cliente: string; status: string; valor_total: number | null; valor_final: number | null;
+  imposto_aplicado: number | null; comissao_calculada: number | null; data_entrega: string | null; status_financeiro: string | null;
+  orcamento_enviado_em: string | null; orcamento_resposta?: string | null; updated_at: string | null;
+  clientes?: { vendedor_id: string | null; vendedores?: { nome: string } | null } | null;
+};
+
+const valorOs = (o: OsRow) => Number(o.valor_final ?? o.valor_total ?? 0);
+const impostoOs = (o: OsRow) => {
+  const t = Number(o.imposto_aplicado ?? 0);
+  return t > 0 && t <= 100 ? (valorOs(o) * t) / 100 : t;
+};
+
+async function custosPorOs(ids: string[]) {
+  const mapa = new Map<string, number>();
+  if (!ids.length) return mapa;
+  const { data, error } = await supabase.from("os_custos").select("os_id, custo_interno").in("os_id", ids);
+  if (error) throw error;
+  (data || []).forEach((c) => mapa.set(c.os_id, (mapa.get(c.os_id) || 0) + Number(c.custo_interno || 0)));
+  return mapa;
+}
+
+function dre(oss: OsRow[], custos: Map<string, number>) {
+  const receita = oss.reduce((a, o) => a + valorOs(o), 0);
+  const custo = oss.reduce((a, o) => a + (custos.get(o.id) || 0), 0);
+  const impostos = oss.reduce((a, o) => a + impostoOs(o), 0);
+  const comissoes = oss.reduce((a, o) => a + Number(o.comissao_calculada || 0), 0);
+  const lucro = receita - custo - impostos - comissoes;
+  return { receita, custo, impostos, comissoes, lucro, margem: receita > 0 ? (lucro / receita) * 100 : null };
+}
+
+const SELECT_OS = "id, numero_os, cliente, status, valor_total, valor_final, imposto_aplicado, comissao_calculada, data_entrega, status_financeiro, orcamento_enviado_em, updated_at, clientes(vendedor_id, vendedores(nome))";
+
+function DashboardFinanceiro() {
+  const { podeVerValoresFinanceiros } = useUserRole();
+  const hoje = new Date();
+  const [mes, setMes] = useState(String(hoje.getMonth()));
+  const [ano, setAno] = useState(String(hoje.getFullYear()));
+  const inicio = new Date(Number(ano), Number(mes), 1);
+  const fim = endOfMonth(inicio);
+  const inicioAnt = startOfMonth(subMonths(inicio, 1));
+  const fimAnt = endOfMonth(inicioAnt);
+
+  const { data, isLoading } = useQuery({
+    enabled: podeVerValoresFinanceiros,
+    queryKey: ["fin-dashboard-v2", dia(inicio)],
+    queryFn: async () => {
+      const [entregues, entreguesAnt, pipeline, prontas, pendentes] = await Promise.all([
+        supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", inicio.toISOString()).lte("data_entrega", fim.toISOString()),
+        supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", inicioAnt.toISOString()).lte("data_entrega", fimAnt.toISOString()),
+        supabase.from("ordens_servico").select("id, numero_os, cliente, valor_final, valor_total, orcamento_enviado_em").in("status", ESTADOS_PIPELINE).not("orcamento_enviado_em", "is", null),
+        supabase.from("ordens_servico").select(SELECT_OS).eq("status", "pronto").order("updated_at", { ascending: true }),
+        supabase.from("os_custos").select("id, custo_interno, fornecedor_id, terceiro_nome, criado_em, fornecedores(nome)").eq("pago", false).lte("criado_em", fim.toISOString()),
+      ]);
+      for (const r of [entregues, entreguesAnt, pipeline, prontas, pendentes]) if (r.error) throw r.error;
+      const ent = (entregues.data || []) as unknown as OsRow[];
+      const ant = (entreguesAnt.data || []) as unknown as OsRow[];
+      const [cAtual, cAnt] = await Promise.all([custosPorOs(ent.map((o) => o.id)), custosPorOs(ant.map((o) => o.id))]);
+
+      const passivoMap = new Map<string, { nome: string; total: number; itens: number }>();
+      (pendentes.data || []).forEach((c: any) => {
+        const nome = c.fornecedores?.nome || c.terceiro_nome || "Sem fornecedor";
+        const k = c.fornecedor_id || nome;
+        const cur = passivoMap.get(k) || { nome, total: 0, itens: 0 };
+        cur.total += Number(c.custo_interno || 0); cur.itens += 1;
+        passivoMap.set(k, cur);
+      });
+      const passivo = [...passivoMap.values()].filter((p) => p.total > 0).sort((a, b) => b.total - a.total);
+
+      const comMap = new Map<string, { nome: string; vendas: number; base: number; comissao: number }>();
+      ent.forEach((o) => {
+        const nome = o.clientes?.vendedores?.nome;
+        if (!nome) return;
+        const cur = comMap.get(nome) || { nome, vendas: 0, base: 0, comissao: 0 };
+        cur.vendas += 1; cur.base += valorOs(o); cur.comissao += Number(o.comissao_calculada || 0);
+        comMap.set(nome, cur);
+      });
+
+      const pip = pipeline.data || [];
+      return {
+        atual: dre(ent, cAtual),
+        anterior: dre(ant, cAnt),
+        passivo,
+        passivoTotal: passivo.reduce((a, p) => a + p.total, 0),
+        pipelineTotal: pip.reduce((a, o: any) => a + Number(o.valor_final ?? o.valor_total ?? 0), 0),
+        pipelineQtd: pip.length,
+        prontas: (prontas.data || []) as unknown as OsRow[],
+        entregues: ent,
+        comissoes: [...comMap.values()].sort((a, b) => b.comissao - a.comissao),
+      };
+    },
+  });
+
+  const { data: tendencia } = useQuery({
+    enabled: podeVerValoresFinanceiros,
+    queryKey: ["fin-tendencia-v2", dia(inicio)],
+    queryFn: async () => {
+      const ini = startOfMonth(subMonths(inicio, 5));
+      const { data: os, error } = await supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", ini.toISOString()).lte("data_entrega", fim.toISOString());
+      if (error) throw error;
+      const lista = (os || []) as unknown as OsRow[];
+      const custos = await custosPorOs(lista.map((o) => o.id));
+      return Array.from({ length: 6 }, (_, i) => {
+        const m = subMonths(inicio, 5 - i);
+        const chave = format(m, "yyyy-MM");
+        const r = dre(lista.filter((o) => o.data_entrega?.startsWith(chave)), custos);
+        return { mes: format(m, "MMM", { locale: ptBR }), receita: r.receita, custos: r.custo + r.impostos + r.comissoes, lucro: r.lucro };
+      });
+    },
+  });
+
+  if (!podeVerValoresFinanceiros) {
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-bold text-destructive uppercase">Acesso negado</h2>
+        <p className="text-muted-foreground mt-2">Você não tem permissão para acessar o painel financeiro.</p>
+      </div>
+    );
+  }
+
+  const exportarCSV = () => {
+    if (!data) return;
+    const linhas = [
+      ["Indicador", "Valor"],
+      ["Faturamento", data.atual.receita.toFixed(2)],
+      ["Custos diretos", data.atual.custo.toFixed(2)],
+      ["Impostos", data.atual.impostos.toFixed(2)],
+      ["Comissões", data.atual.comissoes.toFixed(2)],
+      ["Lucro líquido", data.atual.lucro.toFixed(2)],
+      ["A pagar (valinhos)", data.passivoTotal.toFixed(2)],
+      ["Em negociação", data.pipelineTotal.toFixed(2)],
+      [],
+      ["OS entregue", "Cliente", "Valor"],
+      ...data.entregues.map((o) => [o.numero_os, o.cliente, valorOs(o).toFixed(2)]),
+    ];
+    const blob = new Blob(["\uFEFF" + linhas.map((l) => l.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(";")).join("\n")], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `financeiro_${Number(mes) + 1}_${ano}.csv`;
+    a.click();
+  };
+
+  const variacao = (a: number, b: number) => (b > 0 ? ((a - b) / b) * 100 : null);
+
   return (
-    <Card className="border-border bg-card shadow-sm overflow-hidden border-l-4 border-l-primary">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          {title}
-        </CardTitle>
-        <div className="rounded-lg bg-slate-100 p-2">
-          <Icon className="h-4 w-4 text-primary" />
+    <div className="space-y-6 p-4 md:p-8 print:p-0">
+      {/* Cabeçalho */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Painel financeiro</p>
+          <h1 className="font-display text-2xl md:text-3xl font-black tracking-tight text-foreground">
+            Fechamento de {MESES[Number(mes)]} <span className="text-primary">{ano}</span>
+          </h1>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-black text-foreground">{value}</div>
-        <div className="mt-1 flex items-center gap-1.5">
-          {trend === "up" ? (
-            <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-          ) : (
-            <ArrowDownRight className="h-3 w-3 text-red-500" />
+        <div className="flex flex-wrap items-center gap-2 print:hidden">
+          <Select value={mes} onValueChange={setMes}>
+            <SelectTrigger className="h-9 w-[140px] text-xs font-semibold"><SelectValue /></SelectTrigger>
+            <SelectContent>{MESES.map((m, i) => <SelectItem key={m} value={String(i)}>{m}</SelectItem>)}</SelectContent>
+          </Select>
+          <Select value={ano} onValueChange={setAno}>
+            <SelectTrigger className="h-9 w-[100px] text-xs font-semibold"><SelectValue /></SelectTrigger>
+            <SelectContent>{[0, 1, 2].map((d) => String(hoje.getFullYear() - d)).map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" className="h-9" onClick={exportarCSV}><FileSpreadsheet className="mr-1.5 h-4 w-4" />Planilha</Button>
+          <Button variant="outline" size="sm" className="h-9" onClick={() => window.print()}><Printer className="mr-1.5 h-4 w-4" />Imprimir</Button>
+        </div>
+      </div>
+
+      {/* Alertas mantidos */}
+      <div className="grid gap-4 lg:grid-cols-3 print:hidden">
+        <AlertaAprovacoesCard />
+        <AlertaOrcamentosCard />
+        <LembretesCard />
+      </div>
+
+      {/* KPIs */}
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <Kpi titulo="Faturamento realizado" icone={TrendingUp} carregando={isLoading} valor={brl(data?.atual.receita || 0)}
+          sub="OS entregues no mês" delta={data ? variacao(data.atual.receita, data.anterior.receita) : null} />
+        <Kpi titulo="Custos diretos" icone={Wrench} carregando={isLoading} valor={brl(data?.atual.custo || 0)}
+          sub={`+ impostos ${brl(data?.atual.impostos || 0)}`} delta={data ? variacao(data.atual.custo, data.anterior.custo) : null} inverso />
+        <Kpi titulo="Lucro líquido real" icone={Wallet} destaque carregando={isLoading} valor={brl(data?.atual.lucro || 0)}
+          sub={data?.atual.margem != null ? `Margem ${data.atual.margem.toFixed(1)}%` : "Sem entregas no mês"} delta={data ? variacao(data.atual.lucro, data.anterior.lucro) : null} />
+        <Kpi titulo="A pagar (valinhos)" icone={Truck} carregando={isLoading} valor={brl(data?.passivoTotal || 0)}
+          sub={`${data?.passivo.length || 0} fornecedores em aberto`} />
+        <Kpi titulo="Em negociação" icone={Handshake} carregando={isLoading} valor={brl(data?.pipelineTotal || 0)}
+          sub={`${data?.pipelineQtd || 0} propostas com o cliente`} />
+      </div>
+
+      {/* DRE + gráfico */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider">Resultado dos últimos 6 meses</CardTitle>
+            <CardDescription>Faturamento, custos totais (peças, terceiros, impostos e comissões) e lucro líquido.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer className="h-[280px] w-full" config={{
+              receita: { label: "Faturamento", color: "var(--primary)" },
+              custos: { label: "Custos", color: "var(--muted-foreground)" },
+              lucro: { label: "Lucro", color: "var(--foreground)" },
+            }}>
+              <BarChart data={tendencia || []}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={11} />
+                <YAxis tickLine={false} axisLine={false} fontSize={11} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+                <ChartTooltip content={<ChartTooltipContent formatter={(v: unknown) => brl(Number(v))} />} />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Bar dataKey="receita" fill="var(--color-receita)" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="custos" fill="var(--color-custos)" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="lucro" fill="var(--color-lucro)" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider">Demonstrativo do mês</CardTitle>
+            <CardDescription>Como o faturamento vira lucro.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-1 text-sm">
+            {isLoading ? <Skeleton className="h-48 w-full" /> : (
+              <>
+                <LinhaDre rotulo="Faturamento" valor={data?.atual.receita || 0} forte />
+                <LinhaDre rotulo="(−) Peças e terceiros" valor={-(data?.atual.custo || 0)} />
+                <LinhaDre rotulo="(−) Impostos" valor={-(data?.atual.impostos || 0)} />
+                <LinhaDre rotulo="(−) Comissões" valor={-(data?.atual.comissoes || 0)} />
+                <div className="mt-2 flex items-center justify-between rounded-md bg-primary px-3 py-3 text-primary-foreground">
+                  <span className="text-xs font-black uppercase tracking-wider">Lucro líquido</span>
+                  <span className="text-lg font-black">{brl(data?.atual.lucro || 0)}</span>
+                </div>
+                <p className="pt-1 text-right text-xs text-muted-foreground">
+                  Margem real: <strong className="text-foreground">{data?.atual.margem != null ? `${data.atual.margem.toFixed(1)}%` : "—"}</strong>
+                </p>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Mesas operacionais */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Mesa titulo="Prontas para cobrança" descricao="OS finalizadas na oficina, aguardando entrega e cobrança." icone={Receipt}
+          vazio="Nenhuma OS pronta no momento." carregando={isLoading} total={data ? brl(data.prontas.reduce((a, o) => a + valorOs(o), 0)) : undefined}>
+          {data?.prontas.slice(0, 8).map((o) => (
+            <Link key={o.id} to="/os/$id" params={{ id: o.id }} className="flex items-center justify-between gap-2 py-2.5 hover:bg-muted/50 px-1 rounded-sm">
+              <div className="min-w-0">
+                <p className="text-sm font-bold truncate">{o.numero_os}</p>
+                <p className="text-xs text-muted-foreground truncate">{o.cliente}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-sm font-bold">{brl(valorOs(o))}</p>
+                <Badge variant="outline" className="text-[10px]">{o.status_financeiro || "A cobrar"}</Badge>
+              </div>
+            </Link>
+          ))}
+        </Mesa>
+
+        <Mesa titulo="Quitação de parceiros" descricao="Valores lançados e ainda não pagos, por fornecedor." icone={Truck}
+          vazio="Nenhum valor pendente." carregando={isLoading} total={data ? brl(data.passivoTotal) : undefined}
+          acao={<Button asChild size="sm" className="w-full"><Link to="/financeiro/valinhos">Abrir valinhos e quitar</Link></Button>}>
+          {data?.passivo.slice(0, 8).map((p) => (
+            <div key={p.nome} className="flex items-center justify-between gap-2 py-2.5 px-1">
+              <div className="min-w-0">
+                <p className="text-sm font-bold truncate">{p.nome}</p>
+                <p className="text-xs text-muted-foreground">{p.itens} {p.itens === 1 ? "lançamento" : "lançamentos"}</p>
+              </div>
+              <p className="text-sm font-bold shrink-0">{brl(p.total)}</p>
+            </div>
+          ))}
+        </Mesa>
+
+        <Mesa titulo="Comissões do mês" descricao="Sobre OS entregues de clientes com vendedor." icone={Users}
+          vazio="Nenhuma comissão no período." carregando={isLoading} total={data ? brl(data.comissoes.reduce((a, c) => a + c.comissao, 0)) : undefined}>
+          {data?.comissoes.map((c) => (
+            <div key={c.nome} className="flex items-center justify-between gap-2 py-2.5 px-1">
+              <div className="min-w-0">
+                <p className="text-sm font-bold truncate">{c.nome}</p>
+                <p className="text-xs text-muted-foreground">{c.vendas} {c.vendas === 1 ? "venda" : "vendas"} · base {brl(c.base)}</p>
+              </div>
+              <p className="text-sm font-bold shrink-0">{brl(c.comissao)}</p>
+            </div>
+          ))}
+        </Mesa>
+      </div>
+    </div>
+  );
+}
+
+function Kpi({ titulo, valor, sub, icone: Icone, delta, inverso, destaque, carregando }: {
+  titulo: string; valor: string; sub: string; icone: typeof TrendingUp; delta?: number | null; inverso?: boolean; destaque?: boolean; carregando?: boolean;
+}) {
+  const bom = delta != null && (inverso ? delta <= 0 : delta >= 0);
+  return (
+    <Card className={destaque ? "border-primary bg-primary/5" : ""}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{titulo}</p>
+          <Icone className={`h-4 w-4 ${destaque ? "text-primary" : "text-muted-foreground"}`} />
+        </div>
+        {carregando ? <Skeleton className="mt-2 h-8 w-32" /> : <p className="mt-2 text-2xl font-black tracking-tight text-foreground">{valor}</p>}
+        <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+          {delta != null && (
+            <span className={`inline-flex items-center font-bold ${bom ? "text-foreground" : "text-destructive"}`}>
+              {delta >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+              {Math.abs(delta).toFixed(0)}%
+            </span>
           )}
-          <span className={`text-[10px] font-bold ${trend === "up" ? "text-emerald-500" : "text-red-500"}`}>
-            {trendValue}
-          </span>
-          <span className="text-[10px] font-medium text-muted-foreground uppercase">{subtext}</span>
+          <span className="truncate">{sub}</span>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-function DashboardFinanceiro() {
-  const { podeVerValoresFinanceiros } = useUserRole();
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
-
-  if (!podeVerValoresFinanceiros) {
-    return (
-      <div className="p-10 text-center">
-        <h2 className="text-xl font-bold text-red-600 uppercase">Acesso Negado</h2>
-        <p className="text-slate-500 mt-2">Você não tem permissão para acessar o dashboard financeiro.</p>
-      </div>
-    );
-  }
-
-
-  const filterStartDate = new Date(parseInt(selectedYear), parseInt(selectedMonth), 1);
-  const filterEndDate = endOfMonth(filterStartDate);
-
-  const { data: dashboardData, isLoading: loadingStats } = useQuery({
-    queryKey: ['finance-dashboard-stats', filterStartDate.toISOString()],
-    queryFn: async () => {
-      const [
-        { count: orcamentos },
-        { data: lancamentos },
-        { count: aprovas }
-      ] = await Promise.all([
-        supabase.from('orcamentos' as any).select('*', { count: 'exact', head: true }),
-        supabase.from('lancamentos_financeiros').select('*').gte('data_competencia', filterStartDate.toISOString().split('T')[0]).lte('data_competencia', filterEndDate.toISOString().split('T')[0]),
-        supabase.from('ordens_servico').select('*', { count: 'exact', head: true }).eq('status', 'aprovada')
-      ]);
-
-      const faturamento = (lancamentos || [])
-        .filter(l => l.tipo === 'entrada')
-        .reduce((acc, curr) => acc + Number(curr.valor), 0);
-      
-      const inadimplencia = (lancamentos || [])
-        .filter((l: any) => l.tipo === 'entrada' && l.status === 'atrasado')
-        .reduce((acc, curr) => acc + Number(curr.valor), 0);
-
-      const recebimentos = (lancamentos || [])
-        .filter(l => l.tipo === 'entrada')
-        .sort((a, b) => new Date(a.data_competencia).getTime() - new Date(b.data_competencia).getTime())
-        .slice(0, 5);
-
-      return {
-        orcamentosCount: orcamentos || 0,
-        faturamento,
-        inadimplencia,
-        aprovasCount: aprovas || 0,
-        recebimentos
-      };
-    }
-  });
-
-  const { data: supplierData, isLoading } = useQuery({
-    queryKey: ['supplier-costs', filterStartDate.toISOString()],
-    queryFn: async () => {
-      const { data: lancamentos, error: lError } = await supabase
-        .from('lancamentos_financeiros')
-        .select(`
-          valor,
-          fornecedor:fornecedores(nome, limite_mensal, cnpj),
-          os_id,
-          ordem_servico:ordens_servico(numero_os)
-        `)
-        .gte('data_competencia', filterStartDate.toISOString().split('T')[0])
-        .lte('data_competencia', filterEndDate.toISOString().split('T')[0])
-        .eq('tipo', 'saida');
-
-      if (lError) throw lError;
-
-      const grouped = (lancamentos || []).reduce((acc: any, curr: any) => {
-        const supplierName = curr.fornecedor?.nome || 'Não Identificado';
-        if (!acc[supplierName]) {
-          acc[supplierName] = { 
-            name: supplierName, 
-            total: 0, 
-            entries: [], 
-            limite: curr.fornecedor?.limite_mensal || 0,
-            cnpj: curr.fornecedor?.cnpj || ''
-          };
-        }
-        acc[supplierName].total += Number(curr.valor);
-        acc[supplierName].entries.push({
-          valor: curr.valor,
-          os: curr.ordem_servico?.numero_os || null
-        });
-        return acc;
-      }, {});
-
-      return Object.values(grouped).sort((a: any, b: any) => b.total - a.total);
-    }
-  });
-
-  const { data: trendData } = useQuery({
-    queryKey: ['financial-trends'],
-    queryFn: async () => {
-      const start = startOfMonth(subMonths(new Date(), 6));
-      const end = endOfMonth(new Date());
-
-      const { data, error } = await supabase
-        .from('lancamentos_financeiros')
-        .select('valor, data_competencia, tipo')
-        .gte('data_competencia', start.toISOString().split('T')[0])
-        .lte('data_competencia', end.toISOString().split('T')[0]);
-
-      if (error) throw error;
-
-      const months = eachMonthOfInterval({ start, end });
-      return months.map(month => {
-        const monthStr = format(month, 'yyyy-MM');
-        const monthLabel = format(month, 'MMM', { locale: ptBR });
-        
-        const monthlyData = data?.filter(d => d.data_competencia.startsWith(monthStr)) || [];
-        const saidas = monthlyData
-          .filter(d => d.tipo === 'saida')
-          .reduce((acc, curr) => acc + Number(curr.valor), 0);
-        
-        return {
-          month: monthLabel,
-          gastos: saidas
-        };
-      });
-    }
-  });
-
-  const exportCSV = () => {
-    if (!supplierData || supplierData.length === 0) return;
-    
-    const headers = ["Fornecedor", "CNPJ", "Gasto Total", "Limite Mensal", "Status"];
-    const rows = supplierData.map((s: any) => [
-      s.name,
-      s.cnpj,
-      s.total.toFixed(2),
-      s.limite.toFixed(2),
-      s.total > s.limite && s.limite > 0 ? "Excedido" : "Dentro do Limite"
-    ]);
-
-    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `fornecedores_${selectedMonth}_${selectedYear}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("CSV exportado com sucesso");
-  };
-
-  const exportPDF = () => {
-    window.print();
-  };
-
-  const months = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-  ];
-
+function LinhaDre({ rotulo, valor, forte }: { rotulo: string; valor: number; forte?: boolean }) {
   return (
-    <div className="space-y-8 p-6 md:p-10 pb-10 print:p-0">
-      <div className="flex justify-between items-center print:hidden">
-        <div>
-          <h2 className="font-display text-3xl font-black text-foreground tracking-tight">DASHBOARD <span className="text-primary">FINANCEIRO</span></h2>
-          <p className="text-sm text-muted-foreground font-medium">Controle de orçamentos, aprovações e fluxo de caixa.</p>
-        </div>
-      </div>
-
-      <div className="print:hidden space-y-4">
-        <AlertaAprovacoesCard />
-        <AlertaOrcamentosCard />
-        <LembretesCard />
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
-        <FinanceKPICard 
-          title="Orçamentos" 
-          value={loadingStats ? "..." : String(dashboardData?.orcamentosCount || 0)} 
-          subtext="Total cadastrado" 
-          icon={FileText} 
-          trend="up" 
-          trendValue="+0%" 
-        />
-        <FinanceKPICard 
-          title="Aprovações" 
-          value={loadingStats ? "..." : String(dashboardData?.aprovasCount || 0)} 
-          subtext="OS aprovadas" 
-          icon={CheckCircle2} 
-          trend="up" 
-          trendValue="+0%" 
-        />
-        <FinanceKPICard 
-          title="Faturamento" 
-          value={loadingStats ? "..." : `R$ ${(dashboardData?.faturamento || 0).toLocaleString('pt-BR')}`} 
-          subtext="Meta mensal" 
-          icon={TrendingUp} 
-          trend="up" 
-          trendValue="+0%" 
-        />
-        <FinanceKPICard 
-          title="Inadimplência" 
-          value={loadingStats ? "..." : `R$ ${(dashboardData?.inadimplencia || 0).toLocaleString('pt-BR')}`} 
-          subtext="Risco monitorado" 
-          icon={AlertTriangle} 
-          trend="down" 
-          trendValue="-0%" 
-        />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3 print:hidden">
-        <Card className="lg:col-span-2 border-border shadow-md">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-bold">Fluxo de Recebimentos</CardTitle>
-                <CardDescription>Principais entradas previstas para este mês.</CardDescription>
-              </div>
-              <Button variant="ghost" size="sm" className="text-primary text-xs font-bold uppercase tracking-wider">Ver Todos</Button>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              {loadingStats ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
-              ) : dashboardData?.recebimentos && dashboardData.recebimentos.length > 0 ? (
-                dashboardData.recebimentos.map((item: any, i: number) => (
-                  <div key={item.id || i} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Receipt className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-foreground">{item.descricao || "Lançamento sem descrição"}</p>
-                        <p className="text-xs text-muted-foreground font-medium">Data: {new Date(item.data_competencia).toLocaleDateString('pt-BR')}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-black text-foreground">R$ {Number(item.valor).toLocaleString('pt-BR')}</p>
-                      <Badge variant="secondary" className={`text-[10px] uppercase font-bold ${
-                        (item as any).status === 'confirmado' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                        (item as any).status === 'atrasado' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 
-                        'bg-primary/10 text-primary border-primary/20'
-                      }`}>
-                        {(item as any).status || 'pendente'}
-                      </Badge>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-10 text-center opacity-20">
-                  <Receipt className="h-10 w-10 mx-auto mb-2" />
-                  <p className="text-[10px] font-bold uppercase">Nenhum recebimento previsto</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border shadow-md">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
-            <CardTitle className="text-base font-bold">Metas do Mês</CardTitle>
-            <CardDescription>Acompanhamento de performance.</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                <span className="text-muted-foreground">Faturamento</span>
-                <span className="text-foreground">84%</span>
-              </div>
-              <Progress value={84} className="h-2 bg-slate-100" />
-              <p className="text-[10px] text-muted-foreground font-medium">Faltam R$ 160k para atingir a meta.</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                <span className="text-muted-foreground">Conversão de Orçamentos</span>
-                <span className="text-foreground">62%</span>
-              </div>
-              <Progress value={62} className="h-2 bg-slate-100" />
-              <p className="text-[10px] text-muted-foreground font-medium">Meta interna de 70%.</p>
-            </div>
-
-            <div className="pt-4 border-t border-border/50">
-               <Button className="w-full bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs h-11">
-                <Wallet className="mr-2 h-4 w-4" />
-                Fechar Caixa do Dia
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="mt-6">
-        <Card className="border-border shadow-md print:shadow-none print:border-none">
-          <CardHeader className="bg-muted/10 border-b border-border/50 print:bg-white">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <CardTitle className="text-base font-bold flex items-center gap-2">
-                  <Truck className="h-5 w-5 text-primary" />
-                  Controle de Fornecedores do Mês
-                </CardTitle>
-                <CardDescription className="print:text-black">
-                  Custos acumulados em {months[parseInt(selectedMonth)]} de {selectedYear}.
-                </CardDescription>
-              </div>
-              
-              <div className="flex flex-wrap items-center gap-2 print:hidden">
-                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                  <SelectTrigger className="w-[120px] h-8 text-[10px] font-bold uppercase tracking-wider">
-                    <Calendar className="mr-2 h-3 w-3 text-primary" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map((m, i) => (
-                      <SelectItem key={i} value={i.toString()} className="text-[10px] uppercase font-bold">{m}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={selectedYear} onValueChange={setSelectedYear}>
-                  <SelectTrigger className="w-[100px] h-8 text-[10px] font-bold uppercase tracking-wider">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {["2024", "2025", "2026"].map(y => (
-                      <SelectItem key={y} value={y} className="text-[10px] uppercase font-bold">{y}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <div className="flex gap-1 ml-2">
-                  <Button variant="outline" size="sm" onClick={exportCSV} title="Exportar CSV" className="h-8 w-8 p-0">
-                    <FileSpreadsheet className="h-4 w-4 text-emerald-500" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={exportPDF} title="Exportar PDF" className="h-8 w-8 p-0">
-                    <FileIcon className="h-4 w-4 text-red-500" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-10">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              </div>
-            ) : supplierData && supplierData.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 print:grid-cols-2">
-                {supplierData.map((item: any, idx: number) => {
-                  const isExceeded = item.limite > 0 && item.total > item.limite;
-                  
-                  return (
-                    <div key={idx} className={`flex flex-col p-4 rounded-xl border transition-all shadow-sm group print:shadow-none ${
-                      isExceeded 
-                        ? 'border-red-500/50 bg-red-50/30' 
-                        : 'border-border bg-slate-50/50 hover:bg-white'
-                    }`}>
-                      <div className="flex justify-between items-start mb-3">
-                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center shadow-sm border transition-colors ${
-                          isExceeded ? 'bg-red-100 border-red-200' : 'bg-white border-border group-hover:border-primary/30'
-                        }`}>
-                          <Truck className={`h-5 w-5 transition-colors ${
-                            isExceeded ? 'text-red-500' : 'text-slate-400 group-hover:text-primary'
-                          }`} />
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Gasto Total</p>
-                          <p className={`text-lg font-black ${isExceeded ? 'text-red-600' : 'text-foreground'}`}>
-                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total)}
-                          </p>
-                          {isExceeded && (
-                            <div className="flex items-center gap-1 justify-end text-[9px] text-red-500 font-bold uppercase mt-0.5 animate-pulse">
-                              <AlertCircle className="h-3 w-3" />
-                              Limite Excedido
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <h4 className="text-sm font-bold text-foreground mb-3 truncate">{item.name}</h4>
-                      
-                      {item.limite > 0 && (
-                        <div className="mb-4 space-y-1">
-                          <div className="flex justify-between text-[9px] font-bold uppercase tracking-tighter">
-                            <span className="text-muted-foreground">Uso do Limite</span>
-                            <span className={isExceeded ? 'text-red-600' : 'text-slate-600'}>
-                              {Math.round((item.total / item.limite) * 100)}%
-                            </span>
-                          </div>
-                          <Progress 
-                            value={Math.min((item.total / item.limite) * 100, 100)} 
-                            className={`h-1.5 ${isExceeded ? 'bg-red-100' : 'bg-slate-200'}`} 
-                          />
-                        </div>
-                      )}
-                      
-                      <div className="space-y-2 mt-auto">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Detalhes do Mês</p>
-                        {item.entries.slice(0, 3).map((entry: any, eIdx: number) => (
-                          <div key={eIdx} className="flex items-center justify-between py-1 border-b border-border/40 last:border-0">
-                            <span className="text-[10px] font-medium text-slate-600">
-                              {entry.os ? `OS #${entry.os}` : 'Lançamento Direto'}
-                            </span>
-                            <span className="text-[10px] font-bold text-foreground">
-                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(entry.valor)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-12 border-2 border-dashed border-border rounded-xl">
-                <Truck className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm font-medium text-muted-foreground">Nenhum custo registrado para fornecedores neste período.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="mt-6">
-        <Card className="border-border shadow-md">
-          <CardHeader className="bg-muted/10 border-b border-border/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-bold flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-primary" />
-                  Tendência de Gastos (Últimos 6 Meses)
-                </CardTitle>
-                <CardDescription>Evolução mensal dos custos com fornecedores e OS.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="h-[300px] w-full">
-              <ChartContainer config={{
-                gastos: {
-                  label: "Gastos (R$)",
-                  color: "hsl(var(--primary))"
-                }
-              }}>
-                <AreaChart data={trendData || []}>
-                  <defs>
-                    <linearGradient id="colorGastos" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-gastos)" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="var(--color-gastos)" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis 
-                    dataKey="month" 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
-                  />
-                  <YAxis 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
-                    tickFormatter={(value) => `R$ ${value/1000}k`}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                  <Area 
-                    type="monotone" 
-                    dataKey="gastos" 
-                    stroke="var(--color-gastos)" 
-                    fillOpacity={1} 
-                    fill="url(#colorGastos)" 
-                    strokeWidth={3}
-                  />
-                </AreaChart>
-              </ChartContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+    <div className="flex items-center justify-between border-b border-border py-2">
+      <span className={forte ? "font-bold" : "text-muted-foreground"}>{rotulo}</span>
+      <span className={`font-semibold tabular-nums ${valor < 0 ? "text-destructive" : ""}`}>{brl(valor)}</span>
     </div>
+  );
+}
+
+function Mesa({ titulo, descricao, icone: Icone, children, vazio, carregando, total, acao }: {
+  titulo: string; descricao: string; icone: typeof TrendingUp; children?: React.ReactNode; vazio: string; carregando?: boolean | undefined; total?: string | undefined; acao?: React.ReactNode;
+}) {
+  const itens = Array.isArray(children) ? children.filter(Boolean) : children ? [children] : [];
+  return (
+    <Card className="flex flex-col">
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider"><Icone className="h-4 w-4 text-primary" />{titulo}</CardTitle>
+            <CardDescription className="mt-1">{descricao}</CardDescription>
+          </div>
+          {total && <span className="text-sm font-black whitespace-nowrap">{total}</span>}
+        </div>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col">
+        {carregando ? <Skeleton className="h-40 w-full" /> : itens.length ? <div className="divide-y divide-border">{children}</div> : (
+          <p className="py-8 text-center text-xs font-medium text-muted-foreground">{vazio}</p>
+        )}
+        {acao && <div className="mt-auto pt-3">{acao}</div>}
+      </CardContent>
+    </Card>
   );
 }
