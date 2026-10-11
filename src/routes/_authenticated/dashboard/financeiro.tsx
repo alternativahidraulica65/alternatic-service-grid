@@ -242,7 +242,7 @@ function DashboardFinanceiro() {
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={11} />
                 <YAxis tickLine={false} axisLine={false} fontSize={11} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
-                <ChartTooltip content={<ChartTooltipContent formatter={(v) => brl(Number(v))} />} />
+                <ChartTooltip content={<ChartTooltipContent formatter={(v: unknown) => brl(Number(v))} />} />
                 <ChartLegend content={<ChartLegendContent />} />
                 <Bar dataKey="receita" fill="var(--color-receita)" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="custos" fill="var(--color-custos)" radius={[2, 2, 0, 0]} />
@@ -362,7 +362,7 @@ function LinhaDre({ rotulo, valor, forte }: { rotulo: string; valor: number; for
 }
 
 function Mesa({ titulo, descricao, icone: Icone, children, vazio, carregando, total, acao }: {
-  titulo: string; descricao: string; icone: typeof TrendingUp; children?: React.ReactNode; vazio: string; carregando?: boolean; total?: string; acao?: React.ReactNode;
+  titulo: string; descricao: string; icone: typeof TrendingUp; children?: React.ReactNode; vazio: string; carregando?: boolean | undefined; total?: string | undefined; acao?: React.ReactNode;
 }) {
   const itens = Array.isArray(children) ? children.filter(Boolean) : children ? [children] : [];
   return (
