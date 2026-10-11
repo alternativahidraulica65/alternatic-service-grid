@@ -1328,7 +1328,7 @@ function GestaoOSPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3 min-w-0">
           <Button variant="outline" size="icon" className="h-9 w-9 shrink-0 border-border" asChild>
-            <Link to="/kanban" title="Voltar ao painel Kanban">
+            <Link to={(roles as string[] | undefined)?.some((r) => r === "diretor" || r === "gestor") ? "/producao/orquestrador" : "/dashboard"} title="Voltar">
               <ChevronLeft className="h-5 w-5 text-primary" />
             </Link>
           </Button>
