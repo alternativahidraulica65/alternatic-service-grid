@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-12T02:54:45.972787+00:00
+Generated: 2026-10-12T12:24:15.010302+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -160,6 +160,7 @@ Generated: 2026-10-12T02:54:45.972787+00:00
 - src/components/ClientOnly.tsx
 - src/components/CustosOsPanel.tsx
 - src/components/FiltrosSalvos.tsx
+- src/components/FornecedorDashboardDialog.tsx
 - src/components/FotoThumb.tsx
 - src/components/GuiaExecucaoOs.tsx
 - src/components/LembretesCard.tsx

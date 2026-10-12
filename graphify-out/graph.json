@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T02:54:45.972787+00:00",
+  "generated_at": "2026-10-12T12:24:15.010302+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -578,6 +578,10 @@
       "bytes": 10177
     },
     {
+      "path": "src/components/FornecedorDashboardDialog.tsx",
+      "bytes": 9064
+    },
+    {
       "path": "src/components/LembretesCard.tsx",
       "bytes": 5473
     },
@@ -731,7 +735,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 65628
+      "bytes": 65629
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -1059,7 +1063,7 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
-      "bytes": 49585
+      "bytes": 50121
     },
     {
       "path": "drizzle/migrations/0002_reload_schema_cache_colaboradores.sql",
@@ -2014,6 +2018,46 @@
     {
       "source": "src/components/OrcamentoEnvioCard.tsx",
       "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "@/components/ui/progress"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "@/components/ClientOnly"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "recharts"
+    },
+    {
+      "source": "src/components/FornecedorDashboardDialog.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/components/LembretesCard.tsx",
@@ -4986,6 +5030,10 @@
     {
       "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
+      "target": "@/components/FornecedorDashboardDialog"
     }
   ]
 }
