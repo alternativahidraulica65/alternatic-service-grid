@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T18:54:21.097961+00:00",
+  "generated_at": "2026-10-12T18:57:16.123607+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -47,7 +47,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 34707
+      "bytes": 35898
     },
     {
       "path": "src/styles.css",
@@ -523,7 +523,7 @@
     },
     {
       "path": "src/components/AppNavigation.tsx",
-      "bytes": 13752
+      "bytes": 13860
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
@@ -1022,6 +1022,10 @@
       "bytes": 47598
     },
     {
+      "path": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "bytes": 8579
+    },
+    {
       "path": "src/routes/_authenticated/producao/orquestrador.tsx",
       "bytes": 35519
     },
@@ -1266,6 +1270,10 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/os/nova"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/producao/minha-bancada"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -4034,6 +4042,58 @@
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
       "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/lib/subservicos"
     },
     {
       "source": "src/routes/_authenticated/producao/orquestrador.tsx",
