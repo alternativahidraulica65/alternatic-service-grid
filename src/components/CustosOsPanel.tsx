@@ -203,6 +203,10 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
       toast.error("Informe um valor válido para o custo");
       return;
     }
+    if (!novo.fornecedor_id) {
+      toast.error("Selecione o fornecedor — é obrigatório para concluir o custo");
+      return;
+    }
     setSalvando(true);
     try {
       const { error } = await supabase.from("os_custos" as any).insert({
@@ -440,17 +444,17 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
             </Select>
           </div>
           <div>
-            <Label className="text-[10px] font-bold uppercase">Fornecedor</Label>
+            <Label className="text-[10px] font-bold uppercase">Fornecedor *</Label>
             <Select
               value={novo.fornecedor_id || "none"}
               onValueChange={(v) => setNovo({ ...novo, fornecedor_id: v === "none" ? "" : v })}
             >
-              <SelectTrigger className="h-11 text-sm">
-                <SelectValue placeholder="Selecionar" />
+              <SelectTrigger className={`h-11 text-sm ${!novo.fornecedor_id ? "border-primary/50" : ""}`}>
+                <SelectValue placeholder="Selecionar (obrigatório)" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none" className="text-xs">
-                  Sem fornecedor
+                  Selecionar fornecedor...
                 </SelectItem>
                 {fornecedoresAprovados.map((f: any) => (
                   <SelectItem key={f.id} value={f.id} className="text-xs">
@@ -560,6 +564,8 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
         ) : (
           (custos as any[]).map((custo: any) => {
             const semValor = Number(custo.custo_interno ?? 0) <= 0;
+            const semFornecedor = !custo.fornecedor_id;
+            const pendente = semValor || semFornecedor;
             const notas = (comprovantes as any[]).filter(
               (f) => f.categoria === `custo:${custo.id}`
             );
@@ -567,7 +573,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
               <div
                 key={custo.id}
                 className={`rounded-lg border p-4 space-y-3 ${
-                  semValor ? "border-primary/40 bg-primary/5" : "border-border bg-card"
+                  pendente ? "border-primary/40 bg-primary/5" : "border-border bg-card"
                 }`}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/60 pb-3">
@@ -587,6 +593,11 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                       ) : (
                         <Badge variant="outline" className="text-[9px] font-black uppercase">
                           {semValor ? "Valor pendente" : "A pagar · Financeiro"}
+                        </Badge>
+                      )}
+                      {semFornecedor && (
+                        <Badge className="text-[9px] font-black uppercase bg-primary text-primary-foreground">
+                          Fornecedor pendente
                         </Badge>
                       )}
                     </div>
@@ -616,7 +627,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
                       }} />
                   </div>
                   <div>
-                    <Label className="text-[10px] font-bold uppercase">Fornecedor</Label>
+                    <Label className="text-[10px] font-bold uppercase">Fornecedor *</Label>
                     <Select
                       value={custo.fornecedor_id ?? "none"}
                       onValueChange={(v) =>
