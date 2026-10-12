@@ -111,7 +111,7 @@ export function VendedorDashboardDialog({ vendedor, onClose }: { vendedor: any |
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={r.meses}>
                     <XAxis dataKey="mes" fontSize={11} />
-                    <Tooltip formatter={(v: number) => brl(v)} />
+                    <Tooltip formatter={(v) => brl(Number(v))} />
                     <Legend />
                     <Bar dataKey="lucro" name="Lucro empresa" fill="hsl(var(--foreground))" />
                     <Bar dataKey="comissao" name="Comissão vendedor" fill="hsl(var(--primary))" />
