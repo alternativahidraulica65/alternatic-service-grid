@@ -1466,6 +1466,56 @@ function GestaoOSPage() {
         )}
       </div>
 
+      {/* Modal de entrega rápida */}
+      <Dialog open={entregaRapidaAberta} onOpenChange={setEntregaRapidaAberta}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+              <Truck className="h-4 w-4 text-primary" /> Finalizar entrega
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-widest">Data de Entrega</Label>
+              <Input
+                type="date"
+                value={entregaRapidaForm.data_entrega}
+                onChange={(e) => setEntregaRapidaForm({ ...entregaRapidaForm, data_entrega: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-widest">Entregue por / Retirado por</Label>
+              <Input
+                placeholder="Nome de quem entregou ou retirou"
+                value={entregaRapidaForm.entregue_por}
+                onChange={(e) => setEntregaRapidaForm({ ...entregaRapidaForm, entregue_por: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-widest">Serviço testado?</Label>
+              <Select
+                value={entregaRapidaForm.testado}
+                onValueChange={(v) => setEntregaRapidaForm({ ...entregaRapidaForm, testado: v })}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sim">Sim</SelectItem>
+                  <SelectItem value="nao">Não</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              onClick={() => handleSalvarEntrega(entregaRapidaForm)}
+              disabled={salvandoEntrega}
+              className="w-full bg-primary text-primary-foreground font-black uppercase tracking-widest text-[11px]"
+            >
+              <PackageCheck className="mr-2 h-4 w-4" />
+              {salvandoEntrega ? "Finalizando..." : "Confirmar entrega e finalizar OS"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Fluxo de Processo (Stepper) */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         {steps.map((step, i) => (
