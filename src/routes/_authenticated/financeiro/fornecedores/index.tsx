@@ -58,6 +58,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FiltrosSalvos } from "@/components/FiltrosSalvos";
 import { exportToCSV } from "@/utils/export";
 import { Download } from "lucide-react";
+import { FornecedorDashboardDialog } from "@/components/FornecedorDashboardDialog";
 
 
 export const Route = createFileRoute("/_authenticated/financeiro/fornecedores/")({
@@ -105,6 +106,7 @@ function FornecedoresPage() {
   const [visao, setVisao] = useState<"cards" | "tabela">("cards");
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [selecionados, setSelecionados] = useState<string[]>([]);
+  const [dashFornecedor, setDashFornecedor] = useState<any>(null);
 
 
 
@@ -586,7 +588,7 @@ function FornecedoresPage() {
                           <Truck className="h-4 w-4 text-slate-400" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-foreground truncate">{f.nome}</p>
+                          <button type="button" onClick={() => setDashFornecedor(f)} className="block max-w-full text-left text-sm font-bold text-foreground truncate hover:text-primary hover:underline">{f.nome}</button>
                           <p className="text-[10px] font-mono text-muted-foreground truncate">{f.cnpj || "Sem CNPJ"}</p>
                           <p className="text-[10px] text-muted-foreground font-medium truncate">{f.contato || "Sem contato"}</p>
                         </div>
@@ -726,7 +728,7 @@ function FornecedoresPage() {
                             <Truck className="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-foreground">{f.nome}</p>
+                            <button type="button" onClick={() => setDashFornecedor(f)} className="text-left text-sm font-bold text-foreground hover:text-primary hover:underline">{f.nome}</button>
                             <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter truncate max-w-[200px]">{f.observacoes}</p>
                           </div>
                         </div>
@@ -783,6 +785,7 @@ function FornecedoresPage() {
         </CardContent>
       </Card>
 
+      <FornecedorDashboardDialog fornecedor={dashFornecedor} onClose={() => setDashFornecedor(null)} />
       <Dialog open={isModalOpen} onOpenChange={(open) => {
         if (!open) {
           setIsModalOpen(false);
@@ -843,7 +846,7 @@ function FornecedoresPage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="limite_mensal" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Limite Mensal de Gastos (R$)</Label>
+              <Label htmlFor="limite_mensal" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Teto Mensal de Gastos (R$) — apenas acompanhamento, não bloqueia lançamentos</Label>
               <Input id="limite_mensal" name="limite_mensal" type="number" step="0.01" defaultValue={editingFornecedor?.limite_mensal || 0} className="border-border shadow-sm h-11 font-black" />
             </div>
 
