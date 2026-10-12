@@ -112,7 +112,7 @@ export function FornecedorDashboardDialog({ fornecedor, onClose }: Props) {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={resumo.meses}>
                       <XAxis dataKey="mes" tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700 }} />
-                      <Tooltip formatter={(v: number) => brl(v)} contentStyle={{ fontSize: 11 }} />
+                      <Tooltip formatter={(v) => brl(Number(v))} contentStyle={{ fontSize: 11 }} />
                       <Legend wrapperStyle={{ fontSize: 10 }} />
                       <Bar dataKey="pago" name="Pago" stackId="a" fill="hsl(var(--foreground))" />
                       <Bar dataKey="devendo" name="Em aberto" stackId="a" fill="#FFD700" radius={[3, 3, 0, 0]} />
