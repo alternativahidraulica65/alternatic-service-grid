@@ -34,8 +34,8 @@ export function NovaDespesaDialog() {
 
   async function salvar() {
     const valor = paraNumero(f.valor);
-    if (!f.descricao.trim()) return toast.error("Informe a descrição.");
-    if (valor <= 0) return toast.error("Informe um valor maior que zero.");
+    if (!f.descricao.trim()) { toast.error("Informe a descrição."); return; }
+    if (valor <= 0) { toast.error("Informe um valor maior que zero."); return; }
     setSalvando(true);
     const { data: u } = await supabase.auth.getUser();
     const { error } = await (supabase as any).from("lancamentos_financeiros").insert({
@@ -45,7 +45,7 @@ export function NovaDespesaDialog() {
       valor_pago: f.pago ? valor : null, baixado_por: f.pago ? u.user?.id ?? null : null, criado_por: u.user?.id ?? null,
     });
     setSalvando(false);
-    if (error) return toast.error(`Erro ao salvar: ${error.message}`);
+    if (error) { toast.error(`Erro ao salvar: ${error.message}`); return; }
     toast.success("Despesa lançada.");
     setAberto(false);
     setF({ ...f, descricao: "", valor: "" });
@@ -109,12 +109,12 @@ export function BaixarDespesaDialog({ lancamento }: { lancamento: any }) {
 
   async function baixar() {
     const v = paraNumero(valor);
-    if (v <= 0) return toast.error("Informe o valor pago.");
+    if (v <= 0) { toast.error("Informe o valor pago."); return; }
     const { data: u } = await supabase.auth.getUser();
     const { error } = await (supabase as any).from("lancamentos_financeiros")
       .update({ pago: true, data_pagamento: data, forma_pagamento: forma, valor_pago: v, baixado_por: u.user?.id ?? null })
       .eq("id", lancamento.id);
-    if (error) return toast.error(`Erro na baixa: ${error.message}`);
+    if (error) { toast.error(`Erro na baixa: ${error.message}`); return; }
     toast.success("Pagamento registrado.");
     setAberto(false);
     qc.invalidateQueries({ queryKey: ["lancamentos_lista"] });
