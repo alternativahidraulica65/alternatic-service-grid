@@ -564,7 +564,7 @@ export function CustosOsPanel({ osId, profile, osStatus }: Props) {
         ) : (
           (custos as any[]).map((custo: any) => {
             const semValor = Number(custo.custo_interno ?? 0) <= 0;
-            const semFornecedor = !custo.fornecedor_id;
+            const semFornecedor = !custo.fornecedor_id && custo.categoria !== "mao_de_obra";
             const pendente = semValor || semFornecedor;
             const notas = (comprovantes as any[]).filter(
               (f) => f.categoria === `custo:${custo.id}`
