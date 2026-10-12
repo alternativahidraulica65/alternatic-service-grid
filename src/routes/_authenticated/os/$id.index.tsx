@@ -1229,7 +1229,7 @@ function GestaoOSPage() {
         faltas.push(`A OS está em "${ROTULO_FASE[fluxo.faseAtual]}" — precisa estar em "${ROTULO_FASE.pronto}" para entregar`);
       }
       faltas.push(...pendenciasAte("pronto", fluxo));
-      if (entregaForm.testado !== "sim") faltas.push("Pronto: o serviço precisa ser testado antes da entrega");
+      if (dados.testado !== "sim") faltas.push("Pronto: o serviço precisa ser testado antes da entrega");
       if (faltas.length > 0) {
         setPendenciasFase({ destino: ROTULO_FASE.entrega, itens: faltas });
         toast.error("Entrega bloqueada", { description: "Conclua todas as etapas da execução antes de entregar." });
@@ -1241,9 +1241,9 @@ function GestaoOSPage() {
       const { error } = await supabase
         .from('ordens_servico')
         .update({
-          data_entrega: new Date(`${entregaForm.data_entrega}T12:00:00`).toISOString(),
-          entregue_por: entregaForm.entregue_por.trim(),
-          testado: entregaForm.testado === "sim",
+          data_entrega: new Date(`${dados.data_entrega}T12:00:00`).toISOString(),
+          entregue_por: dados.entregue_por.trim(),
+          testado: dados.testado === "sim",
           status: 'entregue',
         } as any)
         .eq('id', osId);
@@ -1253,7 +1253,7 @@ function GestaoOSPage() {
         os_id: osId,
         status_anterior: os?.status ?? null,
         status_novo: 'entregue',
-        observacao: `OS finalizada — retirada por ${entregaForm.entregue_por.trim()} em ${new Date(`${entregaForm.data_entrega}T12:00:00`).toLocaleDateString('pt-BR')} | Testado: ${entregaForm.testado === 'sim' ? 'Sim' : 'Não'}`,
+        observacao: `OS finalizada — retirada por ${dados.entregue_por.trim()} em ${new Date(`${dados.data_entrega}T12:00:00`).toLocaleDateString('pt-BR')} | Testado: ${dados.testado === 'sim' ? 'Sim' : 'Não'}`,
         executor_id: profile?.id ?? null,
         executor_email: await getExecutorEmail(),
       });
