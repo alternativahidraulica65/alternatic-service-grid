@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T12:35:53.283413+00:00",
+  "generated_at": "2026-10-12T12:39:41.647790+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -508,6 +508,10 @@
     {
       "path": "src/components/NotificacoesSino.tsx",
       "bytes": 8384
+    },
+    {
+      "path": "src/components/VendedorDashboardDialog.tsx",
+      "bytes": 8196
     },
     {
       "path": "src/components/NotasInternasOs.tsx",
@@ -1043,7 +1047,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 32483
+      "bytes": 32814
     },
     {
       "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
@@ -1526,6 +1530,34 @@
     {
       "source": "src/components/NotificacoesSino.tsx",
       "target": "sonner"
+    },
+    {
+      "source": "src/components/VendedorDashboardDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/VendedorDashboardDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/VendedorDashboardDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/VendedorDashboardDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/VendedorDashboardDialog.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/VendedorDashboardDialog.tsx",
+      "target": "@/components/ClientOnly"
+    },
+    {
+      "source": "src/components/VendedorDashboardDialog.tsx",
+      "target": "recharts"
     },
     {
       "source": "src/components/NotasInternasOs.tsx",
@@ -4646,6 +4678,10 @@
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/VendedorDashboardDialog"
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
