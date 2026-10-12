@@ -15,6 +15,13 @@
       "when": 1791743011353,
       "tag": "0001_unificar_parceiros",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791773658167,
+      "tag": "0002_reload_schema_cache_colaboradores",
+      "breakpoints": true
     }
   ]
 }
