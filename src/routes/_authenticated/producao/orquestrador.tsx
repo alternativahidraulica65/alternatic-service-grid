@@ -125,7 +125,25 @@ function Orquestrador() {
     refetchInterval: 30000,
   });
 
-  const refresh = () => qc.invalidateQueries({ queryKey: ["orq_subs"] });
+  // Peças enviadas a terceiros fora do Orquestrador (pela OS ou tela Terceiros) e ainda não recebidas
+  const { data: pecasFora = [] } = useQuery({
+    queryKey: ["orq_pecas_fora"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("os_pecas_rastreio" as any)
+        .select("id, os_id, nome, status_peca, terceiro_nome, terceiro_prazo_entrega, terceiro_enviado_em, terceiro_recebido_em, ordens_servico(id, numero_os, cliente, prioridade, status)")
+        .not("terceiro_nome", "is", null)
+        .is("terceiro_recebido_em", null);
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+    refetchInterval: 30000,
+  });
+
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["orq_subs"] });
+    qc.invalidateQueries({ queryKey: ["orq_pecas_fora"] });
+  };
 
   const atualizar = async (id: string, patch: Record<string, any>, msg?: string) => {
     const { error } = await supabase.from("os_subservicos" as any).update(patch).eq("id", id);
@@ -146,7 +164,17 @@ function Orquestrador() {
 
   const semDestino = subs.filter((s) => s.destino === "pendente" && s.status !== "concluido");
   const internos = subs.filter((s) => s.destino === "interno" && s.status !== "concluido");
-  const externos = subs.filter((s) => s.destino === "terceiro" && s.status !== "concluido");
+  const externosSub = subs.filter((s) => s.destino === "terceiro" && s.status !== "concluido");
+  const chaveSub = new Set(subs.map((s) => `${s.os_id}|${String(s.componente ?? "").trim().toLowerCase()}`));
+  const ocorreEmOsAtiva = (p: any) => !["entregue", "encerrada", "encerrado"].includes(String(p.ordens_servico?.status ?? ""));
+  const externosAvulsos = (pecasFora as any[])
+    .filter((p) => ocorreEmOsAtiva(p) && !chaveSub.has(`${p.os_id}|${String(p.nome ?? "").trim().toLowerCase()}`))
+    .map((p) => ({
+      id: `peca-${p.id}`, peca_id: p.id, avulsa: true, os_id: p.os_id, componente: p.nome, quantidade: 1,
+      terceiro_nome: p.terceiro_nome, prazo_retorno: p.terceiro_prazo_entrega, enviado_em: p.terceiro_enviado_em,
+      fotos_envio: [], ordens_servico: p.ordens_servico,
+    }));
+  const externos = [...externosSub, ...externosAvulsos];
   const vencidos = externos.filter((s) => s.prazo_retorno && new Date(s.prazo_retorno + "T23:59").getTime() < Date.now());
   const filaDa = (b: any) => internos.filter((s) => bancadaDe(s)?.id === b.id).sort((a, c) => a.ordem_fila - c.ordem_fila);
   const usinagem = bancadas.filter((b) => b.is_usinagem);
