@@ -244,6 +244,17 @@ function Orquestrador() {
     setSalvando(true);
     try {
       const uid = await quemSou();
+      if (retorno.avulsa) {
+        const { error } = await supabase.from("os_pecas_rastreio" as any).update({
+          status_peca: "Recebido de terceiros", terceiro_recebido_em: new Date().toISOString(),
+          ...(obsRet ? { terceiro_observacao: `Retorno: ${obsRet}` } : {}),
+        }).eq("id", retorno.peca_id);
+        if (error) throw error;
+        toast.success("Retorno registrado");
+        refresh();
+        setRetorno(null); setFotosRet(null); setObsRet("");
+        return;
+      }
       const fotos = await subirFotos(fotosRet, retorno.os_id, "retorno");
       await atualizar(retorno.id, {
         status: "concluido", retornado_em: new Date().toISOString(), retornado_por: uid,
