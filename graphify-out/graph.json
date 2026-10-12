@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T12:52:03.020371+00:00",
+  "generated_at": "2026-10-12T13:02:54.794644+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -1059,7 +1059,7 @@
     },
     {
       "path": "src/routes/_authenticated/rh/colaboradores.tsx",
-      "bytes": 28521
+      "bytes": 29988
     },
     {
       "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
