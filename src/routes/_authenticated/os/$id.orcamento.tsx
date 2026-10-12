@@ -61,6 +61,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { OrcamentoEnvioCard } from "@/components/OrcamentoEnvioCard";
+import { MaoDeObraOsCard } from "@/components/MaoDeObraOsCard";
 import {
   Select,
   SelectContent,
@@ -1083,6 +1084,7 @@ function OrcamentoOSPage() {
 
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-8 space-y-8">
+          <MaoDeObraOsCard osId={id} />
           {/* Custos reais */}
           <Card className="border-border shadow-md">
             <CardHeader

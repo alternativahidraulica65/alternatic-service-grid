@@ -221,7 +221,7 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
       `${custosZerados.length} custo(s) sem valor válido — mínimo de R$ 0,50 por item`,
     );
   }
-  const custosSemFornecedor = custos.filter((c) => !c?.fornecedor_id);
+  const custosSemFornecedor = custos.filter((c) => !c?.fornecedor_id && c?.categoria !== "mao_de_obra");
   if (custosSemFornecedor.length > 0) {
     pendencias.custos.push(
       `${custosSemFornecedor.length} custo(s) sem fornecedor informado — fornecedor é obrigatório`,
