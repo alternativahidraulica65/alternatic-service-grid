@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-12T13:13:36.635065+00:00
+Generated: 2026-10-12T13:27:51.184004+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -165,6 +165,7 @@ Generated: 2026-10-12T13:13:36.635065+00:00
 - src/components/FotoThumb.tsx
 - src/components/GuiaExecucaoOs.tsx
 - src/components/LembretesCard.tsx
+- src/components/MaoDeObraOsCard.tsx
 - src/components/NotasInternasOs.tsx
 - src/components/NotificacoesSino.tsx
 - src/components/OrcamentoEnvioCard.tsx

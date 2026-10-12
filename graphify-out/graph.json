@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T13:13:36.635065+00:00",
+  "generated_at": "2026-10-12T13:27:51.184004+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -499,7 +499,7 @@
     },
     {
       "path": "src/components/CustosOsPanel.tsx",
-      "bytes": 27883
+      "bytes": 28022
     },
     {
       "path": "src/components/AlertaOrcamentosCard.tsx",
@@ -584,6 +584,10 @@
     {
       "path": "src/components/OrcamentoEnvioCard.tsx",
       "bytes": 10177
+    },
+    {
+      "path": "src/components/MaoDeObraOsCard.tsx",
+      "bytes": 9057
     },
     {
       "path": "src/components/FornecedorDashboardDialog.tsx",
@@ -699,7 +703,11 @@
     },
     {
       "path": "src/lib/os-fluxo.ts",
-      "bytes": 9913
+      "bytes": 9947
+    },
+    {
+      "path": "src/lib/mao-de-obra.ts",
+      "bytes": 1958
     },
     {
       "path": "src/lib/utils.ts",
@@ -1043,7 +1051,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 87360
+      "bytes": 87464
     },
     {
       "path": "src/routes/_authenticated/os/index.tsx",
@@ -1454,6 +1462,10 @@
     {
       "source": "src/components/CustosOsPanel.tsx",
       "target": "@/components/AnaliseDuplicidadeCustos"
+    },
+    {
+      "source": "src/components/CustosOsPanel.tsx",
+      "target": "@/components/MaoDeObraOsCard"
     },
     {
       "source": "src/components/CustosOsPanel.tsx",
@@ -2082,6 +2094,38 @@
     {
       "source": "src/components/OrcamentoEnvioCard.tsx",
       "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/MaoDeObraOsCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/MaoDeObraOsCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/MaoDeObraOsCard.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/MaoDeObraOsCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/MaoDeObraOsCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/MaoDeObraOsCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/MaoDeObraOsCard.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/MaoDeObraOsCard.tsx",
+      "target": "@/lib/mao-de-obra"
     },
     {
       "source": "src/components/FornecedorDashboardDialog.tsx",
@@ -4534,6 +4578,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
       "target": "@/components/OrcamentoEnvioCard"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/MaoDeObraOsCard"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
