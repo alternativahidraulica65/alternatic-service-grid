@@ -81,7 +81,7 @@ function MinhaBancada() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 p-3 sm:p-6">
-      <BotaoVoltar fallback="/dashboard" />
+      <BotaoVoltar to="/dashboard" />
 
       <div className="rounded-md border border-border bg-card p-4">
         <div className="flex items-center gap-2 text-xs font-bold uppercase text-muted-foreground">
