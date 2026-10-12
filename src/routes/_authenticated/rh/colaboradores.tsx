@@ -46,7 +46,14 @@ const NORMAS = ["NR-35", "NR-10", "NR-12", "NR-11", "NR-33", "NR-06", "Outra"];
 const hoje = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
 const diasAte = (iso: string) => Math.round((new Date(iso + "T00:00:00").getTime() - hoje().getTime()) / 86400000);
 const fmt = (iso?: string | null) => (iso ? new Date(iso + "T00:00:00").toLocaleDateString("pt-BR") : "—");
-const addDias = (iso: string, n: number) => { const d = new Date(iso + "T00:00:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+const addDias = (iso: string, n: number): string | null => {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}/.test(iso) || !Number.isFinite(n)) return null;
+  const d = new Date(iso.slice(0, 10) + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return null;
+  d.setDate(d.getDate() + n);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 10);
+};
 const mascaraCpf = (c?: string | null) => { const s = (c || "").replace(/\D/g, ""); return s.length === 11 ? `***.${s.slice(3, 6)}.${s.slice(6, 9)}-**` : "—"; };
 
 function useDados() {
@@ -81,8 +88,8 @@ function calcularAlertas(d: ReturnType<typeof useDados>["data"]): Alerta[] {
     }
     if (c.data_admissao && c.dias_experiencia) {
       const fim = addDias(c.data_admissao, c.dias_experiencia);
-      const dd = diasAte(fim);
-      if (dd >= -30) out.push({ colabId: c.id, nome: c.nome, tipo: "Experiência", rotulo: `Fim da experiência (${c.dias_experiencia} dias)`, data: fim, dias: dd });
+      const dd = fim ? diasAte(fim) : NaN;
+      if (fim && dd >= -30) out.push({ colabId: c.id, nome: c.nome, tipo: "Experiência", rotulo: `Fim da experiência (${c.dias_experiencia} dias)`, data: fim, dias: dd });
     }
     for (const fe of d.ferias.filter((x: any) => x.colaborador_id === c.id)) {
       const di = diasAte(fe.inicio), df = diasAte(fe.fim);
