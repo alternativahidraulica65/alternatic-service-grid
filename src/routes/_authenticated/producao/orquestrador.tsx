@@ -385,8 +385,9 @@ function Orquestrador() {
               const fila = filaDa(b);
               const nome = editNome[b.id];
               return (
-                <Card key={b.id} className={fila.length === 0 ? "border-primary" : ""}>
-                  <CardHeader className="space-y-2 border-b p-3">
+                <Card key={b.id} className="flex flex-col overflow-hidden">
+                  <div className={`h-1 ${fila.some((x) => x.status === "em_andamento") ? "bg-primary" : fila.length ? "bg-foreground/40" : "bg-border"}`} />
+                  <CardHeader className="space-y-2 border-b bg-muted/30 p-3">
                     <CardTitle className="flex items-center justify-between gap-2 text-sm font-black uppercase">
                       {nome !== undefined ? (
                         <div className="flex flex-1 gap-1">
@@ -402,7 +403,7 @@ function Orquestrador() {
                           {b.is_usinagem && <Cog className="h-4 w-4" />}{b.nome} <Pencil className="h-3 w-3 opacity-50" />
                         </button>
                       )}
-                      <Badge className={fila.length === 0 ? "bg-primary text-primary-foreground" : ""} variant={fila.length ? "outline" : "default"}>
+                      <Badge variant="outline" className={fila.length ? "border-foreground/40" : "text-muted-foreground"}>
                         {fila.length === 0 ? "Livre" : `${fila.length} na fila`}
                       </Badge>
                     </CardTitle>
@@ -421,8 +422,8 @@ function Orquestrador() {
                     </div>
                     {!b.usuario_id && b.tecnico_nome && <p className="text-[10px] text-muted-foreground">Responsável: {b.tecnico_nome} (sem usuário no app)</p>}
                   </CardHeader>
-                  <CardContent className="space-y-2 p-2">
-                    {fila.length === 0 && <p className="p-2 text-xs text-muted-foreground">Sem serviço. Destine algo da aba "Sem destino".</p>}
+                  <CardContent className="flex-1 space-y-2 p-2">
+                    {fila.length === 0 && <p className="rounded-md border border-dashed border-border p-4 text-center text-xs text-muted-foreground">Bancada livre</p>}
                     {fila.map((s, i) => <CardServico key={s.id} s={s} i={i} fila={fila} />)}
                   </CardContent>
                 </Card>
@@ -438,7 +439,7 @@ function Orquestrador() {
             const fila = filaDa(b);
             return (
               <Card key={b.id}>
-                <CardHeader className="flex flex-row items-center justify-between border-b p-3">
+                <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30 p-3">
                   <CardTitle className="text-sm font-black uppercase">{b.nome} · {nomeBancada(b)}</CardTitle>
                   <Link to="/engenharia/materiais"><Button size="sm" variant="outline" className="gap-1"><Calculator className="h-4 w-4" /> Calcular matéria-prima</Button></Link>
                 </CardHeader>
