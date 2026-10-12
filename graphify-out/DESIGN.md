@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-12T13:06:04.130398+00:00
+Generated: 2026-10-12T13:13:36.635065+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -155,6 +155,7 @@ Generated: 2026-10-12T13:06:04.130398+00:00
 - src/components/AppNavigation.tsx
 - src/components/BancadasDialog.tsx
 - src/components/BotaoConsultaCnpj.tsx
+- src/components/BotaoVoltar.tsx
 - src/components/BuscaGlobal.tsx
 - src/components/ChecklistDocumento.tsx
 - src/components/ClientOnly.tsx

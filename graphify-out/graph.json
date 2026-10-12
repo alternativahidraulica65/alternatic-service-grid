@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T13:06:04.130398+00:00",
+  "generated_at": "2026-10-12T13:13:36.635065+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -574,6 +574,10 @@
       "bytes": 6285
     },
     {
+      "path": "src/components/BotaoVoltar.tsx",
+      "bytes": 1185
+    },
+    {
       "path": "src/components/AnaliseDuplicidadeCustos.tsx",
       "bytes": 5175
     },
@@ -947,7 +951,7 @@
     },
     {
       "path": "src/routes/_authenticated/historico.tsx",
-      "bytes": 11941
+      "bytes": 11819
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
@@ -959,11 +963,11 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 42179
+      "bytes": 41928
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
-      "bytes": 17607
+      "bytes": 17485
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
@@ -975,11 +979,11 @@
     },
     {
       "path": "src/routes/_authenticated/terceiros.tsx",
-      "bytes": 35211
+      "bytes": 34982
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "bytes": 20683
+      "bytes": 20627
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -1003,19 +1007,19 @@
     },
     {
       "path": "src/routes/_authenticated/clientes/$id.tsx",
-      "bytes": 27358
+      "bytes": 27190
     },
     {
       "path": "src/routes/_authenticated/clientes/index.tsx",
-      "bytes": 47736
+      "bytes": 47598
     },
     {
       "path": "src/routes/_authenticated/producao/orquestrador.tsx",
-      "bytes": 35609
+      "bytes": 35519
     },
     {
       "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "bytes": 11713
+      "bytes": 11640
     },
     {
       "path": "src/routes/_authenticated/orcamento/pdf.tsx",
@@ -1023,7 +1027,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "bytes": 11183
+      "bytes": 11090
     },
     {
       "path": "src/routes/_authenticated/os/$id.tsx",
@@ -1031,47 +1035,47 @@
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
-      "bytes": 40134
+      "bytes": 40028
     },
     {
       "path": "src/routes/_authenticated/os/$id.proposta.tsx",
-      "bytes": 5632
+      "bytes": 5506
     },
     {
       "path": "src/routes/_authenticated/os/$id.orcamento.tsx",
-      "bytes": 87535
+      "bytes": 87360
     },
     {
       "path": "src/routes/_authenticated/os/index.tsx",
-      "bytes": 18686
+      "bytes": 18457
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 132035
+      "bytes": 131422
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
-      "bytes": 32814
+      "bytes": 32640
     },
     {
       "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
-      "bytes": 15447
+      "bytes": 15378
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
-      "bytes": 24226
+      "bytes": 23999
     },
     {
       "path": "src/routes/_authenticated/rh/colaboradores.tsx",
-      "bytes": 29988
+      "bytes": 29935
     },
     {
       "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "bytes": 14735
+      "bytes": 14522
     },
     {
       "path": "src/routes/_authenticated/financeiro/valinhos.tsx",
-      "bytes": 8555
+      "bytes": 8495
     },
     {
       "path": "src/routes/_authenticated/financeiro/fornecedores/index.tsx",
@@ -1990,6 +1994,18 @@
     {
       "source": "src/components/BuscaGlobal.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/BotaoVoltar.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/BotaoVoltar.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/components/BotaoVoltar.tsx",
+      "target": "@/components/ui/button"
     },
     {
       "source": "src/components/AnaliseDuplicidadeCustos.tsx",
@@ -3305,6 +3321,10 @@
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -3390,6 +3410,10 @@
     {
       "source": "src/routes/_authenticated/relatorios.tsx",
       "target": "@/components/ClientOnly"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
@@ -3485,6 +3509,10 @@
     },
     {
       "source": "src/routes/_authenticated/orcamento.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -3558,6 +3586,10 @@
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
       "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/terceiros.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/terceiros.tsx",
@@ -3646,6 +3678,10 @@
     {
       "source": "src/routes/_authenticated/terceiros.tsx",
       "target": "@/lib/brasilapi"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
@@ -3949,6 +3985,10 @@
     },
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/$id.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4018,6 +4058,10 @@
     {
       "source": "src/routes/_authenticated/clientes/$id.tsx",
       "target": "date-fns/locale"
+    },
+    {
+      "source": "src/routes/_authenticated/clientes/index.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/clientes/index.tsx",
@@ -4101,6 +4145,10 @@
     },
     {
       "source": "src/routes/_authenticated/producao/orquestrador.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/orquestrador.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4165,6 +4213,10 @@
     },
     {
       "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4249,6 +4301,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
       "target": "react"
     },
     {
@@ -4286,6 +4342,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.tsx",
       "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/os/nova.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/os/nova.tsx",
@@ -4349,6 +4409,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.proposta.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.proposta.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4378,6 +4442,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.proposta.tsx",
       "target": "@/lib/orcamento"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/os/$id.orcamento.tsx",
@@ -4477,6 +4545,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/index.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/os/index.tsx",
       "target": "@/components/RemoverSelecionados"
     },
     {
@@ -4542,6 +4614,10 @@
     {
       "source": "src/routes/_authenticated/os/index.tsx",
       "target": "@/lib/os-fluxo"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
@@ -4689,6 +4765,10 @@
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/vendedores.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4781,6 +4861,10 @@
     },
     {
       "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/checklist-templates.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4837,6 +4921,10 @@
     },
     {
       "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4885,6 +4973,10 @@
     },
     {
       "source": "src/routes/_authenticated/rh/colaboradores.tsx",
+      "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/rh/colaboradores.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -4926,6 +5018,10 @@
     {
       "source": "src/routes/_authenticated/rh/colaboradores.tsx",
       "target": "@/components/ui/tabs"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
@@ -4990,6 +5086,10 @@
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
+      "target": "@/components/BotaoVoltar"
     },
     {
       "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
