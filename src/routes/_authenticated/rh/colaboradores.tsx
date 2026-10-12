@@ -88,8 +88,8 @@ function calcularAlertas(d: ReturnType<typeof useDados>["data"]): Alerta[] {
     }
     if (c.data_admissao && c.dias_experiencia) {
       const fim = addDias(c.data_admissao, c.dias_experiencia);
-      const dd = diasAte(fim);
-      if (dd >= -30) out.push({ colabId: c.id, nome: c.nome, tipo: "Experiência", rotulo: `Fim da experiência (${c.dias_experiencia} dias)`, data: fim, dias: dd });
+      const dd = fim ? diasAte(fim) : NaN;
+      if (fim && dd >= -30) out.push({ colabId: c.id, nome: c.nome, tipo: "Experiência", rotulo: `Fim da experiência (${c.dias_experiencia} dias)`, data: fim, dias: dd });
     }
     for (const fe of d.ferias.filter((x: any) => x.colaborador_id === c.id)) {
       const di = diasAte(fe.inicio), df = diasAte(fe.fim);
