@@ -17,6 +17,7 @@ import {
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { VendedorDashboardDialog } from "@/components/VendedorDashboardDialog";
 import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
 import type { DadosCnpj } from "@/lib/brasilapi";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -147,6 +148,7 @@ function compatibilidadeLegado(tipo: TipoComissao) {
 
 function VendedoresPage() {
   const queryClient = useQueryClient();
+  const [vendedorDash, setVendedorDash] = useState<any | null>(null);
   const [busca, setBusca] = useState("");
   const [filtroTipo, setFiltroTipo] = useState<string>("all");
   const [filtroStatus, setFiltroStatus] = useState<string>("all");
@@ -399,6 +401,7 @@ function VendedoresPage() {
       </div>
 
       {/* Filtros + tabela */}
+      <VendedorDashboardDialog vendedor={vendedorDash} onClose={() => setVendedorDash(null)} />
       <Card className="border-slate-200 shadow-sm">
         <CardHeader className="p-6 border-b border-slate-100 bg-slate-50/50">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -467,7 +470,7 @@ function VendedoresPage() {
                 lista.map((v) => (
                   <TableRow key={v.id} className="hover:bg-slate-50/50 transition-colors">
                     <TableCell>
-                      <p className="font-bold text-slate-900">{v.nome}</p>
+                      <button type="button" onClick={() => setVendedorDash(v)} className="font-bold text-slate-900 hover:underline text-left">{v.nome}</button>
                       {v.apelido && <p className="text-xs text-slate-400">{v.apelido}</p>}
                     </TableCell>
                     <TableCell className="text-xs text-slate-600 space-y-1">
