@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T19:19:14.023976+00:00",
+  "generated_at": "2026-10-12T19:42:27.682453+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -586,6 +586,10 @@
       "bytes": 10177
     },
     {
+      "path": "src/components/NovaDespesaDialog.tsx",
+      "bytes": 7890
+    },
+    {
       "path": "src/components/MaoDeObraOsCard.tsx",
       "bytes": 9057
     },
@@ -703,7 +707,7 @@
     },
     {
       "path": "src/lib/os-fluxo.ts",
-      "bytes": 10323
+      "bytes": 10676
     },
     {
       "path": "src/lib/mao-de-obra.ts",
@@ -995,7 +999,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
-      "bytes": 21914
+      "bytes": 22967
     },
     {
       "path": "src/routes/_authenticated/dashboard/operador.tsx",
@@ -1075,7 +1079,7 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "bytes": 14522
+      "bytes": 15412
     },
     {
       "path": "src/routes/_authenticated/financeiro/valinhos.tsx",
@@ -2086,6 +2090,50 @@
     {
       "source": "src/components/OrcamentoEnvioCard.tsx",
       "target": "@/lib/log-executor"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@/components/ui/dialog"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@/components/ui/checkbox"
+    },
+    {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/components/MaoDeObraOsCard.tsx",
@@ -4918,6 +4966,10 @@
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "target": "@/utils/export"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/NovaDespesaDialog"
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
