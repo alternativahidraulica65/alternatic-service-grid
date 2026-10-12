@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { obterChaveAdmin } from "./admin-key";
 
 const OFFICIAL_URL = "https://mpwnrcxyyeqftrejwmmx.supabase.co";
 const PERFIS_ADMIN = ["diretor", "administrativo_financeiro", "financeiro"];
@@ -53,9 +54,8 @@ async function adminFetch(
 
 /** Valida o token do chamador e garante que ele é diretor/financeiro. */
 async function autorizar(accessToken: string): Promise<AdminCtx> {
-  const key = process.env["EXTERNAL_SUPABASE_SECRET_KEY"];
-  if (!key) throw new Error("Chave administrativa não configurada.");
   if (!accessToken) throw new Error("Sessão inválida. Faça login novamente.");
+  const key = await obterChaveAdmin();
 
   const res = await fetch(`${OFFICIAL_URL}/auth/v1/user`, {
     headers: { apikey: key, Authorization: `Bearer ${accessToken}` },

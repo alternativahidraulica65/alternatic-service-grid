@@ -1,15 +1,16 @@
+import { obterChaveAdmin } from "./admin-key";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const SUPABASE_URL = "https://mpwnrcxyyeqftrejwmmx.supabase.co";
 
-function headers() {
-  const key = process.env["EXTERNAL_SUPABASE_SECRET_KEY"]!;
+async function headers() {
+  const key = await obterChaveAdmin();
   return { apikey: key, "Content-Type": "application/json" };
 }
 
 async function rest(caminho: string) {
-  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${caminho}`, { headers: headers() });
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${caminho}`, { headers: await headers() });
   if (!resp.ok) throw new Error(await resp.text());
   return (await resp.json()) as any[];
 }
@@ -17,7 +18,7 @@ async function rest(caminho: string) {
 async function urlAssinada(bucket: string, caminho: string, segundos = 60 * 60 * 24 * 7) {
   const resp = await fetch(`${SUPABASE_URL}/storage/v1/object/sign/${bucket}/${caminho}`, {
     method: "POST",
-    headers: headers(),
+    headers: await headers(),
     body: JSON.stringify({ expiresIn: segundos }),
   });
   if (!resp.ok) return null;

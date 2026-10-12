@@ -1,3 +1,4 @@
+import { obterChaveAdmin } from "./admin-key";
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
@@ -5,7 +6,7 @@ import { z } from "zod";
 export const removerChecklist = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ osId: z.string().min(1), accessToken: z.string().min(1) }).parse(input))
   .handler(async ({ data }) => {
-    const key = process.env["EXTERNAL_SUPABASE_SECRET_KEY"];
+    const key = await obterChaveAdmin().catch(() => "");
     if (!key) throw new Error("Serviço indisponível. Tente novamente mais tarde.");
     const client = createClient("https://mpwnrcxyyeqftrejwmmx.supabase.co", key, {
       auth: { persistSession: false, autoRefreshToken: false },
