@@ -33,8 +33,6 @@ import { Route as AuthenticatedDashboardOperadorRouteImport } from './routes/_au
 import { Route as AuthenticatedEngenhariaMateriaisRouteImport } from './routes/_authenticated/engenharia/materiais'
 import { Route as AuthenticatedFinanceiroLancamentosRouteImport } from './routes/_authenticated/financeiro/lancamentos'
 import { Route as AuthenticatedFinanceiroValinhosRouteImport } from './routes/_authenticated/financeiro/valinhos'
-import { Route as AuthenticatedOrcamentoPdfRouteImport } from './routes/_authenticated/orcamento/pdf'
-import { Route as AuthenticatedOrcamentoPrecificacaoRouteImport } from './routes/_authenticated/orcamento/precificacao'
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated/os/index'
 import { Route as AuthenticatedOsIdRouteImport } from './routes/_authenticated/os/$id'
 import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
@@ -178,18 +176,6 @@ const AuthenticatedFinanceiroValinhosRoute =
     path: '/financeiro/valinhos',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedOrcamentoPdfRoute =
-  AuthenticatedOrcamentoPdfRouteImport.update({
-    id: '/pdf',
-    path: '/pdf',
-    getParentRoute: () => AuthenticatedOrcamentoRoute,
-  } as any)
-const AuthenticatedOrcamentoPrecificacaoRoute =
-  AuthenticatedOrcamentoPrecificacaoRouteImport.update({
-    id: '/precificacao',
-    path: '/precificacao',
-    getParentRoute: () => AuthenticatedOrcamentoRoute,
-  } as any)
 const AuthenticatedOsIndexRoute = AuthenticatedOsIndexRouteImport.update({
   id: '/os/',
   path: '/os/',
@@ -254,7 +240,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
-  '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/orcamento': typeof AuthenticatedOrcamentoRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/terceiros': typeof AuthenticatedTerceirosRoute
   '/proposta/$token': typeof PropostaTokenRoute
@@ -269,8 +255,6 @@ export interface FileRoutesByFullPath {
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/financeiro/valinhos': typeof AuthenticatedFinanceiroValinhosRoute
-  '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
-  '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
@@ -290,7 +274,7 @@ export interface FileRoutesByTo {
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/historico': typeof AuthenticatedHistoricoRoute
   '/kanban': typeof AuthenticatedKanbanRoute
-  '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/orcamento': typeof AuthenticatedOrcamentoRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/terceiros': typeof AuthenticatedTerceirosRoute
   '/proposta/$token': typeof PropostaTokenRoute
@@ -305,8 +289,6 @@ export interface FileRoutesByTo {
   '/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/financeiro/valinhos': typeof AuthenticatedFinanceiroValinhosRoute
-  '/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
-  '/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/os/nova': typeof AuthenticatedOsNovaRoute
   '/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
   '/rh/colaboradores': typeof AuthenticatedRhColaboradoresRoute
@@ -328,7 +310,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
-  '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
+  '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/terceiros': typeof AuthenticatedTerceirosRoute
   '/proposta/$token': typeof PropostaTokenRoute
@@ -343,8 +325,6 @@ export interface FileRoutesById {
   '/_authenticated/engenharia/materiais': typeof AuthenticatedEngenhariaMateriaisRoute
   '/_authenticated/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/_authenticated/financeiro/valinhos': typeof AuthenticatedFinanceiroValinhosRoute
-  '/_authenticated/orcamento/pdf': typeof AuthenticatedOrcamentoPdfRoute
-  '/_authenticated/orcamento/precificacao': typeof AuthenticatedOrcamentoPrecificacaoRoute
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
   '/_authenticated/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
@@ -382,8 +362,6 @@ export interface FileRouteTypes {
     | '/engenharia/materiais'
     | '/financeiro/lancamentos'
     | '/financeiro/valinhos'
-    | '/orcamento/pdf'
-    | '/orcamento/precificacao'
     | '/os/$id'
     | '/os/nova'
     | '/producao/orquestrador'
@@ -418,8 +396,6 @@ export interface FileRouteTypes {
     | '/engenharia/materiais'
     | '/financeiro/lancamentos'
     | '/financeiro/valinhos'
-    | '/orcamento/pdf'
-    | '/orcamento/precificacao'
     | '/os/nova'
     | '/producao/orquestrador'
     | '/rh/colaboradores'
@@ -455,8 +431,6 @@ export interface FileRouteTypes {
     | '/_authenticated/engenharia/materiais'
     | '/_authenticated/financeiro/lancamentos'
     | '/_authenticated/financeiro/valinhos'
-    | '/_authenticated/orcamento/pdf'
-    | '/_authenticated/orcamento/precificacao'
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
     | '/_authenticated/producao/orquestrador'
@@ -648,20 +622,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFinanceiroValinhosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/orcamento/pdf': {
-      id: '/_authenticated/orcamento/pdf'
-      path: '/pdf'
-      fullPath: '/orcamento/pdf'
-      preLoaderRoute: typeof AuthenticatedOrcamentoPdfRouteImport
-      parentRoute: typeof AuthenticatedOrcamentoRoute
-    }
-    '/_authenticated/orcamento/precificacao': {
-      id: '/_authenticated/orcamento/precificacao'
-      path: '/precificacao'
-      fullPath: '/orcamento/precificacao'
-      preLoaderRoute: typeof AuthenticatedOrcamentoPrecificacaoRouteImport
-      parentRoute: typeof AuthenticatedOrcamentoRoute
-    }
     '/_authenticated/os/': {
       id: '/_authenticated/os/'
       path: '/os'
@@ -758,23 +718,6 @@ const AuthenticatedDashboardRouteWithChildren =
     AuthenticatedDashboardRouteChildren,
   )
 
-interface AuthenticatedOrcamentoRouteChildren {
-  AuthenticatedOrcamentoPdfRoute: typeof AuthenticatedOrcamentoPdfRoute
-  AuthenticatedOrcamentoPrecificacaoRoute: typeof AuthenticatedOrcamentoPrecificacaoRoute
-}
-
-const AuthenticatedOrcamentoRouteChildren: AuthenticatedOrcamentoRouteChildren =
-  {
-    AuthenticatedOrcamentoPdfRoute: AuthenticatedOrcamentoPdfRoute,
-    AuthenticatedOrcamentoPrecificacaoRoute:
-      AuthenticatedOrcamentoPrecificacaoRoute,
-  }
-
-const AuthenticatedOrcamentoRouteWithChildren =
-  AuthenticatedOrcamentoRoute._addFileChildren(
-    AuthenticatedOrcamentoRouteChildren,
-  )
-
 interface AuthenticatedOsIdRouteChildren {
   AuthenticatedOsIdOficinaRoute: typeof AuthenticatedOsIdOficinaRoute
   AuthenticatedOsIdOrcamentoRoute: typeof AuthenticatedOsIdOrcamentoRoute
@@ -797,7 +740,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
   AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
-  AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
+  AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedTerceirosRoute: typeof AuthenticatedTerceirosRoute
   AuthenticatedAdminAuditoriaRoute: typeof AuthenticatedAdminAuditoriaRoute
@@ -821,7 +764,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
   AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
-  AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
+  AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedTerceirosRoute: AuthenticatedTerceirosRoute,
   AuthenticatedAdminAuditoriaRoute: AuthenticatedAdminAuditoriaRoute,
