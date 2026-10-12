@@ -1,3 +1,4 @@
+import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { createFileRoute, Link, useBlocker } from "@tanstack/react-router";
 import {
   Receipt,

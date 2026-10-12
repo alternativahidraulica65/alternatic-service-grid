@@ -1,3 +1,4 @@
+import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

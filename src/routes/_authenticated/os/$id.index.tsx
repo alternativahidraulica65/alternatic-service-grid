@@ -1,3 +1,4 @@
+import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, pendenciasAte, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";

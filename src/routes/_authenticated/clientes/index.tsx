@@ -1,3 +1,4 @@
+import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { RemoverSelecionados } from "@/components/RemoverSelecionados";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient, useMutation, useQuery } from "@tanstack/react-query";

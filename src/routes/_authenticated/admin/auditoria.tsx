@@ -1,3 +1,4 @@
+import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   History as HistoryIcon,
