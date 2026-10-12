@@ -1297,6 +1297,17 @@ function GestaoOSPage() {
       return;
     }
     setPendenciasFase(null);
+    // Entrega: abre o modal rápido (Data + Testado + Entregador) em vez de avançar direto
+    if (proxima === "entrega") {
+      const hoje = new Date().toISOString().slice(0, 10);
+      setEntregaRapidaForm({
+        data_entrega: (os as any).data_entrega ? String((os as any).data_entrega).slice(0, 10) : hoje,
+        entregue_por: (os as any).entregue_por ?? "",
+        testado: (os as any).testado === false ? "nao" : "sim",
+      });
+      setEntregaRapidaAberta(true);
+      return;
+    }
     setAvancando(true);
     try {
       const update: any = { status: STATUS_DA_FASE[proxima] };
