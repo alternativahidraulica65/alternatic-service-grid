@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T21:37:38.141379+00:00",
+  "generated_at": "2026-10-12T02:54:45.972787+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -1062,6 +1062,10 @@
       "bytes": 49585
     },
     {
+      "path": "drizzle/migrations/0002_reload_schema_cache_colaboradores.sql",
+      "bytes": 478
+    },
+    {
       "path": "drizzle/migrations/0000_colaboradores_rh.sql",
       "bytes": 4596
     },
@@ -1075,10 +1079,14 @@
     },
     {
       "path": "drizzle/migrations/meta/_journal.json",
-      "bytes": 357
+      "bytes": 518
     },
     {
       "path": "drizzle/migrations/meta/0001_snapshot.json",
+      "bytes": 336
+    },
+    {
+      "path": "drizzle/migrations/meta/0002_snapshot.json",
       "bytes": 336
     }
   ],
