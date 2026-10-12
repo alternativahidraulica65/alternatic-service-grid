@@ -1216,8 +1216,9 @@ function GestaoOSPage() {
 
   const entregaRegistrada = Boolean((os as any)?.data_entrega);
 
-  const handleSalvarEntrega = async () => {
-    if (!entregaForm.data_entrega || !entregaForm.entregue_por.trim() || !entregaForm.testado) {
+  const handleSalvarEntrega = async (dadosOverride?: { data_entrega: string; entregue_por: string; testado: string }) => {
+    const dados = dadosOverride ?? entregaForm;
+    if (!dados.data_entrega || !dados.entregue_por.trim() || !dados.testado) {
       toast.error("Campos obrigatórios", { description: "Informe data de entrega, quem retirou e se foi testado." });
       return;
     }
@@ -1228,7 +1229,7 @@ function GestaoOSPage() {
         faltas.push(`A OS está em "${ROTULO_FASE[fluxo.faseAtual]}" — precisa estar em "${ROTULO_FASE.pronto}" para entregar`);
       }
       faltas.push(...pendenciasAte("pronto", fluxo));
-      if (entregaForm.testado !== "sim") faltas.push("Pronto: o serviço precisa ser testado antes da entrega");
+      if (dados.testado !== "sim") faltas.push("Pronto: o serviço precisa ser testado antes da entrega");
       if (faltas.length > 0) {
         setPendenciasFase({ destino: ROTULO_FASE.entrega, itens: faltas });
         toast.error("Entrega bloqueada", { description: "Conclua todas as etapas da execução antes de entregar." });
@@ -1240,9 +1241,9 @@ function GestaoOSPage() {
       const { error } = await supabase
         .from('ordens_servico')
         .update({
-          data_entrega: new Date(`${entregaForm.data_entrega}T12:00:00`).toISOString(),
-          entregue_por: entregaForm.entregue_por.trim(),
-          testado: entregaForm.testado === "sim",
+          data_entrega: new Date(`${dados.data_entrega}T12:00:00`).toISOString(),
+          entregue_por: dados.entregue_por.trim(),
+          testado: dados.testado === "sim",
           status: 'entregue',
         } as any)
         .eq('id', osId);
@@ -1252,13 +1253,14 @@ function GestaoOSPage() {
         os_id: osId,
         status_anterior: os?.status ?? null,
         status_novo: 'entregue',
-        observacao: `OS finalizada — retirada por ${entregaForm.entregue_por.trim()} em ${new Date(`${entregaForm.data_entrega}T12:00:00`).toLocaleDateString('pt-BR')} | Testado: ${entregaForm.testado === 'sim' ? 'Sim' : 'Não'}`,
+        observacao: `OS finalizada — retirada por ${dados.entregue_por.trim()} em ${new Date(`${dados.data_entrega}T12:00:00`).toLocaleDateString('pt-BR')} | Testado: ${dados.testado === 'sim' ? 'Sim' : 'Não'}`,
         executor_id: profile?.id ?? null,
         executor_email: await getExecutorEmail(),
       });
 
       toast.success("Entrega registrada", { description: "OS finalizada e registrada no histórico." });
       setEditandoEntrega(false);
+      setEntregaRapidaAberta(false);
       queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
       queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
     } catch (error: any) {
@@ -1271,6 +1273,9 @@ function GestaoOSPage() {
   // Barra de ação rápida — avançar para a próxima fase da sequência oficial
   const [avancando, setAvancando] = useState(false);
   const [pendenciasFase, setPendenciasFase] = useState<{ destino: string; itens: string[] } | null>(null);
+  // Modal de entrega rápida (Data + Testado + Entregador em um só clique)
+  const [entregaRapidaAberta, setEntregaRapidaAberta] = useState(false);
+  const [entregaRapidaForm, setEntregaRapidaForm] = useState({ data_entrega: "", entregue_por: "", testado: "sim" });
 
   const handleAvancarFase = async () => {
     if (!os || !podeGerenciarOS) {
@@ -1292,6 +1297,17 @@ function GestaoOSPage() {
       return;
     }
     setPendenciasFase(null);
+    // Entrega: abre o modal rápido (Data + Testado + Entregador) em vez de avançar direto
+    if (proxima === "entrega") {
+      const hoje = new Date().toISOString().slice(0, 10);
+      setEntregaRapidaForm({
+        data_entrega: (os as any).data_entrega ? String((os as any).data_entrega).slice(0, 10) : hoje,
+        entregue_por: (os as any).entregue_por ?? "",
+        testado: (os as any).testado === false ? "nao" : "sim",
+      });
+      setEntregaRapidaAberta(true);
+      return;
+    }
     setAvancando(true);
     try {
       const update: any = { status: STATUS_DA_FASE[proxima] };
@@ -1449,6 +1465,56 @@ function GestaoOSPage() {
           </div>
         )}
       </div>
+
+      {/* Modal de entrega rápida */}
+      <Dialog open={entregaRapidaAberta} onOpenChange={setEntregaRapidaAberta}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+              <Truck className="h-4 w-4 text-primary" /> Finalizar entrega
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-widest">Data de Entrega</Label>
+              <Input
+                type="date"
+                value={entregaRapidaForm.data_entrega}
+                onChange={(e) => setEntregaRapidaForm({ ...entregaRapidaForm, data_entrega: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-widest">Entregue por / Retirado por</Label>
+              <Input
+                placeholder="Nome de quem entregou ou retirou"
+                value={entregaRapidaForm.entregue_por}
+                onChange={(e) => setEntregaRapidaForm({ ...entregaRapidaForm, entregue_por: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-widest">Serviço testado?</Label>
+              <Select
+                value={entregaRapidaForm.testado}
+                onValueChange={(v) => setEntregaRapidaForm({ ...entregaRapidaForm, testado: v })}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sim">Sim</SelectItem>
+                  <SelectItem value="nao">Não</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              onClick={() => handleSalvarEntrega(entregaRapidaForm)}
+              disabled={salvandoEntrega}
+              className="w-full bg-primary text-primary-foreground font-black uppercase tracking-widest text-[11px]"
+            >
+              <PackageCheck className="mr-2 h-4 w-4" />
+              {salvandoEntrega ? "Finalizando..." : "Confirmar entrega e finalizar OS"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Fluxo de Processo (Stepper) */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
@@ -2666,7 +2732,7 @@ function GestaoOSPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button onClick={handleSalvarEntrega} disabled={salvandoEntrega || !podeGerenciarOS} className="font-bold uppercase tracking-widest">
+                    <Button onClick={() => handleSalvarEntrega()} disabled={salvandoEntrega || !podeGerenciarOS} className="font-bold uppercase tracking-widest">
                       <CheckCircle2 className="mr-2 h-4 w-4" />
                       {salvandoEntrega ? 'Salvando...' : 'Finalizar OS'}
                     </Button>
