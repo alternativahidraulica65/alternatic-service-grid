@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T12:39:41.647790+00:00",
+  "generated_at": "2026-10-12T12:41:44.906201+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -499,7 +499,7 @@
     },
     {
       "path": "src/components/CustosOsPanel.tsx",
-      "bytes": 27295
+      "bytes": 27883
     },
     {
       "path": "src/components/AlertaOrcamentosCard.tsx",
@@ -691,7 +691,7 @@
     },
     {
       "path": "src/lib/os-fluxo.ts",
-      "bytes": 9659
+      "bytes": 9913
     },
     {
       "path": "src/lib/utils.ts",
