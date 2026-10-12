@@ -238,14 +238,18 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
     pendencias.aprovacao.push("Aprovação do cliente ainda não registrada");
   }
 
-  // Execução (peças, terceiros e bancadas)
-  const semDestino = pecas.filter(
+  // Execução: o subserviço do Orquestrador é soberano sobre a peça de mesmo nome.
+  // Peças sem subserviço correspondente (lançamentos avulsos/legados) seguem validadas.
+  const normal = (v: any) => String(v ?? "").trim().toLowerCase();
+  const nomesSub = new Set(subservicos.map((s: any) => normal(s?.componente)));
+  const pecasAvulsas = pecas.filter((p) => !nomesSub.has(normal(p.nome)));
+  const semDestino = pecasAvulsas.filter(
     (p) => !p.status_peca || p.status_peca === "Pendente de Destinação",
   );
   if (semDestino.length > 0) {
     pendencias.execucao.push(`${semDestino.length} peça(s) sem destinação definida`);
   }
-  const terceirosAbertos = pecas.filter(
+  const terceirosAbertos = pecasAvulsas.filter(
     (p) =>
       String(p.status_peca ?? "").toLowerCase().includes("terceiro") &&
       !p.terceiro_recebido_em &&
@@ -254,7 +258,7 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
   if (terceirosAbertos.length > 0) {
     pendencias.execucao.push(`${terceirosAbertos.length} peça(s) ainda com terceiros`);
   }
-  const bancadaAberta = pecas.filter(
+  const bancadaAberta = pecasAvulsas.filter(
     (p) => p.bancada_id && !STATUS_PECA_FINAL.includes(String(p.status_peca ?? "").toLowerCase()),
   );
   if (bancadaAberta.length > 0) {
