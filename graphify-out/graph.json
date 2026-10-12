@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T13:27:51.184004+00:00",
+  "generated_at": "2026-10-12T18:51:27.621998+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -47,7 +47,7 @@
     },
     {
       "path": "src/routeTree.gen.ts",
-      "bytes": 37196
+      "bytes": 34707
     },
     {
       "path": "src/styles.css",
@@ -959,7 +959,7 @@
     },
     {
       "path": "src/routes/_authenticated/historico.tsx",
-      "bytes": 11819
+      "bytes": 297
     },
     {
       "path": "src/routes/_authenticated/kanban.tsx",
@@ -967,7 +967,7 @@
     },
     {
       "path": "src/routes/_authenticated/relatorios.tsx",
-      "bytes": 13881
+      "bytes": 305
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -975,7 +975,7 @@
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
-      "bytes": 17485
+      "bytes": 297
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
@@ -1024,14 +1024,6 @@
     {
       "path": "src/routes/_authenticated/producao/orquestrador.tsx",
       "bytes": 35519
-    },
-    {
-      "path": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "bytes": 11640
-    },
-    {
-      "path": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "bytes": 8341
     },
     {
       "path": "src/routes/_authenticated/os/$id.oficina.tsx",
@@ -1262,14 +1254,6 @@
     {
       "source": "src/routeTree.gen.ts",
       "target": "./routes/_authenticated/financeiro/valinhos"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/orcamento/pdf"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/orcamento/precificacao"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -3365,54 +3349,6 @@
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/BotaoVoltar"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/table"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/dropdown-menu"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -3422,38 +3358,6 @@
     {
       "source": "src/routes/_authenticated/relatorios.tsx",
       "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "recharts"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/relatorios.tsx",
-      "target": "@/components/ClientOnly"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
@@ -3553,63 +3457,7 @@
     },
     {
       "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/BotaoVoltar"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
       "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/ui/table"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/components/ui/switch"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento.tsx",
-      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/routes/_authenticated/route.tsx",
@@ -4254,94 +4102,6 @@
     {
       "source": "src/routes/_authenticated/producao/orquestrador.tsx",
       "target": "@/lib/os-fluxo"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/BotaoVoltar"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/precificacao.tsx",
-      "target": "@/components/ui/separator"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/components/ui/card"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/components/ui/badge"
-    },
-    {
-      "source": "src/routes/_authenticated/orcamento/pdf.tsx",
-      "target": "@/components/ui/separator"
     },
     {
       "source": "src/routes/_authenticated/os/$id.oficina.tsx",
