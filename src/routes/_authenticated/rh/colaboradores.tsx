@@ -262,6 +262,14 @@ function FichaDialog({ id, onClose, onCriado }: { id: string | null; onClose: ()
   const existente = id ? data?.colabs.find((c) => c.id === id) : null;
   const [form, setForm] = useState<Colab>(() => existente || { status: "experiencia", tipo_contrato: "CLT", dias_experiencia: 90, ativo: true });
   const [salvando, setSalvando] = useState(false);
+  const { data: usuarios } = useQuery({
+    queryKey: ["rh-usuarios-sistema"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("usuarios").select("id, nome, username, ativo").eq("ativo", true).order("nome");
+      if (error) throw error;
+      return data;
+    },
+  });
   const { data: foto } = useFoto(existente?.foto_path);
   const recarregar = () => qc.invalidateQueries({ queryKey: ["rh-colaboradores"] });
 
@@ -276,6 +284,11 @@ function FichaDialog({ id, onClose, onCriado }: { id: string | null; onClose: ()
       payload[k] = v === "" || v === undefined ? null : t === "number" ? Number(v) : v;
     }
     payload.cpf = cpf || null;
+    payload.usuario_id = form.usuario_id || null;
+    if (payload.usuario_id && (data?.colabs || []).some((c: any) => c.usuario_id === payload.usuario_id && c.id !== id)) {
+      setSalvando(false);
+      return void toast.error("Este usuário já está vinculado a outro colaborador.");
+    }
     payload.status = form.status;
     payload.observacoes = form.observacoes || null;
     const { data: u } = await supabase.auth.getUser();
@@ -283,7 +296,7 @@ function FichaDialog({ id, onClose, onCriado }: { id: string | null; onClose: ()
       ? await supabase.from("colaboradores").update(payload).eq("id", id).select("id").single()
       : await supabase.from("colaboradores").insert({ ...payload, criado_por: u.user?.id }).select("id").single();
     setSalvando(false);
-    if (res.error) return void toast.error(res.error.code === "23505" ? "CPF já cadastrado." : `Erro ao salvar: ${res.error.message}`);
+    if (res.error) return void toast.error(res.error.code === "23505" ? (res.error.message.includes("usuario") ? "Este usuário já está vinculado a outro colaborador." : "CPF já cadastrado.") : `Erro ao salvar: ${res.error.message}`);
     toast.success("Colaborador salvo.");
     await recarregar();
     if (!id && res.data) onCriado?.(res.data.id);
@@ -354,6 +367,16 @@ function FichaDialog({ id, onClose, onCriado }: { id: string | null; onClose: ()
 
           <TabsContent value="contrato" className="grid sm:grid-cols-2 gap-3 pt-3">
             {CAMPOS_CONTRATO.map(campo)}
+            <div className="space-y-1">
+              <Label className="text-xs">Usuário do sistema</Label>
+              <select className="h-9 w-full rounded-md border bg-background px-3 text-sm" value={form.usuario_id ?? ""} onChange={(e) => setForm({ ...form, usuario_id: e.target.value || null })}>
+                <option value="">— Sem usuário —</option>
+                {(usuarios || []).map((u: any) => {
+                  const dono = (data?.colabs || []).find((c: any) => c.usuario_id === u.id && c.id !== id);
+                  return <option key={u.id} value={u.id} disabled={!!dono}>{u.nome}{u.username ? ` (@${u.username})` : ""}{dono ? ` — já vinculado a ${dono.nome}` : ""}</option>;
+                })}
+              </select>
+            </div>
             <div className="space-y-1">
               <Label className="text-xs">Status</Label>
               <select className="h-9 w-full rounded-md border bg-background px-3 text-sm" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
