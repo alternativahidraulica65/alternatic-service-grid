@@ -58,13 +58,26 @@ async function custosPorOs(ids: string[]) {
   return mapa;
 }
 
-function dre(oss: OsRow[], custos: Map<string, number>) {
+/** Despesas avulsas pagas (baixadas) no período — entram no DRE. */
+async function despesasPagas(ini: Date, fimP: Date) {
+  const { data, error } = await (supabase as any)
+    .from("lancamentos_financeiros")
+    .select("valor, valor_pago, data_pagamento, tipo")
+    .eq("pago", true)
+    .gte("data_pagamento", dia(ini))
+    .lte("data_pagamento", dia(fimP));
+  if (error) throw error;
+  return ((data || []) as any[]).filter((l) => String(l.tipo ?? "").toLowerCase() !== "receita");
+}
+const somaDespesas = (l: any[]) => l.reduce((a, x) => a + Number(x.valor_pago ?? x.valor ?? 0), 0);
+
+function dre(oss: OsRow[], custos: Map<string, number>, despesas = 0) {
   const receita = oss.reduce((a, o) => a + valorOs(o), 0);
   const custo = oss.reduce((a, o) => a + (custos.get(o.id) || 0), 0);
   const impostos = oss.reduce((a, o) => a + impostoOs(o), 0);
   const comissoes = oss.reduce((a, o) => a + Number(o.comissao_calculada || 0), 0);
-  const lucro = receita - custo - impostos - comissoes;
-  return { receita, custo, impostos, comissoes, lucro, margem: receita > 0 ? (lucro / receita) * 100 : null };
+  const lucro = receita - custo - impostos - comissoes - despesas;
+  return { receita, custo, impostos, comissoes, despesas, lucro, margem: receita > 0 ? (lucro / receita) * 100 : null };
 }
 
 const SELECT_OS = "id, numero_os, cliente, status, valor_total, valor_final, imposto_aplicado, comissao_calculada, data_entrega, status_financeiro, orcamento_enviado_em, updated_at, clientes(vendedor_id, vendedores(nome))";

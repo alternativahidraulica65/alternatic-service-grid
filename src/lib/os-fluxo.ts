@@ -50,6 +50,8 @@ export const VALOR_MINIMO_CUSTO = 0.5;
 const AGUARDANDO_CLIENTE = "aguardando aprovação";
 
 /** Status gravados no banco (inclui legados) mapeados para a fase corrente. */
+const normalizarTexto = (v: unknown) => String(v ?? "").trim().toLowerCase();
+
 export function faseDoStatus(status?: string | null, statusFinanceiro?: string | null): Fase {
   const s = String(status ?? "").toLowerCase();
   switch (s) {
@@ -63,6 +65,9 @@ export function faseDoStatus(status?: string | null, statusFinanceiro?: string |
     case "aguardando_gestor":
       // laudo finalizado — falta lançar/validar custos
       return "custos";
+    case "aguardando_aprovacao":
+      return "aprovacao";
+    case "orcamento":
     case "orcamento_pendente":
       return String(statusFinanceiro ?? "").toLowerCase() === AGUARDANDO_CLIENTE
         ? "aprovacao"
@@ -201,9 +206,7 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
       );
     }
   }
-  if (idxAtual < indiceFase("laudo")) {
-    pendencias.checklist.push('Checklist ainda não finalizado (botão "Finalizar Checklist")');
-  }
+  // Com todos os itens avaliados, "Próxima fase" finaliza o checklist diretamente.
 
   // Laudo técnico (colunas oficiais ou JSON legado em "observacoes")
   const laudoOk = temLaudo(os);
@@ -233,8 +236,12 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
     pendencias.orcamento.push("Orçamento ainda não gerado com valor");
   }
 
-  // Aprovação do cliente
-  if (idxAtual < indiceFase("execucao")) {
+  // Aprovação do cliente: vale a resposta registrada, não só o status da OS
+  const aprovadoCliente =
+    normalizarTexto(os?.orcamento_resposta) === "aprovado" ||
+    normalizarTexto(os?.status_financeiro) === "aprovado" ||
+    os?.aprovado === true;
+  if (idxAtual < indiceFase("execucao") && !aprovadoCliente) {
     pendencias.aprovacao.push("Aprovação do cliente ainda não registrada");
   }
 
