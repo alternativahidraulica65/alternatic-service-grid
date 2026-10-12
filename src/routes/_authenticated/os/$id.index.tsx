@@ -77,6 +77,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { FotoThumb, FotoChecklist } from "@/components/FotoThumb";
 import { CustosOsPanel } from "@/components/CustosOsPanel";
 import { GuiaExecucaoOs } from "@/components/GuiaExecucaoOs";
+import { SelecionarParceiro } from "@/components/SelecionarParceiro";
 
 
 function descreverLog(log: any): string {
@@ -2393,11 +2394,9 @@ function GestaoOSPage() {
                         <div className="grid gap-3 md:grid-cols-3">
                           <div className="space-y-1">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Terceiro</Label>
-                            <Input
-                              className="h-9 text-sm bg-white"
-                              placeholder="Nome do terceiro"
+                            <SelecionarParceiro
                               value={f.nome}
-                              onChange={(e) => setFormTerceiro(peca.id, { nome: e.target.value })}
+                              onChange={(nome) => setFormTerceiro(peca.id, { nome })}
                             />
                           </div>
                           <div className="space-y-1">
