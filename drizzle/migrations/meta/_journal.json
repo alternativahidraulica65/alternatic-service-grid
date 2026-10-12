@@ -22,6 +22,13 @@
       "when": 1791773658167,
       "tag": "0002_reload_schema_cache_colaboradores",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791809489477,
+      "tag": "0003_reload_schema_cache_colaboradores_2",
+      "breakpoints": true
     }
   ]
 }
