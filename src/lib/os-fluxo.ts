@@ -249,7 +249,7 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
   if (semDestino.length > 0) {
     pendencias.execucao.push(`${semDestino.length} peça(s) sem destinação definida`);
   }
-  const terceirosAbertos = pecas.filter(
+  const terceirosAbertos = pecasAvulsas.filter(
     (p) =>
       String(p.status_peca ?? "").toLowerCase().includes("terceiro") &&
       !p.terceiro_recebido_em &&
@@ -258,7 +258,7 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
   if (terceirosAbertos.length > 0) {
     pendencias.execucao.push(`${terceirosAbertos.length} peça(s) ainda com terceiros`);
   }
-  const bancadaAberta = pecas.filter(
+  const bancadaAberta = pecasAvulsas.filter(
     (p) => p.bancada_id && !STATUS_PECA_FINAL.includes(String(p.status_peca ?? "").toLowerCase()),
   );
   if (bancadaAberta.length > 0) {
