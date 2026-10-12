@@ -2732,7 +2732,7 @@ function GestaoOSPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button onClick={handleSalvarEntrega} disabled={salvandoEntrega || !podeGerenciarOS} className="font-bold uppercase tracking-widest">
+                    <Button onClick={() => handleSalvarEntrega()} disabled={salvandoEntrega || !podeGerenciarOS} className="font-bold uppercase tracking-widest">
                       <CheckCircle2 className="mr-2 h-4 w-4" />
                       {salvandoEntrega ? 'Salvando...' : 'Finalizar OS'}
                     </Button>
