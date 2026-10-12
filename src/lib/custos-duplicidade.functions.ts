@@ -1,3 +1,4 @@
+import { obterChaveAdmin } from "./admin-key";
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
@@ -54,7 +55,7 @@ const schema = {
 export const analisarDuplicidadeCustos = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }): Promise<ResultadoDuplicidade> => {
-    const key = process.env["EXTERNAL_SUPABASE_SECRET_KEY"];
+    const key = await obterChaveAdmin().catch(() => "");
     const aiKey = process.env["LOVABLE_API_KEY"];
     if (!key || !aiKey) throw new Error("Serviço indisponível. Tente novamente mais tarde.");
     const client = createClient("https://mpwnrcxyyeqftrejwmmx.supabase.co", key, {

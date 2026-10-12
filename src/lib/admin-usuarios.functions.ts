@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { obterChaveAdmin } from "./admin-key";
 
 const OFFICIAL_URL = "https://mpwnrcxyyeqftrejwmmx.supabase.co";
 const PERFIS_ADMIN = ["diretor", "administrativo_financeiro", "financeiro"];
@@ -52,27 +53,6 @@ async function adminFetch(
 }
 
 /** Valida o token do chamador e garante que ele é diretor/financeiro. */
-/** Obtém uma chave administrativa válida; se a configurada for recusada, busca a atual pela API de gestão. */
-async function obterChaveAdmin(): Promise<string> {
-  const configurada = process.env["EXTERNAL_SUPABASE_SECRET_KEY"];
-  if (configurada) {
-    const t = await fetch(`${OFFICIAL_URL}/auth/v1/admin/users?per_page=1`, {
-      headers: { apikey: configurada, Authorization: `Bearer ${configurada}` },
-    });
-    if (t.ok) return configurada;
-  }
-  const mgmt = process.env["EXTERNAL_SUPABASE_MANAGEMENT_TOKEN"];
-  if (!mgmt) throw new Error("Chave administrativa inválida ou não configurada.");
-  const r = await fetch("https://api.supabase.com/v1/projects/mpwnrcxyyeqftrejwmmx/api-keys?reveal=true", {
-    headers: { Authorization: `Bearer ${mgmt}` },
-  });
-  if (!r.ok) throw new Error("Não foi possível obter a chave administrativa.");
-  const keys = (await r.json()) as { name: string; type: string; api_key: string }[];
-  const k = keys.find((x) => x.type === "secret")?.api_key || keys.find((x) => x.name === "service_role")?.api_key;
-  if (!k) throw new Error("Chave administrativa não encontrada.");
-  return k;
-}
-
 async function autorizar(accessToken: string): Promise<AdminCtx> {
   if (!accessToken) throw new Error("Sessão inválida. Faça login novamente.");
   const key = await obterChaveAdmin();
