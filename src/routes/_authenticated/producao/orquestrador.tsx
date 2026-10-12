@@ -261,10 +261,11 @@ function Orquestrador() {
   );
 
   const CardServico = ({ s, i, fila }: { s: any; i: number; fila: any[] }) => (
-    <div className="rounded-md border border-border bg-card p-2">
-      <div className="flex items-start justify-between gap-1">
-        <div className="min-w-0">
-          <span className="text-[10px] font-black text-primary">#{i + 1}</span> <LinhaOs s={s} />
+    <div className={`rounded-md border bg-background p-3 ${s.status === "em_andamento" ? "border-primary shadow-sm" : s.status === "pausado" ? "border-destructive/50" : "border-border"}`}>
+      <div className="flex items-start gap-2">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-muted text-xs font-black">{i + 1}</div>
+        <div className="min-w-0 flex-1">
+          <LinhaOs s={s} />
           <div className="text-sm font-bold leading-tight">{s.componente}{s.quantidade > 1 && <span className="font-normal text-muted-foreground"> × {s.quantidade}</span>}</div>
           {s.descricao && <div className="truncate text-xs text-muted-foreground">{s.descricao}</div>}
         </div>
@@ -273,14 +274,16 @@ function Orquestrador() {
           <Button size="icon" variant="ghost" className="h-6 w-6" disabled={i === fila.length - 1} onClick={() => mover(fila, i, 1)} title="Descer na fila"><ArrowDown className="h-3 w-3" /></Button>
         </div>
       </div>
-      <Badge className={`mt-1 text-[9px] uppercase ${corStatus[s.status]}`}>{STATUS_SUB[s.status as StatusSub]}</Badge>
-      {s.motivo_pausa && <p className="mt-1 text-[11px] text-destructive">Pausa: {s.motivo_pausa}</p>}
+      <div className="mt-2 flex flex-wrap items-center gap-1">
+        <Badge className={`text-[9px] uppercase ${corStatus[s.status]}`}>{STATUS_SUB[s.status as StatusSub]}</Badge>
+        {s.motivo_pausa && <span className="text-[11px] text-destructive">Pausa: {s.motivo_pausa}</span>}
+      </div>
       {s.observacao && <p className="mt-1 text-[11px] text-muted-foreground">Obs: {s.observacao}</p>}
-      <div className="mt-2 flex flex-wrap gap-1">
-        {s.status !== "em_andamento" && <Button size="sm" className="h-7 gap-1 text-[10px]" onClick={() => iniciar(s)}><Play className="h-3 w-3" /> Iniciar</Button>}
-        {s.status === "em_andamento" && <Button size="sm" variant="outline" className="h-7 gap-1 text-[10px]" onClick={() => { setPausa(s); setMotivo(""); }}><Pause className="h-3 w-3" /> Pausar</Button>}
-        <Button size="sm" variant="outline" className="h-7 gap-1 text-[10px]" onClick={() => concluir(s)}><CheckCircle2 className="h-3 w-3" /> Concluir</Button>
-        <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => abrirDestino(s, "interno")}>Trocar</Button>
+      <div className="mt-2 flex flex-wrap gap-1 border-t border-border pt-2">
+        {s.status !== "em_andamento" && <Button size="sm" className="h-7 gap-1 text-[10px] font-bold uppercase" onClick={() => iniciar(s)}><Play className="h-3 w-3" /> Iniciar</Button>}
+        {s.status === "em_andamento" && <Button size="sm" variant="outline" className="h-7 gap-1 text-[10px] font-bold uppercase" onClick={() => { setPausa(s); setMotivo(""); }}><Pause className="h-3 w-3" /> Pausar</Button>}
+        <Button size="sm" variant="outline" className="h-7 gap-1 text-[10px] font-bold uppercase" onClick={() => concluir(s)}><CheckCircle2 className="h-3 w-3" /> Concluir</Button>
+        <Button size="sm" variant="ghost" className="ml-auto h-7 text-[10px] uppercase" onClick={() => abrirDestino(s, "interno")}>Trocar</Button>
       </div>
     </div>
   );
@@ -296,37 +299,55 @@ function Orquestrador() {
   ];
 
   return (
-    <div className="space-y-6 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black uppercase tracking-tight">Orquestrador de Oficina</h1>
-          <p className="text-sm text-muted-foreground">O que precisa abrir, o que está em cada bancada, no torno e com terceiros.</p>
+    <div className="space-y-5 p-4 md:p-6">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <Factory className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black uppercase tracking-tight">Orquestrador de Oficina</h1>
+            <p className="text-sm text-muted-foreground">Abertura, bancadas, torno e terceiros em uma só visão.</p>
+          </div>
         </div>
         <BotaoVoltar />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {kpis.map((k) => (
-          <button key={k.titulo} onClick={() => setAba(k.aba)} className="text-left">
-            <Card className={`transition-colors hover:border-primary ${k.alerta ? "border-primary bg-primary/10" : ""}`}>
-              <CardContent className="p-3">
-                <k.icone className={`mb-1 h-4 w-4 ${k.alerta ? "text-foreground" : "text-muted-foreground"}`} />
-                <div className="text-2xl font-black">{k.valor}</div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{k.titulo}</div>
-              </CardContent>
-            </Card>
-          </button>
-        ))}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+        {kpis.map((k) => {
+          const ativo = aba === k.aba;
+          return (
+            <button
+              key={k.titulo}
+              onClick={() => setAba(k.aba)}
+              className={`group relative overflow-hidden rounded-md border bg-card p-3 text-left transition-all hover:-translate-y-0.5 hover:border-primary ${ativo ? "border-primary ring-1 ring-primary" : "border-border"}`}
+            >
+              <span className={`absolute inset-y-0 left-0 w-1 ${k.alerta ? "bg-primary" : "bg-border"}`} />
+              <div className="flex items-start justify-between">
+                <div className="text-3xl font-black leading-none tabular-nums">{k.valor}</div>
+                <k.icone className={`h-5 w-5 ${k.alerta ? "text-primary" : "text-muted-foreground"}`} />
+              </div>
+              <div className="mt-2 text-[10px] font-bold uppercase leading-tight tracking-wider text-muted-foreground">{k.titulo}</div>
+            </button>
+          );
+        })}
       </div>
 
       <Tabs value={aba} onValueChange={setAba}>
-        <TabsList className="flex-wrap">
-          <TabsTrigger value="abrir">Para abrir ({paraAbrir.length})</TabsTrigger>
-          <TabsTrigger value="bancadas">Bancadas ({internos.length})</TabsTrigger>
-          <TabsTrigger value="torno">Torneiro ({pecasTorno.length})</TabsTrigger>
-          <TabsTrigger value="terceiros">Terceiros ({externos.length})</TabsTrigger>
-          <TabsTrigger value="fila">Sem destino ({semDestino.length})</TabsTrigger>
-          <TabsTrigger value="fluxo">Fluxo da oficina</TabsTrigger>
+        <TabsList className="h-auto w-full flex-wrap justify-start gap-1 bg-muted/50 p-1">
+          {[
+            ["abrir", `Para abrir`, paraAbrir.length],
+            ["bancadas", "Bancadas", internos.length],
+            ["torno", "Torneiro", pecasTorno.length],
+            ["terceiros", "Terceiros", externos.length],
+            ["fila", "Sem destino", semDestino.length],
+            ["fluxo", "Fluxo da oficina", null],
+          ].map(([v, l, n]) => (
+            <TabsTrigger key={v as string} value={v as string} className="gap-2 text-xs font-bold uppercase data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              {l}
+              {n !== null && <span className="rounded-sm bg-background/60 px-1.5 text-[10px] tabular-nums">{n}</span>}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         {/* Para abrir */}
