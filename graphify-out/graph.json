@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T19:01:38.206396+00:00",
+  "generated_at": "2026-10-12T19:19:14.023976+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -703,7 +703,7 @@
     },
     {
       "path": "src/lib/os-fluxo.ts",
-      "bytes": 9947
+      "bytes": 10323
     },
     {
       "path": "src/lib/mao-de-obra.ts",
@@ -1027,7 +1027,7 @@
     },
     {
       "path": "src/routes/_authenticated/producao/orquestrador.tsx",
-      "bytes": 36934
+      "bytes": 38953
     },
     {
       "path": "src/routes/_authenticated/os/$id.oficina.tsx",
