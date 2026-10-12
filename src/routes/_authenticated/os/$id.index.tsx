@@ -1260,6 +1260,7 @@ function GestaoOSPage() {
 
       toast.success("Entrega registrada", { description: "OS finalizada e registrada no histórico." });
       setEditandoEntrega(false);
+      setEntregaRapidaAberta(false);
       queryClient.invalidateQueries({ queryKey: ['os_detail', osId] });
       queryClient.invalidateQueries({ queryKey: ['os_historico', osId] });
     } catch (error: any) {
@@ -1272,6 +1273,9 @@ function GestaoOSPage() {
   // Barra de ação rápida — avançar para a próxima fase da sequência oficial
   const [avancando, setAvancando] = useState(false);
   const [pendenciasFase, setPendenciasFase] = useState<{ destino: string; itens: string[] } | null>(null);
+  // Modal de entrega rápida (Data + Testado + Entregador em um só clique)
+  const [entregaRapidaAberta, setEntregaRapidaAberta] = useState(false);
+  const [entregaRapidaForm, setEntregaRapidaForm] = useState({ data_entrega: "", entregue_por: "", testado: "sim" });
 
   const handleAvancarFase = async () => {
     if (!os || !podeGerenciarOS) {
