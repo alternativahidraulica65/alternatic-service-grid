@@ -200,13 +200,7 @@ function AuditoriaPage() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b pb-6">
         <div>
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Voltar para o Dashboard
-          </Link>
+          <BotaoVoltar className="mb-2" />
           <h2 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1 flex items-center gap-2">
             <Database className="h-3 w-3" />
             Sistema / Auditoria

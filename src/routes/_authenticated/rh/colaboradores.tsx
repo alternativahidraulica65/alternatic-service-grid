@@ -135,7 +135,7 @@ function ColaboradoresPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
         <div className="mx-auto max-w-7xl px-4 py-4 flex flex-wrap items-center gap-3">
-          <Button variant="ghost" size="sm" asChild><Link to="/dashboard"><ArrowLeft className="h-4 w-4 mr-1" />Voltar</Link></Button>
+          <BotaoVoltar />
           <div className="flex-1">
             <h1 className="text-xl font-black uppercase tracking-tight">Colaboradores</h1>
             <p className="text-xs text-muted-foreground">Administração de pessoal — acesso exclusivo do Financeiro</p>

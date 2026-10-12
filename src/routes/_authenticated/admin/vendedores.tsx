@@ -360,11 +360,7 @@ function VendedoresPage() {
     <div className="container-industrial py-8 space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start md:items-center gap-3">
-          <Link to="/dashboard">
-            <Button variant="outline" size="icon" className="border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
+          <BotaoVoltar />
           <div>
             <h1 className="text-3xl font-display font-black text-slate-900 uppercase tracking-tight">
               Gestão de Vendedores &amp; Comissões

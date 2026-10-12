@@ -149,15 +149,7 @@ function ListaLancamentos() {
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20">
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.navigate({ to: "/dashboard" })}
-          className="text-muted-foreground hover:text-primary"
-          aria-label="Voltar"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+        <BotaoVoltar />
         <div>
           <h1 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">
             LANÇAMENTOS <span className="text-primary">FINANCEIROS</span>

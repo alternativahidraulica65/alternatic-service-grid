@@ -109,9 +109,7 @@ function ValinhosPage() {
     <div className="min-h-screen bg-background p-4 md:p-8 space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Link to="/financeiro/fornecedores" className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
-            <ArrowLeft className="h-3 w-3" /> Voltar
-          </Link>
+          <BotaoVoltar to="/financeiro/fornecedores" className="mb-2" />
           <h1 className="text-2xl font-black uppercase tracking-tight flex items-center gap-2">
             <Wallet className="h-6 w-6 text-primary" /> Vales a pagar
           </h1>

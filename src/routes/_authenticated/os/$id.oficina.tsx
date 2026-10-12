@@ -163,11 +163,7 @@ function ModoOficina() {
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background">
       <header className="flex items-center justify-between gap-2 border-b border-border bg-card px-4 py-3">
-        <Button asChild variant="ghost" size="icon" aria-label="Sair do modo oficina">
-          <Link to="/os/$id" params={{ id: osId }}>
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
+        <BotaoVoltar to="/os/$id" params={{ id: osId }} label="Sair" />
         <div className="min-w-0 text-center">
           <p className="truncate font-mono text-sm font-black">{os?.numero_os || "OS"}</p>
           <p className="truncate text-[10px] uppercase tracking-widest text-muted-foreground">{os?.cliente}</p>

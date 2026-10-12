@@ -771,9 +771,7 @@ function OrcamentoOSPage() {
         <p className="text-sm text-slate-500">
           A geração de orçamentos é exclusiva dos perfis Diretor e Financeiro/Administrativo.
         </p>
-        <Button asChild variant="outline" className="font-bold uppercase text-[10px] tracking-widest">
-          <Link to="/os/$id" params={{ id }}>Voltar para a OS</Link>
-        </Button>
+        <BotaoVoltar to="/os/$id" params={{ id }} label="Voltar para a OS" />
       </div>
     );
   }
@@ -808,9 +806,7 @@ function OrcamentoOSPage() {
             </li>
           ))}
         </ul>
-        <Button asChild className="bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest">
-          <Link to="/os/$id" params={{ id }}>Voltar para a OS</Link>
-        </Button>
+        <BotaoVoltar to="/os/$id" params={{ id }} label="Voltar para a OS" />
       </div>
     );
   }

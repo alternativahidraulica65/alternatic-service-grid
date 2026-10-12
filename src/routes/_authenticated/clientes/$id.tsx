@@ -232,7 +232,7 @@ function ClienteDetalhesPage() {
       <div className="flex h-screen flex-col items-center justify-center bg-slate-50 p-6">
         <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
         <h2 className="font-display text-xl font-black uppercase">Cliente não encontrado</h2>
-        <Button variant="link" onClick={() => router.navigate({ to: '/clientes' })}>Voltar para listagem</Button>
+        <BotaoVoltar to="/clientes" label="Voltar para listagem" />
       </div>
     );
   }
@@ -247,9 +247,7 @@ function ClienteDetalhesPage() {
     <div className="space-y-8 p-6 md:p-10 pb-20 bg-slate-50 min-h-screen">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: '/clientes' })} className="text-muted-foreground hover:text-primary">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <BotaoVoltar to="/clientes" />
           <div>
             <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">PERFIL DO <span className="text-primary">CLIENTE</span></h2>
             <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">{cliente.nome}</p>

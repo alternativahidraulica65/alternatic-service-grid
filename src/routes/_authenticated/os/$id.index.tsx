@@ -1329,11 +1329,7 @@ function GestaoOSPage() {
       <div className="space-y-4 border-b border-border pb-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3 min-w-0">
-          <Button variant="outline" size="icon" className="h-9 w-9 shrink-0 border-border" asChild>
-            <Link to={(roles as string[] | undefined)?.some((r) => r === "diretor" || r === "gestor") ? "/producao/orquestrador" : "/dashboard"} title="Voltar">
-              <ChevronLeft className="h-5 w-5 text-primary" />
-            </Link>
-          </Button>
+          <BotaoVoltar className="shrink-0" />
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Ordem de serviço</p>
             <h2 className="font-display text-3xl font-black tracking-tight text-foreground leading-none mt-1">
@@ -1983,9 +1979,7 @@ function GestaoOSPage() {
                <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 bg-muted/50 p-4 rounded-lg">
                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">Ao finalizar, a OS avança para a próxima etapa.</p>
                  <div className="flex gap-3">
-                   <Button variant="outline" className="h-10 border-border font-bold uppercase text-[10px] tracking-widest px-6" onClick={() => router.history.back()}>
-                     Voltar
-                   </Button>
+                   <BotaoVoltar />
                    <Button 
                     className="h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase text-[10px] tracking-widest px-8 shadow-lg "
                     onClick={handleFinalizarChecklist}
@@ -2026,9 +2020,7 @@ function GestaoOSPage() {
                   <Badge variant="outline" className="h-7 text-[10px] font-bold uppercase border-slate-200">
                     Status: {os.status === 'aguardando_gestor' ? 'Aguardando Gestor' : 'Em Diagnóstico'}
                   </Badge>
-                  <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold uppercase" onClick={() => router.history.back()}>
-                    Voltar
-                  </Button>
+                  <BotaoVoltar />
                 </div>
               </div>
             </CardHeader>

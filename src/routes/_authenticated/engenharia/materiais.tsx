@@ -220,9 +220,7 @@ function MateriaisPage() {
   return (
     <div className="space-y-6 p-4 md:p-8 pb-20">
       <div className="flex items-center gap-3">
-        <Link to="/dashboard">
-          <Button variant="ghost" size="icon"><ArrowLeft className="h-5 w-5" /></Button>
-        </Link>
+        <BotaoVoltar />
         <div>
           <h2 className="font-display text-2xl md:text-3xl font-black uppercase tracking-tight">
             Engenharia / <span className="text-primary">Matéria-prima</span>

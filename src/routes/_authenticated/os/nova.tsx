@@ -379,9 +379,7 @@ function NovaOSPage() {
   return (
     <div className="space-y-8 p-6 md:p-10 pb-20 max-w-5xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
-        <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary shrink-0">
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+        <BotaoVoltar className="shrink-0" />
         <div>
           <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">ABERTURA DE <span className="text-primary">OS / TRIAGEM</span></h2>
           <p className="text-sm text-muted-foreground font-medium">Crie uma nova Ordem de Serviço passo a passo.</p>

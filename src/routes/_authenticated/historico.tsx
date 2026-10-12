@@ -79,9 +79,7 @@ function HistoricoPage() {
     <div className="space-y-8 p-6 md:p-10 pb-20">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.history.back()} className="text-muted-foreground hover:text-primary">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <BotaoVoltar />
           <div>
             <h2 className="font-display text-3xl font-black text-foreground tracking-tight uppercase">HISTÓRICO DE <span className="text-primary">ORDENS DE SERVIÇO</span></h2>
             <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Rastreabilidade completa de todas as manutenções.</p>
