@@ -1,3 +1,4 @@
+import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -115,9 +116,7 @@ function PrecificacaoPage() {
       <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur-sm">
         <div className="container-industrial flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            <BotaoVoltar />
             <h1 className="font-display text-lg font-bold text-slate-900">Precificação e Lucratividade</h1>
           </div>
           <Button 

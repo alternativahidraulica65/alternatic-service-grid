@@ -1,3 +1,4 @@
+import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -141,11 +142,7 @@ function PropostaPage() {
       dados={data!}
       acoes={
         <>
-          <Button asChild variant="ghost" className="text-[10px] font-black uppercase tracking-widest">
-            <Link to="/os/$id/orcamento" params={{ id }}>
-              <ArrowLeft className="mr-2 h-4 w-4" /> Voltar ao orçamento
-            </Link>
-          </Button>
+          <BotaoVoltar to="/os/$id/orcamento" params={{ id }} label="Voltar ao orçamento" />
           <Button
             onClick={() => void imprimir()}
             className="h-10 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest"

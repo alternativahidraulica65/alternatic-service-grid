@@ -1,3 +1,4 @@
+import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -301,9 +302,7 @@ function Orquestrador() {
           <h1 className="text-2xl font-black uppercase tracking-tight">Orquestrador de Oficina</h1>
           <p className="text-sm text-muted-foreground">O que precisa abrir, o que está em cada bancada, no torno e com terceiros.</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => router.history.back()} className="gap-1">
-          <ArrowLeft className="h-4 w-4" /> Voltar
-        </Button>
+        <BotaoVoltar />
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
