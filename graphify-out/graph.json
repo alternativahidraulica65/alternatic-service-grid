@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T13:02:54.794644+00:00",
+  "generated_at": "2026-10-12T13:06:04.130398+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -631,15 +631,19 @@
     },
     {
       "path": "src/lib/proposta-publica.functions.ts",
-      "bytes": 4198
+      "bytes": 4242
     },
     {
       "path": "src/lib/error-page.ts",
       "bytes": 1371
     },
     {
+      "path": "src/lib/admin-key.ts",
+      "bytes": 1367
+    },
+    {
       "path": "src/lib/custos-duplicidade.functions.ts",
-      "bytes": 6080
+      "bytes": 6123
     },
     {
       "path": "src/lib/orcamento.ts",
@@ -667,11 +671,11 @@
     },
     {
       "path": "src/lib/admin-usuarios.functions.ts",
-      "bytes": 7348
+      "bytes": 7304
     },
     {
       "path": "src/lib/checklist.functions.ts",
-      "bytes": 1895
+      "bytes": 1938
     },
     {
       "path": "src/lib/custos-automaticos.ts",
@@ -2373,11 +2377,19 @@
     },
     {
       "source": "src/lib/proposta-publica.functions.ts",
+      "target": "./admin-key"
+    },
+    {
+      "source": "src/lib/proposta-publica.functions.ts",
       "target": "@tanstack/react-start"
     },
     {
       "source": "src/lib/proposta-publica.functions.ts",
       "target": "zod"
+    },
+    {
+      "source": "src/lib/custos-duplicidade.functions.ts",
+      "target": "./admin-key"
     },
     {
       "source": "src/lib/custos-duplicidade.functions.ts",
@@ -2402,6 +2414,14 @@
     {
       "source": "src/lib/admin-usuarios.functions.ts",
       "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/admin-usuarios.functions.ts",
+      "target": "./admin-key"
+    },
+    {
+      "source": "src/lib/checklist.functions.ts",
+      "target": "./admin-key"
     },
     {
       "source": "src/lib/checklist.functions.ts",
