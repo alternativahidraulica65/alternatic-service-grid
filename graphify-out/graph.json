@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T18:57:16.123607+00:00",
+  "generated_at": "2026-10-12T19:01:38.206396+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -1027,7 +1027,7 @@
     },
     {
       "path": "src/routes/_authenticated/producao/orquestrador.tsx",
-      "bytes": 35519
+      "bytes": 36934
     },
     {
       "path": "src/routes/_authenticated/os/$id.oficina.tsx",
