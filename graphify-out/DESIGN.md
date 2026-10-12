@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-12T12:24:15.010302+00:00
+Generated: 2026-10-12T12:35:53.283413+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -173,6 +173,7 @@ Generated: 2026-10-12T12:24:15.010302+00:00
 - src/components/PendenciasOsCard.tsx
 - src/components/PropostaDocumento.tsx
 - src/components/RemoverSelecionados.tsx
+- src/components/SelecionarParceiro.tsx
 - src/components/ServicosLaudoEditor.tsx
 - src/components/SlaOs.tsx
 - src/components/TerceirosDialog.tsx

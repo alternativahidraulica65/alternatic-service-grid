@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T12:24:15.010302+00:00",
+  "generated_at": "2026-10-12T12:35:53.283413+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -610,6 +610,10 @@
       "bytes": 12047
     },
     {
+      "path": "src/components/SelecionarParceiro.tsx",
+      "bytes": 7459
+    },
+    {
       "path": "src/components/ClientOnly.tsx",
       "bytes": 370
     },
@@ -1035,7 +1039,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.index.tsx",
-      "bytes": 132089
+      "bytes": 132035
     },
     {
       "path": "src/routes/_authenticated/admin/vendedores.tsx",
@@ -2278,6 +2282,46 @@
     {
       "source": "src/components/TerceirosDialog.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "@/components/ui/popover"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "@/components/ui/skeleton"
+    },
+    {
+      "source": "src/components/SelecionarParceiro.tsx",
+      "target": "@/lib/utils"
     },
     {
       "source": "src/components/ClientOnly.tsx",
@@ -4578,6 +4622,10 @@
     {
       "source": "src/routes/_authenticated/os/$id.index.tsx",
       "target": "@/components/GuiaExecucaoOs"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.index.tsx",
+      "target": "@/components/SelecionarParceiro"
     },
     {
       "source": "src/routes/_authenticated/admin/vendedores.tsx",
