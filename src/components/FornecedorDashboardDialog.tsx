@@ -43,18 +43,18 @@ export function FornecedorDashboardDialog({ fornecedor, onClose }: Props) {
     for (const c of data?.custos ?? []) {
       const v = Number(c.custo_interno || 0);
       const m = new Date(c.criado_em as string).getMonth();
-      meses[m].lancamentos++;
-      if (c.pago) { pago += v; meses[m].pago += v; } else { devendo += v; meses[m].devendo += v; }
+      meses[m]!.lancamentos++;
+      if (c.pago) { pago += v; meses[m]!.pago += v; } else { devendo += v; meses[m]!.devendo += v; }
     }
     // Lançamentos financeiros diretos são considerados quitados.
     for (const l of data?.lancs ?? []) {
       const v = Number(l.valor || 0);
       const m = new Date(`${l.data_competencia}T12:00:00`).getMonth();
-      meses[m].lancamentos++;
-      pago += v; meses[m].pago += v;
+      meses[m]!.lancamentos++;
+      pago += v; meses[m]!.pago += v;
     }
     const mesAtual = ano === anoAtual ? new Date().getMonth() : 11;
-    const gastoMes = meses[mesAtual].pago + meses[mesAtual].devendo;
+    const gastoMes = meses[mesAtual]!.pago + meses[mesAtual]!.devendo;
     return { meses, pago, devendo, total: pago + devendo, mesAtual, gastoMes };
   }, [data, ano, anoAtual]);
 
