@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { exportToCSV } from "@/utils/export";
+import { NovaDespesaDialog, BaixarDespesaDialog } from "@/components/NovaDespesaDialog";
 import { FiltrosSalvos } from "@/components/FiltrosSalvos";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -68,7 +69,7 @@ function ListaLancamentos() {
       const { data, error } = await (supabase as any)
         .from("lancamentos_financeiros")
         .select(
-          "id, valor, data_competencia, descricao, tipo, os_id, fornecedor_id, cliente_id, criado_em, fornecedores ( nome ), clientes ( nome ), ordens_servico ( numero_os )",
+          "id, valor, data_competencia, descricao, tipo, os_id, fornecedor_id, cliente_id, criado_em, categoria, pago, data_pagamento, forma_pagamento, valor_pago, fornecedores ( nome ), clientes ( nome ), ordens_servico ( numero_os )",
         )
         .order("data_competencia", { ascending: false });
       if (error) throw error;
@@ -134,6 +135,9 @@ function ListaLancamentos() {
         cliente: l.clientes?.nome ?? "",
         os: l.ordens_servico?.numero_os ?? "",
         valor: Number(l.valor || 0),
+        pago: l.pago ? "sim" : "não",
+        data_pagamento: fmtData(l.data_pagamento),
+        forma_pagamento: l.forma_pagamento ?? "",
       })),
       "lancamentos.csv",
     );
@@ -173,6 +177,7 @@ function ListaLancamentos() {
               />
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <NovaDespesaDialog />
               <FiltrosSalvos
                 lista="lancamentos"
                 filtros={{ periodo, tipo, fornecedor, busca }}
@@ -265,19 +270,20 @@ function ListaLancamentos() {
                 <TableHead className="text-[10px] font-black uppercase tracking-widest">Fornecedor</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest">OS</TableHead>
                 <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Valor</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Pagamento</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading && (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-10 text-center text-xs text-muted-foreground">
+                  <TableCell colSpan={8} className="py-10 text-center text-xs text-muted-foreground">
                     Carregando...
                   </TableCell>
                 </TableRow>
               )}
               {!isLoading && filtrados.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-10 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <TableCell colSpan={8} className="py-10 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     Nenhum lançamento encontrado
                   </TableCell>
                 </TableRow>
@@ -306,7 +312,7 @@ function ListaLancamentos() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-[9px] font-black uppercase">
-                      {l.tipo ?? "—"}
+                      {l.categoria ?? l.tipo ?? "—"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs">{l.fornecedores?.nome ?? "—"}</TableCell>
@@ -320,6 +326,11 @@ function ListaLancamentos() {
                     )}
                   </TableCell>
                   <TableCell className="text-right text-xs font-bold">{brl(Number(l.valor || 0))}</TableCell>
+                  <TableCell className="text-xs">
+                    {l.pago ? (
+                      <Badge className="bg-primary text-primary-foreground text-[9px] font-black uppercase">Pago {fmtData(l.data_pagamento)}{l.forma_pagamento ? ` · ${l.forma_pagamento}` : ""}</Badge>
+                    ) : String(l.tipo ?? "").toLowerCase() === "receita" ? "—" : <BaixarDespesaDialog lancamento={l} />}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

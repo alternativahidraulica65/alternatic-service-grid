@@ -58,13 +58,26 @@ async function custosPorOs(ids: string[]) {
   return mapa;
 }
 
-function dre(oss: OsRow[], custos: Map<string, number>) {
+/** Despesas avulsas pagas (baixadas) no período — entram no DRE. */
+async function despesasPagas(ini: Date, fimP: Date) {
+  const { data, error } = await (supabase as any)
+    .from("lancamentos_financeiros")
+    .select("valor, valor_pago, data_pagamento, tipo")
+    .eq("pago", true)
+    .gte("data_pagamento", dia(ini))
+    .lte("data_pagamento", dia(fimP));
+  if (error) throw error;
+  return ((data || []) as any[]).filter((l) => String(l.tipo ?? "").toLowerCase() !== "receita");
+}
+const somaDespesas = (l: any[]) => l.reduce((a, x) => a + Number(x.valor_pago ?? x.valor ?? 0), 0);
+
+function dre(oss: OsRow[], custos: Map<string, number>, despesas = 0) {
   const receita = oss.reduce((a, o) => a + valorOs(o), 0);
   const custo = oss.reduce((a, o) => a + (custos.get(o.id) || 0), 0);
   const impostos = oss.reduce((a, o) => a + impostoOs(o), 0);
   const comissoes = oss.reduce((a, o) => a + Number(o.comissao_calculada || 0), 0);
-  const lucro = receita - custo - impostos - comissoes;
-  return { receita, custo, impostos, comissoes, lucro, margem: receita > 0 ? (lucro / receita) * 100 : null };
+  const lucro = receita - custo - impostos - comissoes - despesas;
+  return { receita, custo, impostos, comissoes, despesas, lucro, margem: receita > 0 ? (lucro / receita) * 100 : null };
 }
 
 const SELECT_OS = "id, numero_os, cliente, status, valor_total, valor_final, imposto_aplicado, comissao_calculada, data_entrega, status_financeiro, orcamento_enviado_em, updated_at, clientes(vendedor_id, vendedores(nome))";
@@ -93,7 +106,7 @@ function DashboardFinanceiro() {
       for (const r of [entregues, entreguesAnt, pipeline, prontas, pendentes]) if (r.error) throw r.error;
       const ent = (entregues.data || []) as unknown as OsRow[];
       const ant = (entreguesAnt.data || []) as unknown as OsRow[];
-      const [cAtual, cAnt] = await Promise.all([custosPorOs(ent.map((o) => o.id)), custosPorOs(ant.map((o) => o.id))]);
+      const [cAtual, cAnt, dAtual, dAnt] = await Promise.all([custosPorOs(ent.map((o) => o.id)), custosPorOs(ant.map((o) => o.id)), despesasPagas(inicio, fim), despesasPagas(inicioAnt, fimAnt)]);
 
       const passivoMap = new Map<string, { nome: string; total: number; itens: number }>();
       (pendentes.data || []).forEach((c: any) => {
@@ -116,8 +129,8 @@ function DashboardFinanceiro() {
 
       const pip = pipeline.data || [];
       return {
-        atual: dre(ent, cAtual),
-        anterior: dre(ant, cAnt),
+        atual: dre(ent, cAtual, somaDespesas(dAtual)),
+        anterior: dre(ant, cAnt, somaDespesas(dAnt)),
         passivo,
         passivoTotal: passivo.reduce((a, p) => a + p.total, 0),
         pipelineTotal: pip.reduce((a, o: any) => a + Number(o.valor_final ?? o.valor_total ?? 0), 0),
@@ -137,12 +150,12 @@ function DashboardFinanceiro() {
       const { data: os, error } = await supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", ini.toISOString()).lte("data_entrega", fim.toISOString());
       if (error) throw error;
       const lista = (os || []) as unknown as OsRow[];
-      const custos = await custosPorOs(lista.map((o) => o.id));
+      const [custos, desp] = await Promise.all([custosPorOs(lista.map((o) => o.id)), despesasPagas(ini, fim)]);
       return Array.from({ length: 6 }, (_, i) => {
         const m = subMonths(inicio, 5 - i);
         const chave = format(m, "yyyy-MM");
-        const r = dre(lista.filter((o) => o.data_entrega?.startsWith(chave)), custos);
-        return { mes: format(m, "MMM", { locale: ptBR }), receita: r.receita, custos: r.custo + r.impostos + r.comissoes, lucro: r.lucro };
+        const r = dre(lista.filter((o) => o.data_entrega?.startsWith(chave)), custos, somaDespesas(desp.filter((d) => String(d.data_pagamento).startsWith(chave))));
+        return { mes: format(m, "MMM", { locale: ptBR }), receita: r.receita, custos: r.custo + r.impostos + r.comissoes + r.despesas, lucro: r.lucro };
       });
     },
   });
@@ -164,6 +177,7 @@ function DashboardFinanceiro() {
       ["Custos diretos", data.atual.custo.toFixed(2)],
       ["Impostos", data.atual.impostos.toFixed(2)],
       ["Comissões", data.atual.comissoes.toFixed(2)],
+      ["Despesas operacionais", data.atual.despesas.toFixed(2)],
       ["Lucro líquido", data.atual.lucro.toFixed(2)],
       ["A pagar (valinhos)", data.passivoTotal.toFixed(2)],
       ["Em negociação", data.pipelineTotal.toFixed(2)],
@@ -264,6 +278,7 @@ function DashboardFinanceiro() {
                 <LinhaDre rotulo="(−) Peças e terceiros" valor={-(data?.atual.custo || 0)} />
                 <LinhaDre rotulo="(−) Impostos" valor={-(data?.atual.impostos || 0)} />
                 <LinhaDre rotulo="(−) Comissões" valor={-(data?.atual.comissoes || 0)} />
+                <LinhaDre rotulo="(−) Despesas operacionais" valor={-(data?.atual.despesas || 0)} />
                 <div className="mt-2 flex items-center justify-between rounded-md bg-primary px-3 py-3 text-primary-foreground">
                   <span className="text-xs font-black uppercase tracking-wider">Lucro líquido</span>
                   <span className="text-lg font-black">{brl(data?.atual.lucro || 0)}</span>
