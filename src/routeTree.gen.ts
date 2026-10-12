@@ -36,6 +36,7 @@ import { Route as AuthenticatedFinanceiroValinhosRouteImport } from './routes/_a
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated/os/index'
 import { Route as AuthenticatedOsIdRouteImport } from './routes/_authenticated/os/$id'
 import { Route as AuthenticatedOsNovaRouteImport } from './routes/_authenticated/os/nova'
+import { Route as AuthenticatedProducaoMinhaBancadaRouteImport } from './routes/_authenticated/producao/minha-bancada'
 import { Route as AuthenticatedProducaoOrquestradorRouteImport } from './routes/_authenticated/producao/orquestrador'
 import { Route as AuthenticatedRhColaboradoresRouteImport } from './routes/_authenticated/rh/colaboradores'
 import { Route as AuthenticatedFinanceiroFornecedoresIndexRouteImport } from './routes/_authenticated/financeiro/fornecedores/index'
@@ -191,6 +192,12 @@ const AuthenticatedOsNovaRoute = AuthenticatedOsNovaRouteImport.update({
   path: '/os/nova',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProducaoMinhaBancadaRoute =
+  AuthenticatedProducaoMinhaBancadaRouteImport.update({
+    id: '/producao/minha-bancada',
+    path: '/producao/minha-bancada',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProducaoOrquestradorRoute =
   AuthenticatedProducaoOrquestradorRouteImport.update({
     id: '/producao/orquestrador',
@@ -257,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/financeiro/valinhos': typeof AuthenticatedFinanceiroValinhosRoute
   '/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/os/nova': typeof AuthenticatedOsNovaRoute
+  '/producao/minha-bancada': typeof AuthenticatedProducaoMinhaBancadaRoute
   '/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
   '/rh/colaboradores': typeof AuthenticatedRhColaboradoresRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
@@ -290,6 +298,7 @@ export interface FileRoutesByTo {
   '/financeiro/lancamentos': typeof AuthenticatedFinanceiroLancamentosRoute
   '/financeiro/valinhos': typeof AuthenticatedFinanceiroValinhosRoute
   '/os/nova': typeof AuthenticatedOsNovaRoute
+  '/producao/minha-bancada': typeof AuthenticatedProducaoMinhaBancadaRoute
   '/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
   '/rh/colaboradores': typeof AuthenticatedRhColaboradoresRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
@@ -327,6 +336,7 @@ export interface FileRoutesById {
   '/_authenticated/financeiro/valinhos': typeof AuthenticatedFinanceiroValinhosRoute
   '/_authenticated/os/$id': typeof AuthenticatedOsIdRouteWithChildren
   '/_authenticated/os/nova': typeof AuthenticatedOsNovaRoute
+  '/_authenticated/producao/minha-bancada': typeof AuthenticatedProducaoMinhaBancadaRoute
   '/_authenticated/producao/orquestrador': typeof AuthenticatedProducaoOrquestradorRoute
   '/_authenticated/rh/colaboradores': typeof AuthenticatedRhColaboradoresRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
@@ -364,6 +374,7 @@ export interface FileRouteTypes {
     | '/financeiro/valinhos'
     | '/os/$id'
     | '/os/nova'
+    | '/producao/minha-bancada'
     | '/producao/orquestrador'
     | '/rh/colaboradores'
     | '/clientes/'
@@ -397,6 +408,7 @@ export interface FileRouteTypes {
     | '/financeiro/lancamentos'
     | '/financeiro/valinhos'
     | '/os/nova'
+    | '/producao/minha-bancada'
     | '/producao/orquestrador'
     | '/rh/colaboradores'
     | '/clientes'
@@ -433,6 +445,7 @@ export interface FileRouteTypes {
     | '/_authenticated/financeiro/valinhos'
     | '/_authenticated/os/$id'
     | '/_authenticated/os/nova'
+    | '/_authenticated/producao/minha-bancada'
     | '/_authenticated/producao/orquestrador'
     | '/_authenticated/rh/colaboradores'
     | '/_authenticated/clientes/'
@@ -643,6 +656,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsNovaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/producao/minha-bancada': {
+      id: '/_authenticated/producao/minha-bancada'
+      path: '/producao/minha-bancada'
+      fullPath: '/producao/minha-bancada'
+      preLoaderRoute: typeof AuthenticatedProducaoMinhaBancadaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/producao/orquestrador': {
       id: '/_authenticated/producao/orquestrador'
       path: '/producao/orquestrador'
@@ -752,6 +772,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFinanceiroValinhosRoute: typeof AuthenticatedFinanceiroValinhosRoute
   AuthenticatedOsIdRoute: typeof AuthenticatedOsIdRouteWithChildren
   AuthenticatedOsNovaRoute: typeof AuthenticatedOsNovaRoute
+  AuthenticatedProducaoMinhaBancadaRoute: typeof AuthenticatedProducaoMinhaBancadaRoute
   AuthenticatedProducaoOrquestradorRoute: typeof AuthenticatedProducaoOrquestradorRoute
   AuthenticatedRhColaboradoresRoute: typeof AuthenticatedRhColaboradoresRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
@@ -778,6 +799,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFinanceiroValinhosRoute: AuthenticatedFinanceiroValinhosRoute,
   AuthenticatedOsIdRoute: AuthenticatedOsIdRouteWithChildren,
   AuthenticatedOsNovaRoute: AuthenticatedOsNovaRoute,
+  AuthenticatedProducaoMinhaBancadaRoute:
+    AuthenticatedProducaoMinhaBancadaRoute,
   AuthenticatedProducaoOrquestradorRoute:
     AuthenticatedProducaoOrquestradorRoute,
   AuthenticatedRhColaboradoresRoute: AuthenticatedRhColaboradoresRoute,
