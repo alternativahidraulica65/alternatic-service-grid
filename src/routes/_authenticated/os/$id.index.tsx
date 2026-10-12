@@ -1216,8 +1216,9 @@ function GestaoOSPage() {
 
   const entregaRegistrada = Boolean((os as any)?.data_entrega);
 
-  const handleSalvarEntrega = async () => {
-    if (!entregaForm.data_entrega || !entregaForm.entregue_por.trim() || !entregaForm.testado) {
+  const handleSalvarEntrega = async (dadosOverride?: { data_entrega: string; entregue_por: string; testado: string }) => {
+    const dados = dadosOverride ?? entregaForm;
+    if (!dados.data_entrega || !dados.entregue_por.trim() || !dados.testado) {
       toast.error("Campos obrigatórios", { description: "Informe data de entrega, quem retirou e se foi testado." });
       return;
     }
