@@ -29,6 +29,20 @@
       "when": 1791809489477,
       "tag": "0003_reload_schema_cache_colaboradores_2",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791909905873,
+      "tag": "0004_sincronizar_schema_app",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791909944436,
+      "tag": "0005_marcar_tabelas_obsoletas",
+      "breakpoints": true
     }
   ]
 }

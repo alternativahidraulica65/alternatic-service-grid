@@ -107,6 +107,7 @@ export type Database = {
           nome: string
           tecnico_nome: string | null
           updated_at: string
+          usuario_id: string | null
         }
         Insert: {
           ativo?: boolean
@@ -117,6 +118,7 @@ export type Database = {
           nome: string
           tecnico_nome?: string | null
           updated_at?: string
+          usuario_id?: string | null
         }
         Update: {
           ativo?: boolean
@@ -127,6 +129,7 @@ export type Database = {
           nome?: string
           tecnico_nome?: string | null
           updated_at?: string
+          usuario_id?: string | null
         }
         Relationships: []
       }
@@ -462,6 +465,7 @@ export type Database = {
           telefone: string | null
           tipo_contrato: string | null
           updated_at: string
+          usuario_id: string | null
         }
         Insert: {
           ativo?: boolean
@@ -486,6 +490,7 @@ export type Database = {
           telefone?: string | null
           tipo_contrato?: string | null
           updated_at?: string
+          usuario_id?: string | null
         }
         Update: {
           ativo?: boolean
@@ -510,6 +515,7 @@ export type Database = {
           telefone?: string | null
           tipo_contrato?: string | null
           updated_at?: string
+          usuario_id?: string | null
         }
         Relationships: []
       }
@@ -902,37 +908,58 @@ export type Database = {
       }
       lancamentos_financeiros: {
         Row: {
+          baixado_por: string | null
+          categoria: string | null
           cliente_id: string | null
           criado_em: string | null
+          criado_por: string | null
           data_competencia: string
+          data_pagamento: string | null
           descricao: string | null
+          forma_pagamento: string | null
           fornecedor_id: string | null
           id: string
           os_id: string | null
+          pago: boolean
           tipo: string | null
           valor: number
+          valor_pago: number | null
         }
         Insert: {
+          baixado_por?: string | null
+          categoria?: string | null
           cliente_id?: string | null
           criado_em?: string | null
+          criado_por?: string | null
           data_competencia?: string
+          data_pagamento?: string | null
           descricao?: string | null
+          forma_pagamento?: string | null
           fornecedor_id?: string | null
           id?: string
           os_id?: string | null
+          pago?: boolean
           tipo?: string | null
           valor: number
+          valor_pago?: number | null
         }
         Update: {
+          baixado_por?: string | null
+          categoria?: string | null
           cliente_id?: string | null
           criado_em?: string | null
+          criado_por?: string | null
           data_competencia?: string
+          data_pagamento?: string | null
           descricao?: string | null
+          forma_pagamento?: string | null
           fornecedor_id?: string | null
           id?: string
           os_id?: string | null
+          pago?: boolean
           tipo?: string | null
           valor?: number
+          valor_pago?: number | null
         }
         Relationships: [
           {
@@ -1048,8 +1075,11 @@ export type Database = {
           canal_utilizado: string
           data_envio: string
           id: string
+          lida: boolean
+          lida_em: string | null
           mensagem_enviada: string
           metadados: Json | null
+          os_id: string | null
           status_envio: string
           titulo_enviado: string | null
           usuario_id: string
@@ -1059,8 +1089,11 @@ export type Database = {
           canal_utilizado: string
           data_envio?: string
           id?: string
+          lida?: boolean
+          lida_em?: string | null
           mensagem_enviada: string
           metadados?: Json | null
+          os_id?: string | null
           status_envio?: string
           titulo_enviado?: string | null
           usuario_id: string
@@ -1070,8 +1103,11 @@ export type Database = {
           canal_utilizado?: string
           data_envio?: string
           id?: string
+          lida?: boolean
+          lida_em?: string | null
           mensagem_enviada?: string
           metadados?: Json | null
+          os_id?: string | null
           status_envio?: string
           titulo_enviado?: string | null
           usuario_id?: string
@@ -1082,6 +1118,13 @@ export type Database = {
             columns: ["alerta_id"]
             isOneToOne: false
             referencedRelation: "alertas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificacoes_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
             referencedColumns: ["id"]
           },
         ]
@@ -1292,6 +1335,11 @@ export type Database = {
           observacoes: string | null
           operador_atribuido: string | null
           orcamento_enviado_em: string | null
+          orcamento_link_gerado_em: string | null
+          orcamento_resposta: string | null
+          orcamento_resposta_em: string | null
+          orcamento_resposta_motivo: string | null
+          orcamento_token: string | null
           prazo_orcamento: string | null
           prioridade: string | null
           status: string
@@ -1326,6 +1374,11 @@ export type Database = {
           observacoes?: string | null
           operador_atribuido?: string | null
           orcamento_enviado_em?: string | null
+          orcamento_link_gerado_em?: string | null
+          orcamento_resposta?: string | null
+          orcamento_resposta_em?: string | null
+          orcamento_resposta_motivo?: string | null
+          orcamento_token?: string | null
           prazo_orcamento?: string | null
           prioridade?: string | null
           status?: string
@@ -1360,6 +1413,11 @@ export type Database = {
           observacoes?: string | null
           operador_atribuido?: string | null
           orcamento_enviado_em?: string | null
+          orcamento_link_gerado_em?: string | null
+          orcamento_resposta?: string | null
+          orcamento_resposta_em?: string | null
+          orcamento_resposta_motivo?: string | null
+          orcamento_token?: string | null
           prazo_orcamento?: string | null
           prioridade?: string | null
           status?: string
@@ -1398,6 +1456,53 @@ export type Database = {
             columns: ["tipo_equipamento_id"]
             isOneToOne: false
             referencedRelation: "tipos_equipamento"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      os_anexos: {
+        Row: {
+          categoria: string
+          criado_em: string
+          enviado_por: string | null
+          enviado_por_nome: string | null
+          id: string
+          nome_arquivo: string
+          os_id: string
+          storage_path: string
+          tamanho_bytes: number | null
+          tipo_mime: string | null
+        }
+        Insert: {
+          categoria?: string
+          criado_em?: string
+          enviado_por?: string | null
+          enviado_por_nome?: string | null
+          id?: string
+          nome_arquivo: string
+          os_id: string
+          storage_path: string
+          tamanho_bytes?: number | null
+          tipo_mime?: string | null
+        }
+        Update: {
+          categoria?: string
+          criado_em?: string
+          enviado_por?: string | null
+          enviado_por_nome?: string | null
+          id?: string
+          nome_arquivo?: string
+          os_id?: string
+          storage_path?: string
+          tamanho_bytes?: number | null
+          tipo_mime?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_anexos_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
             referencedColumns: ["id"]
           },
         ]
@@ -1476,8 +1581,11 @@ export type Database = {
           data_pagamento: string | null
           descricao: string
           fornecedor_id: string | null
+          horas: number | null
           id: string
           is_terceirizado: boolean | null
+          mao_obra_papel: string | null
+          mao_obra_usuario_id: string | null
           margem_lucro_percentual: number | null
           os_id: string
           pago: boolean
@@ -1495,8 +1603,11 @@ export type Database = {
           data_pagamento?: string | null
           descricao: string
           fornecedor_id?: string | null
+          horas?: number | null
           id?: string
           is_terceirizado?: boolean | null
+          mao_obra_papel?: string | null
+          mao_obra_usuario_id?: string | null
           margem_lucro_percentual?: number | null
           os_id: string
           pago?: boolean
@@ -1514,8 +1625,11 @@ export type Database = {
           data_pagamento?: string | null
           descricao?: string
           fornecedor_id?: string | null
+          horas?: number | null
           id?: string
           is_terceirizado?: boolean | null
+          mao_obra_papel?: string | null
+          mao_obra_usuario_id?: string | null
           margem_lucro_percentual?: number | null
           os_id?: string
           pago?: boolean
@@ -1568,6 +1682,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "os_guarda_pecas_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      os_notas: {
+        Row: {
+          autor_id: string | null
+          autor_nome: string | null
+          criado_em: string
+          id: string
+          mencionados: string[]
+          os_id: string
+          texto: string
+        }
+        Insert: {
+          autor_id?: string | null
+          autor_nome?: string | null
+          criado_em?: string
+          id?: string
+          mencionados?: string[]
+          os_id: string
+          texto: string
+        }
+        Update: {
+          autor_id?: string | null
+          autor_nome?: string | null
+          criado_em?: string
+          id?: string
+          mencionados?: string[]
+          os_id?: string
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_notas_os_id_fkey"
             columns: ["os_id"]
             isOneToOne: false
             referencedRelation: "ordens_servico"
@@ -1646,6 +1798,117 @@ export type Database = {
           },
           {
             foreignKeyName: "pecas_os_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      os_subservicos: {
+        Row: {
+          bancada_id: string | null
+          checklist_item_id: string | null
+          componente: string | null
+          concluido_em: string | null
+          concluido_por: string | null
+          created_at: string
+          criado_por: string | null
+          descricao: string
+          destino: string
+          enviado_em: string | null
+          enviado_por: string | null
+          fotos_envio: string[]
+          fotos_retorno: string[]
+          id: string
+          iniciado_em: string | null
+          motivo_pausa: string | null
+          observacao: string | null
+          operador_id: string | null
+          ordem_fila: number
+          origem: string
+          os_id: string
+          prazo_retorno: string | null
+          quantidade: number
+          retornado_em: string | null
+          retornado_por: string | null
+          status: string
+          terceiro_id: string | null
+          terceiro_nome: string | null
+          updated_at: string
+        }
+        Insert: {
+          bancada_id?: string | null
+          checklist_item_id?: string | null
+          componente?: string | null
+          concluido_em?: string | null
+          concluido_por?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao: string
+          destino?: string
+          enviado_em?: string | null
+          enviado_por?: string | null
+          fotos_envio?: string[]
+          fotos_retorno?: string[]
+          id?: string
+          iniciado_em?: string | null
+          motivo_pausa?: string | null
+          observacao?: string | null
+          operador_id?: string | null
+          ordem_fila?: number
+          origem?: string
+          os_id: string
+          prazo_retorno?: string | null
+          quantidade?: number
+          retornado_em?: string | null
+          retornado_por?: string | null
+          status?: string
+          terceiro_id?: string | null
+          terceiro_nome?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bancada_id?: string | null
+          checklist_item_id?: string | null
+          componente?: string | null
+          concluido_em?: string | null
+          concluido_por?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string
+          destino?: string
+          enviado_em?: string | null
+          enviado_por?: string | null
+          fotos_envio?: string[]
+          fotos_retorno?: string[]
+          id?: string
+          iniciado_em?: string | null
+          motivo_pausa?: string | null
+          observacao?: string | null
+          operador_id?: string | null
+          ordem_fila?: number
+          origem?: string
+          os_id?: string
+          prazo_retorno?: string | null
+          quantidade?: number
+          retornado_em?: string | null
+          retornado_por?: string | null
+          status?: string
+          terceiro_id?: string | null
+          terceiro_nome?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_subservicos_bancada_id_fkey"
+            columns: ["bancada_id"]
+            isOneToOne: false
+            referencedRelation: "bancadas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_subservicos_os_id_fkey"
             columns: ["os_id"]
             isOneToOne: false
             referencedRelation: "ordens_servico"
@@ -2006,6 +2269,15 @@ export type Database = {
         Args: { p_base: string; p_prioridade: string }
         Returns: string
       }
+      custo_hora_usuarios: {
+        Args: { p_ids: string[] }
+        Returns: {
+          custo_hora: number
+          nome: string
+          salario: number
+          usuario_id: string
+        }[]
+      }
       dev_get_storage_stats: {
         Args: never
         Returns: {
@@ -2039,6 +2311,13 @@ export type Database = {
           tecnico: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_financeiro: { Args: { _uid: string }; Returns: boolean }
       log_evento: {
         Args: {
@@ -2050,6 +2329,7 @@ export type Database = {
         }
         Returns: string
       }
+      notificar_atraso_os: { Args: { p_os_id: string }; Returns: undefined }
     }
     Enums: {
       app_role:

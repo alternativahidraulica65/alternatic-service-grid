@@ -266,7 +266,7 @@ export function GuiaExecucaoOs({ osId, os, profile, onIrParaAba }: Props) {
 
     const { error } = await supabase
       .from("ordens_servico" as any)
-      .update({ status: statusNovo, data_encerramento: marcarConcluida ? new Date().toISOString() : null })
+      .update({ status: statusNovo, data_entrega: marcarConcluida ? new Date().toISOString() : null })
       .eq("id", osId);
 
     setAtualizandoStatus(false);

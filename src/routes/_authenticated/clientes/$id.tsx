@@ -180,9 +180,9 @@ function ClienteDetalhesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ordens_servico')
-        .select('id, status, valor_final, data_entrada')
+        .select('id, status, valor_final, data_abertura')
         .eq('cliente_id', id)
-        .order('data_entrada', { ascending: false });
+        .order('data_abertura', { ascending: false });
       if (error) throw error;
       return data ?? [];
     }
@@ -210,7 +210,7 @@ function ClienteDetalhesPage() {
         .from('ordens_servico')
         .select('*')
         .eq('cliente_id', id)
-        .order('data_entrada', { ascending: false });
+        .order('data_abertura', { ascending: false });
       if (error) throw error;
       return data ?? [];
     }
@@ -486,7 +486,7 @@ function ClienteDetalhesPage() {
                           {orcamentos.map((o: any) => (
                              <TableRow key={o.id}>
                                 <TableCell className="pl-6 font-bold text-primary">{`#${o.id}`}</TableCell>
-                                <TableCell className="text-xs">{o.data_abertura ? format(new Date(o.data_entrada), "dd/MM/yyyy") : "—"}</TableCell>
+                                <TableCell className="text-xs">{o.data_abertura ? format(new Date(o.data_abertura), "dd/MM/yyyy") : "—"}</TableCell>
                                 <TableCell className="text-xs font-bold">{Number(o.valor_final ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
                                 <TableCell><Badge variant="outline" className="text-[9px] uppercase">{o.status}</Badge></TableCell>
                              </TableRow>
