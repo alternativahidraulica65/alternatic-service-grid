@@ -36,6 +36,13 @@
       "when": 1791909905873,
       "tag": "0004_sincronizar_schema_app",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791909944436,
+      "tag": "0005_marcar_tabelas_obsoletas",
+      "breakpoints": true
     }
   ]
 }
