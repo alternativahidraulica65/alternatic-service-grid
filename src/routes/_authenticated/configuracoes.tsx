@@ -268,7 +268,7 @@ function AbaEmpresas() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("empresas_emissoras")
-        .select("id, nome, razao_social, cnpj, cor_identificacao, ativo")
+        .select("*")
         .order("nome");
       if (error) throw error;
       return (data || []) as Empresa[];
