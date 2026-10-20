@@ -50,6 +50,13 @@
       "when": 1792505898632,
       "tag": "0006_fase2_rls_blindagem",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792506353408,
+      "tag": "0007_fase3_vinculo_subservico_peca",
+      "breakpoints": true
     }
   ]
 }
