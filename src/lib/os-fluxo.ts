@@ -245,25 +245,27 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
     pendencias.aprovacao.push("Aprovação do cliente ainda não registrada");
   }
 
-  // Execução: o subserviço do Orquestrador é soberano sobre a peça de mesmo nome.
-  // Peças sem subserviço correspondente (lançamentos avulsos/legados) seguem validadas.
+  // Execução: o subserviço é soberano sobre a peça vinculada (por ID; nome só para legados).
   const normal = (v: any) => String(v ?? "").trim().toLowerCase();
+  const idsSub = new Set(subservicos.map((s: any) => s?.id));
   const nomesSub = new Set(subservicos.map((s: any) => normal(s?.componente)));
-  const pecasAvulsas = pecas.filter((p) => !nomesSub.has(normal(p.nome)));
+  const vinculada = (p: any) => (p.subservico_id && idsSub.has(p.subservico_id)) || (!p.subservico_id && nomesSub.has(normal(p.nome)));
+  const pecasAvulsas = pecas.filter((p) => !vinculada(p));
   const semDestino = pecasAvulsas.filter(
     (p) => !p.status_peca || p.status_peca === "Pendente de Destinação",
   );
   if (semDestino.length > 0) {
     pendencias.execucao.push(`${semDestino.length} peça(s) sem destinação definida`);
   }
-  const terceirosAbertos = pecasAvulsas.filter(
+  // Qualquer peça enviada a terceiros sem retorno bloqueia (vinculada ou não).
+  const terceirosAbertos = pecas.filter(
     (p) =>
       String(p.status_peca ?? "").toLowerCase().includes("terceiro") &&
       !p.terceiro_recebido_em &&
       String(p.status_peca ?? "").toLowerCase() !== "recebido de terceiros",
   );
   if (terceirosAbertos.length > 0) {
-    pendencias.execucao.push(`${terceirosAbertos.length} peça(s) ainda com terceiros`);
+    pendencias.execucao.push(`${terceirosAbertos.length} peça(s) ainda com terceiros, sem retorno registrado`);
   }
   const bancadaAberta = pecasAvulsas.filter(
     (p) => p.bancada_id && !STATUS_PECA_FINAL.includes(String(p.status_peca ?? "").toLowerCase()),
@@ -281,6 +283,7 @@ export function avaliarFluxo(os: any, dados: DadosFluxo = {}): ResultadoFluxo {
   if (!os?.testado) pendencias.pronto.push("Serviço ainda não testado");
   if (!os?.data_entrega) pendencias.entrega.push("Data de entrega não informada");
   if (!os?.entregue_por) pendencias.entrega.push("Responsável pela entrega não informado");
+  if (!os?.testado) pendencias.entrega.push("Teste do serviço não confirmado");
 
   const concluidas = FASES.filter((f) => {
     if (pendencias[f].length > 0) return false;
