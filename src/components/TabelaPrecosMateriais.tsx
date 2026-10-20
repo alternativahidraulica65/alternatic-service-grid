@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 
-type Linha = Record<string, any>;
+type Linha = any;
 const COLS: { k: string; label: string; w: string; num?: boolean }[] = [
   { k: "especificacao", label: "Especificação", w: "min-w-[180px]" },
   { k: "acabamento", label: "Acabamento", w: "min-w-[130px]" },
@@ -44,15 +44,15 @@ export function TabelaPrecosMateriais() {
     qc.invalidateQueries({ queryKey: ["materiais_precos_referencia"] });
   };
 
-  const salvar = async (r: Linha) => {
+  const salvar = async (r: Linha): Promise<void> => {
     const ch = edit[r.id];
     if (!ch) return;
     const payload: Linha = {};
     for (const [k, v] of Object.entries(ch)) payload[k] = COLS.find((c) => c.k === k)?.num ? toNum(v) : v || null;
-    if (payload.preco_kg != null && !(payload.preco_kg > 0)) return toast.error("Preço por kg deve ser maior que zero");
-    if (!payload.especificacao && "especificacao" in payload) return toast.error("Informe a especificação");
+    if (payload.preco_kg != null && !(payload.preco_kg > 0)) { toast.error("Preço por kg deve ser maior que zero"); return; }
+    if (!payload.especificacao && "especificacao" in payload) { toast.error("Informe a especificação"); return; }
     const { error } = await supabase.from("materiais_precos_referencia" as any).update(payload).eq("id", r.id);
-    if (error) return toast.error("Erro ao salvar: " + error.message);
+    if (error) { toast.error("Erro ao salvar: " + error.message); return; }
     setEdit((e) => { const n = { ...e }; delete n[r.id]; return n; });
     toast.success("Preço atualizado");
     refresh();
@@ -60,20 +60,20 @@ export function TabelaPrecosMateriais() {
 
   const novo = async () => {
     const { error } = await supabase.from("materiais_precos_referencia" as any).insert({ especificacao: "Nova especificação", formato: "redondo", preco_kg: 0.01 });
-    if (error) return toast.error("Erro: " + error.message);
+    if (error) { toast.error("Erro: " + error.message); return; }
     refresh();
   };
 
   const ativo = async (r: Linha, v: boolean) => {
     const { error } = await supabase.from("materiais_precos_referencia" as any).update({ ativo: v }).eq("id", r.id);
-    if (error) return toast.error("Erro: " + error.message);
+    if (error) { toast.error("Erro: " + error.message); return; }
     refresh();
   };
 
   const remover = async (r: Linha) => {
     if (!confirm(`Remover ${r.especificacao}?`)) return;
     const { error } = await supabase.from("materiais_precos_referencia" as any).delete().eq("id", r.id);
-    if (error) return toast.error("Erro: " + error.message);
+    if (error) { toast.error("Erro: " + error.message); return; }
     refresh();
   };
 
