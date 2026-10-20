@@ -43,6 +43,13 @@
       "when": 1791909944436,
       "tag": "0005_marcar_tabelas_obsoletas",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792505898632,
+      "tag": "0006_fase2_rls_blindagem",
+      "breakpoints": true
     }
   ]
 }

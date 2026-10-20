@@ -2274,7 +2274,6 @@ export type Database = {
         Returns: {
           custo_hora: number
           nome: string
-          salario: number
           usuario_id: string
         }[]
       }
@@ -2318,6 +2317,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_dir_fin: { Args: { _uid: string }; Returns: boolean }
       is_financeiro: { Args: { _uid: string }; Returns: boolean }
       log_evento: {
         Args: {
