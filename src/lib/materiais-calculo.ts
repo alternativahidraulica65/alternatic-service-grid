@@ -28,7 +28,7 @@ export function pesoTeorico(formato: Formato, dExt: number, comprimento: number,
   return null;
 }
 
-/** Busca estrita: 1) medida exata documentada 2) faixa cadastrada. Nunca interpola. */
+/** Busca: 1) medida exata 2) faixa cadastrada 3) base do material (R$/kg da bitola cadastrada mais próxima). */
 export function encontrarPreco(
   tabela: PrecoReferencia[],
   especificacao: string,
@@ -36,7 +36,7 @@ export function encontrarPreco(
   formato: Formato,
   dExt: number,
   dInt = 0,
-): { regra: PrecoReferencia; tipo: "exata" | "faixa" } | null {
+): { regra: PrecoReferencia; tipo: "exata" | "faixa" | "base" } | null {
   const base = tabela.filter(
     (r) => r.ativo && r.especificacao === especificacao && (r.acabamento ?? "") === (acabamento ?? "") && r.formato === formato,
   );
@@ -51,7 +51,11 @@ export function encontrarPreco(
     (r) => r.faixa_min_mm != null && r.faixa_max_mm != null && dExt >= Number(r.faixa_min_mm) && dExt <= Number(r.faixa_max_mm),
   );
   if (faixa) return { regra: faixa, tipo: "faixa" };
-  return null;
+  if (!base.length) return null;
+  const ref = (r: PrecoReferencia) =>
+    r.diametro_mm != null ? Number(r.diametro_mm) : ((Number(r.faixa_min_mm) || 0) + (Number(r.faixa_max_mm) || 0)) / 2;
+  const proxima = [...base].sort((a, b) => Math.abs(ref(a) - dExt) - Math.abs(ref(b) - dExt))[0]!;
+  return { regra: proxima, tipo: "base" };
 }
 
 export function valorCompra(pesoPeca: number, quantidade: number, precoKg: number, ipiPercentual: number) {
