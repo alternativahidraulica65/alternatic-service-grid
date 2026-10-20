@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T14:26:45.667408+00:00",
+  "generated_at": "2026-10-20T15:08:08.730800+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -31,7 +31,7 @@
     },
     {
       "path": "package.json",
-      "bytes": 3130
+      "bytes": 3154
     },
     {
       "path": "components.json",
@@ -530,6 +530,10 @@
       "bytes": 2345
     },
     {
+      "path": "src/components/TabelaPrecosMateriais.tsx",
+      "bytes": 6470
+    },
+    {
       "path": "src/components/GuiaExecucaoOs.tsx",
       "bytes": 34931
     },
@@ -714,6 +718,14 @@
       "bytes": 10959
     },
     {
+      "path": "src/lib/materiais-calculo.test.ts",
+      "bytes": 1648
+    },
+    {
+      "path": "src/lib/materiais-calculo.ts",
+      "bytes": 2375
+    },
+    {
       "path": "src/lib/mao-de-obra.ts",
       "bytes": 1958
     },
@@ -767,7 +779,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 74661
+      "bytes": 76373
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -979,7 +991,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 41928
+      "bytes": 42260
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
@@ -999,7 +1011,7 @@
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "bytes": 20627
+      "bytes": 20923
     },
     {
       "path": "src/routes/_authenticated/dashboard/financeiro.tsx",
@@ -1098,6 +1110,10 @@
       "bytes": 489
     },
     {
+      "path": "drizzle/migrations/0008_materiais_precos_referencia.sql",
+      "bytes": 1387
+    },
+    {
       "path": "drizzle/migrations/0004_sincronizar_schema_app.sql",
       "bytes": 10129
     },
@@ -1126,7 +1142,15 @@
       "bytes": 869
     },
     {
+      "path": "drizzle/migrations/0009_seed_precos_unafe.sql",
+      "bytes": 1475
+    },
+    {
       "path": "drizzle/migrations/meta/0006_snapshot.json",
+      "bytes": 336
+    },
+    {
+      "path": "drizzle/migrations/meta/0009_snapshot.json",
       "bytes": 336
     },
     {
@@ -1139,7 +1163,7 @@
     },
     {
       "path": "drizzle/migrations/meta/_journal.json",
-      "bytes": 1287
+      "bytes": 1587
     },
     {
       "path": "drizzle/migrations/meta/0001_snapshot.json",
@@ -1151,6 +1175,10 @@
     },
     {
       "path": "drizzle/migrations/meta/0007_snapshot.json",
+      "bytes": 336
+    },
+    {
+      "path": "drizzle/migrations/meta/0008_snapshot.json",
       "bytes": 336
     },
     {
@@ -1730,6 +1758,42 @@
     {
       "source": "src/components/EstadoLista.tsx",
       "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/TabelaPrecosMateriais.tsx",
+      "target": "@/components/ui/switch"
     },
     {
       "source": "src/components/GuiaExecucaoOs.tsx",
@@ -2586,6 +2650,14 @@
     {
       "source": "src/lib/cliente-vendedor.ts",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/lib/materiais-calculo.test.ts",
+      "target": "vitest"
+    },
+    {
+      "source": "src/lib/materiais-calculo.test.ts",
+      "target": "./materiais-calculo"
     },
     {
       "source": "src/lib/utils.ts",
@@ -3505,6 +3577,10 @@
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/TabelaPrecosMateriais"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
       "target": "@/lib/admin-usuarios.functions"
     },
     {
@@ -3706,6 +3782,10 @@
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
       "target": "@/lib/custos-automaticos"
+    },
+    {
+      "source": "src/routes/_authenticated/engenharia/materiais.tsx",
+      "target": "@/lib/materiais-calculo"
     },
     {
       "source": "src/routes/_authenticated/engenharia/materiais.tsx",
