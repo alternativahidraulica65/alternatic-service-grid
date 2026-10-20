@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { EstadoErro, EstadoVazio, mensagemErro } from "@/components/EstadoLista";
 import { enviarOuEnfileirar, ouvirFila, processarFila, estaOnline } from "@/lib/fila-offline";
 
 export const Route = createFileRoute("/_authenticated/os/$id/oficina")({
@@ -51,8 +52,10 @@ function ModoOficina() {
     };
   }, []);
 
-  const { data: os } = useQuery({
+  const { data: os, isError: erroOs, error: falhaOs, refetch: recarregarOs } = useQuery({
     queryKey: ["oficina_os", osId],
+    staleTime: 5 * 60_000,
+    retry: 3,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("ordens_servico")
@@ -64,8 +67,11 @@ function ModoOficina() {
     },
   });
 
-  const { data: itens = [] } = useQuery({
+  const { data: itens = [], isLoading: carregandoItens } = useQuery({
     queryKey: ["oficina_checklist", osId, os?.tipo_equipamento_id],
+    staleTime: 5 * 60_000,
+    retry: 3,
+    placeholderData: (anterior) => anterior,
     enabled: !!os,
     queryFn: async () => {
       const { data: salvos, error } = await supabase
@@ -157,7 +163,7 @@ function ModoOficina() {
     }).then((r) => {
       if (r === "na-fila") toast.warning("Foto guardada — sobe quando a internet voltar");
       else toast.success("Foto enviada");
-    });
+    }).catch((e) => toast.error(mensagemErro(e)));
   };
 
   return (
@@ -186,30 +192,34 @@ function ModoOficina() {
       </div>
 
       <main className="flex flex-1 flex-col items-center justify-center gap-6 p-6 text-center">
-        {total === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum item de checklist para esta OS.</p>
+        {erroOs ? (
+          <EstadoErro mensagem={mensagemErro(falhaOs)} onTentar={() => recarregarOs()} />
+        ) : carregandoItens && total === 0 ? (
+          <p className="animate-pulse text-sm text-muted-foreground">Carregando checklist…</p>
+        ) : total === 0 ? (
+          <EstadoVazio titulo="Checklist vazio" descricao="Nenhum item de checklist para esta OS." />
         ) : (
           <>
             <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">
               Item {indice + 1} de {total} · {avaliados} avaliados
             </p>
-            <h1 className="text-3xl font-black uppercase leading-tight">{item?.nome}</h1>
+            <h1 key={indice} className="text-3xl font-black uppercase leading-tight animate-in fade-in slide-in-from-right-4 duration-200">{item?.nome}</h1>
             {estadoAtual ? (
-              <Badge className={estadoAtual === "Bom" ? "bg-emerald-600 text-white" : "bg-destructive text-white"}>
+              <Badge key={estadoAtual} className={`animate-in zoom-in duration-200 ${estadoAtual === "Bom" ? "bg-emerald-600 text-white" : "bg-destructive text-white"}`}>
                 {estadoAtual}
               </Badge>
             ) : null}
 
             <div className="grid w-full max-w-md grid-cols-2 gap-4">
               <Button
-                className="h-28 bg-emerald-600 text-lg font-black uppercase text-white hover:bg-emerald-500"
+                className="h-28 active:scale-95 transition-transform bg-emerald-600 text-lg font-black uppercase text-white hover:bg-emerald-500"
                 onClick={() => marcar("Bom")}
               >
                 <ThumbsUp className="mr-2 h-7 w-7" /> Bom
               </Button>
               <Button
                 variant="destructive"
-                className="h-28 text-lg font-black uppercase"
+                className="h-28 active:scale-95 transition-transform text-lg font-black uppercase"
                 onClick={() => marcar("Ruim")}
               >
                 <ThumbsDown className="mr-2 h-7 w-7" /> Ruim
