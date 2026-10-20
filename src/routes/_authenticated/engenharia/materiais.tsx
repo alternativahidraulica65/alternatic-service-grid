@@ -87,8 +87,10 @@ function MateriaisPage() {
   const doFormato = tabela.filter((r) => r.formato === formato);
   const especs = Array.from(new Set(doFormato.map((r) => r.especificacao))).sort();
   const acabs = Array.from(new Set(doFormato.filter((r) => r.especificacao === espec).map((r) => r.acabamento ?? ""))).sort();
-  const medidasDoc = doFormato.filter((r) => r.especificacao === espec && (r.acabamento ?? "") === acab);
-  const densidade = medidasDoc[0]?.densidade ?? doFormato.find((r) => r.especificacao === espec)?.densidade ?? 7.85;
+  const densidade =
+    doFormato.find((r) => r.especificacao === espec && (r.acabamento ?? "") === acab)?.densidade ??
+    doFormato.find((r) => r.especificacao === espec)?.densidade ??
+    7.85;
 
   const { data: fila = [] } = useQuery({
     queryKey: ["materiais_fila"],
@@ -286,17 +288,6 @@ function MateriaisPage() {
                   <SelectContent>{acabs.map((a) => <SelectItem key={a || "-"} value={a}>{a || "Sem acabamento"}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              {medidasDoc.length > 0 && (
-                <div className="sm:col-span-2 flex flex-wrap gap-1.5">
-                  <span className={lbl + " w-full"}>Medidas com preço documentado</span>
-                  {medidasDoc.map((r) => (
-                    <Button key={r.id} type="button" size="sm" variant="outline" className="h-8 text-xs font-bold"
-                      onClick={() => { if (r.diametro_mm != null) setDExt(String(r.diametro_mm).replace(".", ",")); if (r.diametro_int_mm != null) setDInt(String(r.diametro_int_mm).replace(".", ",")); }}>
-                      {r.diametro_mm != null ? `Ø ${num(Number(r.diametro_mm), 1)}${r.diametro_int_mm != null ? ` / ${num(Number(r.diametro_int_mm), 1)}` : ""} mm` : `Ø ${num(Number(r.faixa_min_mm), 1)}–${num(Number(r.faixa_max_mm), 1)} mm`} · {brl(r.preco_kg)}/kg
-                    </Button>
-                  ))}
-                </div>
-              )}
               <div className="space-y-1.5">
                 <Label className={lbl}>{formato === "tubo" ? "Diâmetro externo" : "Diâmetro"}</Label>
                 <Input value={dExt} onChange={(e) => setDExt(e.target.value)} placeholder='2.1/4" ou 57,15mm' className="h-11 font-bold" />
