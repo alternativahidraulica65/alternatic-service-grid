@@ -1,5 +1,5 @@
 import { BotaoVoltar } from "@/components/BotaoVoltar";
-import { createFileRoute, Link, useBlocker } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link, useBlocker } from "@tanstack/react-router";
 import {
   Receipt,
   Trash2,
@@ -80,6 +80,10 @@ import {
 } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/os/$id/orcamento")({
+  beforeLoad: ({ context }) => {
+    const c = context as any;
+    if (!(c.roles?.includes("diretor") || c.roles?.includes("administrativo_financeiro"))) throw redirect({ to: "/dashboard" });
+  },
   component: OrcamentoOSPage,
   head: () => ({
     meta: [

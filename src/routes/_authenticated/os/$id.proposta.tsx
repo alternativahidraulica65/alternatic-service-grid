@@ -1,5 +1,5 @@
 import { BotaoVoltar } from "@/components/BotaoVoltar";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Printer } from "lucide-react";
@@ -19,6 +19,10 @@ import {
 } from "@/lib/orcamento";
 
 export const Route = createFileRoute("/_authenticated/os/$id/proposta")({
+  beforeLoad: ({ context }) => {
+    const c = context as any;
+    if (!(c.roles?.includes("diretor") || c.roles?.includes("administrativo_financeiro"))) throw redirect({ to: "/dashboard" });
+  },
   component: PropostaPage,
   head: () => ({
     meta: [

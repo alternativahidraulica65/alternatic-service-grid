@@ -48,10 +48,8 @@ export const Route = createFileRoute("/_authenticated")({
     const isOperador = roles.includes("operador");
     const isTerceirizado = roles.includes("terceirizado");
 
-    // Usuário DEV sempre tem acesso total (tratado como Diretor)
-    const isDev = user.email === "dev@admin.com" || user.email === "teste.dev@alternativahidraulica.local" || user.email === "admin@teste.com";
     // Financeiro/Administrativo tem acesso irrestrito, igual ao Diretor.
-    const hasFullAccess = isDiretor || isDev || isFinanceiro;
+    const hasFullAccess = isDiretor || isFinanceiro;
 
     // Dashboard inicial de acordo com o perfil real do usuário
     const cargo = (profile as any)?.cargo as string | undefined;

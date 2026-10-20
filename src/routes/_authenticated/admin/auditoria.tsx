@@ -1,5 +1,5 @@
 import { BotaoVoltar } from "@/components/BotaoVoltar";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import {
   History as HistoryIcon,
   Search,
@@ -27,6 +27,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/admin/auditoria")({
+  beforeLoad: ({ context }) => {
+    const c = context as any;
+    if (!(c.roles?.includes("diretor") || c.roles?.includes("administrativo_financeiro"))) throw redirect({ to: "/dashboard" });
+  },
   head: () => ({ meta: [
     { title: "Auditoria — Alternativa Hidráulica" },
     { name: "description", content: "Histórico de ações e rastreabilidade da operação." },
