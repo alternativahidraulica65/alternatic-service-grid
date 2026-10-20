@@ -64,6 +64,13 @@
       "when": 1792508706786,
       "tag": "0008_materiais_precos_referencia",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792508732778,
+      "tag": "0009_seed_precos_unafe",
+      "breakpoints": true
     }
   ]
 }
