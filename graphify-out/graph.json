@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T14:18:47.209682+00:00",
+  "generated_at": "2026-10-20T14:26:45.667408+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -711,7 +711,7 @@
     },
     {
       "path": "src/lib/os-fluxo.ts",
-      "bytes": 10676
+      "bytes": 10959
     },
     {
       "path": "src/lib/mao-de-obra.ts",
@@ -767,7 +767,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 74542
+      "bytes": 74661
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -1110,6 +1110,10 @@
       "bytes": 4596
     },
     {
+      "path": "drizzle/migrations/0007_fase3_vinculo_subservico_peca.sql",
+      "bytes": 3039
+    },
+    {
       "path": "drizzle/migrations/0005_marcar_tabelas_obsoletas.sql",
       "bytes": 507
     },
@@ -1135,7 +1139,7 @@
     },
     {
       "path": "drizzle/migrations/meta/_journal.json",
-      "bytes": 1130
+      "bytes": 1287
     },
     {
       "path": "drizzle/migrations/meta/0001_snapshot.json",
@@ -1143,6 +1147,10 @@
     },
     {
       "path": "drizzle/migrations/meta/0002_snapshot.json",
+      "bytes": 336
+    },
+    {
+      "path": "drizzle/migrations/meta/0007_snapshot.json",
       "bytes": 336
     },
     {
