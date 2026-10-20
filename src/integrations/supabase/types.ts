@@ -1045,6 +1045,63 @@ export type Database = {
           },
         ]
       }
+      materiais_precos_referencia: {
+        Row: {
+          acabamento: string | null
+          ativo: boolean
+          created_at: string
+          data_referencia: string
+          densidade: number
+          diametro_int_mm: number | null
+          diametro_mm: number | null
+          especificacao: string
+          faixa_max_mm: number | null
+          faixa_min_mm: number | null
+          formato: string
+          id: string
+          ipi_percentual: number
+          observacao: string | null
+          preco_kg: number
+          updated_at: string
+        }
+        Insert: {
+          acabamento?: string | null
+          ativo?: boolean
+          created_at?: string
+          data_referencia?: string
+          densidade?: number
+          diametro_int_mm?: number | null
+          diametro_mm?: number | null
+          especificacao: string
+          faixa_max_mm?: number | null
+          faixa_min_mm?: number | null
+          formato?: string
+          id?: string
+          ipi_percentual?: number
+          observacao?: string | null
+          preco_kg: number
+          updated_at?: string
+        }
+        Update: {
+          acabamento?: string | null
+          ativo?: boolean
+          created_at?: string
+          data_referencia?: string
+          densidade?: number
+          diametro_int_mm?: number | null
+          diametro_mm?: number | null
+          especificacao?: string
+          faixa_max_mm?: number | null
+          faixa_min_mm?: number | null
+          formato?: string
+          id?: string
+          ipi_percentual?: number
+          observacao?: string | null
+          preco_kg?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       materias_primas: {
         Row: {
           criado_em: string | null

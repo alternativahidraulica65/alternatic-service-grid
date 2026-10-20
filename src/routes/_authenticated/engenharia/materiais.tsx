@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Calculator, CheckCircle2, Circle, Layers, Save, Search, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { idCustoAutomatico } from "@/lib/custos-automaticos";
+import { encontrarPreco, pesoTeorico, valorCompra, type Formato, type PrecoReferencia } from "@/lib/materiais-calculo";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,23 +30,11 @@ export const Route = createFileRoute("/_authenticated/engenharia/materiais")({
   component: MateriaisPage,
 });
 
-/** Densidades físicas de referência (g/cm³). Preço vem do cadastro. */
-const PADROES = [
-  { nome: "Aço SAE 1045", densidade: 7.85 },
-  { nome: "Aço SAE 4140 beneficiado", densidade: 7.85 },
-  { nome: "Tubo brunido ST-52", densidade: 7.85 },
-  { nome: "Aço inox 304", densidade: 7.93 },
-  { nome: "Bronze TM-23", densidade: 8.8 },
-  { nome: "Ferro fundido nodular", densidade: 7.2 },
-  { nome: "Nylon", densidade: 1.15 },
-  { nome: "Poliacetal (POM)", densidade: 1.42 },
-  { nome: "PTFE / Teflon", densidade: 2.2 },
-];
-
 const PALAVRAS = ["haste", "tubo", "camisa", "embolo", "êmbolo", "porca", "bucha", "pino", "eixo", "flange", "tampa", "guia", "cabe", "olhal", "pistão", "pistao"];
 
 const brl = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0);
 const num = (v: number, d = 2) => (Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", { maximumFractionDigits: d, minimumFractionDigits: d });
+const n = (s: string) => Number(String(s).replace(",", ".")) || 0;
 
 /** Aceita 3.1/2", 3 1/2", 2", 1.3/4 pol, 50,8mm ou 50.8 (mm). Retorna mm. */
 export function medidaParaMm(entrada: string): number {
@@ -76,35 +65,30 @@ function MateriaisPage() {
   const [todos, setTodos] = useState(false);
   const [sel, setSel] = useState<any | null>(null);
 
-  const [geometria, setGeometria] = useState<"barra" | "tubo">("barra");
-  const [dExt, setDExt] = useState("3.1/2\"");
+  const [formato, setFormato] = useState<Formato>("redondo");
+  const [espec, setEspec] = useState("");
+  const [acab, setAcab] = useState("");
+  const [dExt, setDExt] = useState("");
   const [dInt, setDInt] = useState("");
-  const [comp, setComp] = useState("500");
-  const [sobra, setSobra] = useState("15");
+  const [comp, setComp] = useState("");
   const [qtd, setQtd] = useState("1");
-  const [material, setMaterial] = useState(PADROES[0]!.nome);
-  const [modoPreco, setModoPreco] = useState<"kg" | "metro">("kg");
-  const [preco, setPreco] = useState("");
+  const [precoManual, setPrecoManual] = useState("");
   const [salvando, setSalvando] = useState(false);
 
-  const { data: materiaisDb = [] } = useQuery({
-    queryKey: ["materias_primas"],
+  const { data: tabela = [] } = useQuery({
+    queryKey: ["materiais_precos_referencia"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("materias_primas" as any).select("*").order("nome");
+      const { data, error } = await supabase.from("materiais_precos_referencia" as any).select("*").eq("ativo", true).order("especificacao");
       if (error) throw error;
-      return (data ?? []) as any[];
+      return ((data ?? []) as any[]).map((r) => ({ ...r, densidade: Number(r.densidade), preco_kg: Number(r.preco_kg), ipi_percentual: Number(r.ipi_percentual) })) as PrecoReferencia[];
     },
   });
 
-  const materiais = useMemo(() => {
-    const m = new Map<string, { id?: string; nome: string; densidade: number; preco: number }>();
-    PADROES.forEach((p) => m.set(p.nome.toLowerCase(), { ...p, preco: 0 }));
-    materiaisDb.forEach((r: any) =>
-      m.set(String(r.nome).toLowerCase(), { id: r.id, nome: r.nome, densidade: Number(r.densidade) || 7.85, preco: Number(r.preco_base_kg) || 0 }),
-    );
-    return Array.from(m.values()).sort((a, b) => a.nome.localeCompare(b.nome));
-  }, [materiaisDb]);
-  const mat = materiais.find((m) => m.nome === material) ?? materiais[0]!;
+  const doFormato = tabela.filter((r) => r.formato === formato);
+  const especs = Array.from(new Set(doFormato.map((r) => r.especificacao))).sort();
+  const acabs = Array.from(new Set(doFormato.filter((r) => r.especificacao === espec).map((r) => r.acabamento ?? ""))).sort();
+  const medidasDoc = doFormato.filter((r) => r.especificacao === espec && (r.acabamento ?? "") === acab);
+  const densidade = medidasDoc[0]?.densidade ?? doFormato.find((r) => r.especificacao === espec)?.densidade ?? 7.85;
 
   const { data: fila = [] } = useQuery({
     queryKey: ["materiais_fila"],
@@ -137,59 +121,50 @@ function MateriaisPage() {
 
   const calc = useMemo(() => {
     const de = medidaParaMm(dExt);
-    const di = geometria === "tubo" ? medidaParaMm(dInt) : 0;
-    const L = (Number(comp.replace(",", ".")) || 0) + (Number(sobra.replace(",", ".")) || 0);
-    const q = Math.max(1, Number(qtd) || 1);
-    const area = (Math.PI / 4) * (de * de - di * di); // mm²
-    const volCm3 = (area * L) / 1000;
-    const pesoUn = (volCm3 * mat.densidade) / 1000;
-    const p = Number(preco.replace(",", ".")) || 0;
-    const custoUn = modoPreco === "kg" ? pesoUn * p : (L / 1000) * p;
-    return { de, di, L, q, pesoUn, pesoTotal: pesoUn * q, custoTotal: custoUn * q, valido: de > 0 && L > 0 && di < de };
-  }, [dExt, dInt, comp, sobra, qtd, geometria, mat, preco, modoPreco]);
+    const di = formato === "tubo" ? medidaParaMm(dInt) : 0;
+    const L = n(comp);
+    const q = Math.max(1, Math.floor(n(qtd)) || 1);
+    const peso = pesoTeorico(formato, de, L, densidade, di);
+    const achado = espec ? encontrarPreco(tabela, espec, acab || null, formato, de, di) : null;
+    const precoKg = achado?.regra.preco_kg ?? n(precoManual);
+    const ipiPct = achado?.regra.ipi_percentual ?? 3.25;
+    const v = peso && precoKg > 0 ? valorCompra(peso, q, precoKg, ipiPct) : null;
+    return { de, di, L, q, peso, achado, precoKg, ipiPct, v };
+  }, [dExt, dInt, comp, qtd, formato, densidade, espec, acab, tabela, precoManual]);
 
   const escolher = (s: any) => {
     setSel(s);
     const t = `${s.componente ?? ""}`.toLowerCase();
-    setGeometria(t.includes("tubo") || t.includes("camisa") ? "tubo" : "barra");
-    if (t.includes("tubo") || t.includes("camisa")) setMaterial("Tubo brunido ST-52");
-  };
-
-  const escolherMaterial = (nome: string) => {
-    setMaterial(nome);
-    const m = materiais.find((x) => x.nome === nome);
-    if (m?.preco) { setPreco(String(m.preco).replace(".", ",")); setModoPreco("kg"); }
+    setFormato(t.includes("tubo") || t.includes("camisa") ? "tubo" : "redondo");
+    setEspec(""); setAcab("");
   };
 
   const descricao = () => {
-    const forma = geometria === "tubo"
-      ? `tubo Ø ${dExt} x Ø int ${dInt} x ${num(calc.L, 0)}mm`
-      : `barra Ø ${dExt} x ${num(calc.L, 0)}mm`;
-    const preco_ = modoPreco === "kg" ? `${brl(Number(preco.replace(",", ".")) || 0)}/kg` : `${brl(Number(preco.replace(",", ".")) || 0)}/m`;
-    return `Matéria-prima ${sel?.componente ?? ""}: ${mat.nome} ${forma}${calc.q > 1 ? ` (${calc.q} pç)` : ""} — ${num(calc.pesoTotal)} kg a ${preco_}`;
+    const forma = formato === "tubo" ? `tubo Ø ${num(calc.de, 1)} x Ø int ${num(calc.di, 1)} x ${num(calc.L, 0)}mm` : `barra Ø ${num(calc.de, 1)} x ${num(calc.L, 0)}mm`;
+    return `Matéria-prima ${sel?.componente ?? ""}: ${espec} ${acab} ${forma}${calc.q > 1 ? ` (${calc.q} pç)` : ""} — ${num((calc.peso ?? 0) * calc.q)} kg a ${brl(calc.precoKg)}/kg + IPI ${num(calc.ipiPct)}%`;
   };
 
-  const salvarPreco = async () => {
-    const p = Number(preco.replace(",", ".")) || 0;
-    if (modoPreco !== "kg" || p <= 0) { toast.error("Informe o preço por kg para salvar como referência"); return; }
-    const payload = { nome: mat.nome, densidade: mat.densidade, preco_base_kg: p };
-    const q = mat.id
-      ? supabase.from("materias_primas" as any).update({ preco_base_kg: p }).eq("id", mat.id)
-      : supabase.from("materias_primas" as any).insert(payload);
-    const { error } = await q;
+  const salvarReferencia = async () => {
+    const p = n(precoManual);
+    if (!espec || !(p > 0) || !(calc.de > 0)) { toast.error("Informe especificação, medida e preço por kg"); return; }
+    const { error } = await supabase.from("materiais_precos_referencia" as any).insert({
+      especificacao: espec, acabamento: acab || null, formato, diametro_mm: Math.round(calc.de * 100) / 100,
+      diametro_int_mm: formato === "tubo" ? Math.round(calc.di * 100) / 100 : null, densidade, preco_kg: p, observacao: "Cadastro manual na calculadora",
+    });
     if (error) { toast.error("Erro ao salvar preço: " + error.message); return; }
-    toast.success("Preço de referência salvo");
-    qc.invalidateQueries({ queryKey: ["materias_primas"] });
+    toast.success("Preço cadastrado na tabela de referência");
+    setPrecoManual("");
+    qc.invalidateQueries({ queryKey: ["materiais_precos_referencia"] });
   };
 
   const registrar = async () => {
     if (!sel) { toast.error("Selecione um item da fila"); return; }
-    if (!calc.valido) { toast.error("Confira as medidas"); return; }
-    if (calc.custoTotal < 0.5) { toast.error("O custo precisa ser de no mínimo R$ 0,50"); return; }
+    if (!calc.v) { toast.error("Confira medidas e preço"); return; }
+    if (calc.v.total < 0.5) { toast.error("O custo precisa ser de no mínimo R$ 0,50"); return; }
     setSalvando(true);
     try {
       const { data: auth } = await supabase.auth.getUser();
-      const valor = Math.round(calc.custoTotal * 100) / 100;
+      const valor = calc.v.total;
       const desc = descricao();
       const { error } = sel.lancado
         ? await supabase.from("os_custos" as any).update({ descricao: desc, custo_interno: valor }).eq("id", sel.custoId)
@@ -216,6 +191,7 @@ function MateriaisPage() {
   };
 
   const lbl = "text-[10px] font-black uppercase tracking-widest text-muted-foreground";
+  const semPreco = !!espec && calc.de > 0 && !calc.achado;
 
   return (
     <div className="space-y-6 p-4 md:p-8 pb-20">
@@ -287,103 +263,92 @@ function MateriaisPage() {
           </CardHeader>
           <CardContent className="pt-5 space-y-5">
             <div className="grid grid-cols-2 gap-2">
-              {(["barra", "tubo"] as const).map((g) => (
-                <Button key={g} type="button" variant={geometria === g ? "default" : "outline"} onClick={() => setGeometria(g)} className="h-11 font-bold uppercase text-xs">
-                  {g === "barra" ? <Layers className="h-4 w-4 mr-2" /> : <Circle className="h-4 w-4 mr-2" />}
-                  {g === "barra" ? "Barra maciça" : "Tubo / camisa"}
+              {(["redondo", "tubo"] as const).map((g) => (
+                <Button key={g} type="button" variant={formato === g ? "default" : "outline"} onClick={() => { setFormato(g); setEspec(""); setAcab(""); }} className="h-11 font-bold uppercase text-xs">
+                  {g === "redondo" ? <Layers className="h-4 w-4 mr-2" /> : <Circle className="h-4 w-4 mr-2" />}
+                  {g === "redondo" ? "Barra / tarugo" : "Tubo"}
                 </Button>
               ))}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label className={lbl}>{geometria === "tubo" ? "Diâmetro externo" : "Diâmetro"}</Label>
-                <Input value={dExt} onChange={(e) => setDExt(e.target.value)} placeholder='3.1/2" ou 88,9mm' className="h-11 font-bold" />
-                <p className="text-[11px] text-muted-foreground">= {num(medidaParaMm(dExt), 1)} mm</p>
+                <Label className={lbl}>Especificação</Label>
+                <Select value={espec} onValueChange={(v) => { setEspec(v); setAcab(""); }}>
+                  <SelectTrigger className="h-11 font-bold"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>{especs.map((e) => <SelectItem key={e} value={e}>{e}</SelectItem>)}</SelectContent>
+                </Select>
               </div>
-              {geometria === "tubo" && (
-                <div className="space-y-1.5">
-                  <Label className={lbl}>Diâmetro interno</Label>
-                  <Input value={dInt} onChange={(e) => setDInt(e.target.value)} placeholder='2.1/2" ou 63,5mm' className="h-11 font-bold" />
-                  <p className="text-[11px] text-muted-foreground">= {num(medidaParaMm(dInt), 1)} mm</p>
+              <div className="space-y-1.5">
+                <Label className={lbl}>Acabamento</Label>
+                <Select value={acab} onValueChange={setAcab} disabled={!espec}>
+                  <SelectTrigger className="h-11 font-bold"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>{acabs.map((a) => <SelectItem key={a || "-"} value={a}>{a || "Sem acabamento"}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              {medidasDoc.length > 0 && (
+                <div className="sm:col-span-2 flex flex-wrap gap-1.5">
+                  <span className={lbl + " w-full"}>Medidas com preço documentado</span>
+                  {medidasDoc.map((r) => (
+                    <Button key={r.id} type="button" size="sm" variant="outline" className="h-8 text-xs font-bold"
+                      onClick={() => { if (r.diametro_mm != null) setDExt(String(r.diametro_mm).replace(".", ",")); if (r.diametro_int_mm != null) setDInt(String(r.diametro_int_mm).replace(".", ",")); }}>
+                      {r.diametro_mm != null ? `Ø ${num(Number(r.diametro_mm), 1)}${r.diametro_int_mm != null ? ` / ${num(Number(r.diametro_int_mm), 1)}` : ""} mm` : `Ø ${num(Number(r.faixa_min_mm), 1)}–${num(Number(r.faixa_max_mm), 1)} mm`} · {brl(r.preco_kg)}/kg
+                    </Button>
+                  ))}
                 </div>
               )}
               <div className="space-y-1.5">
-                <Label className={lbl}>Comprimento da peça (mm)</Label>
-                <Input value={comp} onChange={(e) => setComp(e.target.value)} inputMode="decimal" className="h-11 font-bold" />
+                <Label className={lbl}>{formato === "tubo" ? "Diâmetro externo" : "Diâmetro"}</Label>
+                <Input value={dExt} onChange={(e) => setDExt(e.target.value)} placeholder='2.1/4" ou 57,15mm' className="h-11 font-bold" />
+                <p className="text-[11px] text-muted-foreground">= {num(calc.de, 2)} mm</p>
               </div>
+              {formato === "tubo" && (
+                <div className="space-y-1.5">
+                  <Label className={lbl}>Diâmetro interno</Label>
+                  <Input value={dInt} onChange={(e) => setDInt(e.target.value)} placeholder="80mm" className="h-11 font-bold" />
+                  <p className="text-[11px] text-muted-foreground">= {num(calc.di, 2)} mm{calc.di > 0 && calc.di >= calc.de ? " · deve ser menor que o externo" : ""}</p>
+                </div>
+              )}
               <div className="space-y-1.5">
-                <Label className={lbl}>Sobremetal corte/face (mm)</Label>
-                <Input value={sobra} onChange={(e) => setSobra(e.target.value)} inputMode="decimal" className="h-11 font-bold" />
+                <Label className={lbl}>Comprimento real (mm)</Label>
+                <Input value={comp} onChange={(e) => setComp(e.target.value)} inputMode="decimal" className="h-11 font-bold" />
               </div>
               <div className="space-y-1.5">
                 <Label className={lbl}>Quantidade de peças</Label>
                 <Input value={qtd} onChange={(e) => setQtd(e.target.value)} inputMode="numeric" className="h-11 font-bold" />
               </div>
-              <div className="space-y-1.5">
-                <Label className={lbl}>Material</Label>
-                <Select value={material} onValueChange={escolherMaterial}>
-                  <SelectTrigger className="h-11 font-bold"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {materiais.map((m) => (
-                      <SelectItem key={m.nome} value={m.nome}>
-                        {m.nome} ({num(m.densidade)} g/cm³){m.preco ? ` · ${brl(m.preco)}/kg` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-[auto_1fr] items-end">
-              <div className="space-y-1.5">
-                <Label className={lbl}>Preço por</Label>
-                <div className="flex gap-1">
-                  {(["kg", "metro"] as const).map((m) => (
-                    <Button key={m} type="button" size="sm" variant={modoPreco === m ? "default" : "outline"} onClick={() => setModoPreco(m)} className="h-11 px-4 font-bold">
-                      {m === "kg" ? "Kg" : "Metro"}
-                    </Button>
-                  ))}
-                </div>
+            {calc.achado && (
+              <p className="text-xs border-l-2 border-primary pl-3">
+                Preço {calc.achado.tipo === "exata" ? "da medida exata" : "da faixa cadastrada"}: <b>{brl(calc.precoKg)}/kg</b> · densidade {num(densidade)} g/cm³
+              </p>
+            )}
+            {semPreco && (
+              <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 space-y-2">
+                <p className="text-xs font-bold">Sem preço histórico documentado para esta medida. O peso foi calculado, mas o valor não é estimado.</p>
+                {podeEditarPreco && (
+                  <div className="flex gap-2">
+                    <Input value={precoManual} onChange={(e) => setPrecoManual(e.target.value)} inputMode="decimal" placeholder="Preço R$/kg" className="h-10 font-bold" />
+                    <Button type="button" variant="outline" className="h-10" onClick={salvarReferencia}><Save className="h-4 w-4 mr-1" /> Cadastrar</Button>
+                  </div>
+                )}
               </div>
-              <div className="space-y-1.5">
-                <Label className={lbl}>Preço (R$/{modoPreco === "kg" ? "kg" : "m"})</Label>
-                <div className="flex gap-2">
-                  <Input value={preco} onChange={(e) => setPreco(e.target.value)} inputMode="decimal" placeholder="0,00" className="h-11 font-bold" />
-                  {podeEditarPreco && modoPreco === "kg" && (
-                    <Button type="button" variant="outline" className="h-11" onClick={salvarPreco} title="Salvar como preço de referência deste material">
-                      <Save className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-3 gap-2 rounded-md border bg-muted/30 p-4">
-              <div>
-                <p className={lbl}>Peso unit.</p>
-                <p className="font-display text-lg font-black">{num(calc.pesoUn)} kg</p>
-              </div>
-              <div>
-                <p className={lbl}>Peso total</p>
-                <p className="font-display text-lg font-black">{num(calc.pesoTotal)} kg</p>
-              </div>
-              <div>
-                <p className={lbl}>Custo total</p>
-                <p className="font-display text-lg font-black text-primary">{brl(calc.custoTotal)}</p>
-              </div>
-              <p className="col-span-3 text-[11px] text-muted-foreground">
-                Comprimento de corte: {num(calc.L, 0)} mm{!calc.valido ? " · confira as medidas" : ""}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-md border bg-muted/30 p-4">
+              <div><p className={lbl}>Peso por peça</p><p className="font-display text-lg font-black">{calc.peso ? `${num(calc.peso, 3)} kg` : "—"}</p></div>
+              <div><p className={lbl}>Material</p><p className="font-display text-lg font-black">{calc.v ? brl(calc.v.material) : "—"}</p></div>
+              <div><p className={lbl}>IPI ({num(calc.ipiPct)}%)</p><p className="font-display text-lg font-black">{calc.v ? brl(calc.v.ipi) : "—"}</p></div>
+              <div><p className={lbl}>Total de compra</p><p className="font-display text-lg font-black text-primary">{calc.v ? brl(calc.v.total) : "—"}</p></div>
+              <p className="col-span-full text-[11px] text-muted-foreground">
+                Peso total: {num((calc.peso ?? 0) * calc.q, 3)} kg · Estimativa pelo peso teórico; não inclui frete, ICMS ou margem.
               </p>
             </div>
 
-            {sel && calc.valido && <p className="text-xs text-muted-foreground border-l-2 border-primary pl-3">{descricao()}</p>}
+            {sel && calc.v && <p className="text-xs text-muted-foreground border-l-2 border-primary pl-3">{descricao()}</p>}
 
-            <Button
-              onClick={registrar}
-              disabled={!sel || !podeLancar || salvando || !calc.valido}
-              className="w-full h-12 font-black uppercase tracking-widest"
-            >
+            <Button onClick={registrar} disabled={!sel || !podeLancar || salvando || !calc.v} className="w-full h-12 font-black uppercase tracking-widest">
               {salvando ? "Lançando..." : sel?.lancado ? "Atualizar custo na OS" : "Registrar custo na OS"}
             </Button>
             {!podeLancar && <p className="text-xs text-muted-foreground text-center">Somente gestor, diretor ou financeiro lançam custos.</p>}

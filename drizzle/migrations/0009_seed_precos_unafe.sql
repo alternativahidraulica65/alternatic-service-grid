@@ -1,0 +1,16 @@
+INSERT INTO public.materiais_precos_referencia (especificacao, acabamento, formato, diametro_mm, diametro_int_mm, faixa_min_mm, faixa_max_mm, densidade, preco_kg, observacao) VALUES
+('Ferro nodular FE-45012','Fundido','redondo',NULL,NULL,92.1,143.64,7.2,10.49,'NF UNAFE'),
+('Aço SAE 4140','Laminado','redondo',57.15,NULL,NULL,NULL,7.85,12.12,'NF UNAFE - 2 1/4 pol'),
+('Aço SAE 1045','Trefilado','redondo',19.05,NULL,NULL,NULL,7.85,9.62,'NF UNAFE - 3/4 pol'),
+('Aço SAE 1045','Cromado','redondo',20,NULL,NULL,NULL,7.85,25.49,'NF UNAFE'),
+('Aço SAE 1045','Cromado','redondo',25.4,NULL,NULL,NULL,7.85,23.52,'NF UNAFE - 1 pol'),
+('Aço SAE 1045','Cromado','redondo',32,NULL,NULL,NULL,7.85,22.75,'NF UNAFE'),
+('Aço SAE 1045','Cromado','redondo',40,NULL,NULL,NULL,7.85,21.50,'NF UNAFE'),
+('Aço SAE 1045','Cromado','redondo',50,NULL,NULL,NULL,7.85,20.20,'NF UNAFE'),
+('Aço SAE 1045','Cromado','redondo',80,NULL,NULL,NULL,7.85,22.10,'NF UNAFE'),
+('Aço SAE 1045','Cromado','redondo',100,NULL,NULL,NULL,7.85,22.10,'NF UNAFE'),
+('Aço SAE 1045','Cromado temperado','redondo',32,NULL,NULL,NULL,7.85,28.06,'NF UNAFE'),
+('Aço SAE 1045','Cromado temperado','redondo',85,NULL,NULL,NULL,7.85,27.57,'NF UNAFE'),
+('Aço SAE 1045 importado','Cromado','redondo',12.7,NULL,NULL,NULL,7.85,37.36,'NF UNAFE - 1/2 pol'),
+('Tubo E235+N sem costura','Trefilado','tubo',16,12,NULL,NULL,7.85,48.43,'NF UNAFE'),
+('Tubo SAE 1026 sem costura','Brunido','tubo',95,80,NULL,NULL,7.85,32.12,'NF UNAFE');

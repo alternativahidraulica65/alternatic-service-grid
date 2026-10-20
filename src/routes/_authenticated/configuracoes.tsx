@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
 import type { DadosCnpj } from "@/lib/brasilapi";
 import { useUserRole } from "@/hooks/useUserRole";
+import { TabelaPrecosMateriais } from "@/components/TabelaPrecosMateriais";
 import {
   criarUsuario,
   resetarSenha,
@@ -192,6 +193,9 @@ function ConfiguracoesPage() {
             <Shield className="mr-2 h-4 w-4" />
             Usuários e permissões
           </TabsTrigger>
+          <TabsTrigger value="materiais" className="text-xs font-black uppercase tracking-widest">
+            Preços de materiais
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="empresas">
@@ -199,6 +203,9 @@ function ConfiguracoesPage() {
         </TabsContent>
         <TabsContent value="usuarios">
           <AbaUsuarios />
+        </TabsContent>
+        <TabsContent value="materiais">
+          <TabelaPrecosMateriais />
         </TabsContent>
       </Tabs>
     </div>
