@@ -71,6 +71,13 @@
       "when": 1792508732778,
       "tag": "0009_seed_precos_unafe",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792525486006,
+      "tag": "0010_campos_fiscais_empresas_clientes",
+      "breakpoints": true
     }
   ]
 }
