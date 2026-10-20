@@ -126,7 +126,7 @@ function MateriaisPage() {
     const q = Math.max(1, Math.floor(n(qtd)) || 1);
     const peso = pesoTeorico(formato, de, L, densidade, di);
     const achado = espec ? encontrarPreco(tabela, espec, acab || null, formato, de, di) : null;
-    const precoKg = achado?.regra.preco_kg ?? n(precoManual);
+    const precoKg = n(precoManual) > 0 ? n(precoManual) : achado?.regra.preco_kg ?? 0;
     const ipiPct = achado?.regra.ipi_percentual ?? 3.25;
     const v = peso && precoKg > 0 ? valorCompra(peso, q, precoKg, ipiPct) : null;
     return { de, di, L, q, peso, achado, precoKg, ipiPct, v };
@@ -319,20 +319,19 @@ function MateriaisPage() {
               </div>
             </div>
 
-            {calc.achado && (
-              <p className="text-xs border-l-2 border-primary pl-3">
-                Preço {calc.achado.tipo === "exata" ? "da medida exata" : "da faixa cadastrada"}: <b>{brl(calc.precoKg)}/kg</b> · densidade {num(densidade)} g/cm³
-              </p>
-            )}
-            {semPreco && (
-              <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 space-y-2">
-                <p className="text-xs font-bold">Sem preço histórico documentado para esta medida. O peso foi calculado, mas o valor não é estimado.</p>
-                {podeEditarPreco && (
-                  <div className="flex gap-2">
-                    <Input value={precoManual} onChange={(e) => setPrecoManual(e.target.value)} inputMode="decimal" placeholder="Preço R$/kg" className="h-10 font-bold" />
-                    <Button type="button" variant="outline" className="h-10" onClick={salvarReferencia}><Save className="h-4 w-4 mr-1" /> Cadastrar</Button>
-                  </div>
-                )}
+            {!!espec && calc.de > 0 && (
+              <div className="rounded-md border border-primary/40 bg-primary/5 p-3 space-y-2">
+                <p className="text-xs">
+                  {calc.achado
+                    ? <>Base do fornecedor ({calc.achado.tipo === "exata" ? "medida exata" : calc.achado.tipo === "faixa" ? "faixa cadastrada" : `preço/kg do material, ref. Ø ${num(Number(calc.achado.regra.diametro_mm ?? calc.de), 1)}`}): <b>{brl(calc.achado.regra.preco_kg)}/kg</b> · densidade {num(densidade)} g/cm³</>
+                    : <>Material sem preço base cadastrado. Informe o R$/kg abaixo.</>}
+                </p>
+                <div className="flex gap-2 items-center">
+                  <Input value={precoManual} onChange={(e) => setPrecoManual(e.target.value)} inputMode="decimal" placeholder={calc.achado ? `Ajustar R$/kg (padrão ${num(calc.achado.regra.preco_kg)})` : "Preço R$/kg"} className="h-10 font-bold" />
+                  {podeEditarPreco && n(precoManual) > 0 && (
+                    <Button type="button" variant="outline" className="h-10" onClick={salvarReferencia}><Save className="h-4 w-4 mr-1" /> Salvar medida</Button>
+                  )}
+                </div>
               </div>
             )}
 
