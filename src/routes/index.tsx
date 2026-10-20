@@ -27,9 +27,6 @@ const loginSchema = z.object({
 const registerSchema = z.object({
   nome: z.string().min(3, "Insira seu nome completo."),
   email: z.string().email("Insira um e-mail válido."),
-  perfil: z.enum(["operador", "gestor", "financeiro", "diretor"], {
-    required_error: "Selecione o nível de permissão.",
-  }),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
 });
 
@@ -91,7 +88,7 @@ function LoginPage() {
 
   const registerForm = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { nome: "", email: "", perfil: "operador", password: "" },
+    defaultValues: { nome: "", email: "", password: "" },
   });
 
   async function onLoginSubmit(values: LoginForm) {
@@ -159,8 +156,7 @@ function LoginPage() {
         password: values.password,
         options: {
           data: {
-            nome: values.nome.trim(),
-            perfil: values.perfil
+            nome: values.nome.trim()
           }
         }
       });
@@ -168,7 +164,7 @@ function LoginPage() {
       if (error) throw error;
 
       toast.success("Conta criada com sucesso!", {
-        description: "Seu cadastro foi concluído. Faça login para continuar.",
+        description: "Cadastro concluído. O acesso será liberado após um gestor definir seu perfil.",
       });
       registerForm.reset();
       setIsRegistering(false);
@@ -352,33 +348,6 @@ function LoginPage() {
                             />
                           </div>
                         </FormControl>
-                        <FormMessage className="text-xs text-red-400" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={registerForm.control}
-                    name="perfil"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nível de Permissão</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
-                          <FormControl>
-                            <div className="relative">
-                              <Shield className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 z-10" />
-                              <SelectTrigger className="h-11 rounded-lg border-white/10 bg-slate-950/50 pl-10 text-white focus:border-primary focus:ring-1 focus:ring-primary/20">
-                                <SelectValue placeholder="Selecione o acesso..." />
-                              </SelectTrigger>
-                            </div>
-                          </FormControl>
-                          <SelectContent className="bg-slate-900 border-white/10 text-white">
-                            <SelectItem value="operador">Operador de Produção</SelectItem>
-                            <SelectItem value="gestor">Gestor / Supervisor</SelectItem>
-                            <SelectItem value="financeiro">Financeiro / Administrativo</SelectItem>
-                            <SelectItem value="diretor">Diretoria</SelectItem>
-                          </SelectContent>
-                        </Select>
                         <FormMessage className="text-xs text-red-400" />
                       </FormItem>
                     )}

@@ -1,5 +1,5 @@
 import { BotaoVoltar } from "@/components/BotaoVoltar";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { redirect, createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
@@ -39,6 +39,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/_authenticated/admin/checklist-templates")({
+  beforeLoad: ({ context }) => {
+    const c = context as any;
+    if (!(c.roles?.includes("diretor") || c.roles?.includes("administrativo_financeiro") || c.roles?.includes("gestor"))) throw redirect({ to: "/dashboard" });
+  },
   head: () => ({ meta: [
     { title: "Modelos de checklist — Alternativa Hidráulica" },
     { name: "description", content: "Cadastro de equipamentos e modelos de avaliação técnica." },

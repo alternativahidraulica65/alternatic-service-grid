@@ -11,7 +11,7 @@ export function useUserRole() {
   const isDiretor = userRoles.includes('diretor') || cargo === 'diretor' || isFinanceiro;
   const isGestor = userRoles.includes('gestor') || cargo === 'gestor';
   const isOperador = userRoles.includes('operador') || cargo === 'operador';
-  const isDev = profile?.email === "dev@admin.com" || profile?.email === "teste.dev@alternativahidraulica.local" || profile?.email === "admin@teste.com";
+  const isDev = false; // Acesso por e-mail fixo removido: permissões vêm só dos perfis cadastrados.
 
   const isDiretorOuFinanceiro = isDiretor || isFinanceiro || isDev;
 

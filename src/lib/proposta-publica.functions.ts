@@ -46,7 +46,7 @@ export const carregarPropostaPublica = createServerFn({ method: "GET" })
     if (!os) return null;
 
     const [livres, dadosArr, empresas] = await Promise.all([
-      rest(`orcamento_itens?os_id=eq.${os.id}&select=*&order=ordem`),
+      rest(`orcamento_itens?os_id=eq.${os.id}&select=id,descricao,quantidade,valor_unitario,ordem,tipo_item&order=ordem`),
       rest(`orcamento_dados?os_id=eq.${os.id}&select=*&limit=1`),
       rest(`empresas_emissoras?select=*&order=criado_em`),
     ]);
@@ -104,13 +104,31 @@ export const carregarPropostaPublica = createServerFn({ method: "GET" })
         : await urlAssinada("empresa-assets", logoPath)
       : null;
 
+    // Envia ao cliente apenas os campos da proposta: nada de custos, margens ou notas internas.
+    const c = os.clientes || {};
+    const osPublica = {
+      id: os.id,
+      numero_os: os.numero_os,
+      descricao: os.descricao,
+      cliente: os.cliente,
+      laudo_diagnostico: os.laudo_diagnostico,
+      laudo_servicos_necessarios: os.laudo_servicos_necessarios,
+      valor_final: os.valor_final,
+      tipos_equipamento: os.tipos_equipamento,
+      clientes: {
+        id: c.id, nome: c.nome, razao_social: c.razao_social, cnpj: c.cnpj,
+        email: c.email, telefone: c.telefone, endereco: c.endereco,
+      },
+    };
+    const fotosPublicas = fotos.map((f: any) => ({ id: f.id, url: f.url, legenda: f.legenda }));
+
     return {
-      os,
+      os: osPublica,
       livres,
       empresa,
       vendedor,
       condicoes: registro?.condicoes || {},
       logo,
-      fotos,
+      fotos: fotosPublicas,
     };
   });
