@@ -57,6 +57,13 @@
       "when": 1792506353408,
       "tag": "0007_fase3_vinculo_subservico_peca",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792508706786,
+      "tag": "0008_materiais_precos_referencia",
+      "breakpoints": true
     }
   ]
 }
