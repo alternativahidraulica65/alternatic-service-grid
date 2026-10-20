@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { STATUS_SUB, type StatusSub } from "@/lib/subservicos";
+import { EstadoCarregando, EstadoErro, EstadoVazio, mensagemErro } from "@/components/EstadoLista";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/producao/minha-bancada")({
   head: () => ({
@@ -31,6 +33,7 @@ function MinhaBancada() {
   const [escolhida, setEscolhida] = useState<string | null>(null);
   const [pausa, setPausa] = useState<any>(null);
   const [motivo, setMotivo] = useState("");
+  const [salvando, setSalvando] = useState<string | null>(null);
 
   const { data: perfilId } = useQuery({
     queryKey: ["meu_perfil_id"],
@@ -52,7 +55,7 @@ function MinhaBancada() {
   const minhas = bancadas.filter((b) => perfilId && b.usuario_id === perfilId);
   const bancada = bancadas.find((b) => b.id === escolhida) ?? minhas[0] ?? null;
 
-  const { data: fila = [], isLoading } = useQuery({
+  const { data: fila = [], isLoading, isError, error: erroFila, refetch } = useQuery({
     queryKey: ["mb_fila", bancada?.id],
     enabled: !!bancada,
     refetchInterval: 30000,
@@ -70,8 +73,20 @@ function MinhaBancada() {
   });
 
   const atualizar = async (id: string, patch: Record<string, any>, msg: string) => {
+    const chave = ["mb_fila", bancada?.id];
+    const anterior = qc.getQueryData<any[]>(chave);
+    // Resposta imediata na tela; desfaz se o envio falhar.
+    qc.setQueryData<any[]>(chave, (lista = []) =>
+      patch.status === "concluido" ? lista.filter((s) => s.id !== id) : lista.map((s) => (s.id === id ? { ...s, ...patch } : s)),
+    );
+    setSalvando(id);
     const { error } = await supabase.from("os_subservicos" as any).update(patch).eq("id", id);
-    if (error) { toast.error("Erro: " + error.message); return; }
+    setSalvando(null);
+    if (error) {
+      qc.setQueryData(chave, anterior);
+      toast.error(mensagemErro(error));
+      return;
+    }
     toast.success(msg);
     qc.invalidateQueries({ queryKey: ["mb_fila"] });
   };
@@ -109,19 +124,20 @@ function MinhaBancada() {
         )}
       </div>
 
-      {bancada && isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
-      {bancada && !isLoading && fila.length === 0 && (
-        <div className="rounded-md border border-dashed border-border p-8 text-center text-muted-foreground">
-          Nenhum serviço pendente nesta bancada.
-        </div>
+      {bancada && isLoading && <EstadoCarregando texto="Carregando sua fila…" />}
+      {bancada && isError && <EstadoErro mensagem={mensagemErro(erroFila)} onTentar={() => refetch()} />}
+      {bancada && !isLoading && !isError && fila.length === 0 && (
+        <EstadoVazio titulo="Fila livre" descricao="Nenhum serviço pendente nesta bancada." />
       )}
 
       <div className="space-y-3">
         {fila.map((s, i) => {
           const os = s.ordens_servico;
           const ativo = s.status === "em_andamento";
+          const pausado = s.status === "pausado";
+          const ocupado = salvando === s.id;
           return (
-            <div key={s.id} className={`rounded-md border bg-card p-4 ${ativo ? "border-primary" : "border-border"}`}>
+            <div key={s.id} className={`rounded-md border-2 bg-card p-4 transition-all duration-300 animate-in fade-in ${ativo ? "border-primary shadow-md" : pausado ? "border-destructive/60" : "border-border"} ${ocupado ? "opacity-70" : ""}`}>
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="text-xs font-black text-primary">#{i + 1}</div>
@@ -135,7 +151,7 @@ function MinhaBancada() {
                   )}
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <Badge variant={ativo ? "default" : "outline"} className="uppercase">{STATUS_SUB[s.status as StatusSub] ?? s.status}</Badge>
+                  <Badge variant={ativo ? "default" : pausado ? "destructive" : "outline"} className="uppercase transition-colors">{ocupado && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}{STATUS_SUB[s.status as StatusSub] ?? s.status}</Badge>
                   {os?.prioridade && ["alta", "urgente"].includes(String(os.prioridade).toLowerCase()) && (
                     <Badge variant="destructive" className="uppercase">{os.prioridade}</Badge>
                   )}
@@ -146,15 +162,15 @@ function MinhaBancada() {
               {s.motivo_pausa && <p className="mt-1 text-sm text-destructive">Pausa: {s.motivo_pausa}</p>}
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {ativo ? (
-                  <Button variant="outline" className="h-12 gap-2" onClick={() => { setPausa(s); setMotivo(""); }}>
+                  <Button variant="outline" disabled={ocupado} className="h-12 gap-2" onClick={() => { setPausa(s); setMotivo(""); }}>
                     <Pause className="h-5 w-5" /> Pausar
                   </Button>
                 ) : (
-                  <Button className="h-12 gap-2" onClick={() => atualizar(s.id, { status: "em_andamento", iniciado_em: s.iniciado_em ?? new Date().toISOString(), motivo_pausa: null }, "Serviço iniciado")}>
+                  <Button disabled={ocupado} className="h-12 gap-2" onClick={() => atualizar(s.id, { status: "em_andamento", iniciado_em: s.iniciado_em ?? new Date().toISOString(), motivo_pausa: null }, "Serviço iniciado")}>
                     <Play className="h-5 w-5" /> Iniciar
                   </Button>
                 )}
-                <Button variant="outline" className="h-12 gap-2" onClick={async () => atualizar(s.id, { status: "concluido", concluido_em: new Date().toISOString(), concluido_por: await uid() }, "Serviço concluído")}>
+                <Button variant="outline" disabled={ocupado} className="h-12 gap-2" onClick={async () => atualizar(s.id, { status: "concluido", concluido_em: new Date().toISOString(), concluido_por: await uid() }, "Serviço concluído")}>
                   <CheckCircle2 className="h-5 w-5" /> Concluir
                 </Button>
               </div>
@@ -169,8 +185,9 @@ function MinhaBancada() {
           <Input className="h-12" value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ex: aguardando peça" />
           <DialogFooter>
             <Button className="h-12" disabled={!motivo.trim()} onClick={async () => {
-              await atualizar(pausa.id, { status: "pausado", motivo_pausa: motivo.trim() }, "Serviço pausado");
+              const alvo = pausa;
               setPausa(null);
+              await atualizar(alvo.id, { status: "pausado", motivo_pausa: motivo.trim() }, "Serviço pausado");
             }}>Confirmar pausa</Button>
           </DialogFooter>
         </DialogContent>
