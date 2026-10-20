@@ -77,7 +77,7 @@ function MinhaBancada() {
     const anterior = qc.getQueryData<any[]>(chave);
     // Resposta imediata na tela; desfaz se o envio falhar.
     qc.setQueryData<any[]>(chave, (lista = []) =>
-      patch.status === "concluido" ? lista.filter((s) => s.id !== id) : lista.map((s) => (s.id === id ? { ...s, ...patch } : s)),
+      patch["status"] === "concluido" ? lista.filter((s) => s.id !== id) : lista.map((s) => (s.id === id ? { ...s, ...patch } : s)),
     );
     setSalvando(id);
     const { error } = await supabase.from("os_subservicos" as any).update(patch).eq("id", id);
