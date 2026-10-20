@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T16:38:44.386662+00:00",
+  "generated_at": "2026-10-20T16:42:34.840597+00:00",
   "files": [
     {
       "path": "eslint.config.js",
@@ -939,7 +939,7 @@
     },
     {
       "path": "src/routes/_authenticated/engenharia/materiais.tsx",
-      "bytes": 21119
+      "bytes": 20165
     },
     {
       "path": "src/routes/_authenticated/rh/colaboradores.tsx",
