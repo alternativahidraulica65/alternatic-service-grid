@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Calculator, CheckCircle2, Circle, Layers, Save, Search, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { idCustoAutomatico } from "@/lib/custos-automaticos";
+import { encontrarPreco, pesoTeorico, valorCompra, type Formato, type PrecoReferencia } from "@/lib/materiais-calculo";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,23 +30,11 @@ export const Route = createFileRoute("/_authenticated/engenharia/materiais")({
   component: MateriaisPage,
 });
 
-/** Densidades físicas de referência (g/cm³). Preço vem do cadastro. */
-const PADROES = [
-  { nome: "Aço SAE 1045", densidade: 7.85 },
-  { nome: "Aço SAE 4140 beneficiado", densidade: 7.85 },
-  { nome: "Tubo brunido ST-52", densidade: 7.85 },
-  { nome: "Aço inox 304", densidade: 7.93 },
-  { nome: "Bronze TM-23", densidade: 8.8 },
-  { nome: "Ferro fundido nodular", densidade: 7.2 },
-  { nome: "Nylon", densidade: 1.15 },
-  { nome: "Poliacetal (POM)", densidade: 1.42 },
-  { nome: "PTFE / Teflon", densidade: 2.2 },
-];
-
 const PALAVRAS = ["haste", "tubo", "camisa", "embolo", "êmbolo", "porca", "bucha", "pino", "eixo", "flange", "tampa", "guia", "cabe", "olhal", "pistão", "pistao"];
 
 const brl = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0);
 const num = (v: number, d = 2) => (Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", { maximumFractionDigits: d, minimumFractionDigits: d });
+const n = (s: string) => Number(String(s).replace(",", ".")) || 0;
 
 /** Aceita 3.1/2", 3 1/2", 2", 1.3/4 pol, 50,8mm ou 50.8 (mm). Retorna mm. */
 export function medidaParaMm(entrada: string): number {
@@ -76,35 +65,30 @@ function MateriaisPage() {
   const [todos, setTodos] = useState(false);
   const [sel, setSel] = useState<any | null>(null);
 
-  const [geometria, setGeometria] = useState<"barra" | "tubo">("barra");
-  const [dExt, setDExt] = useState("3.1/2\"");
+  const [formato, setFormato] = useState<Formato>("redondo");
+  const [espec, setEspec] = useState("");
+  const [acab, setAcab] = useState("");
+  const [dExt, setDExt] = useState("");
   const [dInt, setDInt] = useState("");
-  const [comp, setComp] = useState("500");
-  const [sobra, setSobra] = useState("15");
+  const [comp, setComp] = useState("");
   const [qtd, setQtd] = useState("1");
-  const [material, setMaterial] = useState(PADROES[0]!.nome);
-  const [modoPreco, setModoPreco] = useState<"kg" | "metro">("kg");
-  const [preco, setPreco] = useState("");
+  const [precoManual, setPrecoManual] = useState("");
   const [salvando, setSalvando] = useState(false);
 
-  const { data: materiaisDb = [] } = useQuery({
-    queryKey: ["materias_primas"],
+  const { data: tabela = [] } = useQuery({
+    queryKey: ["materiais_precos_referencia"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("materias_primas" as any).select("*").order("nome");
+      const { data, error } = await supabase.from("materiais_precos_referencia" as any).select("*").eq("ativo", true).order("especificacao");
       if (error) throw error;
-      return (data ?? []) as any[];
+      return ((data ?? []) as any[]).map((r) => ({ ...r, densidade: Number(r.densidade), preco_kg: Number(r.preco_kg), ipi_percentual: Number(r.ipi_percentual) })) as PrecoReferencia[];
     },
   });
 
-  const materiais = useMemo(() => {
-    const m = new Map<string, { id?: string; nome: string; densidade: number; preco: number }>();
-    PADROES.forEach((p) => m.set(p.nome.toLowerCase(), { ...p, preco: 0 }));
-    materiaisDb.forEach((r: any) =>
-      m.set(String(r.nome).toLowerCase(), { id: r.id, nome: r.nome, densidade: Number(r.densidade) || 7.85, preco: Number(r.preco_base_kg) || 0 }),
-    );
-    return Array.from(m.values()).sort((a, b) => a.nome.localeCompare(b.nome));
-  }, [materiaisDb]);
-  const mat = materiais.find((m) => m.nome === material) ?? materiais[0]!;
+  const doFormato = tabela.filter((r) => r.formato === formato);
+  const especs = Array.from(new Set(doFormato.map((r) => r.especificacao))).sort();
+  const acabs = Array.from(new Set(doFormato.filter((r) => r.especificacao === espec).map((r) => r.acabamento ?? ""))).sort();
+  const medidasDoc = doFormato.filter((r) => r.especificacao === espec && (r.acabamento ?? "") === acab);
+  const densidade = medidasDoc[0]?.densidade ?? doFormato.find((r) => r.especificacao === espec)?.densidade ?? 7.85;
 
   const { data: fila = [] } = useQuery({
     queryKey: ["materiais_fila"],
@@ -137,59 +121,50 @@ function MateriaisPage() {
 
   const calc = useMemo(() => {
     const de = medidaParaMm(dExt);
-    const di = geometria === "tubo" ? medidaParaMm(dInt) : 0;
-    const L = (Number(comp.replace(",", ".")) || 0) + (Number(sobra.replace(",", ".")) || 0);
-    const q = Math.max(1, Number(qtd) || 1);
-    const area = (Math.PI / 4) * (de * de - di * di); // mm²
-    const volCm3 = (area * L) / 1000;
-    const pesoUn = (volCm3 * mat.densidade) / 1000;
-    const p = Number(preco.replace(",", ".")) || 0;
-    const custoUn = modoPreco === "kg" ? pesoUn * p : (L / 1000) * p;
-    return { de, di, L, q, pesoUn, pesoTotal: pesoUn * q, custoTotal: custoUn * q, valido: de > 0 && L > 0 && di < de };
-  }, [dExt, dInt, comp, sobra, qtd, geometria, mat, preco, modoPreco]);
+    const di = formato === "tubo" ? medidaParaMm(dInt) : 0;
+    const L = n(comp);
+    const q = Math.max(1, Math.floor(n(qtd)) || 1);
+    const peso = pesoTeorico(formato, de, L, densidade, di);
+    const achado = espec ? encontrarPreco(tabela, espec, acab || null, formato, de, di) : null;
+    const precoKg = achado?.regra.preco_kg ?? n(precoManual);
+    const ipiPct = achado?.regra.ipi_percentual ?? 3.25;
+    const v = peso && precoKg > 0 ? valorCompra(peso, q, precoKg, ipiPct) : null;
+    return { de, di, L, q, peso, achado, precoKg, ipiPct, v };
+  }, [dExt, dInt, comp, qtd, formato, densidade, espec, acab, tabela, precoManual]);
 
   const escolher = (s: any) => {
     setSel(s);
     const t = `${s.componente ?? ""}`.toLowerCase();
-    setGeometria(t.includes("tubo") || t.includes("camisa") ? "tubo" : "barra");
-    if (t.includes("tubo") || t.includes("camisa")) setMaterial("Tubo brunido ST-52");
-  };
-
-  const escolherMaterial = (nome: string) => {
-    setMaterial(nome);
-    const m = materiais.find((x) => x.nome === nome);
-    if (m?.preco) { setPreco(String(m.preco).replace(".", ",")); setModoPreco("kg"); }
+    setFormato(t.includes("tubo") || t.includes("camisa") ? "tubo" : "redondo");
+    setEspec(""); setAcab("");
   };
 
   const descricao = () => {
-    const forma = geometria === "tubo"
-      ? `tubo Ø ${dExt} x Ø int ${dInt} x ${num(calc.L, 0)}mm`
-      : `barra Ø ${dExt} x ${num(calc.L, 0)}mm`;
-    const preco_ = modoPreco === "kg" ? `${brl(Number(preco.replace(",", ".")) || 0)}/kg` : `${brl(Number(preco.replace(",", ".")) || 0)}/m`;
-    return `Matéria-prima ${sel?.componente ?? ""}: ${mat.nome} ${forma}${calc.q > 1 ? ` (${calc.q} pç)` : ""} — ${num(calc.pesoTotal)} kg a ${preco_}`;
+    const forma = formato === "tubo" ? `tubo Ø ${num(calc.de, 1)} x Ø int ${num(calc.di, 1)} x ${num(calc.L, 0)}mm` : `barra Ø ${num(calc.de, 1)} x ${num(calc.L, 0)}mm`;
+    return `Matéria-prima ${sel?.componente ?? ""}: ${espec} ${acab} ${forma}${calc.q > 1 ? ` (${calc.q} pç)` : ""} — ${num((calc.peso ?? 0) * calc.q)} kg a ${brl(calc.precoKg)}/kg + IPI ${num(calc.ipiPct)}%`;
   };
 
-  const salvarPreco = async () => {
-    const p = Number(preco.replace(",", ".")) || 0;
-    if (modoPreco !== "kg" || p <= 0) { toast.error("Informe o preço por kg para salvar como referência"); return; }
-    const payload = { nome: mat.nome, densidade: mat.densidade, preco_base_kg: p };
-    const q = mat.id
-      ? supabase.from("materias_primas" as any).update({ preco_base_kg: p }).eq("id", mat.id)
-      : supabase.from("materias_primas" as any).insert(payload);
-    const { error } = await q;
+  const salvarReferencia = async () => {
+    const p = n(precoManual);
+    if (!espec || !(p > 0) || !(calc.de > 0)) { toast.error("Informe especificação, medida e preço por kg"); return; }
+    const { error } = await supabase.from("materiais_precos_referencia" as any).insert({
+      especificacao: espec, acabamento: acab || null, formato, diametro_mm: Math.round(calc.de * 100) / 100,
+      diametro_int_mm: formato === "tubo" ? Math.round(calc.di * 100) / 100 : null, densidade, preco_kg: p, observacao: "Cadastro manual na calculadora",
+    });
     if (error) { toast.error("Erro ao salvar preço: " + error.message); return; }
-    toast.success("Preço de referência salvo");
-    qc.invalidateQueries({ queryKey: ["materias_primas"] });
+    toast.success("Preço cadastrado na tabela de referência");
+    setPrecoManual("");
+    qc.invalidateQueries({ queryKey: ["materiais_precos_referencia"] });
   };
 
   const registrar = async () => {
     if (!sel) { toast.error("Selecione um item da fila"); return; }
-    if (!calc.valido) { toast.error("Confira as medidas"); return; }
-    if (calc.custoTotal < 0.5) { toast.error("O custo precisa ser de no mínimo R$ 0,50"); return; }
+    if (!calc.v) { toast.error("Confira medidas e preço"); return; }
+    if (calc.v.total < 0.5) { toast.error("O custo precisa ser de no mínimo R$ 0,50"); return; }
     setSalvando(true);
     try {
       const { data: auth } = await supabase.auth.getUser();
-      const valor = Math.round(calc.custoTotal * 100) / 100;
+      const valor = calc.v.total;
       const desc = descricao();
       const { error } = sel.lancado
         ? await supabase.from("os_custos" as any).update({ descricao: desc, custo_interno: valor }).eq("id", sel.custoId)
@@ -216,6 +191,7 @@ function MateriaisPage() {
   };
 
   const lbl = "text-[10px] font-black uppercase tracking-widest text-muted-foreground";
+  const semPreco = !!espec && calc.de > 0 && !calc.achado;
 
   return (
     <div className="space-y-6 p-4 md:p-8 pb-20">
