@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T14:04:58.323477+00:00",
+  "generated_at": "2026-10-20T14:07:55.404593+00:00",
   "files": [
     {
       "path": "eslint.config.js",
@@ -798,6 +798,10 @@
       "bytes": 3762
     },
     {
+      "path": "src/components/EstadoLista.tsx",
+      "bytes": 2345
+    },
+    {
       "path": "src/components/GuiaExecucaoOs.tsx",
       "bytes": 34931
     },
@@ -851,7 +855,7 @@
     },
     {
       "path": "src/routes/_authenticated/os/$id.oficina.tsx",
-      "bytes": 11090
+      "bytes": 11883
     },
     {
       "path": "src/routes/_authenticated/os/nova.tsx",
@@ -867,7 +871,7 @@
     },
     {
       "path": "src/routes/_authenticated/producao/minha-bancada.tsx",
-      "bytes": 8579
+      "bytes": 9705
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
@@ -2648,6 +2652,18 @@
       "target": "@/components/ui/dialog"
     },
     {
+      "source": "src/components/EstadoLista.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/EstadoLista.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/EstadoLista.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
       "source": "src/components/GuiaExecucaoOs.tsx",
       "target": "react"
     },
@@ -3269,6 +3285,10 @@
     },
     {
       "source": "src/routes/_authenticated/os/$id.oficina.tsx",
+      "target": "@/components/EstadoLista"
+    },
+    {
+      "source": "src/routes/_authenticated/os/$id.oficina.tsx",
       "target": "@/lib/fila-offline"
     },
     {
@@ -3526,6 +3546,14 @@
     {
       "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
       "target": "@/lib/subservicos"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "@/components/EstadoLista"
+    },
+    {
+      "source": "src/routes/_authenticated/producao/minha-bancada.tsx",
+      "target": "lucide-react"
     },
     {
       "source": "src/routes/_authenticated/admin/auditoria.tsx",
