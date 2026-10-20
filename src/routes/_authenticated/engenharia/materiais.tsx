@@ -263,103 +263,92 @@ function MateriaisPage() {
           </CardHeader>
           <CardContent className="pt-5 space-y-5">
             <div className="grid grid-cols-2 gap-2">
-              {(["barra", "tubo"] as const).map((g) => (
-                <Button key={g} type="button" variant={geometria === g ? "default" : "outline"} onClick={() => setGeometria(g)} className="h-11 font-bold uppercase text-xs">
-                  {g === "barra" ? <Layers className="h-4 w-4 mr-2" /> : <Circle className="h-4 w-4 mr-2" />}
-                  {g === "barra" ? "Barra maciça" : "Tubo / camisa"}
+              {(["redondo", "tubo"] as const).map((g) => (
+                <Button key={g} type="button" variant={formato === g ? "default" : "outline"} onClick={() => { setFormato(g); setEspec(""); setAcab(""); }} className="h-11 font-bold uppercase text-xs">
+                  {g === "redondo" ? <Layers className="h-4 w-4 mr-2" /> : <Circle className="h-4 w-4 mr-2" />}
+                  {g === "redondo" ? "Barra / tarugo" : "Tubo"}
                 </Button>
               ))}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label className={lbl}>{geometria === "tubo" ? "Diâmetro externo" : "Diâmetro"}</Label>
-                <Input value={dExt} onChange={(e) => setDExt(e.target.value)} placeholder='3.1/2" ou 88,9mm' className="h-11 font-bold" />
-                <p className="text-[11px] text-muted-foreground">= {num(medidaParaMm(dExt), 1)} mm</p>
+                <Label className={lbl}>Especificação</Label>
+                <Select value={espec} onValueChange={(v) => { setEspec(v); setAcab(""); }}>
+                  <SelectTrigger className="h-11 font-bold"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>{especs.map((e) => <SelectItem key={e} value={e}>{e}</SelectItem>)}</SelectContent>
+                </Select>
               </div>
-              {geometria === "tubo" && (
-                <div className="space-y-1.5">
-                  <Label className={lbl}>Diâmetro interno</Label>
-                  <Input value={dInt} onChange={(e) => setDInt(e.target.value)} placeholder='2.1/2" ou 63,5mm' className="h-11 font-bold" />
-                  <p className="text-[11px] text-muted-foreground">= {num(medidaParaMm(dInt), 1)} mm</p>
+              <div className="space-y-1.5">
+                <Label className={lbl}>Acabamento</Label>
+                <Select value={acab} onValueChange={setAcab} disabled={!espec}>
+                  <SelectTrigger className="h-11 font-bold"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>{acabs.map((a) => <SelectItem key={a || "-"} value={a}>{a || "Sem acabamento"}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              {medidasDoc.length > 0 && (
+                <div className="sm:col-span-2 flex flex-wrap gap-1.5">
+                  <span className={lbl + " w-full"}>Medidas com preço documentado</span>
+                  {medidasDoc.map((r) => (
+                    <Button key={r.id} type="button" size="sm" variant="outline" className="h-8 text-xs font-bold"
+                      onClick={() => { if (r.diametro_mm != null) setDExt(String(r.diametro_mm).replace(".", ",")); if (r.diametro_int_mm != null) setDInt(String(r.diametro_int_mm).replace(".", ",")); }}>
+                      {r.diametro_mm != null ? `Ø ${num(Number(r.diametro_mm), 1)}${r.diametro_int_mm != null ? ` / ${num(Number(r.diametro_int_mm), 1)}` : ""} mm` : `Ø ${num(Number(r.faixa_min_mm), 1)}–${num(Number(r.faixa_max_mm), 1)} mm`} · {brl(r.preco_kg)}/kg
+                    </Button>
+                  ))}
                 </div>
               )}
               <div className="space-y-1.5">
-                <Label className={lbl}>Comprimento da peça (mm)</Label>
-                <Input value={comp} onChange={(e) => setComp(e.target.value)} inputMode="decimal" className="h-11 font-bold" />
+                <Label className={lbl}>{formato === "tubo" ? "Diâmetro externo" : "Diâmetro"}</Label>
+                <Input value={dExt} onChange={(e) => setDExt(e.target.value)} placeholder='2.1/4" ou 57,15mm' className="h-11 font-bold" />
+                <p className="text-[11px] text-muted-foreground">= {num(calc.de, 2)} mm</p>
               </div>
+              {formato === "tubo" && (
+                <div className="space-y-1.5">
+                  <Label className={lbl}>Diâmetro interno</Label>
+                  <Input value={dInt} onChange={(e) => setDInt(e.target.value)} placeholder="80mm" className="h-11 font-bold" />
+                  <p className="text-[11px] text-muted-foreground">= {num(calc.di, 2)} mm{calc.di > 0 && calc.di >= calc.de ? " · deve ser menor que o externo" : ""}</p>
+                </div>
+              )}
               <div className="space-y-1.5">
-                <Label className={lbl}>Sobremetal corte/face (mm)</Label>
-                <Input value={sobra} onChange={(e) => setSobra(e.target.value)} inputMode="decimal" className="h-11 font-bold" />
+                <Label className={lbl}>Comprimento real (mm)</Label>
+                <Input value={comp} onChange={(e) => setComp(e.target.value)} inputMode="decimal" className="h-11 font-bold" />
               </div>
               <div className="space-y-1.5">
                 <Label className={lbl}>Quantidade de peças</Label>
                 <Input value={qtd} onChange={(e) => setQtd(e.target.value)} inputMode="numeric" className="h-11 font-bold" />
               </div>
-              <div className="space-y-1.5">
-                <Label className={lbl}>Material</Label>
-                <Select value={material} onValueChange={escolherMaterial}>
-                  <SelectTrigger className="h-11 font-bold"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {materiais.map((m) => (
-                      <SelectItem key={m.nome} value={m.nome}>
-                        {m.nome} ({num(m.densidade)} g/cm³){m.preco ? ` · ${brl(m.preco)}/kg` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-[auto_1fr] items-end">
-              <div className="space-y-1.5">
-                <Label className={lbl}>Preço por</Label>
-                <div className="flex gap-1">
-                  {(["kg", "metro"] as const).map((m) => (
-                    <Button key={m} type="button" size="sm" variant={modoPreco === m ? "default" : "outline"} onClick={() => setModoPreco(m)} className="h-11 px-4 font-bold">
-                      {m === "kg" ? "Kg" : "Metro"}
-                    </Button>
-                  ))}
-                </div>
+            {calc.achado && (
+              <p className="text-xs border-l-2 border-primary pl-3">
+                Preço {calc.achado.tipo === "exata" ? "da medida exata" : "da faixa cadastrada"}: <b>{brl(calc.precoKg)}/kg</b> · densidade {num(densidade)} g/cm³
+              </p>
+            )}
+            {semPreco && (
+              <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 space-y-2">
+                <p className="text-xs font-bold">Sem preço histórico documentado para esta medida. O peso foi calculado, mas o valor não é estimado.</p>
+                {podeEditarPreco && (
+                  <div className="flex gap-2">
+                    <Input value={precoManual} onChange={(e) => setPrecoManual(e.target.value)} inputMode="decimal" placeholder="Preço R$/kg" className="h-10 font-bold" />
+                    <Button type="button" variant="outline" className="h-10" onClick={salvarReferencia}><Save className="h-4 w-4 mr-1" /> Cadastrar</Button>
+                  </div>
+                )}
               </div>
-              <div className="space-y-1.5">
-                <Label className={lbl}>Preço (R$/{modoPreco === "kg" ? "kg" : "m"})</Label>
-                <div className="flex gap-2">
-                  <Input value={preco} onChange={(e) => setPreco(e.target.value)} inputMode="decimal" placeholder="0,00" className="h-11 font-bold" />
-                  {podeEditarPreco && modoPreco === "kg" && (
-                    <Button type="button" variant="outline" className="h-11" onClick={salvarPreco} title="Salvar como preço de referência deste material">
-                      <Save className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-3 gap-2 rounded-md border bg-muted/30 p-4">
-              <div>
-                <p className={lbl}>Peso unit.</p>
-                <p className="font-display text-lg font-black">{num(calc.pesoUn)} kg</p>
-              </div>
-              <div>
-                <p className={lbl}>Peso total</p>
-                <p className="font-display text-lg font-black">{num(calc.pesoTotal)} kg</p>
-              </div>
-              <div>
-                <p className={lbl}>Custo total</p>
-                <p className="font-display text-lg font-black text-primary">{brl(calc.custoTotal)}</p>
-              </div>
-              <p className="col-span-3 text-[11px] text-muted-foreground">
-                Comprimento de corte: {num(calc.L, 0)} mm{!calc.valido ? " · confira as medidas" : ""}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-md border bg-muted/30 p-4">
+              <div><p className={lbl}>Peso por peça</p><p className="font-display text-lg font-black">{calc.peso ? `${num(calc.peso, 3)} kg` : "—"}</p></div>
+              <div><p className={lbl}>Material</p><p className="font-display text-lg font-black">{calc.v ? brl(calc.v.material) : "—"}</p></div>
+              <div><p className={lbl}>IPI ({num(calc.ipiPct)}%)</p><p className="font-display text-lg font-black">{calc.v ? brl(calc.v.ipi) : "—"}</p></div>
+              <div><p className={lbl}>Total de compra</p><p className="font-display text-lg font-black text-primary">{calc.v ? brl(calc.v.total) : "—"}</p></div>
+              <p className="col-span-full text-[11px] text-muted-foreground">
+                Peso total: {num((calc.peso ?? 0) * calc.q, 3)} kg · Estimativa pelo peso teórico; não inclui frete, ICMS ou margem.
               </p>
             </div>
 
-            {sel && calc.valido && <p className="text-xs text-muted-foreground border-l-2 border-primary pl-3">{descricao()}</p>}
+            {sel && calc.v && <p className="text-xs text-muted-foreground border-l-2 border-primary pl-3">{descricao()}</p>}
 
-            <Button
-              onClick={registrar}
-              disabled={!sel || !podeLancar || salvando || !calc.valido}
-              className="w-full h-12 font-black uppercase tracking-widest"
-            >
+            <Button onClick={registrar} disabled={!sel || !podeLancar || salvando || !calc.v} className="w-full h-12 font-black uppercase tracking-widest">
               {salvando ? "Lançando..." : sel?.lancado ? "Atualizar custo na OS" : "Registrar custo na OS"}
             </Button>
             {!podeLancar && <p className="text-xs text-muted-foreground text-center">Somente gestor, diretor ou financeiro lançam custos.</p>}
