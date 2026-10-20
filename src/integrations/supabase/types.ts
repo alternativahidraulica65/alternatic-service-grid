@@ -225,17 +225,30 @@ export type Database = {
         Row: {
           aprovado_em: string | null
           aprovado_por: string | null
+          bairro: string | null
+          cep: string | null
+          cidade: string | null
           cnpj: string | null
+          codigo_ibge: string | null
+          complemento: string | null
           criado_em: string | null
           email: string | null
+          email_fiscal: string | null
           endereco: string | null
           id: string
+          indicador_ie: string
+          inscricao_estadual: string | null
+          inscricao_municipal: string | null
+          logradouro: string | null
           motivo_reprovacao: string | null
           nome: string
+          numero: string | null
           razao_social: string | null
           solicitado_por: string | null
           status_cadastro: string
           telefone: string | null
+          tipo_pessoa: string
+          uf: string | null
           ultimo_numero_orcamento: number | null
           updated_at: string | null
           venda_propria: boolean
@@ -244,17 +257,30 @@ export type Database = {
         Insert: {
           aprovado_em?: string | null
           aprovado_por?: string | null
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
           cnpj?: string | null
+          codigo_ibge?: string | null
+          complemento?: string | null
           criado_em?: string | null
           email?: string | null
+          email_fiscal?: string | null
           endereco?: string | null
           id?: string
+          indicador_ie?: string
+          inscricao_estadual?: string | null
+          inscricao_municipal?: string | null
+          logradouro?: string | null
           motivo_reprovacao?: string | null
           nome: string
+          numero?: string | null
           razao_social?: string | null
           solicitado_por?: string | null
           status_cadastro?: string
           telefone?: string | null
+          tipo_pessoa?: string
+          uf?: string | null
           ultimo_numero_orcamento?: number | null
           updated_at?: string | null
           venda_propria?: boolean
@@ -263,17 +289,30 @@ export type Database = {
         Update: {
           aprovado_em?: string | null
           aprovado_por?: string | null
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
           cnpj?: string | null
+          codigo_ibge?: string | null
+          complemento?: string | null
           criado_em?: string | null
           email?: string | null
+          email_fiscal?: string | null
           endereco?: string | null
           id?: string
+          indicador_ie?: string
+          inscricao_estadual?: string | null
+          inscricao_municipal?: string | null
+          logradouro?: string | null
           motivo_reprovacao?: string | null
           nome?: string
+          numero?: string | null
           razao_social?: string | null
           solicitado_por?: string | null
           status_cadastro?: string
           telefone?: string | null
+          tipo_pessoa?: string
+          uf?: string | null
           ultimo_numero_orcamento?: number | null
           updated_at?: string | null
           venda_propria?: boolean
@@ -630,46 +669,103 @@ export type Database = {
       }
       empresas_emissoras: {
         Row: {
+          ambiente_fiscal: string
           ativo: boolean
+          bairro: string | null
+          cep: string | null
+          cidade: string | null
+          cnae_principal: string | null
           cnpj: string
+          codigo_ibge: string | null
+          complemento: string | null
           cor_identificacao: string | null
           criado_em: string | null
           email: string | null
           endereco: string | null
           id: string
+          inscricao_estadual: string | null
+          inscricao_municipal: string | null
           logo_url: string | null
+          logradouro: string | null
+          nfe_proximo_numero: number
+          nfe_serie: number
+          nfse_codigo_nbs: string | null
+          nfse_codigo_tributacao: string | null
+          nfse_proximo_numero: number
+          nfse_serie: number
           nome: string
+          numero: string | null
           razao_social: string | null
+          regime_tributario: string
           site: string | null
           telefone: string | null
+          uf: string | null
         }
         Insert: {
+          ambiente_fiscal?: string
           ativo?: boolean
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
+          cnae_principal?: string | null
           cnpj: string
+          codigo_ibge?: string | null
+          complemento?: string | null
           cor_identificacao?: string | null
           criado_em?: string | null
           email?: string | null
           endereco?: string | null
           id?: string
+          inscricao_estadual?: string | null
+          inscricao_municipal?: string | null
           logo_url?: string | null
+          logradouro?: string | null
+          nfe_proximo_numero?: number
+          nfe_serie?: number
+          nfse_codigo_nbs?: string | null
+          nfse_codigo_tributacao?: string | null
+          nfse_proximo_numero?: number
+          nfse_serie?: number
           nome: string
+          numero?: string | null
           razao_social?: string | null
+          regime_tributario?: string
           site?: string | null
           telefone?: string | null
+          uf?: string | null
         }
         Update: {
+          ambiente_fiscal?: string
           ativo?: boolean
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
+          cnae_principal?: string | null
           cnpj?: string
+          codigo_ibge?: string | null
+          complemento?: string | null
           cor_identificacao?: string | null
           criado_em?: string | null
           email?: string | null
           endereco?: string | null
           id?: string
+          inscricao_estadual?: string | null
+          inscricao_municipal?: string | null
           logo_url?: string | null
+          logradouro?: string | null
+          nfe_proximo_numero?: number
+          nfe_serie?: number
+          nfse_codigo_nbs?: string | null
+          nfse_codigo_tributacao?: string | null
+          nfse_proximo_numero?: number
+          nfse_serie?: number
           nome?: string
+          numero?: string | null
           razao_social?: string | null
+          regime_tributario?: string
           site?: string | null
           telefone?: string | null
+          uf?: string | null
         }
         Relationships: []
       }

@@ -24,6 +24,16 @@ import { BotaoConsultaCnpj } from "@/components/BotaoConsultaCnpj";
 import type { DadosCnpj } from "@/lib/brasilapi";
 import { useUserRole } from "@/hooks/useUserRole";
 import { TabelaPrecosMateriais } from "@/components/TabelaPrecosMateriais";
+import { EnderecoFiscalCampos } from "@/components/EnderecoFiscalCampos";
+import {
+  ENDERECO_VAZIO,
+  REGIMES,
+  enderecoDeRegistro,
+  enderecoTexto,
+  limparEndereco,
+  pendenciasEmpresa,
+  type EnderecoFiscal,
+} from "@/lib/fiscal";
 import {
   criarUsuario,
   resetarSenha,
@@ -258,7 +268,7 @@ function AbaEmpresas() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("empresas_emissoras")
-        .select("id, nome, razao_social, cnpj, cor_identificacao, ativo")
+        .select("*")
         .order("nome");
       if (error) throw error;
       return (data || []) as Empresa[];
@@ -464,6 +474,20 @@ function DialogEmpresa({
   const [salvando, setSalvando] = useState(false);
   const [subindoLogo, setSubindoLogo] = useState(false);
   const [form, setForm] = useState(() => estadoInicial());
+  const [end, setEnd] = useState<EnderecoFiscal>({ ...ENDERECO_VAZIO });
+  const [fiscal, setFiscal] = useState({
+    inscricao_estadual: "",
+    inscricao_municipal: "",
+    regime_tributario: "simples_nacional",
+    cnae_principal: "",
+    nfe_serie: 1,
+    nfe_proximo_numero: 1,
+    nfse_serie: 1,
+    nfse_proximo_numero: 1,
+    nfse_codigo_tributacao: "",
+    nfse_codigo_nbs: "",
+    ambiente_fiscal: "homologacao",
+  });
 
   // Completa o cadastro da empresa emissora com os dados públicos do CNPJ.
   const preencherEmpresaComCnpj = (dados: DadosCnpj) => {
@@ -476,6 +500,17 @@ function DialogEmpresa({
       telefone: dados.telefone || atual.telefone,
       email: dados.email || atual.email,
     }));
+    setEnd({
+      cep: dados.cep,
+      logradouro: dados.logradouro,
+      numero: dados.numero,
+      complemento: dados.complemento,
+      bairro: dados.bairro,
+      cidade: dados.cidade,
+      uf: dados.uf,
+      codigo_ibge: dados.codigoIbge,
+    });
+    if (dados.cnae) setFiscal((f) => ({ ...f, cnae_principal: dados.cnae }));
   };
 
   function estadoInicial() {
@@ -520,7 +555,23 @@ function DialogEmpresa({
       observacoes_orcamento:
         config?.observacoes_orcamento ?? REGRAS_PADRAO.observacoes_orcamento,
     });
+    const e: any = empresa || {};
+    setEnd(enderecoDeRegistro(e));
+    setFiscal({
+      inscricao_estadual: e.inscricao_estadual || "",
+      inscricao_municipal: e.inscricao_municipal || "",
+      regime_tributario: e.regime_tributario || "simples_nacional",
+      cnae_principal: e.cnae_principal || "",
+      nfe_serie: e.nfe_serie ?? 1,
+      nfe_proximo_numero: e.nfe_proximo_numero ?? 1,
+      nfse_serie: e.nfse_serie ?? 1,
+      nfse_proximo_numero: e.nfse_proximo_numero ?? 1,
+      nfse_codigo_tributacao: e.nfse_codigo_tributacao || "",
+      nfse_codigo_nbs: e.nfse_codigo_nbs || "",
+      ambiente_fiscal: e.ambiente_fiscal || "homologacao",
+    });
   }
+  const faltandoFiscal = pendenciasEmpresa({ cnpj: form.cnpj, ...fiscal, ...end });
 
   const enviarLogo = async (arquivo: File) => {
     setSubindoLogo(true);
@@ -555,11 +606,23 @@ function DialogEmpresa({
         cnpj: form.cnpj.trim(),
         cor_identificacao: form.cor_identificacao,
         ativo: form.ativo,
-        endereco: form.endereco.trim(),
+        endereco: enderecoTexto(end) || form.endereco.trim(),
         telefone: form.telefone.trim(),
         email: form.email.trim(),
         site: form.site.trim(),
         logo_url: form.logo_url || null,
+        ...limparEndereco(end),
+        inscricao_estadual: fiscal.inscricao_estadual.replace(/\D/g, "") || null,
+        inscricao_municipal: fiscal.inscricao_municipal.trim() || null,
+        regime_tributario: fiscal.regime_tributario,
+        cnae_principal: fiscal.cnae_principal.trim() || null,
+        nfe_serie: Number(fiscal.nfe_serie) || 1,
+        nfe_proximo_numero: Number(fiscal.nfe_proximo_numero) || 1,
+        nfse_serie: Number(fiscal.nfse_serie) || 1,
+        nfse_proximo_numero: Number(fiscal.nfse_proximo_numero) || 1,
+        nfse_codigo_tributacao: fiscal.nfse_codigo_tributacao.trim() || null,
+        nfse_codigo_nbs: fiscal.nfse_codigo_nbs.trim() || null,
+        ambiente_fiscal: "homologacao",
       };
 
 
@@ -673,11 +736,62 @@ function DialogEmpresa({
             />
           </Campo>
           <div className="sm:col-span-2">
-            <Campo label="Endereço">
-              <Input
-                value={form.endereco}
-                onChange={(e) => setForm({ ...form, endereco: e.target.value })}
-              />
+            <EnderecoFiscalCampos valor={end} onChange={setEnd} />
+          </div>
+          <div className="sm:col-span-2 grid gap-3 rounded-md border border-border p-3 sm:grid-cols-2">
+            <div className="flex items-center justify-between sm:col-span-2">
+              <span className="text-[10px] font-black uppercase tracking-widest">Parâmetros fiscais</span>
+              {faltandoFiscal.length === 0 ? (
+                <span className="text-[10px] font-bold uppercase text-emerald-600">Apta para emissão</span>
+              ) : (
+                <span className="text-[10px] font-bold uppercase text-destructive">
+                  Falta: {faltandoFiscal.join(", ")}
+                </span>
+              )}
+            </div>
+            <Campo label="Inscrição estadual">
+              <Input value={fiscal.inscricao_estadual} onChange={(e) => setFiscal({ ...fiscal, inscricao_estadual: e.target.value })} className="font-mono" />
+            </Campo>
+            <Campo label="Inscrição municipal">
+              <Input value={fiscal.inscricao_municipal} onChange={(e) => setFiscal({ ...fiscal, inscricao_municipal: e.target.value })} className="font-mono" />
+            </Campo>
+            <Campo label="Regime tributário">
+              <Select value={fiscal.regime_tributario} onValueChange={(v) => setFiscal({ ...fiscal, regime_tributario: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {REGIMES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Campo>
+            <Campo label="CNAE principal">
+              <Input value={fiscal.cnae_principal} onChange={(e) => setFiscal({ ...fiscal, cnae_principal: e.target.value })} className="font-mono" />
+            </Campo>
+            <Campo label="NF-e — série">
+              <Input type="number" value={fiscal.nfe_serie} onChange={(e) => setFiscal({ ...fiscal, nfe_serie: Number(e.target.value) })} />
+            </Campo>
+            <Campo label="NF-e — próximo número">
+              <Input type="number" value={fiscal.nfe_proximo_numero} onChange={(e) => setFiscal({ ...fiscal, nfe_proximo_numero: Number(e.target.value) })} />
+            </Campo>
+            <Campo label="NFS-e — série da DPS">
+              <Input type="number" value={fiscal.nfse_serie} onChange={(e) => setFiscal({ ...fiscal, nfse_serie: Number(e.target.value) })} />
+            </Campo>
+            <Campo label="NFS-e — próximo número da DPS">
+              <Input type="number" value={fiscal.nfse_proximo_numero} onChange={(e) => setFiscal({ ...fiscal, nfse_proximo_numero: Number(e.target.value) })} />
+            </Campo>
+            <Campo label="Código de tributação nacional (serviço)">
+              <Input value={fiscal.nfse_codigo_tributacao} onChange={(e) => setFiscal({ ...fiscal, nfse_codigo_tributacao: e.target.value })} className="font-mono" placeholder="14.01.01" />
+            </Campo>
+            <Campo label="Código NBS">
+              <Input value={fiscal.nfse_codigo_nbs} onChange={(e) => setFiscal({ ...fiscal, nfse_codigo_nbs: e.target.value })} className="font-mono" placeholder="1.2001.50.00" />
+            </Campo>
+            <Campo label="Ambiente">
+              <Select value={fiscal.ambiente_fiscal} onValueChange={(v) => setFiscal({ ...fiscal, ambiente_fiscal: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="homologacao">Homologação (testes, sem valor fiscal)</SelectItem>
+                  <SelectItem value="producao" disabled>Produção (liberado após homologação)</SelectItem>
+                </SelectContent>
+              </Select>
             </Campo>
           </div>
           <div className="sm:col-span-2">

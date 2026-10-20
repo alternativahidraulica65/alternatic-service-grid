@@ -1,5 +1,15 @@
 import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { RemoverSelecionados } from "@/components/RemoverSelecionados";
+import { EnderecoFiscalCampos } from "@/components/EnderecoFiscalCampos";
+import {
+  ENDERECO_VAZIO,
+  INDICADORES_IE,
+  enderecoDeRegistro,
+  enderecoTexto,
+  limparEndereco,
+  pendenciasCliente,
+  type EnderecoFiscal,
+} from "@/lib/fiscal";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -82,7 +92,24 @@ const FORM_VAZIO = {
   email: "",
   telefone: "",
   vendedor: "nenhum",
+  tipo_pessoa: "juridica",
+  inscricao_estadual: "",
+  indicador_ie: "1",
+  inscricao_municipal: "",
+  email_fiscal: "",
+  end: { ...ENDERECO_VAZIO } as EnderecoFiscal,
 };
+
+// Campos fiscais + endereço estruturado; mantém o texto legado `endereco` sincronizado.
+const dadosFiscais = (v: typeof FORM_VAZIO) => ({
+  endereco: enderecoTexto(v.end) || v.endereco || null,
+  tipo_pessoa: v.tipo_pessoa,
+  indicador_ie: v.indicador_ie,
+  inscricao_estadual: v.inscricao_estadual.replace(/\D/g, "") || null,
+  inscricao_municipal: v.inscricao_municipal.trim() || null,
+  email_fiscal: v.email_fiscal.trim() || null,
+  ...limparEndereco(v.end),
+});
 
 const COLUNAS_MODELO = ["nome", "cnpj", "email", "telefone", "endereco", "vendedor"];
 
@@ -158,6 +185,17 @@ function ClientesPage() {
       endereco: dados.endereco || atual.endereco,
       email: dados.email || atual.email,
       telefone: dados.telefone || atual.telefone,
+      tipo_pessoa: "juridica",
+      end: {
+        cep: dados.cep,
+        logradouro: dados.logradouro,
+        numero: dados.numero,
+        complemento: dados.complemento,
+        bairro: dados.bairro,
+        cidade: dados.cidade,
+        uf: dados.uf,
+        codigo_ibge: dados.codigoIbge,
+      },
     }));
   };
 
@@ -222,9 +260,9 @@ function ClientesPage() {
       const { error } = await supabase.from('clientes').insert([{
         nome: values.nome,
         cnpj: values.cnpj,
-        endereco: values.endereco,
         email: values.email,
         telefone: values.telefone,
+        ...dadosFiscais(values),
         ...patchVendedor(values.vendedor),
       } as any]);
       if (error) throw error;
@@ -246,9 +284,9 @@ function ClientesPage() {
       const { error } = await supabase.from('clientes').update({
         nome: values.nome,
         cnpj: values.cnpj,
-        endereco: values.endereco,
         email: values.email,
         telefone: values.telefone,
+        ...dadosFiscais(values),
         ...patchVendedor(values.vendedor),
       } as any).eq('id', values.id);
       if (error) throw error;
@@ -401,6 +439,12 @@ function ClientesPage() {
       email: cliente.email || "",
       telefone: cliente.telefone || "",
       vendedor: cliente.venda_propria ? "proprio" : (cliente.vendedor_id || "nenhum"),
+      tipo_pessoa: cliente.tipo_pessoa || "juridica",
+      inscricao_estadual: cliente.inscricao_estadual || "",
+      indicador_ie: cliente.indicador_ie || "1",
+      inscricao_municipal: cliente.inscricao_municipal || "",
+      email_fiscal: cliente.email_fiscal || "",
+      end: enderecoDeRegistro(cliente),
     });
     setIsEditDialogOpen(true);
   };
@@ -537,6 +581,55 @@ function ClientesPage() {
     }
   };
 
+  const faltandoFiscal = pendenciasCliente({ ...formValues.end, cnpj: formValues.cnpj, indicador_ie: formValues.indicador_ie, inscricao_estadual: formValues.inscricao_estadual });
+  const rotulo = "text-[10px] font-black uppercase tracking-widest text-muted-foreground";
+  const camposFiscais = (
+    <div className="grid gap-3">
+      <div className="grid grid-cols-2 gap-3 rounded-md border border-border p-3">
+        <div className="col-span-2 flex items-center justify-between">
+          <span className="text-[10px] font-black uppercase tracking-widest">Identificação fiscal</span>
+          {faltandoFiscal.length === 0 ? (
+            <span className="text-[10px] font-bold uppercase text-emerald-600">Apto para nota</span>
+          ) : (
+            <span className="text-[10px] font-bold uppercase text-destructive">Falta: {faltandoFiscal.join(", ")}</span>
+          )}
+        </div>
+        <div className="grid gap-1.5">
+          <Label className={rotulo}>Tipo de pessoa</Label>
+          <Select value={formValues.tipo_pessoa} onValueChange={(v) => setFormValues({ ...formValues, tipo_pessoa: v })}>
+            <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="juridica">Pessoa jurídica</SelectItem>
+              <SelectItem value="fisica">Pessoa física</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid gap-1.5">
+          <Label className={rotulo}>Situação no ICMS</Label>
+          <Select value={formValues.indicador_ie} onValueChange={(v) => setFormValues({ ...formValues, indicador_ie: v })}>
+            <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {INDICADORES_IE.map((i) => <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid gap-1.5">
+          <Label className={rotulo}>Inscrição estadual</Label>
+          <Input value={formValues.inscricao_estadual} onChange={(e) => setFormValues({ ...formValues, inscricao_estadual: e.target.value })} className="h-10 font-mono" />
+        </div>
+        <div className="grid gap-1.5">
+          <Label className={rotulo}>Inscrição municipal</Label>
+          <Input value={formValues.inscricao_municipal} onChange={(e) => setFormValues({ ...formValues, inscricao_municipal: e.target.value })} className="h-10 font-mono" />
+        </div>
+        <div className="col-span-2 grid gap-1.5">
+          <Label className={rotulo}>E-mail para envio da nota (XML/PDF)</Label>
+          <Input value={formValues.email_fiscal} onChange={(e) => setFormValues({ ...formValues, email_fiscal: e.target.value })} className="h-10" placeholder="fiscal@cliente.com" />
+        </div>
+      </div>
+      <EnderecoFiscalCampos valor={formValues.end} onChange={(end) => setFormValues({ ...formValues, end })} />
+    </div>
+  );
+
   const CampoVendedor = ({ prefixo }: { prefixo: string }) => (
     <div className="grid gap-2">
       <Label htmlFor={`${prefixo}-vendedor`} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
@@ -580,7 +673,7 @@ function ClientesPage() {
                 Novo Cliente
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] bg-white">
+            <DialogContent className="sm:max-w-[640px] max-h-[90vh] overflow-y-auto bg-white">
               <DialogHeader>
                 <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">CADASTRAR <span className="text-primary">NOVO CLIENTE</span></DialogTitle>
               </DialogHeader>
@@ -608,15 +701,7 @@ function ClientesPage() {
                   </div>
                   <p className="text-[10px] text-muted-foreground">Digite o CNPJ e clique em buscar para preencher nome, endereço, telefone e e-mail automaticamente.</p>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
-                  <Input
-                    id="endereco"
-                    value={formValues.endereco}
-                    onChange={(e) => setFormValues({...formValues, endereco: e.target.value})}
-                    className="h-11 border-border"
-                  />
-                </div>
+                {camposFiscais}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
@@ -994,7 +1079,7 @@ function ClientesPage() {
       </Card>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] bg-white">
+        <DialogContent className="sm:max-w-[640px] max-h-[90vh] overflow-y-auto bg-white">
           <DialogHeader>
             <DialogTitle className="font-display text-xl font-black uppercase tracking-tight">EDITAR <span className="text-primary">CLIENTE</span></DialogTitle>
           </DialogHeader>
@@ -1021,15 +1106,7 @@ function ClientesPage() {
                 <BotaoConsultaCnpj cnpj={formValues.cnpj} onDados={preencherComCnpj} />
               </div>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="edit-endereco" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Endereço Completo</Label>
-              <Input
-                id="edit-endereco"
-                value={formValues.endereco}
-                onChange={(e) => setFormValues({...formValues, endereco: e.target.value})}
-                className="h-11 border-border"
-              />
-            </div>
+            {camposFiscais}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="edit-email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail</Label>
