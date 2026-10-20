@@ -17,6 +17,12 @@ export type DadosCnpj = {
   cep: string;
   situacao: string;
   atividade: string;
+  logradouro: string;
+  numero: string;
+  complemento: string;
+  bairro: string;
+  codigoIbge: string;
+  cnae: string;
 };
 
 export const somenteDigitos = (valor: string) => (valor || "").replace(/\D+/g, "");
@@ -126,5 +132,46 @@ export async function consultarCnpj(valor: string): Promise<DadosCnpj> {
     cep: raw?.cep ? formatarCep(String(raw.cep)) : "",
     situacao: normalizar(raw?.descricao_situacao_cadastral),
     atividade: normalizar(raw?.cnae_fiscal_descricao),
+    logradouro: [raw?.descricao_tipo_de_logradouro, raw?.logradouro].filter(Boolean).join(" ").trim(),
+    numero: normalizar(raw?.numero),
+    complemento: normalizar(raw?.complemento),
+    bairro: normalizar(raw?.bairro),
+    codigoIbge: normalizar(raw?.codigo_municipio_ibge),
+    cnae: normalizar(raw?.cnae_fiscal),
+  };
+}
+
+/** Consulta de CEP gratuita (BrasilAPI v1 com fallback ViaCEP), incluindo código IBGE. */
+export async function consultarCep(valor: string) {
+  const d = somenteDigitos(valor);
+  if (d.length !== 8) throw new Error("Informe um CEP com 8 dígitos.");
+  try {
+    const r = await fetch(`https://viacep.com.br/ws/${d}/json/`);
+    if (r.ok) {
+      const j = await r.json();
+      if (!j?.erro) {
+        return {
+          cep: formatarCep(d),
+          logradouro: normalizar(j.logradouro),
+          bairro: normalizar(j.bairro),
+          cidade: normalizar(j.localidade),
+          uf: normalizar(j.uf),
+          codigo_ibge: normalizar(j.ibge),
+        };
+      }
+    }
+  } catch {
+    /* tenta a próxima fonte */
+  }
+  const r = await fetch(`https://brasilapi.com.br/api/cep/v1/${d}`);
+  if (!r.ok) throw new Error("CEP não encontrado.");
+  const j = await r.json();
+  return {
+    cep: formatarCep(d),
+    logradouro: normalizar(j.street),
+    bairro: normalizar(j.neighborhood),
+    cidade: normalizar(j.city),
+    uf: normalizar(j.state),
+    codigo_ibge: "",
   };
 }
