@@ -22,11 +22,19 @@ describe("materiais", () => {
   it("cromado Ø32 usa R$ 22,75 exato", () => {
     expect(encontrarPreco(tabela, "Aço SAE 1045", "Cromado", "redondo", 32)?.regra.preco_kg).toBe(22.75);
   });
-  it("Ø36 sem registro não interpola", () => {
-    expect(encontrarPreco(tabela, "Aço SAE 1045", "Cromado", "redondo", 36)).toBeNull();
+  it("Ø38 sem registro usa base do material da bitola mais próxima (Ø40)", () => {
+    const a = encontrarPreco(tabela, "Aço SAE 1045", "Cromado", "redondo", 38);
+    expect(a?.tipo).toBe("base");
+    expect(a?.regra.preco_kg).toBe(21.5);
+  });
+  it("nodular 5.1/4\" fora de qualquer faixa ainda usa R$ 10,49/kg", () => {
+    expect(encontrarPreco(tabela, "Ferro nodular FE-45012", "Fundido", "redondo", 160)?.regra.preco_kg).toBe(10.49);
   });
   it("nodular Ø100 cai na faixa", () => {
     expect(encontrarPreco(tabela, "Ferro nodular FE-45012", "Fundido", "redondo", 100)?.tipo).toBe("faixa");
+  });
+  it("material sem nenhum cadastro retorna null", () => {
+    expect(encontrarPreco(tabela, "Inexistente", null, "redondo", 50)).toBeNull();
   });
   it("IPI padrão 3,25% sobre R$ 100", () => {
     expect(valorCompra(1, 1, 100, 3.25)).toEqual({ material: 100, ipi: 3.25, total: 103.25 });
