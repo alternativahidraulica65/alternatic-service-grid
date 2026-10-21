@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 import {
   TrendingUp, Wrench, Wallet, Truck, Handshake, FileSpreadsheet, Printer, Receipt, Users, ArrowUpRight, ArrowDownRight,
 } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,34 @@ const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Ag
 const brl = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0);
 const dia = (d: Date) => format(d, "yyyy-MM-dd");
 const ESTADOS_PIPELINE = ["orcamento_pendente", "orcamento", "aguardando_aprovacao"];
+
+type Periodo = "mes" | "30d" | "tri" | "ano" | "mesEsp";
+function calcularPeriodo(p: Periodo, mes: number, ano: number) {
+  const hoje = new Date();
+  let inicio: Date; let fim: Date; let rotulo: string;
+  if (p === "30d") { fim = hoje; inicio = new Date(hoje.getTime() - 29 * 86400000); rotulo = "Últimos 30 dias"; }
+  else if (p === "tri") { inicio = startOfMonth(subMonths(hoje, 2)); fim = endOfMonth(hoje); rotulo = "Último trimestre"; }
+  else if (p === "ano") { inicio = new Date(ano, 0, 1); fim = new Date(ano, 11, 31, 23, 59, 59); rotulo = `Ano de ${ano}`; }
+  else if (p === "mesEsp") { inicio = new Date(ano, mes, 1); fim = endOfMonth(inicio); rotulo = `${MESES[mes]} de ${ano}`; }
+  else { inicio = startOfMonth(hoje); fim = endOfMonth(hoje); rotulo = `${MESES[hoje.getMonth()]} de ${hoje.getFullYear()}`; }
+  const dur = fim.getTime() - inicio.getTime();
+  const fimAnt = new Date(inicio.getTime() - 1);
+  const inicioAnt = new Date(fimAnt.getTime() - dur);
+  return { inicio, fim, inicioAnt, fimAnt, rotulo };
+}
+
+function montarCascata(r: { receita: number; custo: number; impostos: number; comissoes: number; despesas: number; lucro: number }) {
+  const linhas: { nome: string; base: number; valor: number; real: number; tipo: "entrada" | "saida" | "total" }[] = [
+    { nome: "Faturamento", base: 0, valor: r.receita, real: r.receita, tipo: "entrada" },
+  ];
+  let nivel = r.receita;
+  for (const [nome, v] of [["Peças/terceiros", r.custo], ["Impostos", r.impostos], ["Comissões", r.comissoes], ["Despesas", r.despesas]] as const) {
+    nivel -= v;
+    linhas.push({ nome, base: Math.max(nivel, 0), valor: v, real: -v, tipo: "saida" });
+  }
+  linhas.push({ nome: "Lucro", base: 0, valor: Math.max(r.lucro, 0), real: r.lucro, tipo: "total" });
+  return linhas;
+}
 
 type OsRow = {
   id: string; numero_os: string; cliente: string; status: string; valor_total: number | null; valor_final: number | null;
