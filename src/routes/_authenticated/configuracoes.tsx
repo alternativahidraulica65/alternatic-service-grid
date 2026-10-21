@@ -25,6 +25,7 @@ import type { DadosCnpj } from "@/lib/brasilapi";
 import { useUserRole } from "@/hooks/useUserRole";
 import { TabelaPrecosMateriais } from "@/components/TabelaPrecosMateriais";
 import { EnderecoFiscalCampos } from "@/components/EnderecoFiscalCampos";
+import { CertificadoDigitalCard } from "@/components/CertificadoDigitalCard";
 import {
   ENDERECO_VAZIO,
   REGIMES,
@@ -208,8 +209,9 @@ function ConfiguracoesPage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="empresas">
+        <TabsContent value="empresas" className="space-y-6">
           <AbaEmpresas />
+          <CertificadoDigitalCard />
         </TabsContent>
         <TabsContent value="usuarios">
           <AbaUsuarios />
