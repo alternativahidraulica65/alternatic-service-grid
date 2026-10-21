@@ -980,12 +980,17 @@ function ClientesPage() {
                     />
                   </TableCell>
                   <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
+                    <Link
+                      to="/clientes/$id"
+                      params={{ id: cliente.id }}
+                      className="flex items-center gap-3 outline-none rounded-lg focus-visible:ring-2 focus-visible:ring-primary/60"
+                      aria-label={`Abrir detalhes de ${cliente.nome ?? "cliente"}`}
+                    >
                       <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-border group-hover:border-primary/50 transition-colors">
                         <Building2 className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
                       </div>
-                      <div>
-                        <p className="text-sm font-bold text-foreground uppercase tracking-tight flex items-center gap-1.5">
+                      <div className="text-left">
+                        <p className="text-sm font-bold text-foreground uppercase tracking-tight flex items-center gap-1.5 group-hover:text-primary group-hover:underline underline-offset-4 transition-colors">
                           {cliente.status_cadastro === 'pendente' && (
                             <AlertTriangle className="h-4 w-4 text-amber-500" aria-label="Cadastro pendente de aprovação" />
                           )}
@@ -1001,7 +1006,7 @@ function ClientesPage() {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </TableCell>
                   <TableCell className="py-4 text-[11px] font-mono text-muted-foreground">{cliente.cnpj}</TableCell>
                   <TableCell className="py-4">
