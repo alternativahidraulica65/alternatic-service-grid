@@ -198,27 +198,50 @@ function DashboardFinanceiro() {
 
   const variacao = (a: number, b: number) => (b > 0 ? ((a - b) / b) * 100 : null);
 
+  const cascata = data ? montarCascata(data.atual) : [];
+  const PILULAS: { id: Periodo; rotulo: string }[] = [
+    { id: "mes", rotulo: "Este mês" }, { id: "30d", rotulo: "30 dias" }, { id: "tri", rotulo: "Trimestre" },
+    { id: "ano", rotulo: "Ano" }, { id: "mesEsp", rotulo: "Mês específico" },
+  ];
+
   return (
     <div className="space-y-6 p-4 md:p-8 print:p-0">
-      {/* Cabeçalho */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Painel financeiro</p>
-          <h1 className="font-display text-2xl md:text-3xl font-black tracking-tight text-foreground">
-            Fechamento de {MESES[Number(mes)]} <span className="text-primary">{ano}</span>
-          </h1>
+      {/* Cockpit: cabeçalho + período */}
+      <div className="rounded-md border border-border bg-sidebar p-5 md:p-6 text-sidebar-foreground">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-primary">Cockpit financeiro</p>
+            <h1 className="font-display text-2xl md:text-4xl font-black tracking-tight">{rotulo}</h1>
+            <p className="mt-1 text-xs opacity-70">
+              {format(inicio, "dd/MM/yyyy")} a {format(fim, "dd/MM/yyyy")} · comparado com {format(inicioAnt, "dd/MM")} a {format(fimAnt, "dd/MM/yyyy")}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 print:hidden">
+            <Button variant="outline" size="sm" className="h-9" onClick={exportarCSV}><FileSpreadsheet className="mr-1.5 h-4 w-4" />Planilha</Button>
+            <Button variant="outline" size="sm" className="h-9" onClick={() => window.print()}><Printer className="mr-1.5 h-4 w-4" />Imprimir</Button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2 print:hidden">
-          <Select value={mes} onValueChange={setMes}>
-            <SelectTrigger className="h-9 w-[140px] text-xs font-semibold"><SelectValue /></SelectTrigger>
-            <SelectContent>{MESES.map((m, i) => <SelectItem key={m} value={String(i)}>{m}</SelectItem>)}</SelectContent>
-          </Select>
-          <Select value={ano} onValueChange={setAno}>
-            <SelectTrigger className="h-9 w-[100px] text-xs font-semibold"><SelectValue /></SelectTrigger>
-            <SelectContent>{[0, 1, 2].map((d) => String(hoje.getFullYear() - d)).map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
-          </Select>
-          <Button variant="outline" size="sm" className="h-9" onClick={exportarCSV}><FileSpreadsheet className="mr-1.5 h-4 w-4" />Planilha</Button>
-          <Button variant="outline" size="sm" className="h-9" onClick={() => window.print()}><Printer className="mr-1.5 h-4 w-4" />Imprimir</Button>
+        <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
+          {PILULAS.map((p) => (
+            <button key={p.id} type="button" onClick={() => setPeriodo(p.id)}
+              className={`h-8 rounded-sm px-3 text-xs font-bold uppercase tracking-wider transition-colors ${periodo === p.id ? "bg-primary text-primary-foreground" : "border border-sidebar-border hover:bg-sidebar-accent"}`}>
+              {p.rotulo}
+            </button>
+          ))}
+          {(periodo === "mesEsp" || periodo === "ano") && (
+            <div className="flex gap-2">
+              {periodo === "mesEsp" && (
+                <Select value={mes} onValueChange={setMes}>
+                  <SelectTrigger className="h-8 w-[130px] text-xs font-semibold text-foreground bg-background"><SelectValue /></SelectTrigger>
+                  <SelectContent>{MESES.map((m, i) => <SelectItem key={m} value={String(i)}>{m}</SelectItem>)}</SelectContent>
+                </Select>
+              )}
+              <Select value={ano} onValueChange={setAno}>
+                <SelectTrigger className="h-8 w-[90px] text-xs font-semibold text-foreground bg-background"><SelectValue /></SelectTrigger>
+                <SelectContent>{[0, 1, 2].map((d) => String(hoje.getFullYear() - d)).map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -232,16 +255,40 @@ function DashboardFinanceiro() {
       {/* KPIs */}
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <Kpi titulo="Faturamento realizado" icone={TrendingUp} carregando={isLoading} valor={brl(data?.atual.receita || 0)}
-          sub="OS entregues no mês" delta={data ? variacao(data.atual.receita, data.anterior.receita) : null} />
-        <Kpi titulo="Custos diretos" icone={Wrench} carregando={isLoading} valor={brl(data?.atual.custo || 0)}
-          sub={`+ impostos ${brl(data?.atual.impostos || 0)}`} delta={data ? variacao(data.atual.custo, data.anterior.custo) : null} inverso />
+          sub="OS entregues no período" delta={data ? variacao(data.atual.receita, data.anterior.receita) : null} />
         <Kpi titulo="Lucro líquido real" icone={Wallet} destaque carregando={isLoading} valor={brl(data?.atual.lucro || 0)}
-          sub={data?.atual.margem != null ? `Margem ${data.atual.margem.toFixed(1)}%` : "Sem entregas no mês"} delta={data ? variacao(data.atual.lucro, data.anterior.lucro) : null} />
+          sub={data?.atual.margem != null ? `Margem ${data.atual.margem.toFixed(1)}%` : "Sem entregas no período"} delta={data ? variacao(data.atual.lucro, data.anterior.lucro) : null} />
+        <Kpi titulo="Capital em oficina" icone={Wrench} carregando={isLoading} valor={brl(data?.wipTotal || 0)}
+          sub={`Custos em ${data?.wipQtd || 0} OS abertas`} />
         <Kpi titulo="A pagar (valinhos)" icone={Truck} carregando={isLoading} valor={brl(data?.passivoTotal || 0)}
           sub={`${data?.passivo.length || 0} fornecedores em aberto`} />
         <Kpi titulo="Em negociação" icone={Handshake} carregando={isLoading} valor={brl(data?.pipelineTotal || 0)}
           sub={`${data?.pipelineQtd || 0} propostas com o cliente`} />
       </div>
+
+      {/* Cascata */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-bold uppercase tracking-wider">Do faturamento ao lucro</CardTitle>
+          <CardDescription>Cada barra mostra quanto sai do faturamento até sobrar o lucro líquido do período.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? <Skeleton className="h-[260px] w-full" /> : (
+            <ChartContainer className="h-[260px] w-full" config={{ valor: { label: "Valor", color: "var(--primary)" } }}>
+              <BarChart data={cascata}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis dataKey="nome" tickLine={false} axisLine={false} fontSize={11} />
+                <YAxis tickLine={false} axisLine={false} fontSize={11} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+                <ChartTooltip content={<ChartTooltipContent hideLabel formatter={(_v: unknown, _n: unknown, item: any) => `${item.payload.nome}: ${brl(item.payload.real)}`} />} />
+                <Bar dataKey="base" stackId="c" fill="transparent" />
+                <Bar dataKey="valor" stackId="c" radius={[2, 2, 0, 0]}>
+                  {cascata.map((c) => <Cell key={c.nome} fill={c.tipo === "saida" ? "var(--destructive)" : c.tipo === "total" ? "var(--foreground)" : "var(--primary)"} />)}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          )}
+        </CardContent>
+      </Card>
 
       {/* DRE + gráfico */}
       <div className="grid gap-4 lg:grid-cols-3">
