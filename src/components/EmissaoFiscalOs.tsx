@@ -1,0 +1,278 @@
+import { useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import {
+  CSOSN_RETORNO, NATUREZA_RETORNO, NCM_PADRAO_CILINDRO, cfopRetorno, itensServico, pendenciasEmissao, totalItens, type TipoNota,
+} from "@/lib/emissao-fiscal";
+
+const brl = (v: number) => Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const db = supabase as any;
+
+const STATUS: Record<string, string> = {
+  rascunho: "Aguardando transmissão", processando: "Transmitindo", autorizada: "Autorizada",
+  rejeitada: "Rejeitada", cancelada: "Cancelada", denegada: "Denegada",
+};
+
+export function EmissaoFiscalOs({ osId }: { osId: string }) {
+  const qc = useQueryClient();
+  const key = ["emissao-fiscal", osId];
+  const { data, isLoading } = useQuery({
+    queryKey: key,
+    queryFn: async () => {
+      const { data: os } = await db.from("ordens_servico")
+        .select("id, numero_os, cliente_id, empresa_id, valor_final, valor_total, descricao, nf_entrada_numero, nf_entrada_serie, nf_entrada_chave, nf_entrada_data, nf_entrada_valor")
+        .eq("id", osId).maybeSingle();
+      const [cli, emps, itens, notas, certs] = await Promise.all([
+        os?.cliente_id ? db.from("clientes").select("*").eq("id", os.cliente_id).maybeSingle() : { data: null },
+        db.from("empresas_emissoras").select("*").eq("ativo", true).order("nome"),
+        db.from("orcamento_itens").select("descricao, quantidade, valor_unitario, tipo_item").eq("os_id", osId).order("ordem"),
+        db.from("notas_fiscais").select("*").eq("os_id", osId).order("created_at", { ascending: false }),
+        db.from("certificados_fiscais").select("empresa_id, valido_ate"),
+      ]);
+      return { os, cliente: cli.data, empresas: emps.data || [], itens: itens.data || [], notas: notas.data || [], certs: certs.data || [] };
+    },
+  });
+
+  const [aberto, setAberto] = useState(false);
+  const [tipo, setTipo] = useState<TipoNota>("nfse");
+  const [empresaId, setEmpresaId] = useState<string>("");
+  const [obs, setObs] = useState("");
+  const [entrada, setEntrada] = useState({ numero: "", serie: "", chave: "", data: "", valor: "" });
+  const [enviando, setEnviando] = useState(false);
+
+  const empresa = useMemo(
+    () => data?.empresas.find((e: any) => e.id === (empresaId || data?.os?.empresa_id)) || data?.empresas[0],
+    [data, empresaId],
+  );
+  const cert = data?.certs.find((c: any) => c.empresa_id === empresa?.id);
+  const servicos = itensServico(data?.itens || []);
+  const valorServicos = totalItens(servicos);
+  const osComEntrada = {
+    ...data?.os,
+    nf_entrada_numero: entrada.numero, nf_entrada_chave: entrada.chave, nf_entrada_valor: Number(entrada.valor.replace(",", ".")),
+  };
+  const pend = data ? pendenciasEmissao({
+    tipo, empresa, cliente: data.cliente, os: osComEntrada, temCertificado: !!cert, certificadoValidoAte: cert?.valido_ate, valorServicos,
+  }) : [];
+  const cfop = cfopRetorno(empresa?.uf, data?.cliente?.uf);
+  const homolog = (empresa?.ambiente_fiscal || "homologacao") !== "producao";
+
+  const abrir = (t: TipoNota) => {
+    const o = data?.os || {};
+    setTipo(t); setEmpresaId(o.empresa_id || data?.empresas[0]?.id || ""); setObs("");
+    setEntrada({
+      numero: o.nf_entrada_numero || "", serie: o.nf_entrada_serie || "", chave: o.nf_entrada_chave || "",
+      data: o.nf_entrada_data || "", valor: o.nf_entrada_valor != null ? String(o.nf_entrada_valor).replace(".", ",") : "",
+    });
+    setAberto(true);
+  };
+
+  const preparar = async () => {
+    if (pend.length) return;
+    setEnviando(true);
+    try {
+      if (tipo === "nfe") {
+        const { error } = await db.from("ordens_servico").update({
+          nf_entrada_numero: entrada.numero.trim(), nf_entrada_serie: entrada.serie.trim() || null,
+          nf_entrada_chave: entrada.chave.replace(/\D/g, ""), nf_entrada_data: entrada.data || null,
+          nf_entrada_valor: Number(entrada.valor.replace(",", ".")),
+        }).eq("id", osId);
+        if (error) throw error;
+      }
+      const c = data!.cliente;
+      const itens = tipo === "nfse"
+        ? servicos.map((i: any) => ({ descricao: i.descricao, quantidade: Number(i.quantidade), valor_unitario: Number(i.valor_unitario), codigo_tributacao: empresa.nfse_codigo_tributacao, nbs: empresa.nfse_codigo_nbs }))
+        : [{ descricao: data!.os.descricao || `Equipamento da OS ${data!.os.numero_os}`, quantidade: 1, valor_unitario: osComEntrada.nf_entrada_valor, ncm: NCM_PADRAO_CILINDRO, cfop, csosn: CSOSN_RETORNO }];
+      const valor = tipo === "nfse" ? valorServicos : osComEntrada.nf_entrada_valor;
+      const snapshot = {
+        emitente: { cnpj: empresa.cnpj, razao_social: empresa.razao_social, ie: empresa.inscricao_estadual, im: empresa.inscricao_municipal, regime: empresa.regime_tributario, logradouro: empresa.logradouro, numero: empresa.numero, bairro: empresa.bairro, cidade: empresa.cidade, uf: empresa.uf, cep: empresa.cep, codigo_ibge: empresa.codigo_ibge },
+        destinatario: { documento: c.cnpj, razao_social: c.razao_social || c.nome, tipo_pessoa: c.tipo_pessoa, indicador_ie: c.indicador_ie, ie: c.inscricao_estadual, im: c.inscricao_municipal, email: c.email_fiscal || c.email, logradouro: c.logradouro, numero: c.numero, complemento: c.complemento, bairro: c.bairro, cidade: c.cidade, uf: c.uf, cep: c.cep, codigo_ibge: c.codigo_ibge },
+        nf_entrada: tipo === "nfe" ? { numero: entrada.numero, serie: entrada.serie, chave: entrada.chave.replace(/\D/g, ""), data: entrada.data } : null,
+      };
+      const { error } = await db.rpc("reservar_nota_fiscal", {
+        p_os_id: osId, p_empresa_id: empresa.id, p_tipo: tipo, p_cfop: tipo === "nfe" ? cfop : null,
+        p_natureza: tipo === "nfe" ? NATUREZA_RETORNO : "Prestação de serviço de manutenção e reparo",
+        p_valor: valor, p_itens: itens, p_snapshot: snapshot,
+        p_nf_entrada: tipo === "nfe" ? entrada.chave.replace(/\D/g, "") : null, p_observacoes: obs.trim() || null,
+      });
+      if (error) throw error;
+      toast.success("Nota preparada e número reservado.");
+      setAberto(false);
+      qc.invalidateQueries({ queryKey: key });
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao preparar a nota.");
+    } finally { setEnviando(false); }
+  };
+
+  const descartar = async (id: string) => {
+    const { error } = await db.rpc("descartar_nota_fiscal", { p_id: id });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Rascunho descartado.");
+    qc.invalidateQueries({ queryKey: key });
+  };
+
+  return (
+    <Card className="border-border shadow-md">
+      <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between gap-3 flex-wrap">
+        <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
+          <Receipt className="h-5 w-5 text-primary" /> Documentos fiscais
+        </CardTitle>
+        <div className="flex gap-2 flex-wrap">
+          <Button size="sm" className="font-black uppercase tracking-widest text-[10px]" onClick={() => abrir("nfse")} disabled={isLoading}>
+            <FileText className="mr-2 h-4 w-4" /> Emitir NFS-e (serviço)
+          </Button>
+          <Button size="sm" variant="outline" className="font-bold uppercase tracking-widest text-[10px]" onClick={() => abrir("nfe")} disabled={isLoading}>
+            <FileText className="mr-2 h-4 w-4 text-primary" /> Emitir NF-e retorno
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-6 space-y-3">
+        {homolog && (
+          <div className="flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold uppercase tracking-widest">
+            <FlaskConical className="h-4 w-4 text-primary" /> Ambiente de homologação — notas sem valor fiscal
+          </div>
+        )}
+        {isLoading ? (
+          <p className="text-xs text-muted-foreground">Carregando…</p>
+        ) : !data?.notas.length ? (
+          <div className="flex flex-col items-center py-10 text-muted-foreground">
+            <Receipt className="h-10 w-10 mb-3 opacity-20" />
+            <p className="text-xs font-bold uppercase tracking-widest">Nenhuma nota para esta OS.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border rounded-md border border-border">
+            {data.notas.map((n: any) => (
+              <div key={n.id} className="flex flex-wrap items-center gap-3 px-3 py-3 text-sm">
+                <Badge variant="outline" className="font-black uppercase">{n.tipo === "nfe" ? "NF-e" : "NFS-e"}</Badge>
+                <span className="font-bold">Nº {n.numero} · Série {n.serie}</span>
+                {n.cfop && <span className="text-xs text-muted-foreground">CFOP {n.cfop}</span>}
+                <Badge variant={n.ambiente === "producao" ? "default" : "secondary"} className="uppercase text-[9px]">
+                  {n.ambiente === "producao" ? "Produção" : "Homologação"}
+                </Badge>
+                <span className="text-xs font-semibold">{STATUS[n.status] || n.status}</span>
+                <span className="ml-auto font-black">{brl(n.valor_total)}</span>
+                {n.status === "rascunho" && (
+                  <Button size="icon" variant="ghost" className="h-8 w-8" title="Descartar rascunho" onClick={() => descartar(n.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+                {n.chave_acesso && <p className="w-full font-mono text-[10px] text-muted-foreground break-all">Chave {n.chave_acesso}</p>}
+                {n.motivo_status && <p className="w-full text-[11px] text-muted-foreground">{n.motivo_status}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+
+      <Dialog open={aberto} onOpenChange={setAberto}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="uppercase tracking-widest text-sm font-black">
+              {tipo === "nfse" ? "NFS-e — Prestação de serviço" : `NF-e — Retorno de conserto (CFOP ${cfop})`}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 text-sm">
+            <div className="space-y-1">
+              <Label className="text-[10px] font-bold uppercase tracking-widest">Empresa emissora</Label>
+              <select className="w-full h-10 rounded-md border border-input bg-background px-3" value={empresa?.id || ""} onChange={(e) => setEmpresaId(e.target.value)}>
+                {data?.empresas.map((e: any) => <option key={e.id} value={e.id}>{e.nome} — {e.cnpj}</option>)}
+              </select>
+              {empresa && (
+                <p className="text-[11px] text-muted-foreground">
+                  Série {tipo === "nfe" ? empresa.nfe_serie : empresa.nfse_serie} · próximo nº {homolog ? "de teste" : "real"}{" "}
+                  {tipo === "nfe"
+                    ? (homolog ? empresa.nfe_proximo_numero_homolog : empresa.nfe_proximo_numero)
+                    : (homolog ? empresa.nfse_proximo_numero_homolog : empresa.nfse_proximo_numero)}
+                  {" "}· {homolog ? "Homologação" : "PRODUÇÃO"}
+                </p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-md border border-border p-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Tomador / Destinatário</p>
+                <p className="font-bold">{data?.cliente?.razao_social || data?.cliente?.nome || "—"}</p>
+                <p className="text-xs">{data?.cliente?.cnpj || "Sem documento"}</p>
+                <p className="text-xs text-muted-foreground">{[data?.cliente?.cidade, data?.cliente?.uf].filter(Boolean).join(" - ")}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Tributação</p>
+                {tipo === "nfse" ? (
+                  <p className="text-xs">Cód. {empresa?.nfse_codigo_tributacao || "—"} · NBS {empresa?.nfse_codigo_nbs || "—"} · ISS {empresa?.cidade || ""}</p>
+                ) : (
+                  <p className="text-xs">CFOP {cfop} · CSOSN {CSOSN_RETORNO} · NCM {NCM_PADRAO_CILINDRO} · sem ICMS/IPI</p>
+                )}
+              </div>
+            </div>
+
+            {tipo === "nfse" ? (
+              <div className="rounded-md border border-border">
+                {servicos.length === 0 ? (
+                  <p className="p-3 text-xs text-muted-foreground">Sem serviços no orçamento desta OS.</p>
+                ) : servicos.map((i: any, idx: number) => (
+                  <div key={idx} className="flex justify-between px-3 py-2 text-xs border-b border-border last:border-0">
+                    <span>{Number(i.quantidade)} × {i.descricao}</span>
+                    <span className="font-bold">{brl(Number(i.quantidade) * Number(i.valor_unitario))}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between px-3 py-2 font-black bg-muted/20">
+                  <span>Total dos serviços</span><span>{brl(valorServicos)}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2 rounded-md border border-border p-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest">NF de entrada (com que o cliente enviou a peça)</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <Input placeholder="Número" value={entrada.numero} onChange={(e) => setEntrada({ ...entrada, numero: e.target.value })} />
+                  <Input placeholder="Série" value={entrada.serie} onChange={(e) => setEntrada({ ...entrada, serie: e.target.value })} />
+                  <Input type="date" value={entrada.data} onChange={(e) => setEntrada({ ...entrada, data: e.target.value })} />
+                  <Input placeholder="Valor (R$)" inputMode="decimal" value={entrada.valor} onChange={(e) => setEntrada({ ...entrada, valor: e.target.value })} />
+                </div>
+                <Input placeholder="Chave de acesso (44 dígitos)" className="font-mono" value={entrada.chave}
+                  onChange={(e) => setEntrada({ ...entrada, chave: e.target.value.replace(/\D/g, "").slice(0, 44) })} />
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <Label className="text-[10px] font-bold uppercase tracking-widest">Informações complementares</Label>
+              <Textarea rows={2} value={obs} onChange={(e) => setObs(e.target.value)} placeholder={`Referente à OS ${data?.os?.numero_os || ""}`} />
+            </div>
+
+            {pend.length > 0 ? (
+              <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3">
+                <p className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-destructive">
+                  <AlertTriangle className="h-4 w-4" /> Corrija antes de emitir
+                </p>
+                <ul className="mt-2 list-disc pl-5 text-xs space-y-0.5">{pend.map((p) => <li key={p}>{p}</li>)}</ul>
+              </div>
+            ) : (
+              <p className="flex items-center gap-2 text-xs font-bold text-primary">
+                <CheckCircle2 className="h-4 w-4" /> Dados completos para emissão.
+              </p>
+            )}
+            <p className="flex items-start gap-2 text-[11px] text-muted-foreground">
+              <ShieldCheck className="h-4 w-4 shrink-0" /> A nota é gravada com número reservado. A assinatura com o certificado e o envio à SEFAZ/Prefeitura são a próxima etapa do módulo.
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAberto(false)}>Cancelar</Button>
+            <Button onClick={preparar} disabled={enviando || pend.length > 0} className="font-black uppercase tracking-widest text-[10px]">
+              {enviando ? "Gravando…" : homolog ? "Preparar nota de teste" : "Preparar nota real"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Card>
+  );
+}

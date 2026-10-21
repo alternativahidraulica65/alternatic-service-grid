@@ -2,6 +2,7 @@ import { BotaoVoltar } from "@/components/BotaoVoltar";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { faseDoStatus, indiceFase, avaliarFluxo, podeAvancar, pendenciasAte, ROTULO_FASE, STATUS_DA_FASE, type Fase } from "@/lib/os-fluxo";
 import { PendenciasOsCard } from "@/components/PendenciasOsCard";
+import { EmissaoFiscalOs } from "@/components/EmissaoFiscalOs";
 import { NotasInternasOs } from "@/components/NotasInternasOs";
 import { idCustoAutomatico } from "@/lib/custos-automaticos";
 import { ChecklistDocumento, iconeComponente } from "@/components/ChecklistDocumento";
@@ -2652,21 +2653,7 @@ function GestaoOSPage() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-border shadow-md">
-
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle className="text-base font-bold uppercase tracking-widest flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-primary" />
-                Dados de Faturamento
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Receipt className="h-12 w-12 mb-4 opacity-20" />
-                <p className="text-xs font-bold uppercase tracking-widest">Faturamento ainda não processado.</p>
-              </div>
-            </CardContent>
-            </Card>
+            <EmissaoFiscalOs osId={String(osId)} />
           )}
         </TabsContent>
 
