@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T12:21:49.964559+00:00",
+  "generated_at": "2026-10-21T17:20:12.402416+00:00",
   "files": [
     {
       "path": "eslint.config.js",
@@ -11,7 +11,7 @@
     },
     {
       "path": "package.json",
-      "bytes": 3154
+      "bytes": 3218
     },
     {
       "path": "README.md",
@@ -35,7 +35,7 @@
     },
     {
       "path": "AGENTS.md",
-      "bytes": 1997
+      "bytes": 2249
     },
     {
       "path": ".lovasiri/sync.json",
@@ -602,6 +602,10 @@
       "bytes": 5051
     },
     {
+      "path": "src/lib/certificado.functions.ts",
+      "bytes": 5339
+    },
+    {
       "path": "src/lib/admin-usuarios.functions.ts",
       "bytes": 7304
     },
@@ -826,6 +830,10 @@
       "bytes": 28022
     },
     {
+      "path": "src/components/ConsumoPlanoCard.tsx",
+      "bytes": 3554
+    },
+    {
       "path": "src/components/PainelGestorOs.tsx",
       "bytes": 12954
     },
@@ -866,6 +874,10 @@
       "bytes": 34931
     },
     {
+      "path": "src/components/CertificadoDigitalCard.tsx",
+      "bytes": 6063
+    },
+    {
       "path": "src/routes/_authenticated/terceiros.tsx",
       "bytes": 34982
     },
@@ -883,7 +895,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 48332
+      "bytes": 48469
     },
     {
       "path": "src/routes/_authenticated/relatorios.tsx",
@@ -935,7 +947,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin/auditoria.tsx",
-      "bytes": 24206
+      "bytes": 24300
     },
     {
       "path": "src/routes/_authenticated/admin/checklist-templates.tsx",
@@ -1458,6 +1470,30 @@
     {
       "source": "src/lib/proposta-publica.functions.ts",
       "target": "zod"
+    },
+    {
+      "source": "src/lib/certificado.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/certificado.functions.ts",
+      "target": "@supabase/supabase-js"
+    },
+    {
+      "source": "src/lib/certificado.functions.ts",
+      "target": "zod"
+    },
+    {
+      "source": "src/lib/certificado.functions.ts",
+      "target": "./admin-key"
+    },
+    {
+      "source": "src/lib/certificado.functions.ts",
+      "target": "node-forge"
+    },
+    {
+      "source": "src/lib/certificado.functions.ts",
+      "target": "node-forge"
     },
     {
       "source": "src/lib/admin-usuarios.functions.ts",
@@ -2552,6 +2588,26 @@
       "target": "lucide-react"
     },
     {
+      "source": "src/components/ConsumoPlanoCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/ConsumoPlanoCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/ConsumoPlanoCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/ConsumoPlanoCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/ConsumoPlanoCard.tsx",
+      "target": "@/components/ui/progress"
+    },
+    {
       "source": "src/components/PainelGestorOs.tsx",
       "target": "react"
     },
@@ -2868,6 +2924,58 @@
       "target": "lucide-react"
     },
     {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@/lib/certificado.functions"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@/components/ui/card"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@/components/ui/badge"
+    },
+    {
+      "source": "src/components/CertificadoDigitalCard.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
       "source": "src/routes/_authenticated/terceiros.tsx",
       "target": "@/components/BotaoVoltar"
     },
@@ -3030,6 +3138,10 @@
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
       "target": "@/components/EnderecoFiscalCampos"
+    },
+    {
+      "source": "src/routes/_authenticated/configuracoes.tsx",
+      "target": "@/components/CertificadoDigitalCard"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
@@ -3706,6 +3818,10 @@
     {
       "source": "src/routes/_authenticated/admin/auditoria.tsx",
       "target": "@/components/BotaoVoltar"
+    },
+    {
+      "source": "src/routes/_authenticated/admin/auditoria.tsx",
+      "target": "@/components/ConsumoPlanoCard"
     },
     {
       "source": "src/routes/_authenticated/admin/auditoria.tsx",
