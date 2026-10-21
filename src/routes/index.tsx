@@ -7,6 +7,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2, Droplets, UserCircle, Shield, ArrowLe
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import loginAgro from "@/assets/login-agro.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -179,7 +180,7 @@ function LoginPage() {
     <div suppressHydrationWarning className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div 
         className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
-        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=2000")' }}
+        style={{ backgroundImage: `url("${loginAgro}")` }}
       >
         <div className="absolute inset-0 bg-slate-950/70" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/40" />
