@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T18:42:26.087910+00:00",
+  "generated_at": "2026-10-21T23:31:30.358287+00:00",
   "files": [
     {
       "path": "eslint.config.js",
@@ -711,7 +711,7 @@
     },
     {
       "path": "src/routes/index.tsx",
-      "bytes": 17976
+      "bytes": 17944
     },
     {
       "path": "src/utils/export.ts",
@@ -1698,6 +1698,10 @@
     {
       "source": "src/routes/index.tsx",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/index.tsx",
+      "target": "@/assets/login-agro.jpg"
     },
     {
       "source": "src/routes/index.tsx",
