@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-21T17:20:12.402416+00:00
+Generated: 2026-10-21T17:57:40.117921+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -162,6 +162,7 @@ Generated: 2026-10-21T17:20:12.402416+00:00
 - src/components/ClientOnly.tsx
 - src/components/ConsumoPlanoCard.tsx
 - src/components/CustosOsPanel.tsx
+- src/components/EmissaoFiscalOs.tsx
 - src/components/EnderecoFiscalCampos.tsx
 - src/components/EstadoLista.tsx
 - src/components/FiltrosSalvos.tsx
