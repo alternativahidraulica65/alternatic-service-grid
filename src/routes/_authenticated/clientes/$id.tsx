@@ -254,7 +254,11 @@ function ClienteDetalhesPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="h-11 font-black uppercase tracking-widest text-xs px-6">
+          <Button
+            variant="outline"
+            className="h-11 font-black uppercase tracking-widest text-xs px-6"
+            onClick={() => router.navigate({ to: "/clientes", search: { editar: cliente.id } })}
+          >
             <Edit className="mr-2 h-4 w-4" />
             Editar
           </Button>
