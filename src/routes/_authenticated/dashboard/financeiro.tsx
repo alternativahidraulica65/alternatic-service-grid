@@ -220,7 +220,7 @@ function DashboardFinanceiro() {
     const blob = new Blob(["\uFEFF" + linhas.map((l) => l.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(";")).join("\n")], { type: "text/csv;charset=utf-8;" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `financeiro_${Number(mes) + 1}_${ano}.csv`;
+    a.download = `financeiro_${dia(inicio)}_${dia(fim)}.csv`;
     a.click();
   };
 
