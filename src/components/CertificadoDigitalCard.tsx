@@ -39,7 +39,10 @@ export function CertificadoDigitalCard() {
   });
 
   async function enviar() {
-    if (!empresaId || !arquivo || !senha) return toast.error("Selecione a empresa, o arquivo .pfx e informe a senha.");
+    if (!empresaId || !arquivo || !senha) {
+      toast.error("Selecione a empresa, o arquivo .pfx e informe a senha.");
+      return;
+    }
     setEnviando(true);
     try {
       const buf = new Uint8Array(await arquivo.arrayBuffer());

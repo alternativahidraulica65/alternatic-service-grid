@@ -51,10 +51,13 @@ export const salvarCertificado = createServerFn({ method: "POST" })
     try {
       const der = forge.util.decode64(data.pfxBase64);
       const p12 = forge.pkcs12.pkcs12FromAsn1(forge.asn1.fromDer(der), data.senha);
-      const bags = p12.getBags({ bagType: forge.pki.oids.certBag })[forge.pki.oids.certBag] ?? [];
-      const keyBags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag })[forge.pki.oids.pkcs8ShroudedKeyBag] ?? [];
+      const certOid = forge.pki.oids["certBag"]!;
+      const keyOid = forge.pki.oids["pkcs8ShroudedKeyBag"]!;
+      const bags = p12.getBags({ bagType: certOid })[certOid] ?? [];
+      const keyBags = p12.getBags({ bagType: keyOid })[keyOid] ?? [];
       if (!bags[0]?.cert || !keyBags[0]?.key) throw new Error();
-      cert = bags.map((b) => b.cert!).find((c) => !c.extensions.some((e) => e.name === "basicConstraints" && e.cA)) ?? bags[0].cert;
+      const certs = bags.map((b) => b.cert!).filter(Boolean);
+      cert = certs.find((c) => !c.extensions.some((e: { name?: string; cA?: boolean }) => e.name === "basicConstraints" && e.cA)) ?? certs[0]!;
     } catch {
       throw new Error("Certificado inválido ou senha incorreta.");
     }
