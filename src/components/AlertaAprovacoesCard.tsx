@@ -137,29 +137,21 @@ export function AlertaAprovacoesCard() {
 
   return (
     <>
-      <Card role="button" tabIndex={0} onClick={abrir}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") abrir(); }}
-        aria-label={`Itens aguardando aprovação: ${total}`}
-        className={`cursor-pointer border-l-8 shadow-md transition-transform hover:-translate-y-0.5 ${total > 0 ? "border-l-amber-500 bg-amber-50/70 border-amber-200" : "border-l-emerald-500 bg-emerald-50/60 border-emerald-200"}`}>
-        <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${total > 0 ? "bg-amber-500 text-white" : "bg-emerald-500 text-white"}`}>
-              {total > 0 ? <ShieldAlert className="h-7 w-7" /> : <ShieldCheck className="h-7 w-7" />}
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">Aprovações · serviços e cadastros</p>
-              <p className="text-2xl font-black text-slate-900">
-                {isLoading ? "…" : total > 0 ? `${total} aguardando aprovação` : "Nada pendente de aprovação"}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="bg-white"><Wrench className="h-3 w-3 mr-1" />{servicos.length} serviço(s)</Badge>
-            <Badge variant="outline" className="bg-white"><Users className="h-3 w-3 mr-1" />{clientes.length} cliente(s)</Badge>
-            <Badge variant="outline" className="bg-white"><Truck className="h-3 w-3 mr-1" />{fornecedores.length} fornecedor(es)/terceiro(s)</Badge>
-          </div>
-        </CardContent>
-      </Card>
+      <button type="button" onClick={abrir} aria-label={`Itens aguardando aprovação: ${total}`}
+        className={`group flex w-full items-center gap-3 rounded-md border bg-card px-4 py-3 text-left transition-colors hover:border-primary ${total > 0 ? "border-l-4 border-l-primary border-border" : "border-border"}`}>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm ${total > 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+          {total > 0 ? <ShieldAlert className="h-5 w-5" /> : <ShieldCheck className="h-5 w-5" />}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Aprovações</span>
+          <span className="flex items-center gap-3 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1"><Wrench className="h-3 w-3" />{servicos.length}</span>
+            <span className="inline-flex items-center gap-1"><Users className="h-3 w-3" />{clientes.length}</span>
+            <span className="inline-flex items-center gap-1"><Truck className="h-3 w-3" />{fornecedores.length}</span>
+          </span>
+        </span>
+        <span className="text-2xl font-black tabular-nums text-foreground">{isLoading ? "…" : total}</span>
+      </button>
 
       <Dialog open={aberto} onOpenChange={setAberto}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
