@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T12:13:37.171501+00:00",
+  "generated_at": "2026-10-21T12:21:49.964559+00:00",
   "files": [
     {
       "path": "eslint.config.js",
@@ -715,7 +715,7 @@
     },
     {
       "path": "src/components/AlertaAprovacoesCard.tsx",
-      "bytes": 13997
+      "bytes": 13622
     },
     {
       "path": "src/components/NotasInternasOs.tsx",
@@ -747,7 +747,7 @@
     },
     {
       "path": "src/components/AlertaOrcamentosCard.tsx",
-      "bytes": 11105
+      "bytes": 9174
     },
     {
       "path": "src/components/ChecklistDocumento.tsx",
@@ -831,7 +831,7 @@
     },
     {
       "path": "src/components/LembretesCard.tsx",
-      "bytes": 5473
+      "bytes": 6283
     },
     {
       "path": "src/components/BotaoConsultaCnpj.tsx",
@@ -2625,7 +2625,7 @@
     },
     {
       "source": "src/components/LembretesCard.tsx",
-      "target": "@/components/ui/card"
+      "target": "@/components/ui/dialog"
     },
     {
       "source": "src/components/LembretesCard.tsx",
