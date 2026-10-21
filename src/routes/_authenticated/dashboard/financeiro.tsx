@@ -85,25 +85,27 @@ const SELECT_OS = "id, numero_os, cliente, status, valor_total, valor_final, imp
 function DashboardFinanceiro() {
   const { podeVerValoresFinanceiros } = useUserRole();
   const hoje = new Date();
+  const [periodo, setPeriodo] = useState<Periodo>("mes");
   const [mes, setMes] = useState(String(hoje.getMonth()));
   const [ano, setAno] = useState(String(hoje.getFullYear()));
-  const inicio = new Date(Number(ano), Number(mes), 1);
-  const fim = endOfMonth(inicio);
-  const inicioAnt = startOfMonth(subMonths(inicio, 1));
-  const fimAnt = endOfMonth(inicioAnt);
+  const { inicio, fim, inicioAnt, fimAnt, rotulo } = calcularPeriodo(periodo, Number(mes), Number(ano));
 
   const { data, isLoading } = useQuery({
     enabled: podeVerValoresFinanceiros,
-    queryKey: ["fin-dashboard-v2", dia(inicio)],
+    queryKey: ["fin-dashboard-v3", dia(inicio), dia(fim)],
     queryFn: async () => {
-      const [entregues, entreguesAnt, pipeline, prontas, pendentes] = await Promise.all([
+      const [entregues, entreguesAnt, pipeline, prontas, pendentes, wipOs] = await Promise.all([
         supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", inicio.toISOString()).lte("data_entrega", fim.toISOString()),
         supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", inicioAnt.toISOString()).lte("data_entrega", fimAnt.toISOString()),
         supabase.from("ordens_servico").select("id, numero_os, cliente, valor_final, valor_total, orcamento_enviado_em").in("status", ESTADOS_PIPELINE).not("orcamento_enviado_em", "is", null),
         supabase.from("ordens_servico").select(SELECT_OS).eq("status", "pronto").order("updated_at", { ascending: true }),
         supabase.from("os_custos").select("id, custo_interno, fornecedor_id, terceiro_nome, criado_em, fornecedores(nome)").eq("pago", false).lte("criado_em", fim.toISOString()),
+        supabase.from("ordens_servico").select("id").not("status", "in", "(entregue,cancelado,cancelada,encerrado)"),
       ]);
-      for (const r of [entregues, entreguesAnt, pipeline, prontas, pendentes]) if (r.error) throw r.error;
+      for (const r of [entregues, entreguesAnt, pipeline, prontas, pendentes, wipOs]) if (r.error) throw r.error;
+      const wipIds = (wipOs.data || []).map((o: any) => o.id as string);
+      const wipMapa = await custosPorOs(wipIds);
+      const wipTotal = [...wipMapa.values()].reduce((a, v) => a + v, 0);
       const ent = (entregues.data || []) as unknown as OsRow[];
       const ant = (entreguesAnt.data || []) as unknown as OsRow[];
       const [cAtual, cAnt, dAtual, dAnt] = await Promise.all([custosPorOs(ent.map((o) => o.id)), custosPorOs(ant.map((o) => o.id)), despesasPagas(inicio, fim), despesasPagas(inicioAnt, fimAnt)]);
