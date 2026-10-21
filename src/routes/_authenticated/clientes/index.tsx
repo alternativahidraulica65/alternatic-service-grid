@@ -10,7 +10,7 @@ import {
   pendenciasCliente,
   type EnderecoFiscal,
 } from "@/lib/fiscal";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
   Users,
