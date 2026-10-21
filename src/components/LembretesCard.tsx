@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { BellRing, Clock, FileClock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -19,6 +19,7 @@ function diasDesde(valor?: string | null) {
 /** Lembretes automáticos: orçamentos sem resposta e OS sem movimento. */
 export function LembretesCard() {
   const [limite, setLimite] = useState("3");
+  const [aberto, setAberto] = useState(false);
   const dias = Number(limite) || 3;
 
   const { data: ordens = [] } = useQuery({
@@ -117,7 +118,7 @@ function Bloco({
         <p className="text-[11px] text-muted-foreground">{vazio}</p>
       ) : (
         <ul className="space-y-1">
-          {itens.slice(0, 6).map((os) => (
+          {itens.slice(0, 30).map((os) => (
             <li key={os.id} className="flex items-center justify-between gap-2 border-b border-border/40 py-1 last:border-0">
               <span className="min-w-0">
                 <span className="font-mono text-xs font-bold">{os.numero_os}</span>
