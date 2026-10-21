@@ -182,13 +182,26 @@ function MateriaisPage() {
       const { data: auth } = await supabase.auth.getUser();
       const valor = calc.v.total;
       const desc = descricao();
-      const { error } = sel.lancado
-        ? await supabase.from("os_custos" as any).update({ descricao: desc, custo_interno: valor }).eq("id", sel.custoId)
+      // Reaproveita o custo pendente criado pela destinação da peça (ex.: "Comprar Nova - Haste")
+      let alvoId: string | null = sel.lancado ? sel.custoId : null;
+      if (!alvoId) {
+        const comp = String(sel.componente ?? "").trim().toLowerCase();
+        const { data: pend } = await supabase.from("os_custos" as any)
+          .select("id, descricao, custo_interno, pago").eq("os_id", sel.os_id).eq("categoria", "material");
+        const achado = ((pend ?? []) as any[]).find((c) => {
+          const d = String(c.descricao ?? "").toLowerCase();
+          return !c.pago && Number(c.custo_interno ?? 0) <= 0 && comp && d.endsWith(`- ${comp}`);
+        });
+        alvoId = achado?.id ?? null;
+      }
+      const { error } = alvoId
+        ? await supabase.from("os_custos" as any).update({ descricao: desc, custo_interno: valor }).eq("id", alvoId)
         : await supabase.from("os_custos" as any).insert({
             id: sel.custoId, os_id: sel.os_id, descricao: desc, categoria: "material", custo_interno: valor,
             pago: false, data_pagamento: null, is_terceirizado: false, criado_por: auth.user?.id ?? null,
           });
       if (error) throw error;
+      if (alvoId) sel.custoId = alvoId;
       await supabase.from("historico_status_os" as any).insert({
         os_id: sel.os_id, status_novo: sel.ordens_servico?.status ?? "atualizado",
         status_anterior: sel.ordens_servico?.status ?? null,
