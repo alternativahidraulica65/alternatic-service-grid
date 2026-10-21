@@ -108,9 +108,23 @@ function MateriaisPage() {
         const { data: c } = await supabase.from("os_custos" as any).select("id, custo_interno").in("id", ids.slice(i, i + 100));
         (c ?? []).forEach((x: any) => lancados.set(x.id, Number(x.custo_interno) || 0));
       }
+      // Custos de matéria-prima já gravados sobre a linha da destinação (ex.: "Comprar Nova - Haste")
+      const osIds = Array.from(new Set(lista.map((s) => s.os_id)));
+      const porOs = new Map<string, any[]>();
+      for (let i = 0; i < osIds.length; i += 100) {
+        const { data: c } = await supabase.from("os_custos" as any).select("id, os_id, descricao, custo_interno").in("os_id", osIds.slice(i, i + 100)).ilike("descricao", "Matéria-prima %");
+        (c ?? []).forEach((x: any) => porOs.set(x.os_id, [...(porOs.get(x.os_id) ?? []), x]));
+      }
       return lista
         .filter((s) => !["entregue", "cancelada", "encerrado"].includes(String(s.ordens_servico?.status ?? "")))
-        .map((s, i) => ({ ...s, custoId: ids[i], lancado: lancados.has(ids[i]!), valorLancado: lancados.get(ids[i]!) ?? 0 }));
+        .map((s, i) => {
+          if (lancados.has(ids[i]!)) return { ...s, custoId: ids[i], lancado: true, valorLancado: lancados.get(ids[i]!) ?? 0 };
+          const prefixo = `matéria-prima ${String(s.componente ?? "").toLowerCase()}:`;
+          const ex = (porOs.get(s.os_id) ?? []).find((x) => String(x.descricao).toLowerCase().startsWith(prefixo));
+          return ex
+            ? { ...s, custoId: ex.id, lancado: true, valorLancado: Number(ex.custo_interno) || 0 }
+            : { ...s, custoId: ids[i], lancado: false, valorLancado: 0 };
+        });
     },
   });
 
