@@ -35,7 +35,7 @@ import {
   FileSpreadsheet,
   X,
 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { exportToCSV } from "@/utils/export";
@@ -80,6 +80,8 @@ export const Route = createFileRoute("/_authenticated/clientes/")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
+  validateSearch: (s: Record<string, unknown>): { editar?: string } =>
+    typeof s["editar"] === "string" ? { editar: s["editar"] } : {},
   component: ClientesPage,
 });
 
@@ -448,6 +450,18 @@ function ClientesPage() {
     });
     setIsEditDialogOpen(true);
   };
+
+  // Abre a edição quando vindo da ficha do cliente (?editar=<id>).
+  const editarId = Route.useSearch().editar;
+  const editarAberto = useRef<string | null>(null);
+  useEffect(() => {
+    if (!editarId || editarAberto.current === editarId) return;
+    const alvo = (clientes as any[]).find((c) => c.id === editarId);
+    if (alvo) {
+      editarAberto.current = editarId;
+      handleEdit(alvo);
+    }
+  }, [editarId, clientes]);
 
   const handleDelete = (cliente: any) => {
     toast.error("Remoção confirmada", {
