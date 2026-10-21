@@ -140,21 +140,23 @@ function DashboardFinanceiro() {
         prontas: (prontas.data || []) as unknown as OsRow[],
         entregues: ent,
         comissoes: [...comMap.values()].sort((a, b) => b.comissao - a.comissao),
+        wipTotal,
+        wipQtd: wipIds.length,
       };
     },
   });
 
   const { data: tendencia } = useQuery({
     enabled: podeVerValoresFinanceiros,
-    queryKey: ["fin-tendencia-v2", dia(inicio)],
+    queryKey: ["fin-tendencia-v3", dia(fim)],
     queryFn: async () => {
-      const ini = startOfMonth(subMonths(inicio, 5));
+      const ini = startOfMonth(subMonths(fim, 5));
       const { data: os, error } = await supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", ini.toISOString()).lte("data_entrega", fim.toISOString());
       if (error) throw error;
       const lista = (os || []) as unknown as OsRow[];
       const [custos, desp] = await Promise.all([custosPorOs(lista.map((o) => o.id)), despesasPagas(ini, fim)]);
       return Array.from({ length: 6 }, (_, i) => {
-        const m = subMonths(inicio, 5 - i);
+        const m = subMonths(fim, 5 - i);
         const chave = format(m, "yyyy-MM");
         const r = dre(lista.filter((o) => o.data_entrega?.startsWith(chave)), custos, somaDespesas(desp.filter((d) => String(d.data_pagamento).startsWith(chave))));
         return { mes: format(m, "MMM", { locale: ptBR }), receita: r.receita, custos: r.custo + r.impostos + r.comissoes + r.despesas, lucro: r.lucro };
