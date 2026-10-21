@@ -115,7 +115,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
 
   const descartar = async (id: string) => {
     const { error } = await db.rpc("descartar_nota_fiscal", { p_id: id });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Rascunho descartado.");
     qc.invalidateQueries({ queryKey: key });
   };
