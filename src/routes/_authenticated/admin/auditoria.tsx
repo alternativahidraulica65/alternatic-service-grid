@@ -1,4 +1,5 @@
 import { BotaoVoltar } from "@/components/BotaoVoltar";
+import { ConsumoPlanoCard } from "@/components/ConsumoPlanoCard";
 import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import {
   History as HistoryIcon,
@@ -245,6 +246,8 @@ function AuditoriaPage() {
           </Button>
         </div>
       </div>
+
+      <ConsumoPlanoCard />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
