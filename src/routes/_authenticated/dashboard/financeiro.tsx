@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 import {
   TrendingUp, Wrench, Wallet, Truck, Handshake, FileSpreadsheet, Printer, Receipt, Users, ArrowUpRight, ArrowDownRight,
 } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,34 @@ const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Ag
 const brl = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0);
 const dia = (d: Date) => format(d, "yyyy-MM-dd");
 const ESTADOS_PIPELINE = ["orcamento_pendente", "orcamento", "aguardando_aprovacao"];
+
+type Periodo = "mes" | "30d" | "tri" | "ano" | "mesEsp";
+function calcularPeriodo(p: Periodo, mes: number, ano: number) {
+  const hoje = new Date();
+  let inicio: Date; let fim: Date; let rotulo: string;
+  if (p === "30d") { fim = hoje; inicio = new Date(hoje.getTime() - 29 * 86400000); rotulo = "Últimos 30 dias"; }
+  else if (p === "tri") { inicio = startOfMonth(subMonths(hoje, 2)); fim = endOfMonth(hoje); rotulo = "Último trimestre"; }
+  else if (p === "ano") { inicio = new Date(ano, 0, 1); fim = new Date(ano, 11, 31, 23, 59, 59); rotulo = `Ano de ${ano}`; }
+  else if (p === "mesEsp") { inicio = new Date(ano, mes, 1); fim = endOfMonth(inicio); rotulo = `${MESES[mes]} de ${ano}`; }
+  else { inicio = startOfMonth(hoje); fim = endOfMonth(hoje); rotulo = `${MESES[hoje.getMonth()]} de ${hoje.getFullYear()}`; }
+  const dur = fim.getTime() - inicio.getTime();
+  const fimAnt = new Date(inicio.getTime() - 1);
+  const inicioAnt = new Date(fimAnt.getTime() - dur);
+  return { inicio, fim, inicioAnt, fimAnt, rotulo };
+}
+
+function montarCascata(r: { receita: number; custo: number; impostos: number; comissoes: number; despesas: number; lucro: number }) {
+  const linhas: { nome: string; base: number; valor: number; real: number; tipo: "entrada" | "saida" | "total" }[] = [
+    { nome: "Faturamento", base: 0, valor: r.receita, real: r.receita, tipo: "entrada" },
+  ];
+  let nivel = r.receita;
+  for (const [nome, v] of [["Peças/terceiros", r.custo], ["Impostos", r.impostos], ["Comissões", r.comissoes], ["Despesas", r.despesas]] as const) {
+    nivel -= v;
+    linhas.push({ nome, base: Math.max(nivel, 0), valor: v, real: -v, tipo: "saida" });
+  }
+  linhas.push({ nome: "Lucro", base: 0, valor: Math.max(r.lucro, 0), real: r.lucro, tipo: "total" });
+  return linhas;
+}
 
 type OsRow = {
   id: string; numero_os: string; cliente: string; status: string; valor_total: number | null; valor_final: number | null;
@@ -85,25 +113,27 @@ const SELECT_OS = "id, numero_os, cliente, status, valor_total, valor_final, imp
 function DashboardFinanceiro() {
   const { podeVerValoresFinanceiros } = useUserRole();
   const hoje = new Date();
+  const [periodo, setPeriodo] = useState<Periodo>("mes");
   const [mes, setMes] = useState(String(hoje.getMonth()));
   const [ano, setAno] = useState(String(hoje.getFullYear()));
-  const inicio = new Date(Number(ano), Number(mes), 1);
-  const fim = endOfMonth(inicio);
-  const inicioAnt = startOfMonth(subMonths(inicio, 1));
-  const fimAnt = endOfMonth(inicioAnt);
+  const { inicio, fim, inicioAnt, fimAnt, rotulo } = calcularPeriodo(periodo, Number(mes), Number(ano));
 
   const { data, isLoading } = useQuery({
     enabled: podeVerValoresFinanceiros,
-    queryKey: ["fin-dashboard-v2", dia(inicio)],
+    queryKey: ["fin-dashboard-v3", dia(inicio), dia(fim)],
     queryFn: async () => {
-      const [entregues, entreguesAnt, pipeline, prontas, pendentes] = await Promise.all([
+      const [entregues, entreguesAnt, pipeline, prontas, pendentes, wipOs] = await Promise.all([
         supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", inicio.toISOString()).lte("data_entrega", fim.toISOString()),
         supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", inicioAnt.toISOString()).lte("data_entrega", fimAnt.toISOString()),
         supabase.from("ordens_servico").select("id, numero_os, cliente, valor_final, valor_total, orcamento_enviado_em").in("status", ESTADOS_PIPELINE).not("orcamento_enviado_em", "is", null),
         supabase.from("ordens_servico").select(SELECT_OS).eq("status", "pronto").order("updated_at", { ascending: true }),
         supabase.from("os_custos").select("id, custo_interno, fornecedor_id, terceiro_nome, criado_em, fornecedores(nome)").eq("pago", false).lte("criado_em", fim.toISOString()),
+        supabase.from("ordens_servico").select("id").not("status", "in", "(entregue,cancelado,cancelada,encerrado)"),
       ]);
-      for (const r of [entregues, entreguesAnt, pipeline, prontas, pendentes]) if (r.error) throw r.error;
+      for (const r of [entregues, entreguesAnt, pipeline, prontas, pendentes, wipOs]) if (r.error) throw r.error;
+      const wipIds = (wipOs.data || []).map((o: any) => o.id as string);
+      const wipMapa = await custosPorOs(wipIds);
+      const wipTotal = [...wipMapa.values()].reduce((a, v) => a + v, 0);
       const ent = (entregues.data || []) as unknown as OsRow[];
       const ant = (entreguesAnt.data || []) as unknown as OsRow[];
       const [cAtual, cAnt, dAtual, dAnt] = await Promise.all([custosPorOs(ent.map((o) => o.id)), custosPorOs(ant.map((o) => o.id)), despesasPagas(inicio, fim), despesasPagas(inicioAnt, fimAnt)]);
@@ -138,21 +168,23 @@ function DashboardFinanceiro() {
         prontas: (prontas.data || []) as unknown as OsRow[],
         entregues: ent,
         comissoes: [...comMap.values()].sort((a, b) => b.comissao - a.comissao),
+        wipTotal,
+        wipQtd: wipIds.length,
       };
     },
   });
 
   const { data: tendencia } = useQuery({
     enabled: podeVerValoresFinanceiros,
-    queryKey: ["fin-tendencia-v2", dia(inicio)],
+    queryKey: ["fin-tendencia-v3", dia(fim)],
     queryFn: async () => {
-      const ini = startOfMonth(subMonths(inicio, 5));
+      const ini = startOfMonth(subMonths(fim, 5));
       const { data: os, error } = await supabase.from("ordens_servico").select(SELECT_OS).eq("status", "entregue").gte("data_entrega", ini.toISOString()).lte("data_entrega", fim.toISOString());
       if (error) throw error;
       const lista = (os || []) as unknown as OsRow[];
       const [custos, desp] = await Promise.all([custosPorOs(lista.map((o) => o.id)), despesasPagas(ini, fim)]);
       return Array.from({ length: 6 }, (_, i) => {
-        const m = subMonths(inicio, 5 - i);
+        const m = subMonths(fim, 5 - i);
         const chave = format(m, "yyyy-MM");
         const r = dre(lista.filter((o) => o.data_entrega?.startsWith(chave)), custos, somaDespesas(desp.filter((d) => String(d.data_pagamento).startsWith(chave))));
         return { mes: format(m, "MMM", { locale: ptBR }), receita: r.receita, custos: r.custo + r.impostos + r.comissoes + r.despesas, lucro: r.lucro };
@@ -188,33 +220,56 @@ function DashboardFinanceiro() {
     const blob = new Blob(["\uFEFF" + linhas.map((l) => l.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(";")).join("\n")], { type: "text/csv;charset=utf-8;" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `financeiro_${Number(mes) + 1}_${ano}.csv`;
+    a.download = `financeiro_${dia(inicio)}_${dia(fim)}.csv`;
     a.click();
   };
 
   const variacao = (a: number, b: number) => (b > 0 ? ((a - b) / b) * 100 : null);
 
+  const cascata = data ? montarCascata(data.atual) : [];
+  const PILULAS: { id: Periodo; rotulo: string }[] = [
+    { id: "mes", rotulo: "Este mês" }, { id: "30d", rotulo: "30 dias" }, { id: "tri", rotulo: "Trimestre" },
+    { id: "ano", rotulo: "Ano" }, { id: "mesEsp", rotulo: "Mês específico" },
+  ];
+
   return (
     <div className="space-y-6 p-4 md:p-8 print:p-0">
-      {/* Cabeçalho */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Painel financeiro</p>
-          <h1 className="font-display text-2xl md:text-3xl font-black tracking-tight text-foreground">
-            Fechamento de {MESES[Number(mes)]} <span className="text-primary">{ano}</span>
-          </h1>
+      {/* Cockpit: cabeçalho + período */}
+      <div className="rounded-md border border-border bg-sidebar p-5 md:p-6 text-sidebar-foreground">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-primary">Cockpit financeiro</p>
+            <h1 className="font-display text-2xl md:text-4xl font-black tracking-tight">{rotulo}</h1>
+            <p className="mt-1 text-xs opacity-70">
+              {format(inicio, "dd/MM/yyyy")} a {format(fim, "dd/MM/yyyy")} · comparado com {format(inicioAnt, "dd/MM")} a {format(fimAnt, "dd/MM/yyyy")}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 print:hidden">
+            <Button variant="outline" size="sm" className="h-9" onClick={exportarCSV}><FileSpreadsheet className="mr-1.5 h-4 w-4" />Planilha</Button>
+            <Button variant="outline" size="sm" className="h-9" onClick={() => window.print()}><Printer className="mr-1.5 h-4 w-4" />Imprimir</Button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2 print:hidden">
-          <Select value={mes} onValueChange={setMes}>
-            <SelectTrigger className="h-9 w-[140px] text-xs font-semibold"><SelectValue /></SelectTrigger>
-            <SelectContent>{MESES.map((m, i) => <SelectItem key={m} value={String(i)}>{m}</SelectItem>)}</SelectContent>
-          </Select>
-          <Select value={ano} onValueChange={setAno}>
-            <SelectTrigger className="h-9 w-[100px] text-xs font-semibold"><SelectValue /></SelectTrigger>
-            <SelectContent>{[0, 1, 2].map((d) => String(hoje.getFullYear() - d)).map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
-          </Select>
-          <Button variant="outline" size="sm" className="h-9" onClick={exportarCSV}><FileSpreadsheet className="mr-1.5 h-4 w-4" />Planilha</Button>
-          <Button variant="outline" size="sm" className="h-9" onClick={() => window.print()}><Printer className="mr-1.5 h-4 w-4" />Imprimir</Button>
+        <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
+          {PILULAS.map((p) => (
+            <button key={p.id} type="button" onClick={() => setPeriodo(p.id)}
+              className={`h-8 rounded-sm px-3 text-xs font-bold uppercase tracking-wider transition-colors ${periodo === p.id ? "bg-primary text-primary-foreground" : "border border-sidebar-border hover:bg-sidebar-accent"}`}>
+              {p.rotulo}
+            </button>
+          ))}
+          {(periodo === "mesEsp" || periodo === "ano") && (
+            <div className="flex gap-2">
+              {periodo === "mesEsp" && (
+                <Select value={mes} onValueChange={setMes}>
+                  <SelectTrigger className="h-8 w-[130px] text-xs font-semibold text-foreground bg-background"><SelectValue /></SelectTrigger>
+                  <SelectContent>{MESES.map((m, i) => <SelectItem key={m} value={String(i)}>{m}</SelectItem>)}</SelectContent>
+                </Select>
+              )}
+              <Select value={ano} onValueChange={setAno}>
+                <SelectTrigger className="h-8 w-[90px] text-xs font-semibold text-foreground bg-background"><SelectValue /></SelectTrigger>
+                <SelectContent>{[0, 1, 2].map((d) => String(hoje.getFullYear() - d)).map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -228,16 +283,40 @@ function DashboardFinanceiro() {
       {/* KPIs */}
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <Kpi titulo="Faturamento realizado" icone={TrendingUp} carregando={isLoading} valor={brl(data?.atual.receita || 0)}
-          sub="OS entregues no mês" delta={data ? variacao(data.atual.receita, data.anterior.receita) : null} />
-        <Kpi titulo="Custos diretos" icone={Wrench} carregando={isLoading} valor={brl(data?.atual.custo || 0)}
-          sub={`+ impostos ${brl(data?.atual.impostos || 0)}`} delta={data ? variacao(data.atual.custo, data.anterior.custo) : null} inverso />
+          sub="OS entregues no período" delta={data ? variacao(data.atual.receita, data.anterior.receita) : null} />
         <Kpi titulo="Lucro líquido real" icone={Wallet} destaque carregando={isLoading} valor={brl(data?.atual.lucro || 0)}
-          sub={data?.atual.margem != null ? `Margem ${data.atual.margem.toFixed(1)}%` : "Sem entregas no mês"} delta={data ? variacao(data.atual.lucro, data.anterior.lucro) : null} />
+          sub={data?.atual.margem != null ? `Margem ${data.atual.margem.toFixed(1)}%` : "Sem entregas no período"} delta={data ? variacao(data.atual.lucro, data.anterior.lucro) : null} />
+        <Kpi titulo="Capital em oficina" icone={Wrench} carregando={isLoading} valor={brl(data?.wipTotal || 0)}
+          sub={`Custos em ${data?.wipQtd || 0} OS abertas`} />
         <Kpi titulo="A pagar (valinhos)" icone={Truck} carregando={isLoading} valor={brl(data?.passivoTotal || 0)}
           sub={`${data?.passivo.length || 0} fornecedores em aberto`} />
         <Kpi titulo="Em negociação" icone={Handshake} carregando={isLoading} valor={brl(data?.pipelineTotal || 0)}
           sub={`${data?.pipelineQtd || 0} propostas com o cliente`} />
       </div>
+
+      {/* Cascata */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-bold uppercase tracking-wider">Do faturamento ao lucro</CardTitle>
+          <CardDescription>Cada barra mostra quanto sai do faturamento até sobrar o lucro líquido do período.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? <Skeleton className="h-[260px] w-full" /> : (
+            <ChartContainer className="h-[260px] w-full" config={{ valor: { label: "Valor", color: "var(--primary)" } }}>
+              <BarChart data={cascata}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis dataKey="nome" tickLine={false} axisLine={false} fontSize={11} />
+                <YAxis tickLine={false} axisLine={false} fontSize={11} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+                <ChartTooltip content={<ChartTooltipContent hideLabel formatter={(_v: unknown, _n: unknown, item: any) => `${item.payload.nome}: ${brl(item.payload.real)}`} />} />
+                <Bar dataKey="base" stackId="c" fill="transparent" />
+                <Bar dataKey="valor" stackId="c" radius={[2, 2, 0, 0]}>
+                  {cascata.map((c) => <Cell key={c.nome} fill={c.tipo === "saida" ? "var(--destructive)" : c.tipo === "total" ? "var(--foreground)" : "var(--primary)"} />)}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          )}
+        </CardContent>
+      </Card>
 
       {/* DRE + gráfico */}
       <div className="grid gap-4 lg:grid-cols-3">
