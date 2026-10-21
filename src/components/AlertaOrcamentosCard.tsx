@@ -99,75 +99,21 @@ export function AlertaOrcamentosCard() {
 
   return (
     <>
-      <Card
-        role="button"
-        tabIndex={0}
-        aria-label={`Orçamentos pendentes: ${total}`}
+      <button type="button" aria-label={`Orçamentos pendentes: ${total}`}
         onClick={() => abrir(paraFazer.length ? "fazer" : "cliente")}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") abrir(paraFazer.length ? "fazer" : "cliente");
-        }}
-        className={`cursor-pointer border-l-8 shadow-md transition-transform hover:-translate-y-0.5 ${
-          total > 0
-            ? "border-l-amber-500 bg-amber-50/70 border-amber-200"
-            : "border-l-emerald-500 bg-emerald-50/60 border-emerald-200"
-        }`}
-      >
-        <CardContent className="p-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div
-                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${
-                  total > 0 ? "bg-amber-500 text-slate-900" : "bg-emerald-500 text-white"
-                }`}
-              >
-                {total > 0 ? <AlertTriangle className="h-7 w-7" /> : <CheckCircle2 className="h-7 w-7" />}
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  Alerta de orçamentos
-                </p>
-                <p className="text-3xl font-black leading-tight text-slate-900">
-                  {isLoading ? "…" : total}
-                </p>
-                <p className="text-[11px] font-bold text-slate-600">
-                  {total > 0 ? "Pendências aguardando ação" : "Nenhuma pendência de orçamento"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  abrir("fazer");
-                }}
-                className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-left transition-colors hover:bg-amber-100"
-              >
-                <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  <Calculator className="h-3.5 w-3.5 text-amber-600" /> Para fazer
-                </span>
-                <span className="text-xl font-black text-slate-900">{paraFazer.length}</span>
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  abrir("cliente");
-                }}
-                className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-left transition-colors hover:bg-amber-100"
-              >
-                <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  <Clock className="h-3.5 w-3.5 text-amber-600" /> Aguardando cliente
-                </span>
-                <span className="text-xl font-black text-slate-900">{aguardandoCliente.length}</span>
-              </button>
-              <ArrowRight className="hidden h-5 w-5 text-amber-600 sm:block" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        className={`group flex w-full items-center gap-3 rounded-md border bg-card px-4 py-3 text-left transition-colors hover:border-primary ${total > 0 ? "border-l-4 border-l-primary border-border" : "border-border"}`}>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm ${total > 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+          {total > 0 ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Orçamentos</span>
+          <span className="flex items-center gap-3 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1"><Calculator className="h-3 w-3" />{paraFazer.length} a fazer</span>
+            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{aguardandoCliente.length} com cliente</span>
+          </span>
+        </span>
+        <span className="text-2xl font-black tabular-nums text-foreground">{isLoading ? "…" : total}</span>
+      </button>
 
       <Dialog open={aberto} onOpenChange={setAberto}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">

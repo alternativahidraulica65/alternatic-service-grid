@@ -53,18 +53,29 @@ export function LembretesCard() {
   const total = semResposta.length + paradas.length;
 
   return (
-    <Card className="border-amber-400/60 bg-amber-400/5 shadow-md">
-      <CardHeader className="border-b border-amber-400/30">
-        <CardTitle className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-[11px] font-black uppercase tracking-widest sm:flex sm:justify-between">
-          <span className="flex min-w-0 items-center gap-2">
-            <BellRing className="h-4 w-4 shrink-0 text-amber-500" />
-            <span className="truncate">Lembretes automáticos</span>
-            <Badge className="shrink-0 bg-amber-400 text-slate-900 text-[10px] font-black">{total}</Badge>
+    <>
+      <button type="button" onClick={() => setAberto(true)} aria-label={`Lembretes: ${total}`}
+        className={`flex w-full items-center gap-3 rounded-md border bg-card px-4 py-3 text-left transition-colors hover:border-primary ${total > 0 ? "border-l-4 border-l-primary border-border" : "border-border"}`}>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm ${total > 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+          <BellRing className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Lembretes</span>
+          <span className="flex items-center gap-3 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1"><FileClock className="h-3 w-3" />{semResposta.length} sem resposta</span>
+            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{paradas.length} paradas</span>
           </span>
+        </span>
+        <span className="text-2xl font-black tabular-nums text-foreground">{total}</span>
+      </button>
+
+      <Dialog open={aberto} onOpenChange={setAberto}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black uppercase tracking-widest">Lembretes automáticos</DialogTitle>
+          </DialogHeader>
           <Select value={limite} onValueChange={setLimite}>
-            <SelectTrigger className="h-8 w-[140px] bg-card text-[10px] font-bold uppercase">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="h-8 w-[160px] text-[10px] font-bold uppercase"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="2">A partir de 2 dias</SelectItem>
               <SelectItem value="3">A partir de 3 dias</SelectItem>
@@ -72,25 +83,15 @@ export function LembretesCard() {
               <SelectItem value="10">A partir de 10 dias</SelectItem>
             </SelectContent>
           </Select>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4 p-4 md:grid-cols-2">
-        <Bloco
-          titulo="Orçamentos sem resposta"
-          icone={<FileClock className="h-3.5 w-3.5 text-amber-500" />}
-          itens={semResposta}
-          vazio="Nenhum orçamento aguardando retorno."
-          sufixo="dias sem resposta"
-        />
-        <Bloco
-          titulo="OS sem movimento"
-          icone={<Clock className="h-3.5 w-3.5 text-amber-500" />}
-          itens={paradas}
-          vazio="Todas as OS tiveram movimento recente."
-          sufixo="dias parada"
-        />
-      </CardContent>
-    </Card>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Bloco titulo="Orçamentos sem resposta" icone={<FileClock className="h-3.5 w-3.5 text-primary" />}
+              itens={semResposta} vazio="Nenhum orçamento aguardando retorno." sufixo="dias sem resposta" />
+            <Bloco titulo="OS sem movimento" icone={<Clock className="h-3.5 w-3.5 text-primary" />}
+              itens={paradas} vazio="Todas as OS tiveram movimento recente." sufixo="dias parada" />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
