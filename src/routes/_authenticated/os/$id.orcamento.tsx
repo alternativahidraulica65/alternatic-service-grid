@@ -1688,8 +1688,25 @@ function OrcamentoOSPage() {
                 <Calculator className="h-4 w-4 text-primary" /> Resumo financeiro
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 space-y-5">
-              <div className="space-y-2 text-[11px] font-bold uppercase">
+            <CardContent className="pt-5 space-y-4">
+              <div className="rounded-sm border border-primary/30 bg-primary/10 p-4">
+                <p className="text-[9px] font-black uppercase tracking-widest text-primary">Valor final ao cliente</p>
+                <p className="mt-1 text-3xl font-black text-primary">{brl(totais.valorFinal)}</p>
+                <div className="mt-2 flex justify-between text-[10px] font-bold uppercase text-slate-400">
+                  <span>Lucro <span className={totais.lucro < 0 ? "text-red-400" : "text-emerald-400"}>{brl(totais.lucro)}</span></span>
+                  <span>Margem <span className={totais.margemEfetiva < 0 ? "text-red-400" : "text-emerald-400"}>{totais.margemEfetiva.toFixed(1)}%</span></span>
+                </div>
+                {totais.margemEfetiva < 10 && (
+                  <p className="mt-2 text-[10px] font-bold uppercase text-red-400">Atenção: margem abaixo de 10%</p>
+                )}
+              </div>
+
+              <details className="rounded-sm border border-white/10 bg-slate-800/60">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  <span>Base de custo e itens</span>
+                  <span className="text-red-400">{brl(totais.custoDireto)}</span>
+                </summary>
+              <div className="space-y-2 border-t border-white/10 p-3 text-[11px] font-bold uppercase">
                 <div className="flex justify-between text-slate-400">
                   <span>Custo da manutenção</span>
                   <span className="text-white">{brl(totais.custoTotal)}</span>
@@ -1715,8 +1732,14 @@ function OrcamentoOSPage() {
                   <span className="text-amber-400">{brl(totais.base)}</span>
                 </div>
               </div>
+              </details>
 
-              <div className="grid grid-cols-2 gap-3">
+              <details className="rounded-sm border border-white/10 bg-slate-800/60">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  <span>Ajustes comerciais</span>
+                  <span className="text-white">Imposto {imposto}% · {brl(totais.valorImposto)}</span>
+                </summary>
+              <div className="grid grid-cols-2 gap-3 border-t border-white/10 p-3">
                 <div className="space-y-1">
                   <Label className="text-[9px] font-black uppercase text-slate-500">Imposto (%)</Label>
                   <Input
@@ -1727,7 +1750,7 @@ function OrcamentoOSPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[9px] font-black uppercase text-slate-500">Margem padrão dos produtos (%)</Label>
+                  <Label className="text-[9px] font-black uppercase text-slate-500">Margem padrão produtos (%)</Label>
                   <Input
                     type="number"
                     value={margemPadrao}
@@ -1736,11 +1759,7 @@ function OrcamentoOSPage() {
                   />
                 </div>
               </div>
-
-              <div className="flex justify-between text-[11px] font-bold uppercase text-slate-400">
-                <span>Imposto (R$)</span>
-                <span className="text-white">{brl(totais.valorImposto)}</span>
-              </div>
+              </details>
 
               <div className="grid grid-cols-2 gap-1 rounded-md border border-white/10 bg-slate-800 p-1">
                 <Button
@@ -1810,20 +1829,24 @@ function OrcamentoOSPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-slate-800 border border-white/5">
+                <div className="p-3 rounded-sm bg-slate-800 border border-white/5">
                   <p className="text-[9px] font-black uppercase text-slate-500 mb-1">Margem líquida</p>
                   <p className={`text-lg font-black ${totais.margemEfetiva < 0 ? "text-red-400" : "text-emerald-400"}`}>
                     {totais.margemEfetiva.toFixed(1)}%
                   </p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-800 border border-white/5">
+                <div className="p-3 rounded-sm bg-slate-800 border border-white/5">
                   <p className="text-[9px] font-black uppercase text-slate-500 mb-1">Lucro previsto</p>
                   <p className={`text-lg font-black ${totais.lucro < 0 ? "text-red-400" : "text-white"}`}>{brl(totais.lucro)}</p>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 space-y-2">
-                <p className="text-[9px] font-black uppercase tracking-widest text-primary">Comissão do vendedor</p>
+              <details className="group rounded-sm border border-white/10 bg-slate-800/60">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-[9px] font-black uppercase tracking-widest text-primary">
+                  <span>Comissão do vendedor</span>
+                  <span className="text-white">{brl(totais.comissao.valor ?? totais.comissaoRegra.valor)}</span>
+                </summary>
+              <div className="space-y-2 border-t border-white/10 p-3">
                 <Input
                   type="number"
                   step="0.01"
@@ -1866,6 +1889,7 @@ function OrcamentoOSPage() {
                   />
                 </div>
               </div>
+              </details>
 
               <Button
                 disabled={salvando}
