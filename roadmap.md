@@ -21,6 +21,7 @@ O sistema tem **um único banco de dados**: o projeto Supabase
       operador), clientes, kanban e configurações sem erros.
 
 ## Pendente
+- [ ] Emissão fiscal real em homologação usando OS-05614193: conferir cadastro e certificado, validar suporte à conexão oficial, transmitir e guardar XML/PDF; produção permanece bloqueada até homologação validada.
 - [x] Menu global: acesso permanente, abertura rápida e opção de fixar no computador.
 - [ ] Validar menu com login do banco oficial; sessão de teste disponível não autentica nesse banco.
 - [x] Custos da OS: impedir duplicação automática, separar pagamento, renomear fornecedor e melhorar valores/cartões.
