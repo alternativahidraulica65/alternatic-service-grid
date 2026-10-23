@@ -21,7 +21,8 @@ O sistema tem **um único banco de dados**: o projeto Supabase
       operador), clientes, kanban e configurações sem erros.
 
 ## Pendente
-- [ ] Emissão fiscal real em homologação usando OS-05614193: conferir cadastro e certificado, validar suporte à conexão oficial, transmitir e guardar XML/PDF; produção permanece bloqueada até homologação validada.
+- [x] Diagnóstico fiscal da OS-05614193: NFS-e nº 1 em rascunho/homologação, sem XML/PDF; certificado da emissora válido até 05/12/2026. Nenhuma transmissão realizada.
+- [ ] Emissão fiscal real em homologação usando OS-05614193: bloqueada pela necessidade de hospedagem auxiliar com suporte a certificado A1 por conexão (mTLS); a hospedagem atual não suporta cert/key/pfx dinâmicos. Escolher hospedagem com o usuário, implementar assinatura/transmissão, guardar resposta oficial e XML/PDF, e bloquear produção até validação. Usar apenas o banco oficial existente.
 - [x] Menu global: acesso permanente, abertura rápida e opção de fixar no computador.
 - [ ] Validar menu com login do banco oficial; sessão de teste disponível não autentica nesse banco.
 - [x] Custos da OS: impedir duplicação automática, separar pagamento, renomear fornecedor e melhorar valores/cartões.
