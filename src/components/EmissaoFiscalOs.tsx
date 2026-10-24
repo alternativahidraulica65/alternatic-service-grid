@@ -13,7 +13,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { transmitirNota } from "@/lib/transmissao-fiscal.functions";
 import { toast } from "sonner";
 import {
-  CSOSN_RETORNO, NATUREZA_RETORNO, NCM_PADRAO_CILINDRO, cfopRetorno, itensServico, pendenciasEmissao, totalItens, type TipoNota,
+  CSOSN_RETORNO, NATUREZA_RETORNO, TEXTO_SEM_REMESSA, NCM_PADRAO_CILINDRO, cfopRetorno, itensServico, pendenciasEmissao, totalItens, type TipoNota,
 } from "@/lib/emissao-fiscal";
 
 const brl = (v: number) => Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

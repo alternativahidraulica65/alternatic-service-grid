@@ -8,6 +8,7 @@ import { enderecoDeRegistro, pendenciasCliente, pendenciasEmpresa } from "./fisc
 export type TipoNota = "nfe" | "nfse";
 
 export const NATUREZA_RETORNO = "Retorno de mercadoria ou bem recebido para conserto ou reparo";
+export const TEXTO_SEM_REMESSA = "Retorno de equipamento recebido para conserto sem nota fiscal de remessa de origem";
 export const CSOSN_RETORNO = "0400";
 export const NCM_PADRAO_CILINDRO = "8412.29.00";
 
