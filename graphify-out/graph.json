@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T18:16:03.891529+00:00",
+  "generated_at": "2026-10-24T01:31:35.051434+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -11,7 +11,7 @@
     },
     {
       "path": "AGENTS.md",
-      "bytes": 2249
+      "bytes": 2487
     },
     {
       "path": "tsconfig.json",
@@ -535,7 +535,7 @@
     },
     {
       "path": "src/components/EmissaoFiscalOs.tsx",
-      "bytes": 16964
+      "bytes": 19106
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
@@ -680,6 +680,10 @@
     {
       "path": "src/lib/admin-key.ts",
       "bytes": 1367
+    },
+    {
+      "path": "src/lib/transmissao-fiscal.functions.ts",
+      "bytes": 7589
     },
     {
       "path": "src/lib/custos-duplicidade.functions.ts",
@@ -1881,6 +1885,14 @@
     },
     {
       "source": "src/components/EmissaoFiscalOs.tsx",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/components/EmissaoFiscalOs.tsx",
+      "target": "@/lib/transmissao-fiscal.functions"
+    },
+    {
+      "source": "src/components/EmissaoFiscalOs.tsx",
       "target": "sonner"
     },
     {
@@ -2802,6 +2814,22 @@
     {
       "source": "src/lib/emissao-fiscal.test.ts",
       "target": "./emissao-fiscal"
+    },
+    {
+      "source": "src/lib/transmissao-fiscal.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/transmissao-fiscal.functions.ts",
+      "target": "@supabase/supabase-js"
+    },
+    {
+      "source": "src/lib/transmissao-fiscal.functions.ts",
+      "target": "zod"
+    },
+    {
+      "source": "src/lib/transmissao-fiscal.functions.ts",
+      "target": "./admin-key"
     },
     {
       "source": "src/lib/custos-duplicidade.functions.ts",
