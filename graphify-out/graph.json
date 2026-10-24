@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T01:31:35.051434+00:00",
+  "generated_at": "2026-10-24T12:54:28.318449+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -535,7 +535,7 @@
     },
     {
       "path": "src/components/EmissaoFiscalOs.tsx",
-      "bytes": 19106
+      "bytes": 20345
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
@@ -671,7 +671,7 @@
     },
     {
       "path": "src/lib/emissao-fiscal.test.ts",
-      "bytes": 1828
+      "bytes": 2262
     },
     {
       "path": "src/lib/error-page.ts",
@@ -735,7 +735,7 @@
     },
     {
       "path": "src/lib/emissao-fiscal.ts",
-      "bytes": 2783
+      "bytes": 2940
     },
     {
       "path": "src/lib/fila-offline.ts",
