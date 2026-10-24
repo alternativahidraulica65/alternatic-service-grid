@@ -48,7 +48,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
   const [tipo, setTipo] = useState<TipoNota>("nfse");
   const [empresaId, setEmpresaId] = useState<string>("");
   const [obs, setObs] = useState("");
-  const [entrada, setEntrada] = useState({ numero: "", serie: "", chave: "", data: "", valor: "" });
+  const [entrada, setEntrada] = useState({ numero: "", serie: "", chave: "", data: "", valor: "", semRemessa: false });
   const [enviando, setEnviando] = useState(false);
 
   const empresa = useMemo(
@@ -61,6 +61,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
   const osComEntrada = {
     ...data?.os,
     nf_entrada_numero: entrada.numero, nf_entrada_chave: entrada.chave, nf_entrada_valor: Number(entrada.valor.replace(",", ".")),
+    sem_remessa: entrada.semRemessa,
   };
   const pend = data ? pendenciasEmissao({
     tipo, empresa, cliente: data.cliente, os: osComEntrada, temCertificado: !!cert, certificadoValidoAte: cert?.valido_ate, valorServicos,
@@ -74,6 +75,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
     setEntrada({
       numero: o.nf_entrada_numero || "", serie: o.nf_entrada_serie || "", chave: o.nf_entrada_chave || "",
       data: o.nf_entrada_data || "", valor: o.nf_entrada_valor != null ? String(o.nf_entrada_valor).replace(".", ",") : "",
+      semRemessa: o.nf_entrada_valor != null && !o.nf_entrada_chave,
     });
     setAberto(true);
   };
@@ -82,10 +84,12 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
     if (pend.length) return;
     setEnviando(true);
     try {
+      const sem = entrada.semRemessa;
+      const chave = sem ? "" : entrada.chave.replace(/\D/g, "");
       if (tipo === "nfe") {
         const { error } = await db.from("ordens_servico").update({
-          nf_entrada_numero: entrada.numero.trim(), nf_entrada_serie: entrada.serie.trim() || null,
-          nf_entrada_chave: entrada.chave.replace(/\D/g, ""), nf_entrada_data: entrada.data || null,
+          nf_entrada_numero: sem ? null : entrada.numero.trim(), nf_entrada_serie: sem ? null : entrada.serie.trim() || null,
+          nf_entrada_chave: sem ? null : chave, nf_entrada_data: sem ? null : entrada.data || null,
           nf_entrada_valor: Number(entrada.valor.replace(",", ".")),
         }).eq("id", osId);
         if (error) throw error;
@@ -98,13 +102,14 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
       const snapshot = {
         emitente: { cnpj: empresa.cnpj, razao_social: empresa.razao_social, ie: empresa.inscricao_estadual, im: empresa.inscricao_municipal, regime: empresa.regime_tributario, logradouro: empresa.logradouro, numero: empresa.numero, bairro: empresa.bairro, cidade: empresa.cidade, uf: empresa.uf, cep: empresa.cep, codigo_ibge: empresa.codigo_ibge },
         destinatario: { documento: c.cnpj, razao_social: c.razao_social || c.nome, tipo_pessoa: c.tipo_pessoa, indicador_ie: c.indicador_ie, ie: c.inscricao_estadual, im: c.inscricao_municipal, email: c.email_fiscal || c.email, logradouro: c.logradouro, numero: c.numero, complemento: c.complemento, bairro: c.bairro, cidade: c.cidade, uf: c.uf, cep: c.cep, codigo_ibge: c.codigo_ibge },
-        nf_entrada: tipo === "nfe" ? { numero: entrada.numero, serie: entrada.serie, chave: entrada.chave.replace(/\D/g, ""), data: entrada.data } : null,
+        nf_entrada: tipo === "nfe" ? (sem ? { sem_remessa: true } : { numero: entrada.numero, serie: entrada.serie, chave, data: entrada.data }) : null,
       };
+      const obsFinal = [tipo === "nfe" && sem ? TEXTO_SEM_REMESSA : "", obs.trim()].filter(Boolean).join(" · ");
       const { error } = await db.rpc("reservar_nota_fiscal", {
         p_os_id: osId, p_empresa_id: empresa.id, p_tipo: tipo, p_cfop: tipo === "nfe" ? cfop : null,
         p_natureza: tipo === "nfe" ? NATUREZA_RETORNO : "Prestação de serviço de manutenção e reparo",
         p_valor: valor, p_itens: itens, p_snapshot: snapshot,
-        p_nf_entrada: tipo === "nfe" ? entrada.chave.replace(/\D/g, "") : null, p_observacoes: obs.trim() || null,
+        p_nf_entrada: tipo === "nfe" && chave ? chave : null, p_observacoes: obsFinal || null,
       });
       if (error) throw error;
       toast.success("Nota preparada e número reservado.");
@@ -272,14 +277,27 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
             ) : (
               <div className="space-y-2 rounded-md border border-border p-3">
                 <p className="text-[10px] font-bold uppercase tracking-widest">NF de entrada (com que o cliente enviou a peça)</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <Input placeholder="Número" value={entrada.numero} onChange={(e) => setEntrada({ ...entrada, numero: e.target.value })} />
-                  <Input placeholder="Série" value={entrada.serie} onChange={(e) => setEntrada({ ...entrada, serie: e.target.value })} />
-                  <Input type="date" value={entrada.data} onChange={(e) => setEntrada({ ...entrada, data: e.target.value })} />
-                  <Input placeholder="Valor (R$)" inputMode="decimal" value={entrada.valor} onChange={(e) => setEntrada({ ...entrada, valor: e.target.value })} />
-                </div>
-                <Input placeholder="Chave de acesso (44 dígitos)" className="font-mono" value={entrada.chave}
-                  onChange={(e) => setEntrada({ ...entrada, chave: e.target.value.replace(/\D/g, "").slice(0, 44) })} />
+                <label className="flex items-center gap-2 text-xs font-semibold">
+                  <input type="checkbox" checked={entrada.semRemessa} onChange={(e) => setEntrada({ ...entrada, semRemessa: e.target.checked })} />
+                  Equipamento recebido sem nota de remessa
+                </label>
+                {entrada.semRemessa ? (
+                  <div className="space-y-1">
+                    <Input placeholder="Valor estimado do equipamento (R$)" inputMode="decimal" value={entrada.valor} onChange={(e) => setEntrada({ ...entrada, valor: e.target.value })} />
+                    <p className="text-[11px] text-muted-foreground">A nota sai sem referência e com a observação: "{TEXTO_SEM_REMESSA}".</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <Input placeholder="Número" value={entrada.numero} onChange={(e) => setEntrada({ ...entrada, numero: e.target.value })} />
+                      <Input placeholder="Série" value={entrada.serie} onChange={(e) => setEntrada({ ...entrada, serie: e.target.value })} />
+                      <Input type="date" value={entrada.data} onChange={(e) => setEntrada({ ...entrada, data: e.target.value })} />
+                      <Input placeholder="Valor (R$)" inputMode="decimal" value={entrada.valor} onChange={(e) => setEntrada({ ...entrada, valor: e.target.value })} />
+                    </div>
+                    <Input placeholder="Chave de acesso (44 dígitos)" className="font-mono" value={entrada.chave}
+                      onChange={(e) => setEntrada({ ...entrada, chave: e.target.value.replace(/\D/g, "").slice(0, 44) })} />
+                  </>
+                )}
               </div>
             )}
 

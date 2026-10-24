@@ -49,8 +49,10 @@ export function pendenciasEmissao(args: {
     if (!empresa.nfse_codigo_tributacao) p.push("Empresa: código de tributação da NFS-e");
     if (args.valorServicos <= 0) p.push("Orçamento sem serviços com valor");
   } else {
-    if (!(os?.nf_entrada_numero || "").trim()) p.push("NF de entrada: número");
-    if (!chaveNfeValida(os?.nf_entrada_chave)) p.push("NF de entrada: chave de acesso (44 dígitos)");
+    if (!os?.sem_remessa) {
+      if (!(os?.nf_entrada_numero || "").trim()) p.push("NF de entrada: número");
+      if (!chaveNfeValida(os?.nf_entrada_chave)) p.push("NF de entrada: chave de acesso (44 dígitos)");
+    }
     if (!(Number(os?.nf_entrada_valor) > 0)) p.push("NF de entrada: valor do bem recebido");
   }
   return p;
