@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck } from "lucide-react";
+import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck, Send, Download } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { transmitirNota } from "@/lib/transmissao-fiscal.functions";
 import { toast } from "sonner";
 import {
   CSOSN_RETORNO, NATUREZA_RETORNO, NCM_PADRAO_CILINDRO, cfopRetorno, itensServico, pendenciasEmissao, totalItens, type TipoNota,
@@ -113,6 +115,29 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
     } finally { setEnviando(false); }
   };
 
+  const transmitirFn = useServerFn(transmitirNota);
+  const [transmitindo, setTransmitindo] = useState<string | null>(null);
+  const transmitir = async (id: string) => {
+    setTransmitindo(id);
+    try {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) throw new Error("Sessão expirada.");
+      const r = await transmitirFn({ data: { accessToken: s.session.access_token, notaId: id } });
+      if (r.autorizada) toast.success("Nota autorizada! XML e PDF disponíveis.");
+      else toast.error(`Rejeitada: ${r.motivo}`);
+    } catch (e: any) {
+      toast.error(e?.message || "Falha na transmissão.");
+    } finally {
+      setTransmitindo(null);
+      qc.invalidateQueries({ queryKey: key });
+    }
+  };
+  const baixar = async (path: string) => {
+    const { data: u, error } = await supabase.storage.from("documentos-fiscais").createSignedUrl(path, 120);
+    if (error || !u) { toast.error("Arquivo indisponível."); return; }
+    window.open(u.signedUrl, "_blank");
+  };
+
   const descartar = async (id: string) => {
     const { error } = await db.rpc("descartar_nota_fiscal", { p_id: id });
     if (error) { toast.error(error.message); return; }
@@ -160,6 +185,21 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
                 </Badge>
                 <span className="text-xs font-semibold">{STATUS[n.status] || n.status}</span>
                 <span className="ml-auto font-black">{brl(n.valor_total)}</span>
+                {["rascunho", "rejeitada"].includes(n.status) && (
+                  <Button size="sm" className="h-8 font-black uppercase tracking-widest text-[10px]" disabled={transmitindo === n.id} onClick={() => transmitir(n.id)}>
+                    <Send className="mr-1 h-3.5 w-3.5" /> {transmitindo === n.id ? "Transmitindo…" : n.status === "rejeitada" ? "Reenviar" : "Transmitir"}
+                  </Button>
+                )}
+                {n.xml_path && (
+                  <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.xml_path)}>
+                    <Download className="mr-1 h-3.5 w-3.5" /> XML
+                  </Button>
+                )}
+                {n.pdf_path && (
+                  <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.pdf_path)}>
+                    <Download className="mr-1 h-3.5 w-3.5" /> PDF
+                  </Button>
+                )}
                 {n.status === "rascunho" && (
                   <Button size="icon" variant="ghost" className="h-8 w-8" title="Descartar rascunho" onClick={() => descartar(n.id)}>
                     <Trash2 className="h-4 w-4" />
@@ -261,7 +301,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
               </p>
             )}
             <p className="flex items-start gap-2 text-[11px] text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 shrink-0" /> A nota é gravada com número reservado. A assinatura com o certificado e o envio à SEFAZ/Prefeitura são a próxima etapa do módulo.
+              <ShieldCheck className="h-4 w-4 shrink-0" /> A nota é gravada com número reservado. Depois clique em "Transmitir" na lista para assinar com o certificado e enviar.
             </p>
           </div>
 
