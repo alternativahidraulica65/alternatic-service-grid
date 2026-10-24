@@ -301,7 +301,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
               </p>
             )}
             <p className="flex items-start gap-2 text-[11px] text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 shrink-0" /> A nota é gravada com número reservado. A assinatura com o certificado e o envio à SEFAZ/Prefeitura são a próxima etapa do módulo.
+              <ShieldCheck className="h-4 w-4 shrink-0" /> A nota é gravada com número reservado. Depois clique em "Transmitir" na lista para assinar com o certificado e enviar.
             </p>
           </div>
 
