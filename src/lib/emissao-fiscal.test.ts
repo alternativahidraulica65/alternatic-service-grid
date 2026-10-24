@@ -22,6 +22,12 @@ describe("emissão fiscal", () => {
     const p = pendenciasEmissao({ tipo: "nfe", empresa, cliente, os: { nf_entrada_numero: "10", nf_entrada_chave: "123", nf_entrada_valor: 100 }, temCertificado: true, valorServicos: 0 });
     expect(p).toContain("NF de entrada: chave de acesso (44 dígitos)");
   });
+  it("NF-e sem remessa dispensa número e chave, mas exige valor", () => {
+    const p = pendenciasEmissao({ tipo: "nfe", empresa, cliente, os: { sem_remessa: true, nf_entrada_valor: 0 }, temCertificado: true, valorServicos: 0 });
+    expect(p).not.toContain("NF de entrada: número");
+    expect(p).not.toContain("NF de entrada: chave de acesso (44 dígitos)");
+    expect(p).toContain("NF de entrada: valor do bem recebido");
+  });
   it("sem certificado bloqueia", () => {
     const p = pendenciasEmissao({ tipo: "nfse", empresa, cliente, os: {}, temCertificado: false, valorServicos: 100 });
     expect(p).toContain("Empresa: certificado digital A1 não enviado");
