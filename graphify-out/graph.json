@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T12:54:28.318449+00:00",
+  "generated_at": "2026-10-26T14:26:52.067180+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -735,7 +735,7 @@
     },
     {
       "path": "src/lib/emissao-fiscal.ts",
-      "bytes": 2940
+      "bytes": 2939
     },
     {
       "path": "src/lib/fila-offline.ts",
