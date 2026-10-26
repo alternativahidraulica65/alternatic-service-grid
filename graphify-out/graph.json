@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T14:26:52.067180+00:00",
+  "generated_at": "2026-10-26T20:00:09.717050+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -535,7 +535,7 @@
     },
     {
       "path": "src/components/EmissaoFiscalOs.tsx",
-      "bytes": 20345
+      "bytes": 20712
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
@@ -740,6 +740,10 @@
     {
       "path": "src/lib/fila-offline.ts",
       "bytes": 1886
+    },
+    {
+      "path": "src/lib/documento-fiscal.functions.ts",
+      "bytes": 1662
     },
     {
       "path": "src/lib/cliente-vendedor.ts",
@@ -1893,6 +1897,10 @@
     },
     {
       "source": "src/components/EmissaoFiscalOs.tsx",
+      "target": "@/lib/documento-fiscal.functions"
+    },
+    {
+      "source": "src/components/EmissaoFiscalOs.tsx",
       "target": "sonner"
     },
     {
@@ -2906,6 +2914,22 @@
     {
       "source": "src/lib/emissao-fiscal.ts",
       "target": "./fiscal"
+    },
+    {
+      "source": "src/lib/documento-fiscal.functions.ts",
+      "target": "@tanstack/react-start"
+    },
+    {
+      "source": "src/lib/documento-fiscal.functions.ts",
+      "target": "@supabase/supabase-js"
+    },
+    {
+      "source": "src/lib/documento-fiscal.functions.ts",
+      "target": "zod"
+    },
+    {
+      "source": "src/lib/documento-fiscal.functions.ts",
+      "target": "./admin-key"
     },
     {
       "source": "src/lib/cliente-vendedor.ts",
