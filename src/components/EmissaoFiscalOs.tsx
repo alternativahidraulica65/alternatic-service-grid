@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck, Send, Download } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { transmitirNota } from "@/lib/transmissao-fiscal.functions";
+import { obterUrlDocumentoFiscal } from "@/lib/documento-fiscal.functions";
 import { toast } from "sonner";
 import {
   CSOSN_RETORNO, NATUREZA_RETORNO, TEXTO_SEM_REMESSA, NCM_PADRAO_CILINDRO, cfopRetorno, itensServico, pendenciasEmissao, totalItens, type TipoNota,
@@ -137,10 +138,18 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
       qc.invalidateQueries({ queryKey: key });
     }
   };
+  const urlFn = useServerFn(obterUrlDocumentoFiscal);
   const baixar = async (path: string) => {
-    const { data: u, error } = await supabase.storage.from("documentos-fiscais").createSignedUrl(path, 120);
-    if (error || !u) { toast.error("Arquivo indisponível."); return; }
-    window.open(u.signedUrl, "_blank");
+    const janela = window.open("", "_blank");
+    try {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) throw new Error("Sessão expirada.");
+      const { url } = await urlFn({ data: { accessToken: s.session.access_token, path } });
+      if (janela) janela.location.href = url; else window.location.href = url;
+    } catch (e: any) {
+      janela?.close();
+      toast.error(e?.message || "Arquivo indisponível.");
+    }
   };
 
   const descartar = async (id: string) => {
