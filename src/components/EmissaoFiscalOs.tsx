@@ -8,9 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck, Send, Download, Eye } from "lucide-react";
+import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck, Send, Download, Eye, Ban } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { transmitirNota } from "@/lib/transmissao-fiscal.functions";
+import { transmitirNota, cancelarNota } from "@/lib/transmissao-fiscal.functions";
 import { obterUrlDocumentoFiscal } from "@/lib/documento-fiscal.functions";
 import { toast } from "sonner";
 import {
@@ -51,6 +51,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
   const [obs, setObs] = useState("");
   const [entrada, setEntrada] = useState({ numero: "", serie: "", chave: "", data: "", valor: "", semRemessa: false });
   const [enviando, setEnviando] = useState(false);
+  const [teste, setTeste] = useState(false);
 
   const empresa = useMemo(
     () => data?.empresas.find((e: any) => e.id === (empresaId || data?.os?.empresa_id)) || data?.empresas[0],
@@ -72,7 +73,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
 
   const abrir = (t: TipoNota) => {
     const o = data?.os || {};
-    setTipo(t); setEmpresaId(o.empresa_id || data?.empresas[0]?.id || ""); setObs("");
+    setTipo(t); setTeste(false); setEmpresaId(o.empresa_id || data?.empresas[0]?.id || ""); setObs("");
     setEntrada({
       numero: o.nf_entrada_numero || "", serie: o.nf_entrada_serie || "", chave: o.nf_entrada_chave || "",
       data: o.nf_entrada_data || "", valor: o.nf_entrada_valor != null ? String(o.nf_entrada_valor).replace(".", ",") : "",
@@ -96,10 +97,12 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
         if (error) throw error;
       }
       const c = data!.cliente;
-      const itens = tipo === "nfse"
+      const itens = tipo === "nfse" && teste
+        ? [{ descricao: "Serviço de teste - validação de integração do sistema emissor", quantidade: 1, valor_unitario: 1, codigo_tributacao: empresa.nfse_codigo_tributacao, nbs: empresa.nfse_codigo_nbs }]
+        : tipo === "nfse"
         ? servicos.map((i: any) => ({ descricao: i.descricao, quantidade: Number(i.quantidade), valor_unitario: Number(i.valor_unitario), codigo_tributacao: empresa.nfse_codigo_tributacao, nbs: empresa.nfse_codigo_nbs }))
         : [{ descricao: data!.os.descricao || `Equipamento da OS ${data!.os.numero_os}`, quantidade: 1, valor_unitario: osComEntrada.nf_entrada_valor, ncm: NCM_PADRAO_CILINDRO, cfop, csosn: CSOSN_RETORNO }];
-      const valor = tipo === "nfse" ? valorServicos : osComEntrada.nf_entrada_valor;
+      const valor = tipo === "nfse" ? (teste ? 1 : valorServicos) : osComEntrada.nf_entrada_valor;
       const snapshot = {
         emitente: { cnpj: empresa.cnpj, razao_social: empresa.razao_social, ie: empresa.inscricao_estadual, im: empresa.inscricao_municipal, regime: empresa.regime_tributario, logradouro: empresa.logradouro, numero: empresa.numero, bairro: empresa.bairro, cidade: empresa.cidade, uf: empresa.uf, cep: empresa.cep, codigo_ibge: empresa.codigo_ibge },
         destinatario: { documento: c.cnpj, razao_social: c.razao_social || c.nome, tipo_pessoa: c.tipo_pessoa, indicador_ie: c.indicador_ie, ie: c.inscricao_estadual, im: c.inscricao_municipal, email: c.email_fiscal || c.email, logradouro: c.logradouro, numero: c.numero, complemento: c.complemento, bairro: c.bairro, cidade: c.cidade, uf: c.uf, cep: c.cep, codigo_ibge: c.codigo_ibge },
@@ -119,6 +122,23 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
     } catch (e: any) {
       toast.error(e?.message || "Falha ao preparar a nota.");
     } finally { setEnviando(false); }
+  };
+
+  const cancelarFn = useServerFn(cancelarNota);
+  const cancelar = async (n: any) => {
+    const motivo = window.prompt(`Cancelar a NFS-e nº ${n.numero}? Informe o motivo (mín. 15 letras):`, "Nota emitida para teste de integração do sistema");
+    if (!motivo) return;
+    if (motivo.trim().length < 15) { toast.error("O motivo precisa ter pelo menos 15 letras."); return; }
+    const id = toast.loading("Cancelando na prefeitura…");
+    try {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) throw new Error("Sessão expirada.");
+      const r = await cancelarFn({ data: { accessToken: s.session.access_token, notaId: n.id, motivo: motivo.trim() } });
+      if (r.cancelada) toast.success("Nota cancelada.", { id });
+      else toast.error(`Cancelamento recusado: ${r.motivo}`, { id });
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao cancelar.", { id });
+    } finally { qc.invalidateQueries({ queryKey: key }); }
   };
 
   const transmitirFn = useServerFn(transmitirNota);
@@ -235,6 +255,11 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
                     </Button>
                   </>
                 )}
+                {n.status === "autorizada" && n.tipo === "nfse" && (
+                  <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase text-destructive" onClick={() => cancelar(n)}>
+                    <Ban className="mr-1 h-3.5 w-3.5" /> Cancelar
+                  </Button>
+                )}
                 {n.status === "rascunho" && (
                   <Button size="icon" variant="ghost" className="h-8 w-8" title="Descartar rascunho" onClick={() => descartar(n.id)}>
                     <Trash2 className="h-4 w-4" />
@@ -290,7 +315,17 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
               </div>
             </div>
 
-            {tipo === "nfse" ? (
+            {tipo === "nfse" && (
+              <label className="flex items-start gap-2 rounded-md border border-primary/40 bg-primary/10 p-3 text-xs font-semibold">
+                <input type="checkbox" className="mt-0.5" checked={teste} onChange={(e) => setTeste(e.target.checked)} />
+                <span>Emitir nota de teste de R$ 1,00 (o orçamento da OS não muda). Depois de autorizada, cancele e emita a nota com o valor real.</span>
+              </label>
+            )}
+            {tipo === "nfse" && teste ? (
+              <div className="flex justify-between rounded-md border border-border px-3 py-2 text-xs font-black">
+                <span>Serviço de teste - validação de integração</span><span>{brl(1)}</span>
+              </div>
+            ) : tipo === "nfse" ? (
               <div className="rounded-md border border-border">
                 {servicos.length === 0 ? (
                   <p className="p-3 text-xs text-muted-foreground">Sem serviços no orçamento desta OS.</p>
