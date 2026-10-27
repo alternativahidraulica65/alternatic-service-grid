@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T12:17:28.311968+00:00",
+  "generated_at": "2026-10-27T13:27:42.663828+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -535,7 +535,7 @@
     },
     {
       "path": "src/components/EmissaoFiscalOs.tsx",
-      "bytes": 22413
+      "bytes": 24869
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
@@ -683,7 +683,7 @@
     },
     {
       "path": "src/lib/transmissao-fiscal.functions.ts",
-      "bytes": 7589
+      "bytes": 10738
     },
     {
       "path": "src/lib/custos-duplicidade.functions.ts",
@@ -1031,7 +1031,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 48469
+      "bytes": 48514
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
