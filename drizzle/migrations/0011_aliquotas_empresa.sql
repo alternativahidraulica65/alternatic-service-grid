@@ -1,0 +1,1 @@
+ALTER TABLE public.empresas_emissoras ADD COLUMN IF NOT EXISTS aliquota_simples numeric NOT NULL DEFAULT 6, ADD COLUMN IF NOT EXISTS aliquota_iss numeric NOT NULL DEFAULT 5;
