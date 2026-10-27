@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck, Send, Download, Eye, Ban } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { transmitirNota, cancelarNota } from "@/lib/transmissao-fiscal.functions";
-import { obterUrlDocumentoFiscal } from "@/lib/documento-fiscal.functions";
+import { obterUrlDocumentoFiscal, gerarPdfNotaServico } from "@/lib/documento-fiscal.functions";
 import { toast } from "sonner";
 import {
   CSOSN_RETORNO, NATUREZA_RETORNO, TEXTO_SEM_REMESSA, NCM_PADRAO_CILINDRO, cfopRetorno, itensServico, pendenciasEmissao, totalItens, type TipoNota,
@@ -158,6 +158,17 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
       qc.invalidateQueries({ queryKey: key });
     }
   };
+  const pdfFn = useServerFn(gerarPdfNotaServico);
+  const gerarPdf = async (id: string) => {
+    const t = toast.loading("Gerando PDF…");
+    try {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) throw new Error("Sessão expirada.");
+      await pdfFn({ data: { accessToken: s.session.access_token, notaId: id } });
+      toast.success("PDF gerado.", { id: t });
+    } catch (e: any) { toast.error(e?.message || "Falha ao gerar PDF.", { id: t }); }
+    finally { qc.invalidateQueries({ queryKey: key }); }
+  };
   const urlFn = useServerFn(obterUrlDocumentoFiscal);
   const [visualizar, setVisualizar] = useState<{ url: string; nome: string } | null>(null);
   const salvarArquivo = (url: string, nome: string) => {
@@ -248,12 +259,17 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
                 {n.pdf_path && (
                   <>
                     <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.pdf_path, true)}>
-                      <Eye className="mr-1 h-3.5 w-3.5" /> Ver DANFE
+                      <Eye className="mr-1 h-3.5 w-3.5" /> {n.tipo === "nfse" ? "Ver DANFSe" : "Ver DANFE"}
                     </Button>
                     <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.pdf_path, false)}>
                       <Download className="mr-1 h-3.5 w-3.5" /> PDF
                     </Button>
                   </>
+                )}
+                {n.status === "autorizada" && n.tipo === "nfse" && n.xml_path && !n.pdf_path && (
+                  <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => gerarPdf(n.id)}>
+                    <FileText className="mr-1 h-3.5 w-3.5" /> Gerar PDF
+                  </Button>
                 )}
                 {n.status === "autorizada" && n.tipo === "nfse" && (
                   <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase text-destructive" onClick={() => cancelar(n)}>
