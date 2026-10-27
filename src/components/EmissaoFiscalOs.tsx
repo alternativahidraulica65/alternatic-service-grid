@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck, Send, Download } from "lucide-react";
+import { Receipt, AlertTriangle, CheckCircle2, FlaskConical, FileText, Trash2, ShieldCheck, Send, Download, Eye } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { transmitirNota } from "@/lib/transmissao-fiscal.functions";
 import { obterUrlDocumentoFiscal } from "@/lib/documento-fiscal.functions";
@@ -139,21 +139,32 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
     }
   };
   const urlFn = useServerFn(obterUrlDocumentoFiscal);
-  const baixar = async (path: string) => {
-    const janela = window.open("", "_blank");
+  const [visualizar, setVisualizar] = useState<{ url: string; nome: string } | null>(null);
+  const salvarArquivo = (url: string, nome: string) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nome;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+  const baixar = async (path: string, ver: boolean) => {
+    const id = toast.loading("Carregando arquivo…");
     try {
       const { data: s } = await supabase.auth.getSession();
       if (!s.session) throw new Error("Sessão expirada.");
-      const { base64, mime } = await urlFn({ data: { accessToken: s.session.access_token, path } });
+      const { base64, mime, nome } = await urlFn({ data: { accessToken: s.session.access_token, path } });
       const bin = atob(base64);
       const bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
       const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
-      if (janela) janela.location.href = url; else window.location.href = url;
+      toast.dismiss(id);
+      if (ver) { setVisualizar({ url, nome }); return; }
+      salvarArquivo(url, nome);
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      toast.success("Download iniciado.");
     } catch (e: any) {
-      janela?.close();
-      toast.error(e?.message || "Arquivo indisponível.");
+      toast.error(e?.message || "Arquivo indisponível.", { id });
     }
   };
 
@@ -210,14 +221,19 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
                   </Button>
                 )}
                 {n.xml_path && (
-                  <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.xml_path)}>
+                  <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.xml_path, false)}>
                     <Download className="mr-1 h-3.5 w-3.5" /> XML
                   </Button>
                 )}
                 {n.pdf_path && (
-                  <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.pdf_path)}>
-                    <Download className="mr-1 h-3.5 w-3.5" /> PDF
-                  </Button>
+                  <>
+                    <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.pdf_path, true)}>
+                      <Eye className="mr-1 h-3.5 w-3.5" /> Ver DANFE
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase" onClick={() => baixar(n.pdf_path, false)}>
+                      <Download className="mr-1 h-3.5 w-3.5" /> PDF
+                    </Button>
+                  </>
                 )}
                 {n.status === "rascunho" && (
                   <Button size="icon" variant="ghost" className="h-8 w-8" title="Descartar rascunho" onClick={() => descartar(n.id)}>
@@ -341,6 +357,17 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
             <Button variant="outline" onClick={() => setAberto(false)}>Cancelar</Button>
             <Button onClick={preparar} disabled={enviando || pend.length > 0} className="font-black uppercase tracking-widest text-[10px]">
               {enviando ? "Gravando…" : homolog ? "Preparar nota de teste" : "Preparar nota real"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!visualizar} onOpenChange={(o) => { if (!o) { if (visualizar) URL.revokeObjectURL(visualizar.url); setVisualizar(null); } }}>
+        <DialogContent className="max-w-5xl">
+          <DialogHeader><DialogTitle>{visualizar?.nome}</DialogTitle></DialogHeader>
+          {visualizar && <iframe src={visualizar.url} title="DANFE" className="h-[75vh] w-full rounded-sm border border-border" />}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => visualizar && salvarArquivo(visualizar.url, visualizar.nome)}>
+              <Download className="mr-2 h-4 w-4" /> Baixar
             </Button>
           </DialogFooter>
         </DialogContent>
