@@ -624,7 +624,7 @@ function DialogEmpresa({
         nfse_proximo_numero: Number(fiscal.nfse_proximo_numero) || 1,
         nfse_codigo_tributacao: fiscal.nfse_codigo_tributacao.trim() || null,
         nfse_codigo_nbs: fiscal.nfse_codigo_nbs.trim() || null,
-        ambiente_fiscal: "homologacao",
+        ambiente_fiscal: fiscal.ambiente_fiscal === "producao" ? "producao" : "homologacao",
       };
 
 
@@ -791,7 +791,7 @@ function DialogEmpresa({
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="homologacao">Homologação (testes, sem valor fiscal)</SelectItem>
-                  <SelectItem value="producao" disabled>Produção (liberado após homologação)</SelectItem>
+                  <SelectItem value="producao">Produção (notas reais, com valor fiscal)</SelectItem>
                 </SelectContent>
               </Select>
             </Campo>
