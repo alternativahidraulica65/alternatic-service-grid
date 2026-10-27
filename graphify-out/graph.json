@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T20:00:09.717050+00:00",
+  "generated_at": "2026-10-27T11:52:43.864937+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -535,7 +535,7 @@
     },
     {
       "path": "src/components/EmissaoFiscalOs.tsx",
-      "bytes": 20712
+      "bytes": 21006
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
@@ -743,7 +743,7 @@
     },
     {
       "path": "src/lib/documento-fiscal.functions.ts",
-      "bytes": 1662
+      "bytes": 2002
     },
     {
       "path": "src/lib/cliente-vendedor.ts",
