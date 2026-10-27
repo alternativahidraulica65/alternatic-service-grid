@@ -66,7 +66,7 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
     sem_remessa: entrada.semRemessa,
   };
   const pend = data ? pendenciasEmissao({
-    tipo, empresa, cliente: data.cliente, os: osComEntrada, temCertificado: !!cert, certificadoValidoAte: cert?.valido_ate, valorServicos,
+    tipo, empresa, cliente: data.cliente, os: osComEntrada, temCertificado: !!cert, certificadoValidoAte: cert?.valido_ate, valorServicos: tipo === "nfse" && teste ? 1 : valorServicos,
   }) : [];
   const cfop = cfopRetorno(empresa?.uf, data?.cliente?.uf);
   const homolog = (empresa?.ambiente_fiscal || "homologacao") !== "producao";

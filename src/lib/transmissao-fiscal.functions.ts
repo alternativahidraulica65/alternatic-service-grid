@@ -126,3 +126,55 @@ export const transmitirNota = createServerFn({ method: "POST" })
     }).eq("id", nota.id);
     return { autorizada: true, motivo: r.xMotivo || "Autorizada" };
   });
+
+/** Cancela uma NFS-e autorizada (evento 101101) via transmissor. Só Diretor/Financeiro. */
+export const cancelarNota = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => z.object({
+    accessToken: z.string().min(10), notaId: z.string().uuid(), motivo: z.string().trim().min(15).max(255),
+  }).parse(i))
+  .handler(async ({ data }) => {
+    const url = process.env["FISCAL_BRIDGE_URL"]?.replace(/\/+$/, "");
+    const apiKey = process.env["FISCAL_BRIDGE_KEY"];
+    if (!url || !apiKey) throw new Error("Transmissor fiscal não configurado.");
+    const admin = createClient(OFFICIAL_URL, await obterChaveAdmin(), { auth: { persistSession: false, autoRefreshToken: false } });
+    const { data: auth } = await admin.auth.getUser(data.accessToken);
+    if (!auth?.user) throw new Error("Sessão inválida. Entre novamente.");
+    const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", auth.user.id);
+    if (!roles?.some((r) => ["diretor", "financeiro", "administrativo_financeiro"].includes(r.role as string)))
+      throw new Error("Somente Diretor ou Financeiro podem cancelar notas.");
+
+    const { data: nota } = await admin.from("notas_fiscais").select("*").eq("id", data.notaId).single();
+    if (!nota) throw new Error("Nota não encontrada.");
+    if (nota.tipo !== "nfse") throw new Error("Cancelamento disponível apenas para NFS-e.");
+    if (nota.status !== "autorizada" || !nota.chave_acesso) throw new Error("Só notas autorizadas podem ser canceladas.");
+    const [{ data: emp }, { data: cofre }] = await Promise.all([
+      admin.from("empresas_emissoras").select("cnpj").eq("id", nota.empresa_id).single(),
+      admin.from("certificados_fiscais_cofre").select("pfx_cifrado, senha_cifrada").eq("empresa_id", nota.empresa_id).maybeSingle(),
+    ]);
+    if (!emp || !cofre) throw new Error("Empresa ou certificado não encontrado.");
+    const ambiente = nota.ambiente === "producao" ? "producao" : "homologacao";
+
+    let r: any;
+    try {
+      const resp = await fetch(`${url}/nfse/cancelar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+        body: JSON.stringify({
+          ambiente, cancelamento: { chave: nota.chave_acesso, cnpj: emp.cnpj, motivo: data.motivo, codigo_motivo: "9" },
+          certificado: { pfx_base64: await decifrar(cofre.pfx_cifrado), senha: await decifrar(cofre.senha_cifrada) },
+        }),
+      });
+      r = await resp.json().catch(() => ({ erro: `Resposta inválida do transmissor (HTTP ${resp.status}).` }));
+    } catch (e) {
+      console.error("cancelarNota", e);
+      r = { erro: "Não foi possível conectar ao transmissor fiscal." };
+    }
+    if (r.erro || !r.cancelada) {
+      const motivo = r.erro || (r.erros ? JSON.stringify(r.erros).slice(0, 500) : "Recusado sem motivo informado.");
+      return { cancelada: false, motivo };
+    }
+    await admin.from("notas_fiscais").update({
+      status: "cancelada", motivo_status: `Cancelada: ${data.motivo}`, updated_at: new Date().toISOString(),
+    }).eq("id", nota.id);
+    return { cancelada: true, motivo: "Cancelada" };
+  });
