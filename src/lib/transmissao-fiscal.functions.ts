@@ -125,6 +125,12 @@ export const transmitirNota = createServerFn({ method: "POST" })
       codigo_status: r.cStat || "100", motivo_status: r.xMotivo || "Autorizada",
       xml_path, pdf_path, emitida_em: new Date().toISOString(), updated_at: new Date().toISOString(),
     }).eq("id", nota.id);
+    if (nota.tipo === "nfse" && xml_path && !pdf_path) {
+      try {
+        const { gerarPdfDeNfse } = await import("./danfse-storage");
+        await gerarPdfDeNfse(admin, { ...nota, xml_path });
+      } catch (e) { console.error("DANFSe", e); }
+    }
     return { autorizada: true, motivo: r.xMotivo || "Autorizada" };
   });
 
