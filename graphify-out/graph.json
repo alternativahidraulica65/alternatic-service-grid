@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T14:31:56.037655+00:00",
+  "generated_at": "2026-10-27T14:39:21.835773+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -31,7 +31,7 @@
     },
     {
       "path": "package.json",
-      "bytes": 3218
+      "bytes": 3244
     },
     {
       "path": "components.json",
@@ -535,7 +535,7 @@
     },
     {
       "path": "src/components/EmissaoFiscalOs.tsx",
-      "bytes": 24869
+      "bytes": 25827
     },
     {
       "path": "src/components/GuiaExecucaoOs.tsx",
@@ -683,7 +683,7 @@
     },
     {
       "path": "src/lib/transmissao-fiscal.functions.ts",
-      "bytes": 10866
+      "bytes": 11120
     },
     {
       "path": "src/lib/custos-duplicidade.functions.ts",
@@ -726,6 +726,10 @@
       "bytes": 7304
     },
     {
+      "path": "src/lib/danfse.ts",
+      "bytes": 7349
+    },
+    {
       "path": "src/lib/checklist.functions.ts",
       "bytes": 1938
     },
@@ -743,7 +747,7 @@
     },
     {
       "path": "src/lib/documento-fiscal.functions.ts",
-      "bytes": 2002
+      "bytes": 3307
     },
     {
       "path": "src/lib/cliente-vendedor.ts",
@@ -752,6 +756,10 @@
     {
       "path": "src/lib/error-capture.ts",
       "bytes": 2898
+    },
+    {
+      "path": "src/lib/danfse-storage.ts",
+      "bytes": 1074
     },
     {
       "path": "src/lib/os-fluxo.ts",
@@ -2848,6 +2856,10 @@
       "target": "./admin-key"
     },
     {
+      "source": "src/lib/transmissao-fiscal.functions.ts",
+      "target": "./danfse-storage"
+    },
+    {
       "source": "src/lib/custos-duplicidade.functions.ts",
       "target": "./admin-key"
     },
@@ -2904,6 +2916,10 @@
       "target": "./admin-key"
     },
     {
+      "source": "src/lib/danfse.ts",
+      "target": "pdf-lib"
+    },
+    {
       "source": "src/lib/checklist.functions.ts",
       "target": "./admin-key"
     },
@@ -2940,8 +2956,16 @@
       "target": "./admin-key"
     },
     {
+      "source": "src/lib/documento-fiscal.functions.ts",
+      "target": "./danfse-storage"
+    },
+    {
       "source": "src/lib/cliente-vendedor.ts",
       "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/lib/danfse-storage.ts",
+      "target": "./danfse"
     },
     {
       "source": "src/lib/materiais-calculo.test.ts",
