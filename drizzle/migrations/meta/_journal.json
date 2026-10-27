@@ -78,6 +78,13 @@
       "when": 1792525486006,
       "tag": "0010_campos_fiscais_empresas_clientes",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793111459304,
+      "tag": "0011_aliquotas_empresa",
+      "breakpoints": true
     }
   ]
 }

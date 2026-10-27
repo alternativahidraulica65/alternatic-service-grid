@@ -669,6 +669,8 @@ export type Database = {
       }
       empresas_emissoras: {
         Row: {
+          aliquota_iss: number
+          aliquota_simples: number
           ambiente_fiscal: string
           ativo: boolean
           bairro: string | null
@@ -702,6 +704,8 @@ export type Database = {
           uf: string | null
         }
         Insert: {
+          aliquota_iss?: number
+          aliquota_simples?: number
           ambiente_fiscal?: string
           ativo?: boolean
           bairro?: string | null
@@ -735,6 +739,8 @@ export type Database = {
           uf?: string | null
         }
         Update: {
+          aliquota_iss?: number
+          aliquota_simples?: number
           ambiente_fiscal?: string
           ativo?: boolean
           bairro?: string | null
