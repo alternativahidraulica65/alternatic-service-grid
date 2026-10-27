@@ -80,6 +80,7 @@ export const transmitirNota = createServerFn({ method: "POST" })
             serie: nota.serie, numero: nota.numero, emitente,
             tomador: { ...endCli, nome: cli.razao_social || cli.nome, cpf_cnpj: cli.cnpj },
             codigo_tributacao: emp.nfse_codigo_tributacao, codigo_nbs: emp.nfse_codigo_nbs,
+            aliquota_simples: Number((emp as any).aliquota_simples ?? 6), aliquota_iss: Number((emp as any).aliquota_iss ?? 5),
             descricao: (itens.map((i) => i.descricao).join("; ") + (info ? ` · ${info}` : "")).slice(0, 1900),
             valor: Number(nota.valor_total),
           },

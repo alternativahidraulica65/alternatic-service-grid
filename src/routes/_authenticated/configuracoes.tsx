@@ -488,6 +488,8 @@ function DialogEmpresa({
     nfse_proximo_numero: 1,
     nfse_codigo_tributacao: "",
     nfse_codigo_nbs: "",
+    aliquota_simples: 6,
+    aliquota_iss: 5,
     ambiente_fiscal: "homologacao",
   });
 
@@ -570,6 +572,8 @@ function DialogEmpresa({
       nfse_proximo_numero: e.nfse_proximo_numero ?? 1,
       nfse_codigo_tributacao: e.nfse_codigo_tributacao || "",
       nfse_codigo_nbs: e.nfse_codigo_nbs || "",
+      aliquota_simples: Number(e.aliquota_simples ?? 6),
+      aliquota_iss: Number(e.aliquota_iss ?? 5),
       ambiente_fiscal: e.ambiente_fiscal || "homologacao",
     });
   }
@@ -624,6 +628,8 @@ function DialogEmpresa({
         nfse_proximo_numero: Number(fiscal.nfse_proximo_numero) || 1,
         nfse_codigo_tributacao: fiscal.nfse_codigo_tributacao.trim() || null,
         nfse_codigo_nbs: fiscal.nfse_codigo_nbs.trim() || null,
+        aliquota_simples: Number(fiscal.aliquota_simples) || 0,
+        aliquota_iss: Number(fiscal.aliquota_iss) || 0,
         ambiente_fiscal: fiscal.ambiente_fiscal === "producao" ? "producao" : "homologacao",
       };
 
@@ -785,6 +791,12 @@ function DialogEmpresa({
             </Campo>
             <Campo label="Código NBS">
               <Input value={fiscal.nfse_codigo_nbs} onChange={(e) => setFiscal({ ...fiscal, nfse_codigo_nbs: e.target.value })} className="font-mono" placeholder="1.2001.50.00" />
+            </Campo>
+            <Campo label="Alíquota Simples Nacional / cheia (%)">
+              <Input type="number" step="0.01" value={fiscal.aliquota_simples} onChange={(e) => setFiscal({ ...fiscal, aliquota_simples: Number(e.target.value) })} />
+            </Campo>
+            <Campo label="Alíquota ISS municipal (%)">
+              <Input type="number" step="0.01" value={fiscal.aliquota_iss} onChange={(e) => setFiscal({ ...fiscal, aliquota_iss: Number(e.target.value) })} />
             </Campo>
             <Campo label="Ambiente">
               <Select value={fiscal.ambiente_fiscal} onValueChange={(v) => setFiscal({ ...fiscal, ambiente_fiscal: v })}>
