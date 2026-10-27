@@ -27,3 +27,20 @@ export const obterUrlDocumentoFiscal = createServerFn({ method: "POST" })
     const mime = data.path.toLowerCase().endsWith(".pdf") ? "application/pdf" : "application/xml";
     return { base64: btoa(bin), mime, nome: data.path.split("/").pop() || "documento" };
   });
+
+/** Gera e guarda o PDF (DANFSe) de uma NFS-e autorizada a partir do XML oficial. Só Diretor/Financeiro. */
+export const gerarPdfNotaServico = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => z.object({ accessToken: z.string().min(10), notaId: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const admin = createClient(OFFICIAL_URL, await obterChaveAdmin(), { auth: { persistSession: false, autoRefreshToken: false } });
+    const { data: auth } = await admin.auth.getUser(data.accessToken);
+    if (!auth?.user) throw new Error("Sessão inválida. Entre novamente.");
+    const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", auth.user.id);
+    if (!roles?.some((r) => ["diretor", "financeiro", "administrativo_financeiro"].includes(r.role as string)))
+      throw new Error("Somente Diretor ou Financeiro podem gerar documentos fiscais.");
+    const { data: nota } = await admin.from("notas_fiscais").select("*").eq("id", data.notaId).single();
+    if (!nota || nota.tipo !== "nfse" || nota.status !== "autorizada" || !nota.xml_path) throw new Error("Nota sem XML autorizado.");
+    const { gerarPdfDeNfse } = await import("./danfse-storage");
+    const pdf_path = await gerarPdfDeNfse(admin, nota);
+    return { pdf_path };
+  });
