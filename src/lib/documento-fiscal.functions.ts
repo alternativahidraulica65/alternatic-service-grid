@@ -19,7 +19,11 @@ export const obterUrlDocumentoFiscal = createServerFn({ method: "POST" })
     const { data: nota } = await admin.from("notas_fiscais").select("id")
       .or(`xml_path.eq.${data.path},pdf_path.eq.${data.path}`).limit(1).maybeSingle();
     if (!nota) throw new Error("Documento não encontrado.");
-    const { data: u, error } = await admin.storage.from("documentos-fiscais").createSignedUrl(data.path, 300);
-    if (error || !u) throw new Error("Arquivo indisponível.");
-    return { url: u.signedUrl };
+    const { data: blob, error } = await admin.storage.from("documentos-fiscais").download(data.path);
+    if (error || !blob) throw new Error("Arquivo indisponível.");
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    const mime = data.path.toLowerCase().endsWith(".pdf") ? "application/pdf" : "application/xml";
+    return { base64: btoa(bin), mime, nome: data.path.split("/").pop() || "documento" };
   });

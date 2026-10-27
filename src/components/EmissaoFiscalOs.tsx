@@ -144,8 +144,13 @@ export function EmissaoFiscalOs({ osId }: { osId: string }) {
     try {
       const { data: s } = await supabase.auth.getSession();
       if (!s.session) throw new Error("Sessão expirada.");
-      const { url } = await urlFn({ data: { accessToken: s.session.access_token, path } });
+      const { base64, mime } = await urlFn({ data: { accessToken: s.session.access_token, path } });
+      const bin = atob(base64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
       if (janela) janela.location.href = url; else window.location.href = url;
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (e: any) {
       janela?.close();
       toast.error(e?.message || "Arquivo indisponível.");
