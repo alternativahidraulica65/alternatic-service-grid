@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T13:27:42.663828+00:00",
+  "generated_at": "2026-10-27T14:31:56.037655+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -683,7 +683,7 @@
     },
     {
       "path": "src/lib/transmissao-fiscal.functions.ts",
-      "bytes": 10738
+      "bytes": 10866
     },
     {
       "path": "src/lib/custos-duplicidade.functions.ts",
@@ -819,7 +819,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 79839
+      "bytes": 80041
     },
     {
       "path": "src/integrations/supabase/client.ts",
@@ -1031,7 +1031,7 @@
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
-      "bytes": 48514
+      "bytes": 49277
     },
     {
       "path": "src/routes/_authenticated/orcamento.tsx",
@@ -1158,6 +1158,10 @@
       "bytes": 10129
     },
     {
+      "path": "drizzle/migrations/0011_aliquotas_empresa.sql",
+      "bytes": 173
+    },
+    {
       "path": "drizzle/migrations/0002_reload_schema_cache_colaboradores.sql",
       "bytes": 478
     },
@@ -1207,7 +1211,11 @@
     },
     {
       "path": "drizzle/migrations/meta/_journal.json",
-      "bytes": 1748
+      "bytes": 1894
+    },
+    {
+      "path": "drizzle/migrations/meta/0011_snapshot.json",
+      "bytes": 336
     },
     {
       "path": "drizzle/migrations/meta/0001_snapshot.json",
