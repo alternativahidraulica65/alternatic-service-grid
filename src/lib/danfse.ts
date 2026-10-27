@@ -3,7 +3,7 @@ import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf
 // DANFSE (documento auxiliar da NFS-e Nacional) gerado a partir do XML autorizado. Roda no servidor (Workers).
 const tag = (xml: string, t: string) => {
   const m = xml.match(new RegExp(`<${t}(?:\\s[^>]*)?>([\\s\\S]*?)</${t}>`));
-  return m ? m[1].replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim() : "";
+  return m ? (m[1] ?? "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim() : "";
 };
 // Fontes padrão só cobrem WinAnsi: troca o que não couber.
 const limpa = (s: string) => s.replace(/[·•]/g, "-").replace(/[^\x20-\x7E\u00A0-\u00FF—–“”‘’]/g, "");
