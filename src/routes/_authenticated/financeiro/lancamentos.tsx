@@ -198,7 +198,7 @@ function Mesa({ titulo, itens, alerta }: { titulo: string; itens: any[]; alerta?
 function Calendario({ lanc }: { lanc: any[] }) {
   const [ref, setRef] = useState(() => hoje().slice(0, 7));
   const [dia, setDia] = useState<string | null>(null);
-  const [y, m] = ref.split("-").map(Number);
+  const [y = 2026, m = 1] = ref.split("-").map(Number);
   const primeiro = new Date(Date.UTC(y, m - 1, 1));
   const totalDias = new Date(Date.UTC(y, m, 0)).getUTCDate();
   const offset = primeiro.getUTCDay();

@@ -24,7 +24,7 @@ export function somarDiasIso(iso: string, dias: number): string {
 }
 
 export function addMesesIso(iso: string, meses: number): string {
-  const [y, m, d] = iso.split("-").map(Number);
+  const [y = 0, m = 1, d = 1] = iso.split("-").map(Number);
   const alvo = new Date(Date.UTC(y, m - 1 + meses, 1, 12));
   const ultimo = new Date(Date.UTC(alvo.getUTCFullYear(), alvo.getUTCMonth() + 1, 0, 12)).getUTCDate();
   alvo.setUTCDate(Math.min(d, ultimo));
