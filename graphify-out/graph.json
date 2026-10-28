@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T14:39:21.835773+00:00",
+  "generated_at": "2026-10-28T13:28:51.942322+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -11,7 +11,7 @@
     },
     {
       "path": "AGENTS.md",
-      "bytes": 2487
+      "bytes": 2801
     },
     {
       "path": "tsconfig.json",
@@ -523,7 +523,7 @@
     },
     {
       "path": "src/components/AppNavigation.tsx",
-      "bytes": 13860
+      "bytes": 13872
     },
     {
       "path": "src/components/EstadoLista.tsx",
@@ -607,7 +607,7 @@
     },
     {
       "path": "src/components/NovaDespesaDialog.tsx",
-      "bytes": 7890
+      "bytes": 11696
     },
     {
       "path": "src/components/MaoDeObraOsCard.tsx",
@@ -684,6 +684,10 @@
     {
       "path": "src/lib/transmissao-fiscal.functions.ts",
       "bytes": 11120
+    },
+    {
+      "path": "src/lib/financeiro.test.ts",
+      "bytes": 721
     },
     {
       "path": "src/lib/custos-duplicidade.functions.ts",
@@ -764,6 +768,10 @@
     {
       "path": "src/lib/os-fluxo.ts",
       "bytes": 10959
+    },
+    {
+      "path": "src/lib/financeiro.ts",
+      "bytes": 1606
     },
     {
       "path": "src/lib/materiais-calculo.test.ts",
@@ -1143,7 +1151,7 @@
     },
     {
       "path": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "bytes": 15412
+      "bytes": 28983
     },
     {
       "path": "src/routes/_authenticated/financeiro/valinhos.tsx",
@@ -2460,6 +2468,10 @@
       "target": "lucide-react"
     },
     {
+      "source": "src/components/NovaDespesaDialog.tsx",
+      "target": "@/lib/financeiro"
+    },
+    {
       "source": "src/components/MaoDeObraOsCard.tsx",
       "target": "react"
     },
@@ -2858,6 +2870,14 @@
     {
       "source": "src/lib/transmissao-fiscal.functions.ts",
       "target": "./danfse-storage"
+    },
+    {
+      "source": "src/lib/financeiro.test.ts",
+      "target": "vitest"
+    },
+    {
+      "source": "src/lib/financeiro.test.ts",
+      "target": "./financeiro"
     },
     {
       "source": "src/lib/custos-duplicidade.functions.ts",
@@ -5429,10 +5449,6 @@
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "target": "@/components/RemoverSelecionados"
-    },
-    {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "target": "@tanstack/react-router"
     },
     {
@@ -5461,10 +5477,6 @@
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "target": "@/components/FiltrosSalvos"
-    },
-    {
-      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "target": "@/components/ui/card"
     },
     {
@@ -5477,11 +5489,23 @@
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/label"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
       "target": "@/components/ui/badge"
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "target": "@/components/ui/checkbox"
+      "target": "@/components/ui/progress"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/tabs"
+    },
+    {
+      "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
+      "target": "@/components/ui/dialog"
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
@@ -5489,11 +5513,11 @@
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "target": "@/components/ui/select"
+      "target": "lucide-react"
     },
     {
       "source": "src/routes/_authenticated/financeiro/lancamentos.tsx",
-      "target": "lucide-react"
+      "target": "@/lib/financeiro"
     },
     {
       "source": "src/routes/_authenticated/financeiro/valinhos.tsx",
