@@ -314,7 +314,7 @@ function CustosFornecedores({ custos }: { custos: any[] }) {
     const m = new Map<string, { nome: string; total: number; ids: string[]; itens: any[] }>();
     custos.forEach((c) => {
       const k = c.fornecedor_id || `t:${c.terceiro_nome || "sem"}`;
-      const g = m.get(k) ?? { nome: c.fornecedores?.nome || c.terceiro_nome || "Sem fornecedor", total: 0, ids: [], itens: [] };
+      const g = m.get(k) ?? { nome: String(c.fornecedores?.nome || c.terceiro_nome || "Sem fornecedor"), total: 0, ids: [] as string[], itens: [] as any[] };
       g.total += Number(c.custo_interno || 0); g.ids.push(c.id); g.itens.push(c); m.set(k, g);
     });
     return [...m.values()].sort((a, b) => b.total - a.total);
