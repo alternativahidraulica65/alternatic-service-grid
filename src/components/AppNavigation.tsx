@@ -87,7 +87,7 @@ export function AppNavigation({ context, children }: { context: any; children: R
     { label: "Terceiros", icon: Package, to: "/terceiros", roles: ["diretor", "administrativo_financeiro", "gestor"] },
     { label: "Orquestrador", icon: Factory, to: "/producao/orquestrador", roles: ["diretor", "gestor"] },
     { label: "Minha Bancada", icon: Wrench, to: "/producao/minha-bancada", roles: ["operador", "gestor"] },
-    { label: "Lançamentos", icon: Receipt, to: "/financeiro/lancamentos", roles: ["diretor", "administrativo_financeiro"] },
+    { label: "Financeiro", icon: Receipt, to: "/financeiro/lancamentos", roles: ["diretor", "administrativo_financeiro", "financeiro"] },
 
     { label: "Materiais", icon: Factory, to: "/engenharia/materiais", roles: ["diretor", "gestor"] },
     { label: "Fornecedores", icon: Truck, to: "/financeiro/fornecedores", roles: ["diretor", "administrativo_financeiro"] },
