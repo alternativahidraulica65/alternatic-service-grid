@@ -50,7 +50,7 @@ function useFinanceiro() {
           .select("id, tipo, categoria, valor, valor_pago, data_competencia, data_vencimento, data_pagamento, descricao, pago, cancelado, forma_pagamento, conta_bancaria_id, nota_fiscal_id, parcela, total_parcelas, os_id, cliente_id, fornecedor_id, fornecedores ( nome ), clientes ( nome ), ordens_servico ( numero_os )")
           .eq("cancelado", false).order("data_vencimento", { ascending: true }),
         sb.from("contas_bancarias").select("*").order("nome"),
-        sb.from("os_custos").select("id, os_id, descricao, custo_interno, criado_em, fornecedor_id, terceiro_nome, fornecedores ( nome ), ordens_servico ( numero_os )")
+        sb.from("os_custos").select("id, os_id, descricao, custo_interno, criado_em, fornecedor_id, terceiro_nome, fornecedores ( nome ), ordens_servico!os_custos_os_id_fkey ( numero_os )")
           .eq("pago", false).gt("custo_interno", 0).neq("categoria", "mao_obra"),
         sb.from("notas_fiscais").select("id, empresa_id, valor_total, emitida_em, tipo, cfop").eq("status", "autorizada").eq("ambiente", "producao").gte("emitida_em", umAno),
         sb.from("empresas_emissoras").select("id, nome, cnpj, regime_tributario, aliquota_simples, ativo").eq("ativo", true),
@@ -114,13 +114,26 @@ function Financeiro() {
       </div>
 
       <Tabs defaultValue="visao">
-        <TabsList className="flex h-auto flex-wrap justify-start">
-          <TabsTrigger value="visao">Mesa do dia & Calendário</TabsTrigger>
-          <TabsTrigger value="receber">A receber ({r.receber.length})</TabsTrigger>
-          <TabsTrigger value="pagar">A pagar ({r.pagar.length})</TabsTrigger>
-          <TabsTrigger value="fiscal">Teto fiscal por CNPJ</TabsTrigger>
-          <TabsTrigger value="contas">Contas bancárias</TabsTrigger>
-          <TabsTrigger value="historico">Histórico</TabsTrigger>
+        <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 rounded-sm border border-border bg-card p-1">
+          {[
+            ["visao", "Mesa do dia & Calendário", null],
+            ["receber", "A receber", r.receber.length],
+            ["pagar", "A pagar", r.pagar.length],
+            ["fiscal", "Teto fiscal por CNPJ", null],
+            ["contas", "Contas bancárias", null],
+            ["historico", "Histórico", null],
+          ].map(([v, label, n]) => (
+            <TabsTrigger
+              key={v as string}
+              value={v as string}
+              className="gap-2 rounded-sm px-4 py-2 text-xs font-bold uppercase tracking-wide text-muted-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
+            >
+              {label}
+              {n !== null && (
+                <span className="rounded-sm bg-foreground/10 px-1.5 py-0.5 text-[10px] font-black tabular-nums">{n as number}</span>
+              )}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <TabsContent value="visao" className="space-y-4">
