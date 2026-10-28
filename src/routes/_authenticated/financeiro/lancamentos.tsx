@@ -427,15 +427,11 @@ function ContasBancarias({ saldos }: { saldos: any[] }) {
           <DialogFooter><Button onClick={salvar}>Salvar conta</Button></DialogFooter>
         </DialogContent>
       </Dialog>
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {saldos.length === 0 && <p className="text-sm text-muted-foreground">Cadastre suas contas para acompanhar o saldo real. As baixas passam a movimentar a conta escolhida.</p>}
         {saldos.map((c) => (
-          <Card key={c.id}><CardContent className="p-4">
-            <p className="flex items-center gap-2 text-sm font-black uppercase">{c.banco ? <Landmark className="h-4 w-4" /> : <Wallet className="h-4 w-4" />}{c.nome}</p>
-            <p className="text-[11px] text-muted-foreground">{[c.banco, c.agencia && `Ag ${c.agencia}`, c.conta && `CC ${c.conta}`].filter(Boolean).join(" · ") || "Caixa"}</p>
-            <p className={`mt-2 text-2xl font-black ${c.saldo < 0 ? "text-destructive" : ""}`}>{brl(c.saldo)}</p>
-            <p className="text-[11px] text-muted-foreground">Saldo inicial {brl(Number(c.saldo_inicial))} em {fmt(c.data_saldo_inicial)}</p>
-          </CardContent></Card>
+          <CartaoBancario key={c.id} nome={c.nome} banco={c.banco} agencia={c.agencia} conta={c.conta} saldo={c.saldo} brl={brl}
+            rodape={`Inicial ${brl(Number(c.saldo_inicial))}\nem ${fmt(c.data_saldo_inicial)}`} />
         ))}
       </div>
     </div>
