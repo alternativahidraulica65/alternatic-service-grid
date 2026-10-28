@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-28T13:34:03.020420+00:00
+Generated: 2026-10-28T14:21:52.470238+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -157,6 +157,7 @@ Generated: 2026-10-28T13:34:03.020420+00:00
 - src/components/BotaoConsultaCnpj.tsx
 - src/components/BotaoVoltar.tsx
 - src/components/BuscaGlobal.tsx
+- src/components/CartaoBancario.tsx
 - src/components/CertificadoDigitalCard.tsx
 - src/components/ChecklistDocumento.tsx
 - src/components/ClientOnly.tsx
